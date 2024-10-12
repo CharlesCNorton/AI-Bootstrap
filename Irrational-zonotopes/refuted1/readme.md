@@ -4,6 +4,8 @@ By: Charles Norton & GPT-4
 
 Created on: October 11th, 2024
 
+Note: Read refutation.md before proceeding.
+
 ---
 
 ### Table of Contents:
