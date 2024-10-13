@@ -103,7 +103,7 @@ def plot_discrepancies(discrepancies, sequence_type):
 
 def main():
     n = 1000000000  # Adjust n as needed
-    sequence_type = 'odd'  # Choose from 'natural', 'odd', 'multiples_of_3', 'primes'
+    sequence_type = 'primes'  # Choose from 'natural', 'odd', 'multiples_of_3', 'primes'
 
     discrepancies = greedy_coloring(n, sequence_type)
     stats = compute_statistics(discrepancies)
