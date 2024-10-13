@@ -4,7 +4,6 @@ By: Charles Norton & GPT-4
 
 Created on: October 13th, 2024
 
--
 ## Abstract
 
 This paper addresses the open problem of balanced coloring of the reciprocals of positive integers, starting with \( n = 2 \). The primary goal is to assign each integer to one of two sets, denoted as "red" and "blue," such that the discrepancy between the reciprocal sums of the two sets remains bounded as \( n \to \infty \). Specifically, given sets \( R \) and \( B \) of integers colored red and blue, respectively, the discrepancy is defined as \( D_n = S_{\text{red}}(n) - S_{\text{blue}}(n) \), where \( S_{\text{red}}(n) \) and \( S_{\text{blue}}(n) \) are the sums of the reciprocals of the red and blue sets up to the integer \( n \). The paper explores whether a deterministic strategy can ensure that \( D_n \) remains bounded indefinitely, and if so, what such a strategy would look like.
