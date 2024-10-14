@@ -5,6 +5,12 @@ Date: October 14, 2024
 
 ---
 
+Open Question: Is there an efficient deterministic algorithm that partitions the positive integers starting from 2 into two sets such that the discrepancy between the sums of the reciprocals of the numbers in each set remains tightly bounded as n→∞?
+
+Our Answer: Erdős showed that there exists a partition of the positive integers into two sets such that the discrepancy of the reciprocal sums remains bounded, but his proof was non-constructive and probabilistic. Our work expands on this by proposing a deterministic algorithm—Weighted Averaging—that provides a constructive solution with tighter discrepancy bounds than the Greedy Algorithm previously proposed. Weighted Averaging employs fractional assignments to achieve smoother convergence, demonstrating both theoretically and empirically that it effectively maintains a smaller, bounded discrepancy for large values of 𝑛.
+
+---
+
 ## Abstract
 
 This manuscript revisits the problem of balanced coloring of the reciprocals of positive integers, starting with \( n = 2 \). The goal is to assign each integer to one of two sets, "red" and "blue," such that the discrepancy between the reciprocal sums of the two sets remains bounded as \( n \to \infty \). The original Greedy Algorithm proposed to solve this problem was theoretically proven to keep discrepancies bounded. However, we present empirical evidence that Weighted Averaging, a more refined algorithm, offers superior performance in practice. This paper provides both new proofs and empirical validations to support that Weighted Averaging is more effective at minimizing discrepancies over large values of \( n \). This transition reflects the continuous evolution of mathematical optimization in combinatorial problems, with Weighted Averaging emerging as the current best-known solution. Through rigorous proofs and comprehensive testing, we establish that it provides tighter bounds on discrepancies and converges more quickly than the previously assumed optimal greedy method.
