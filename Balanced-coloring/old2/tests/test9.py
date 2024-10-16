@@ -242,7 +242,7 @@ def run_all_algorithms(n):
     return pd.DataFrame(results)
 
 # Example of running the comparison
-n = 1000000  # Choose a reasonable large n for testing
+n = 10000000000  # Choose a reasonable large n for testing
 comparison_df = run_all_algorithms(n)
 
 # Print detailed statistics for each algorithm
