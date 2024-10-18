@@ -9,7 +9,7 @@ from torch_geometric.data import Data
 from torch_geometric.nn import GINConv, global_mean_pool
 from torch.distributions import Categorical
 from tqdm import tqdm
-import community
+import community.community_louvain as community
 import warnings
 from collections import deque
 import logging
@@ -24,11 +24,61 @@ torch.manual_seed(42)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"Using device: {device}")
 
-def initialize_graph(num_nodes=100000, m=5):
+def initialize_graph(num_nodes=10000, m=5):
     graph = nx.barabasi_albert_graph(n=num_nodes, m=m, seed=42)
     return graph
 
-graph = initialize_graph()
+def extract_features(subgraph, controlled_nodes, adversarial_nodes, node_resource_costs, global_state, stability_history, clustering_coeff):
+    """
+    Extract features for each node in the subgraph.
+    Features may include:
+    - Node resource cost
+    - Whether it is controlled by the agent or adversary
+    - Degree centrality
+    - Clustering coefficient
+    - Stability status
+
+    Args:
+        subgraph (Graph): The subgraph to extract features from.
+        controlled_nodes (set): Nodes controlled by the agent.
+        adversarial_nodes (set): Nodes controlled by the adversary.
+        node_resource_costs (dict): Resource costs per node.
+        global_state (dict): Global state of the network, such as total controlled nodes.
+        stability_history (dict): Stability tracking of nodes.
+        clustering_coeff (dict): Clustering coefficient per node.
+
+    Returns:
+        torch.Tensor: Node feature matrix.
+        list: Node list.
+    """
+    feature_matrix = []
+    node_list = list(subgraph.nodes())
+
+    for node in node_list:
+        is_controlled = 1 if node in controlled_nodes else 0
+        is_adversarial = 1 if node in adversarial_nodes else 0
+        resource_cost = node_resource_costs.get(node, 1.0)
+        degree_centrality = subgraph.degree(node)
+        clustering = clustering_coeff.get(node, 0)
+        stability = stability_history.get(node, 0)
+        global_controlled = global_state.get('total_controlled', 0)
+
+        feature_vector = [
+            resource_cost,
+            is_controlled,
+            is_adversarial,
+            degree_centrality,
+            clustering,
+            stability,
+            global_controlled,
+        ]
+
+        feature_matrix.append(feature_vector)
+
+    # Convert to tensor
+    feature_matrix = torch.tensor(feature_matrix, dtype=torch.float).to(device)
+    return feature_matrix, node_list
+
 
 def compute_centrality_measures(graph):
     degree_centrality = nx.degree_centrality(graph)
@@ -44,9 +94,8 @@ def compute_centrality_measures(graph):
         katz_centrality = degree_centrality
     return degree_centrality, betweenness_centrality, eigenvector_centrality, closeness_centrality, katz_centrality
 
-degree_centrality, betweenness_centrality, eigenvector_centrality, closeness_centrality, katz_centrality = compute_centrality_measures(graph)
-
-def initialize_resource_costs(graph, degree_centrality, betweenness_centrality, eigenvector_centrality, closeness_centrality, katz_centrality):
+def initialize_resource_costs(graph, degree_centrality, betweenness_centrality,
+                              eigenvector_centrality, closeness_centrality, katz_centrality):
     resource_costs = {}
     for node in graph.nodes:
         cost = (degree_centrality[node] * 1.0 +
@@ -60,9 +109,6 @@ def initialize_resource_costs(graph, degree_centrality, betweenness_centrality, 
         normalized_cost = max(0.1, normalized_cost)
         resource_costs[node] = normalized_cost
     return resource_costs
-
-node_resource_costs = initialize_resource_costs(graph, degree_centrality, betweenness_centrality,
-                                              eigenvector_centrality, closeness_centrality, katz_centrality)
 
 def evolve_graph(graph, agent_success, adversary_success, p_add_base=0.001, p_remove_base=0.001, m=5):
     """
@@ -84,23 +130,23 @@ def evolve_graph(graph, agent_success, adversary_success, p_add_base=0.001, p_re
         p_add = p_add_base
         p_remove = p_remove_base
 
-    # Add edges
+
     for _ in range(int(num_edges * p_add)):
-        u, v = random.choices(list(graph.nodes()), weights=[degree_centrality[node] for node in graph.nodes()], k=2)
+        u, v = random.choices(list(graph.nodes()), weights=[degree_centrality.get(node, 1) for node in graph.nodes()], k=2)
         if not graph.has_edge(u, v):
             graph.add_edge(u, v)
 
-    # Remove edges
+
     edges = list(graph.edges())
     for edge in edges:
         if random.random() < p_remove:
             graph.remove_edge(*edge)
 
-    # Add nodes
+
     if random.random() < p_add:
         new_node = num_nodes
         graph.add_node(new_node)
-        targets = random.choices(list(graph.nodes()), weights=[degree_centrality[node] for node in graph.nodes()], k=m)
+        targets = random.choices(list(graph.nodes()), weights=[degree_centrality.get(node, 1) for node in graph.nodes()], k=m)
         for target in targets:
             graph.add_edge(new_node, target)
 
@@ -125,8 +171,9 @@ class DetectionProbabilityPredictor(nn.Module):
 class GNNPolicyNetworkWithMemory(nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, lstm_hidden_dim, num_heads=4):
         super(GNNPolicyNetworkWithMemory, self).__init__()
+
         self.gnn = GINConv(nn.Sequential(
-            nn.Linear(input_dim, hidden_dim),
+            nn.Linear(9, hidden_dim),
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim)
         ))
@@ -138,6 +185,8 @@ class GNNPolicyNetworkWithMemory(nn.Module):
         self.dropout = nn.Dropout(p=0.5)
         self.lstm = nn.LSTM(hidden_dim, lstm_hidden_dim, batch_first=True)
         self.fc = nn.Linear(lstm_hidden_dim, output_dim)
+
+
 
     def forward(self, data, memory):
         x, edge_index = data.x, data.edge_index
@@ -155,19 +204,8 @@ class GNNPolicyNetworkWithMemory(nn.Module):
         return action_probs, memory
 
 class AdversaryActionPredictor(nn.Module):
-    def __init__(self, input_dim, hidden_dim, num_heads=3):
-        super(AdversaryActionPredictor, self).__init__()
-        self.fc1 = nn.Linear(input_dim, hidden_dim)
-        self.fc_heads = nn.ModuleList([nn.Linear(hidden_dim, 2) for _ in range(num_heads)])
-
-    def forward(self, x):
-        x = F.relu(self.fc1(x))
-        head_outputs = [F.softmax(head(x), dim=1) for head in self.fc_heads]
-        return head_outputs  # List of tensors
-
-class MultiHeadAdversaryActionPredictor(nn.Module):
     def __init__(self, input_dim, hidden_dim, num_classes=3):
-        super(MultiHeadAdversaryActionPredictor, self).__init__()
+        super(AdversaryActionPredictor, self).__init__()
         self.fc1 = nn.Linear(input_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, num_classes)
 
@@ -176,14 +214,8 @@ class MultiHeadAdversaryActionPredictor(nn.Module):
         action_pred = F.softmax(self.fc2(x), dim=1)
         return action_pred
 
-def initialize_adversary_predictor(input_dim, hidden_dim, num_heads=3, lr=0.001):
-    predictor = AdversaryActionPredictor(input_dim, hidden_dim, num_heads=num_heads).to(device)
-    optimizer = optim.AdamW(predictor.parameters(), lr=lr)
-    scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1)
-    return predictor, optimizer, scheduler
-
-def initialize_multihead_adversary_predictor(input_dim, hidden_dim, num_classes=3, lr=0.001):
-    predictor = MultiHeadAdversaryActionPredictor(input_dim, hidden_dim, num_classes=num_classes).to(device)
+def initialize_adversary_predictor(input_dim, hidden_dim, num_classes=3, lr=0.001):
+    predictor = AdversaryActionPredictor(input_dim, hidden_dim, num_classes=num_classes).to(device)
     optimizer = optim.AdamW(predictor.parameters(), lr=lr)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=50, gamma=0.1)
     return predictor, optimizer, scheduler
@@ -195,18 +227,6 @@ def initialize_detection_predictor(input_dim, hidden_dim, num_classes=2, lr=0.00
     return detector, optimizer, scheduler
 
 def train_adversary_predictor(predictor, optimizer, scheduler, features, adversary_actions):
-    predictor.train()
-    optimizer.zero_grad()
-    head_outputs = predictor(features)
-    loss = 0
-    for output, label in zip(head_outputs, adversary_actions):
-        loss += F.cross_entropy(output, label)
-    loss.backward()
-    optimizer.step()
-    scheduler.step()
-    return loss.item()
-
-def train_multihead_adversary_predictor(predictor, optimizer, scheduler, features, adversary_actions):
     predictor.train()
     optimizer.zero_grad()
     action_preds = predictor(features)
@@ -272,13 +292,13 @@ class AgentWithMemory:
         return loss.item()
 
 class AdversaryWithMemory:
-    def __init__(self, input_dim, hidden_dim, output_dim, lstm_hidden_dim, num_heads=3, lr=0.001, entropy_coeff=0.01):
+    def __init__(self, input_dim, hidden_dim, output_dim, lstm_hidden_dim, num_classes=3, lr=0.001, entropy_coeff=0.01):
         self.policy_net = GNNPolicyNetworkWithMemory(input_dim, hidden_dim, output_dim, lstm_hidden_dim).to(device)
         self.optimizer = optim.AdamW(self.policy_net.parameters(), lr=lr)
         self.scheduler = optim.lr_scheduler.StepLR(self.optimizer, step_size=50, gamma=0.1)
         self.memory = None
         self.entropy_coeff = entropy_coeff
-        self.num_heads = num_heads
+        self.num_classes = num_classes
 
     def reset_memory(self):
         self.memory = (torch.zeros(1, 1, self.policy_net.lstm.hidden_size).to(device),
@@ -393,18 +413,21 @@ def training_loop(
     output_dim = graph.number_of_nodes()
 
     agent = AgentWithMemory(input_dim, hidden_dim, output_dim, lstm_hidden_dim, lr=0.001, entropy_coeff=0.01)
-    adversary = AdversaryWithMemory(input_dim, hidden_dim, output_dim, lstm_hidden_dim, num_heads=num_heads, lr=0.001, entropy_coeff=0.01)
+    adversary = AdversaryWithMemory(input_dim, hidden_dim, output_dim, lstm_hidden_dim, num_classes=num_heads, lr=0.001, entropy_coeff=0.01)
 
     adversary_predictor, adversary_optimizer, adversary_scheduler = initialize_adversary_predictor(
-        input_dim, hidden_dim, num_heads=num_heads, lr=0.001)
+        input_dim, hidden_dim, num_classes=num_heads, lr=0.001)
 
     detection_predictor, detection_optimizer, detection_scheduler = initialize_detection_predictor(
         input_dim + 1, 256, num_classes=2, lr=0.001)  # +1 for temporal feature
 
     controlled_nodes, adversarial_nodes = initialize_control_states(graph, initial_control, initial_adversarial)
+
+    degree_centrality, betweenness_centrality, eigenvector_centrality, closeness_centrality, katz_centrality = compute_centrality_measures(graph)
     node_resource_costs = initialize_resource_costs(graph, degree_centrality, betweenness_centrality,
-                                                   eigenvector_centrality, closeness_centrality, katz_centrality)
+                                                  eigenvector_centrality, closeness_centrality, katz_centrality)
     clustering_coeff = nx.clustering(graph)
+
     stability_history = {}
     agent.reset_memory()
     adversary.reset_memory()
@@ -424,7 +447,7 @@ def training_loop(
         if epoch > 0:
             last_agent_success = agent_control_history[-1] if agent_control_history else 0
             last_adversary_success = adversary_success_history[-1] if adversary_success_history else 0
-            graph = evolve_graph(graph, last_agent_success, last_adversary_success, p_add_base=p_add, p_remove_base=p_remove, m=m)
+            graph = evolve_graph(graph, last_agent_success, last_adversary_success, p_add_base=p_add, p_remove_base=p_remove, m=5)
 
         if epoch % 10 == 0 and epoch != 0:
             degree_centrality, betweenness_centrality, eigenvector_centrality, closeness_centrality, katz_centrality = compute_centrality_measures(graph)
@@ -497,6 +520,7 @@ def training_loop(
         for node in adversary_selected_nodes:
             controlled_nodes.discard(node)
 
+
         agent_reward, adversary_reward, stability_history = compute_rewards(
             controlled_nodes,
             adversarial_nodes,
@@ -509,8 +533,10 @@ def training_loop(
             stability_history=stability_history
         )
 
+
         agent_loss = agent.train_step(agent_log_prob, agent_reward)
         adversary_loss = adversary.train_step(adversary_log_prob, adversary_reward)
+
 
         agent_replay_buffer.append((agent_log_prob, agent_reward))
         adversary_replay_buffer.append((adversary_log_prob, adversary_reward))
@@ -538,8 +564,8 @@ def training_loop(
                 class_label = 0
             adversary_action_labels[idx] = class_label
 
-        loss = train_multihead_adversary_predictor(adversary_predictor, adversary_optimizer,
-                                                 adversary_scheduler, data.x, adversary_action_labels)
+        loss = train_adversary_predictor(adversary_predictor, adversary_optimizer, adversary_scheduler, data.x, adversary_action_labels)
+
 
         detection_labels = []
         detection_features = []
@@ -556,8 +582,7 @@ def training_loop(
             batch_features, batch_labels = zip(*batch)
             batch_features = torch.cat(batch_features, dim=0)
             batch_labels = torch.cat(batch_labels, dim=0)
-            loss = train_detection_predictor(detection_predictor, detection_optimizer,
-                                            detection_scheduler, batch_features, batch_labels)
+            loss = train_detection_predictor(detection_predictor, detection_optimizer, detection_scheduler, batch_features, batch_labels)
 
         detection_avoidance = 0
         for node in controlled_nodes:
@@ -601,6 +626,7 @@ def compute_detection_probability_nn(node, graph, controlled_nodes, adversarial_
     return prob.item()
 
 if __name__ == "__main__":
+    graph = initialize_graph()
     training_loop(
         graph=graph,
         epochs=100,
