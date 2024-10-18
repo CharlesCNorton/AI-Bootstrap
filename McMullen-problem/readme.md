@@ -1,4 +1,8 @@
 # Open Question of McMullen Problem
+
+By: Charles Norton & GPT-4
+Date: October 18, 2024
+
 - Statement: Determine the largest number ν(d) such that for any set of ν(d) points in general position in d-dimensional affine space ℝᵈ, there is a projective transformation that can map these points into a convex configuration (making them the vertices of a convex polytope).
 - Conjecture: The conjecture is that:
   ν(d) = 2d + 1
@@ -27,6 +31,7 @@
 
 #### Summary of Findings
 - Formal Statement: For dimensions d = 3 to d = 20, we have empirically verified that any set of ν(d) = 2d + 1 points in general position in ℝᵈ can be transformed into a convex configuration using simulated annealing.
+
 - Informal Interpretation: By using a global optimization technique, we "shook" the point sets into a shape that achieved convexity across multiple high dimensions, all the way up to dimension 20. This suggests that the conjecture holds true for these tested dimensions, and that our approach may provide a general pathway to verify the conjecture for even higher dimensions.
 
 
