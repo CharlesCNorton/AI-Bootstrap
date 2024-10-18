@@ -29,28 +29,6 @@ def initialize_graph(num_nodes=10000, m=5):
     return graph
 
 def extract_features(subgraph, controlled_nodes, adversarial_nodes, node_resource_costs, global_state, stability_history, clustering_coeff):
-    """
-    Extract features for each node in the subgraph.
-    Features may include:
-    - Node resource cost
-    - Whether it is controlled by the agent or adversary
-    - Degree centrality
-    - Clustering coefficient
-    - Stability status
-
-    Args:
-        subgraph (Graph): The subgraph to extract features from.
-        controlled_nodes (set): Nodes controlled by the agent.
-        adversarial_nodes (set): Nodes controlled by the adversary.
-        node_resource_costs (dict): Resource costs per node.
-        global_state (dict): Global state of the network, such as total controlled nodes.
-        stability_history (dict): Stability tracking of nodes.
-        clustering_coeff (dict): Clustering coefficient per node.
-
-    Returns:
-        torch.Tensor: Node feature matrix.
-        list: Node list.
-    """
     feature_matrix = []
     node_list = list(subgraph.nodes())
 
@@ -75,10 +53,8 @@ def extract_features(subgraph, controlled_nodes, adversarial_nodes, node_resourc
 
         feature_matrix.append(feature_vector)
 
-    # Convert to tensor
     feature_matrix = torch.tensor(feature_matrix, dtype=torch.float).to(device)
     return feature_matrix, node_list
-
 
 def compute_centrality_measures(graph):
     degree_centrality = nx.degree_centrality(graph)
@@ -130,18 +106,15 @@ def evolve_graph(graph, agent_success, adversary_success, p_add_base=0.001, p_re
         p_add = p_add_base
         p_remove = p_remove_base
 
-
     for _ in range(int(num_edges * p_add)):
         u, v = random.choices(list(graph.nodes()), weights=[degree_centrality.get(node, 1) for node in graph.nodes()], k=2)
         if not graph.has_edge(u, v):
             graph.add_edge(u, v)
 
-
     edges = list(graph.edges())
     for edge in edges:
         if random.random() < p_remove:
             graph.remove_edge(*edge)
-
 
     if random.random() < p_add:
         new_node = num_nodes
@@ -150,7 +123,6 @@ def evolve_graph(graph, agent_success, adversary_success, p_add_base=0.001, p_re
         for target in targets:
             graph.add_edge(new_node, target)
 
-    # Remove nodes
     if random.random() < p_remove and num_nodes > 1:
         remove_node = random.choice(list(graph.nodes()))
         graph.remove_node(remove_node)
@@ -185,8 +157,6 @@ class GNNPolicyNetworkWithMemory(nn.Module):
         self.dropout = nn.Dropout(p=0.5)
         self.lstm = nn.LSTM(hidden_dim, lstm_hidden_dim, batch_first=True)
         self.fc = nn.Linear(lstm_hidden_dim, output_dim)
-
-
 
     def forward(self, data, memory):
         x, edge_index = data.x, data.edge_index
@@ -267,9 +237,9 @@ class AgentWithMemory:
             masked_probs = action_probs * mask
             if masked_probs.sum() == 0:
                 node_indices = available_actions
-                resource_costs = [data.x[i][3].item() for i in node_indices]
-                min_cost_idx = node_indices[np.argmin(resource_costs)]
-                return [min_cost_idx], torch.log(torch.tensor([1.0]))
+                degrees = [graph.degree(node_list[i]) for i in node_indices]
+                max_degree_idx = node_indices[np.argmax(degrees)]
+                return [max_degree_idx], torch.log(torch.tensor([1.0]))
             if random.random() < epsilon:
                 actions = random.sample(available_actions, min(num_actions, len(available_actions)))
                 log_probs = torch.log(torch.tensor([1.0 / len(actions)] * len(actions)).to(device))
@@ -281,6 +251,7 @@ class AgentWithMemory:
                 log_probs = m.log_prob(torch.tensor(actions).to(device))
                 entropy = m.entropy().sum()
             return actions, log_probs.sum() + self.entropy_coeff * entropy
+
 
     def train_step(self, log_prob, reward):
         self.policy_net.train()
@@ -440,7 +411,7 @@ def training_loop(
     adversary_replay_buffer = deque(maxlen=10000)
     detection_replay_buffer = deque(maxlen=10000)
 
-    batch_size = 64
+    batch_size = 256
 
     for epoch in tqdm(range(epochs), desc="Training Progress"):
 
@@ -541,14 +512,21 @@ def training_loop(
         agent_replay_buffer.append((agent_log_prob, agent_reward))
         adversary_replay_buffer.append((adversary_log_prob, adversary_reward))
 
-        if len(agent_replay_buffer) >= batch_size:
-            batch = random.sample(agent_replay_buffer, batch_size)
-            for log_prob, reward in batch:
-                agent.train_step(log_prob, reward)
+        if len(adversary_replay_buffer) >= batch_size:
+            batch = random.sample(adversary_replay_buffer, batch_size)
+
+            batch_log_probs, batch_rewards = zip(*batch)
+
+            for log_prob, reward in zip(batch_log_probs, batch_rewards):
+                adversary.train_step(log_prob, reward)
+
 
         if len(adversary_replay_buffer) >= batch_size:
             batch = random.sample(adversary_replay_buffer, batch_size)
-            for log_prob, reward in batch:
+
+            batch_log_probs, batch_rewards = zip(*batch)
+
+            for log_prob, reward in zip(batch_log_probs, batch_rewards):
                 adversary.train_step(log_prob, reward)
 
 
