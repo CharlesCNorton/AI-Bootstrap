@@ -31,4 +31,4 @@
 
 
 ### Code for Reproducibility
-Adjacent in the repo isa the code used to verify the convex transformation using simulated annealing. This code can be easily adapted to verify our findings for dimensions \( d = 3 \) to \( d = 20 \) and beyond.
+Adjacent in the repo are the various tests used to verify the convex transformation using simulated annealing. These scripts can be easily adapted to verify our findings for dimensions \( d = 3 \) to \( d = 20 \) and beyond.
