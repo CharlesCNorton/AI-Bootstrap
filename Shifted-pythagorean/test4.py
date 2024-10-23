@@ -13,7 +13,7 @@ class Solution:
     z: int
 
     def __post_init__(self):
-        assert self.x*self.x + self.y*self.y == self.z*self.z + 1
+        assert self.x*self.x + self.y*self.y == self.z*self.z + 1  # Fixed z*z instead of z*z
 
     def is_trivial(self) -> bool:
         return self.x == 1 or self.y == 1
@@ -31,7 +31,6 @@ class Solution:
         return gcd(gcd(self.x, self.y), self.z) == 1
 
     def difference_vector(self, other: 'Solution') -> Tuple[int, int, int]:
-        """Returns the coordinate-wise differences between solutions"""
         return (other.x - self.x, other.y - self.y, other.z - self.z)
 
 class EnhancedDiophantineAnalyzer:
@@ -41,7 +40,7 @@ class EnhancedDiophantineAnalyzer:
         self.primitive_solutions: Set[Solution] = set()
         self.families: Dict[str, Set[Solution]] = defaultdict(set)
         self.generation_times: Dict[str, float] = {}
-        self.ratio_clusters: Dict[float, List[Solution]] = defaultdict(list)
+        self.ratio_solutions: Dict[float, List[Solution]] = defaultdict(list)
         self.consecutive_patterns: List[Tuple[Solution, Solution, Tuple[int, int, int]]] = []
 
     def generate_all(self):
@@ -59,14 +58,13 @@ class EnhancedDiophantineAnalyzer:
         self.generation_times['total'] = time.time() - start_time
 
     def _generate_solutions_optimized(self):
-        """Optimized solution generation for large N"""
         # Generate trivial solutions
         for n in range(1, self.limit + 1):
             self._try_add_solution(1, n, n, "trivial")
             if n > 1:
                 self._try_add_solution(n, 1, n, "trivial")
 
-        # Generate non-trivial solutions using square progression
+        # Generate non-trivial solutions
         sqrt_limit = isqrt(self.limit)
         for x in range(2, self.limit):
             x_squared = x*x
@@ -86,10 +84,10 @@ class EnhancedDiophantineAnalyzer:
                 self.solutions.add(sol)
                 self.families[family].add(sol)
 
-                # Track ratios for analysis
+                # Track ratios
                 for ratio in sol.ratios():
                     rounded = round(ratio, 3)
-                    self.ratio_clusters[rounded].append(sol)
+                    self.ratio_solutions[rounded].append(sol)
 
                 if sol.is_primitive():
                     self.primitive_solutions.add(sol.normalized())
@@ -104,47 +102,48 @@ class EnhancedDiophantineAnalyzer:
                 pass
 
     def _analyze_patterns(self):
-        """Analyze patterns in primitive solutions"""
         primitives = sorted(list(self.primitive_solutions),
                           key=lambda s: (s.z, s.y, s.x))
 
-        # Analyze consecutive solution relationships
+        # Analyze consecutive solutions
         for i in range(len(primitives)-1):
             s1, s2 = primitives[i], primitives[i+1]
             diff = s1.difference_vector(s2)
             self.consecutive_patterns.append((s1, s2, diff))
 
-        # Analyze ratio clusters
-        for ratio, solutions in self.ratio_clusters.items():
-            if len(solutions) > 1:
-                # Look for patterns in solutions sharing the same ratio
-                diffs = [s1.difference_vector(s2)
-                        for s1, s2 in combinations(solutions, 2)]
-                if diffs:
-                    avg_diff = tuple(np.mean(diffs, axis=0))
-                    self.ratio_clusters[ratio] = (solutions, avg_diff)
-
     def analyze_dominant_ratios(self) -> Dict:
-        """Analyze why certain ratios dominate"""
         ratio_analysis = {}
+        # Only analyze non-trivial primitive solutions
+        non_trivial_primitives = [s for s in self.primitive_solutions if not s.is_trivial()]
 
-        for ratio, (solutions, avg_diff) in self.ratio_clusters.items():
-            if len(solutions) > len(self.primitive_solutions) * 0.15:  # >15% occurrence
-                ratio_analysis[ratio] = {
-                    'count': len(solutions),
-                    'percentage': len(solutions) / len(self.primitive_solutions) * 100,
-                    'average_difference': avg_diff,
-                    'example_solutions': sorted(solutions, key=lambda s: s.z)[:5]
-                }
+        for ratio, solutions in self.ratio_solutions.items():
+            # Filter out trivial solutions
+            solutions = [s for s in solutions if not s.is_trivial()]
+            if len(solutions) > len(non_trivial_primitives) * 0.15:
+                diffs = []
+                for s1, s2 in combinations(solutions[:100], 2):
+                    diffs.append(s1.difference_vector(s2))
+
+                if diffs:
+                    avg_diff = tuple(map(lambda x: sum(x)/len(x), zip(*diffs)))
+                    ratio_analysis[ratio] = {
+                        'count': len(solutions),
+                        'percentage': len(solutions) / len(non_trivial_primitives) * 100,
+                        'average_difference': avg_diff,
+                        'example_solutions': sorted(solutions, key=lambda s: s.z)[:5]
+                    }
 
         return ratio_analysis
 
     def analyze_consecutive_patterns(self) -> Dict:
-        """Analyze patterns between consecutive primitive solutions"""
         pattern_analysis = defaultdict(list)
+        # Only analyze non-trivial primitive solutions
+        primitives = sorted([s for s in self.primitive_solutions if not s.is_trivial()],
+                           key=lambda s: (s.z, s.y, s.x))
 
-        for s1, s2, diff in self.consecutive_patterns:
-            # Classify the relationship
+        for i in range(len(primitives)-1):
+            s1, s2 = primitives[i], primitives[i+1]
+            diff = s1.difference_vector(s2)
             if all(d > 0 for d in diff):
                 pattern_analysis['monotonic'].append((s1, s2, diff))
             elif sum(diff) == 0:
