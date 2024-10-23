@@ -488,7 +488,7 @@ def main():
         for trial in trials:
             visualize_convergence(trial, output_dir=visualize_dir)
 
-    logging.info("McMullen Problem verification process completed successfully.")
+    logging.info("Process completed successfully.")
 
 if __name__ == "__main__":
     main()
