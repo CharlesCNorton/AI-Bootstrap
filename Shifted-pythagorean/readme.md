@@ -1,9 +1,10 @@
+
 # Investigation of the Diophantine Equation  
 ## x² + y² = z² + 1: A Complete Analysis
 
 By: Charles Norton and Claude (Anthropic)
 
-Date: October 23, 2024
+Date: October 23, 2024 (Updated: October 24, 2024)
 
 ## Abstract
 
@@ -69,18 +70,18 @@ The most significant discovery is the existence of stable ratio triplets that do
 
 1. Primary Attractor (\(α\)):
    - \((x/y, y/z, x/z) = (0.75, 0.8, 0.6)\).
-   - Frequency grows as \(O(N^{0.5})\).
+   - Frequency grows as \(O(N^{1.05})\).
    - Forms the basis for the largest solution family.
 
 2. Secondary Attractor (\(β\)):
    - \((x/y, y/z, x/z) = (1.333, 0.6, 0.8)\).
    - Complementary to the primary attractor.
-   - Growth rate matches the primary attractor.
+   - Growth rate \(O(N^{1.03})\).
 
 3. Tertiary Attractor (\(γ\)):
    - \((x/y, y/z, x/z) = (0.417, 0.923, 0.385)\).
    - Independent of \(α, β\) relationships.
-   - Growth rate \(O(N^{0.45})\).
+   - Growth rate \(O(N^{1.11})\).
 
 ### 2.2 Ratio Relationships
 
@@ -105,11 +106,11 @@ The frequency \(f(N)\) of solutions near each attractor follows:
 ```python
 def attractor_frequency(N, attractor_type):
     if attractor_type == 'α':
-        return 0.75  pow(N, 0.5)
+        return 0.75  pow(N, 1.05)
     elif attractor_type == 'β':
-        return 0.73  pow(N, 0.5)
+        return 0.73  pow(N, 1.03)
     elif attractor_type == 'γ':
-        return 0.41  pow(N, 0.45)
+        return 0.41  pow(N, 1.11)
 ```
 
 ---
@@ -234,6 +235,8 @@ def analyze_patterns(solutions: Set[Solution]) -> Dict[str, List[Pattern]]:
 
 ():
         if len(family) > 1:
+
+
             pattern_type = classify_pattern(family)
             patterns[pattern_type].append(Pattern(family))
     
@@ -340,7 +343,7 @@ Sources of uncertainty:
 
 ## 8. Conclusion
 
-Our investigation reveals the deep mathematical structure underlying \(x² + y² = z² + 1\):
+Our investigation reveals the deep mathematical structure underlying (x² + y² = z² + 1):
 
 1. Solutions organize around specific ratio attractors.
 2. Z-values form the basis of pattern families.
@@ -355,7 +358,7 @@ These findings provide both theoretical insight and practical methods for unders
 
 ### 9.1 Primary Ratio Attractor Mechanics
 
-The dominance of the \((0.75, 0.8, 0.6)\) ratio triplet can be explained through the following analysis:
+The dominance of the (0.75, 0.8, 0.6) ratio triplet can be explained through the following analysis:
 ```python
 def analyze_ratio_mechanics(solutions: Set[Solution]) -> Dict[str, float]:
     stability_metrics = {}
@@ -541,7 +544,9 @@ We propose a unified theory of pattern formation:
  z_family_forces = self._compute_z_family_forces(z)
         
            # Combine forces
-           total_force = self._combine_forces(attractor_forces, z_family_forces)
+           total_force = self._combine_forces(attractor_forces, z_family_for
+
+ces)
         
            return self._classify_pattern(total_force)
    ```
@@ -561,6 +566,7 @@ Pattern growth follows predictable phases:
 ## 12. Computational Implementation
 
 ### 12.1 Optimized Solution Generation
+
 ```python
 def generate_solutions_optimized(limit: int) -> Set[Solution]:
     solutions = set()
@@ -628,7 +634,7 @@ class PatternAnalysisFramework:
 
 ## 14. Conclusion
 
-Our investigation has revealed the fundamental structure of solutions to \(x² + y² = z² + 1\):
+Our investigation has revealed the fundamental structure of solutions to (x² + y² = z² + 1):
 
 - Solutions organize around specific ratio attractors.
 - Pattern families follow precise growth laws.
