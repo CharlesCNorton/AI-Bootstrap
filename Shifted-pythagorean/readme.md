@@ -1,4 +1,4 @@
-# Investigation of Solution Families in the Diophantine Equation x^2 + y^2 = z^2 + 1
+# Investigation of Solution Families in the Diophantine Equation x² + y² = z² + 1
 
 By: Charles Norton and Claude (Anthropic)  
 Date: October 24, 2024
