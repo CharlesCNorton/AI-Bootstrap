@@ -70,10 +70,10 @@ def find_solutions(z: int) -> List[Tuple[int, int]]:
     """Find all (x, y) pairs satisfying x² + y² = z² + 1 for a given z"""
     solutions = []
     for x in range(2, z):
-        y_squared = zz + 1 - xx
+        y_squared = z*z + 1 - x*x
         if y_squared > 0:
             y = isqrt(y_squared)
-            if yy == y_squared and y > x:
+            if y*y == y_squared and y > x:
                 solutions.append((x, y))
     return sorted(solutions)
 ```
