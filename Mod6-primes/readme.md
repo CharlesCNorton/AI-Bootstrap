@@ -384,12 +384,22 @@ Final Constants: a=0.01176, b=0.0183, c=0.00136, R²=0.999857
 
 #### B.3.5. Final Formula
 
-N(r,s) = r * a / (1 + b*log(s/1e8) + c*(log(s/1e8))²)
+𝑁(𝑟,𝑠) = 𝑟 ⋅ 𝑎 / (1 + 𝑏 ⋅ log(𝑠/10⁸) + 𝑐 ⋅ (log(𝑠/10⁸))²)
 
 where:
-- a = 0.01176 (base rate)
-- b = 0.0183 (linear decay)
-- c = 0.00136 (quadratic decay)
+- 𝑎 = 0.01176 (base rate)
+- 𝑏 = 0.0183 (linear decay)
+- 𝑐 = 0.00136 (quadratic decay)
+
+Simplified:
+
+𝑁(𝑟, 𝑠) = 𝑟 ⋅ 𝑎 / (1 + 𝑏 ⋅ 𝐿 + 𝑐 ⋅ 𝐿²)
+
+where:
+𝐿 = log(𝑠/10⁸)
+- 𝑎 = 0.01176 (base rate)
+- 𝑏 = 0.0183 (linear decay)
+- 𝑐 = 0.00136 (quadratic decay)
 
 Verified across ranges from 1 to 1 trillion with consistent error < 0.1%
 
