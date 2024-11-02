@@ -33,22 +33,22 @@ def count_prime_clusters(primes, modulo_base=6):
     print(f"[{time.strftime('%H:%M:%S')}] Counted {clusters} size-2 prime clusters modulo {modulo_base}.")
     return clusters
 
-# Configuration
+# Configuration for real sampling
 target_range_start, target_range_end = int(1e10), int(1e10 + 1e9)
-sample_size = 20
-subrange_size = int(5e6)
+sample_count = 50  # Number of subranges to sample within the target range
+subrange_size = int(1e6)  # Size of each sampled subrange
 
 # Progress tracking setup
 cluster_counts = []
-print(f"Starting computation across target range {target_range_start} to {target_range_end}.\n")
+print(f"Starting real sampling computation across target range {target_range_start} to {target_range_end}.\n")
 overall_start_time = time.time()
 
-for i in range(sample_size):
-    subrange_start = target_range_start + i * subrange_size
+for i in range(sample_count):
+    subrange_start = target_range_start + i * subrange_size * 20  # Spread subranges evenly
     subrange_end = subrange_start + subrange_size
-    percent_complete = (i + 1) / sample_size * 100
+    percent_complete = (i + 1) / sample_count * 100
 
-    print(f"--- Sample {i+1}/{sample_size} ({percent_complete:.2f}% Complete) ---")
+    print(f"--- Sample {i+1}/{sample_count} ({percent_complete:.2f}% Complete) ---")
     print(f"[{time.strftime('%H:%M:%S')}] Subrange: {subrange_start} to {subrange_end}")
 
     sample_start_time = time.time()
@@ -67,7 +67,10 @@ average_density = np.mean(cluster_counts_np) / subrange_size
 total_clusters_estimate = average_density * (target_range_end - target_range_start)
 
 # Final report with timing and results
-print("\n--- Final Results ---")
-print(f"Total computation time: {overall_elapsed / 60:.2f} minutes")
-print(f"Average cluster density per sampled subrange: {average_density:.6f}")
-print(f"Estimated total size-2 prime clusters modulo 6 in range {target_range_start} to {target_range_end}: {total_clusters_estimate}")
+real_sampling_results = {
+    "Total computation time (minutes)": overall_elapsed / 60,
+    "Average cluster density per sampled subrange": average_density,
+    "Estimated total size-2 prime clusters modulo 6": total_clusters_estimate
+}
+
+real_sampling_results
