@@ -15,11 +15,9 @@ Real-world networks, such as Twitter's social graph, exhibit features like irreg
 
 The continuous wave equation is generally represented as:
 
-\[
-\frac{\partial^2 u(x, t)}{\partial t^2} = c^2 \nabla^2 u(x, t),
-\]
+∂²u(x, t)/∂t² = c² ∇²u(x, t)
 
-where \( u(x, t) \) is the wave amplitude, \( c \) is the propagation speed, and \( \nabla^2 \) is the Laplacian operator. Solving this equation in continuous space using methods such as finite difference or finite element techniques becomes difficult when dealing with non-uniform or irregular domains.
+Where u(x, t) is the wave amplitude, c is the propagation speed, and ∇² is the Laplacian operator. Solving this equation in continuous space using methods such as finite difference or finite element techniques becomes difficult when dealing with non-uniform or irregular domains.
 
 Key Challenges:
 - Complex Network Topologies: Real-world networks like social media graphs are inherently irregular and discrete. Attempting to map these structures to continuous PDEs involves intricate approximations that often result in inaccuracies.
@@ -28,80 +26,60 @@ Key Challenges:
 
 ### Our Solution: Graph-Based Wave Equation
 
-To overcome these challenges, we employ a method grounded in graph theory. Specifically, we use the Laplacian matrix \( L \) of a graph \( G \) to model wave propagation directly on the network:
+To overcome these challenges, we employ a method grounded in graph theory. Specifically, we use the Laplacian matrix **L** of a graph **G** to model wave propagation directly on the network:
 
-\[
-L = D - A,
-\]
+L = D − A
 
-where \( D \) is the degree matrix (with \( D_{ii} \) representing the sum of weights connected to node \( i \)), and \( A \) is the adjacency matrix.
+where D is the degree matrix (with Dᵢᵢ representing the sum of weights connected to node i), and A is the adjacency matrix.
 
 The wave equation on a graph becomes:
 
-\[
-\frac{\partial^2 u(v, t)}{\partial t^2} = c^2 L u(v, t),
-\]
+∂²u(v, t)/∂t² = c² L u(v, t)
 
-where \( u(v, t) \) is the wave amplitude at vertex \( v \), and \( L \) serves as the discrete Laplacian operator.
+where u(v, t) is the wave amplitude at vertex v, and L serves as the discrete Laplacian operator.
 
 ## Mathematical Background
 
 ### Graph Theory Essentials
 
-Consider an undirected, weighted graph \( G = (V, E) \) with vertices \( V \) and edges \( E \). The adjacency matrix \( A \) is defined by:
+Consider an undirected, weighted graph *G = (V, E)* with vertices *V* and edges *E*. The adjacency matrix *A* is defined by:
 
-\[
-A_{ij} = \begin{cases}
-w_{ij}, & \text{if } (i, j) \in E, \\
-0, & \text{otherwise},
-\end{cases}
-\]
+*Aᵢⱼ = { wᵢⱼ,  if (i, j) ∈ E;  
+          0, otherwise }*
 
-where \( w_{ij} \) represents the weight of the edge between nodes \( i \) and \( j \). The degree matrix \( D \) has diagonal entries:
+where *wᵢⱼ* represents the weight of the edge between nodes *i* and *j*. The degree matrix *D* has diagonal entries:
 
-\[
-D_{ii} = \sum_{j} A_{ij}.
-\]
+*Dᵢᵢ = ∑ⱼ Aᵢⱼ.*
 
-The Laplacian matrix \( L \), defined as \( L = D - A \), captures the graph's connectivity and serves as the discrete analog of the continuous Laplacian operator. 
+The Laplacian matrix *L*, defined as *L = D − A*, captures the graph's connectivity and serves as the discrete analog of the continuous Laplacian operator.
 
 ### Spectral Decomposition of the Laplacian
 
-The Laplacian \( L \) can be decomposed into its eigenvalues \( \lambda_i \) and eigenvectors \( \phi_i \), satisfying:
+The Laplacian *L* can be decomposed into its eigenvalues *λᵢ* and eigenvectors *ϕᵢ*, satisfying:
 
-\[
-L \phi_i = \lambda_i \phi_i.
-\]
+*L ϕᵢ = λᵢ ϕᵢ.*
 
-The eigenvalues \( \lambda_i \) represent the "frequency" modes of the graph, while the eigenvectors \( \phi_i \) are the "modes" or structures that describe wave behavior. For a connected graph, the smallest eigenvalue \( \lambda_0 \) is 0, corresponding to a constant eigenvector.
+The eigenvalues *λᵢ* represent the "frequency" modes of the graph, while the eigenvectors *ϕᵢ* are the "modes" or structures that describe wave behavior. For a connected graph, the smallest eigenvalue *λ₀* is 0, corresponding to a constant eigenvector.
 
 ### Transition from PDEs to Graphs
 
-To express wave propagation on a graph, we represent \( u(v, t) \) as a sum of the eigenfunctions:
+To express wave propagation on a graph, we represent *u(v, t)* as a sum of the eigenfunctions:
 
-\[
-u(v, t) = \sum_{i} a_i(t) \phi_i(v),
-\]
+*u(v, t) = ∑ᵢ aᵢ(t) ϕᵢ(v),*
 
-where \( a_i(t) \) are time-dependent coefficients. Substituting this into the wave equation yields:
+where *aᵢ(t)* are time-dependent coefficients. Substituting this into the wave equation yields:
 
-\[
-\sum_{i} \frac{d^2 a_i(t)}{dt^2} \phi_i(v) = -c^2 \sum_{i} \lambda_i a_i(t) \phi_i(v).
-\]
+*∑ᵢ (d²aᵢ(t)/dt²) ϕᵢ(v) = −c² ∑ᵢ λᵢ aᵢ(t) ϕᵢ(v).*
 
-Using the orthogonality property \( \phi_i^T \phi_j = \delta_{ij} \), we isolate the coefficients:
+Using the orthogonality property *ϕᵢᵀ ϕⱼ = δᵢⱼ*, we isolate the coefficients:
 
-\[
-\frac{d^2 a_i(t)}{dt^2} = -c^2 \lambda_i a_i(t).
-\]
+*d²aᵢ(t)/dt² = −c² λᵢ aᵢ(t).*
 
-The solution for each coefficient \( a_i(t) \) is:
+The solution for each coefficient *aᵢ(t)* is:
 
-\[
-a_i(t) = A_i \cos(\sqrt{\lambda_i} \, c \, t) + B_i \sin(\sqrt{\lambda_i} \, c \, t),
-\]
+*aᵢ(t) = Aᵢ cos(√λᵢ ⋅ c ⋅ t) + Bᵢ sin(√λᵢ ⋅ c ⋅ t),*
 
-where \( A_i \) and \( B_i \) are determined by initial conditions.
+where *Aᵢ* and *Bᵢ* are determined by initial conditions.
 
 ### Initial and Boundary Conditions
 
@@ -119,19 +97,17 @@ For large graphs, direct eigenvalue computation can be infeasible due to memory 
 
 #### ODE Integration for Coefficients
 
-The evolution of \( a_i(t) \) is solved using numerical methods such as the Runge-Kutta algorithm through `scipy.integrate.solve_ivp`. The complete wave \( u(v, t) \) is reconstructed as:
+The evolution of *aᵢ(t)* is solved using numerical methods such as the Runge-Kutta algorithm through `scipy.integrate.solve_ivp`. The complete wave *u(v, t)* is reconstructed as:
 
-\[
-u(v, t) = \sum_{i} a_i(t) \phi_i(v).
-\]
+*u(v, t) = ∑ᵢ aᵢ(t) ϕᵢ(v).*
 
 ### Implementation for Large-Scale Networks
 
 Key Implementation Steps:
-1. Graph Construction: Build the graph from network data and compute \( L \) as a sparse matrix.
+1. Graph Construction: Build the graph from network data and compute *L* as a sparse matrix.
 2. Eigenvalue Computation: Calculate significant eigenvalues and eigenvectors.
 3. Initial Condition Application: Set initial conditions based on network properties (e.g., wave initiation at high-degree nodes).
-4. ODE Solution: Solve for \( a_i(t) \) over a specified time span and observe wave behavior.
+4. ODE Solution: Solve for *aᵢ(t)* over a specified time span and observe wave behavior.
 
 ## Experimental Design and Results
 
@@ -168,7 +144,7 @@ Strategic Importance of Spectral Position:
 The Twitter data analysis revealed that nodes with strategic spectral positioning exert disproportionate influence on wave propagation compared to what simple degree centrality would suggest. Specifically, nodes aligned with the eigenvectors corresponding to low eigenvalues were more impactful in initiating waves that reached across the network, while nodes associated with higher eigenvalue modes, even if they had high degrees, tended to have their influence confined within specific communities.
 
 Mathematical Context:
-Mathematically, the influence of a node \( v \) in spreading waves depends on its contribution to the eigenvectors \( \phi_i \) associated with small \( \lambda_i \). If a node has significant components in eigenvectors corresponding to lower eigenvalues, it participates in modes that affect the network globally. Conversely, a node contributing mainly to higher eigenvalue eigenvectors will influence localized, high-frequency modes, limiting its propagation reach.
+Mathematically, the influence of a node *v* in spreading waves depends on its contribution to the eigenvectors *ϕᵢ* associated with small *λᵢ*. If a node has significant components in eigenvectors corresponding to lower eigenvalues, it participates in modes that affect the network globally. Conversely, a node contributing mainly to higher eigenvalue eigenvectors will influence localized, high-frequency modes, limiting its propagation reach.
 
 Example from Twitter Data:
 In our experiments, users with moderate degrees but strong spectral alignment with low-frequency eigenmodes facilitated more effective cross-community information transfer. This finding was particularly notable in users who acted as "bridges" between distinct clusters. On the other hand, some high-degree accounts, while active within their sub-communities, did not significantly impact network-wide propagation due to their spectral alignment with higher modes.
@@ -190,7 +166,8 @@ Wave Amplitude and Resonant Nodes:
 The analysis showed that specific nodes in the Twitter network triggered wave amplitude peaks when they initiated content sharing. This resonance is a direct consequence of how the structure of the network aligns with certain eigenvectors. Physically, these moments of amplification correspond to viral trends, where the right combination of timing, content, and network positioning results in sudden spikes in engagement and reach.
 
 Mathematical Insight:
-The condition for network resonance can be expressed as the alignment of the initial wave \( u(0) \) with eigenvectors \( \phi_i \) that have high participation in low-frequency modes. The overall wave amplitude at time \( t \) can be significantly amplified when these modes are excited, leading to a constructive interference effect across the network.
+
+The condition for network resonance can be expressed as the alignment of the initial wave *u(0)* with eigenvectors *ϕᵢ* that have high participation in low-frequency modes. The overall wave amplitude at time *t* can be significantly amplified when these modes are excited, leading to a constructive interference effect across the network.
 
 Implications for Content Strategy:
 Content originating from nodes that are well-aligned with these resonant modes can engage larger audiences quickly. Understanding the spectral properties of the network enables strategists to predict when and where content is likely to achieve viral amplification. This insight can inform the timing and targeting of content to maximize its impact.
@@ -229,7 +206,7 @@ Propagation Speed and Community Barriers:
 The propagation speed varied notably when waves crossed from one community to another. The eigenvalue analysis confirmed that tightly connected clusters acted as semi-permeable barriers, slowing the spread until a node acting as a bridge facilitated the transition. The delay in propagation across these barriers was a direct function of the eigenvalue gap between community-aligned modes.
 
 Long-Term Wave Stability:
-Over extended simulations, the coefficients \( a_i(t) \) remained bounded for nodes associated with low eigenvalue eigenvectors, demonstrating the method's numerical stability. Nodes linked to higher eigenvalues exhibited more rapid oscillations, representing localized waves within specific substructures.
+Over extended simulations, the coefficients aᵢ(t) remained bounded for nodes associated with low eigenvalue eigenvectors, demonstrating the method's numerical stability. Nodes linked to higher eigenvalues exhibited more rapid oscillations, representing localized waves within specific substructures.
 
 ### Real-World Context and Insights
 
@@ -289,39 +266,29 @@ Apologies for the oversight. Let me ensure the appendix is structured correctly,
 
 ### Appendix A: Mathematical Derivations
 
-#### Series Solution Derivation for \( u(v, t) \)
+#### Series Solution Derivation for u(v, t)
 
 Starting from the graph-based wave equation:
 
-\[
-\frac{\partial^2 u(v, t)}{\partial t^2} = c^2 L u(v, t),
-\]
+∂²u(v, t)/∂t² = c² L u(v, t),
 
-we represent \( u(v, t) \) as a series expansion of the Laplacian’s eigenfunctions:
+we represent u(v, t) as a series expansion of the Laplacian’s eigenfunctions:
 
-\[
-u(v, t) = \sum_{i} a_i(t) \phi_i(v),
-\]
+u(v, t) = ∑ᵢ aᵢ(t) ϕᵢ(v),
 
-where \( \phi_i(v) \) are the eigenvectors of \( L \) and \( a_i(t) \) are time-dependent coefficients. Substituting into the wave equation:
+where ϕᵢ(v) are the eigenvectors of L and aᵢ(t) are time-dependent coefficients. Substituting into the wave equation:
 
-\[
-\sum_{i} \frac{d^2 a_i(t)}{dt^2} \phi_i(v) = -c^2 \sum_{i} \lambda_i a_i(t) \phi_i(v).
-\]
+∑ᵢ (d²aᵢ(t)/dt²) ϕᵢ(v) = −c² ∑ᵢ λᵢ aᵢ(t) ϕᵢ(v).
 
-By leveraging the orthogonality of the eigenvectors (\(\phi_i^T \phi_j = \delta_{ij}\)), each coefficient \( a_i(t) \) must satisfy:
+By leveraging the orthogonality of the eigenvectors (ϕᵢᵀ ϕⱼ = δᵢⱼ), each coefficient aᵢ(t) must satisfy:
 
-\[
-\frac{d^2 a_i(t)}{dt^2} = -c^2 \lambda_i a_i(t).
-\]
+d²aᵢ(t)/dt² = −c² λᵢ aᵢ(t).
 
 The solution to this second-order differential equation is:
 
-\[
-a_i(t) = A_i \cos(\sqrt{\lambda_i} \, c \, t) + B_i \sin(\sqrt{\lambda_i} \, c \, t),
-\]
+aᵢ(t) = Aᵢ cos(√λᵢ ⋅ c ⋅ t) + Bᵢ sin(√λᵢ ⋅ c ⋅ t),
 
-where \( A_i \) and \( B_i \) are constants determined by initial conditions.
+where Aᵢ and Bᵢ are constants determined by initial conditions.
 
 ### Appendix B: Python Code Implementations
 
