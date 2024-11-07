@@ -2,7 +2,7 @@
 
 By: Charles Norton & GPT-4
 
-November 6th, 2024
+November 6th, 2024 (Updated: 11/7/24)
 
 #### Introduction and Contextual Background
 Homotopy theory deals with understanding spaces up to continuous deformations. It allows mathematicians to explore the fundamental shapes of different topological spaces through paths and loops. Loop spaces, product types, and fibrations form crucial elements of this theory, providing structures to generalize homotopy beyond simple path connections.
