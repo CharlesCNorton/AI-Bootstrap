@@ -45,7 +45,7 @@ Date: November 6th, 2024 (Updated: 11/8/24)
 
 ## Abstract
 
-Homotopy theory is pivotal in understanding topological spaces through continuous deformations, focusing on fundamental shapes via paths and loops. This paper investigates the stability and triviality of higher-level homotopies (\( H_n \)) under perturbations (\( \epsilon \)). Specifically, we examine whether homotopy paths retain their equivalence to trivial paths when subjected to both positive and negative perturbations. Through rigorous inductive proofs and comprehensive evaluations across various homotopy structures—including loop spaces, product types, and fibrations—we establish conditions under which stability and triviality are maintained. Additionally, we explore adaptive scaling of perturbations and intrinsic stability mechanisms, providing a robust framework for understanding stability in higher homotopies.
+Homotopy theory is pivotal in understanding topological spaces through continuous deformations, focusing on fundamental shapes via paths and loops. This paper investigates the stability and triviality of higher-level homotopies (𝐻ₙ) under perturbations (𝜖). Specifically, we examine whether homotopy paths retain their equivalence to trivial paths when subjected to both positive and negative perturbations. Through rigorous inductive proofs and comprehensive evaluations across various homotopy structures—including loop spaces, product types, and fibrations—we establish conditions under which stability and triviality are maintained. Additionally, we explore adaptive scaling of perturbations and intrinsic stability mechanisms, providing a robust framework for understanding stability in higher homotopies.
 
 ---
 
@@ -53,7 +53,7 @@ Homotopy theory is pivotal in understanding topological spaces through continuou
 
 Homotopy theory deals with understanding spaces up to continuous deformations. It allows mathematicians to explore the fundamental shapes of different topological spaces through paths and loops. Loop spaces, product types, and fibrations form crucial elements of this theory, providing structures to generalize homotopy beyond simple path connections.
 
-This proof explores the stability and triviality of higher-level homotopies (\( H_n \)) under perturbations (\( \epsilon \)). Specifically, we address whether homotopy paths maintain their equivalence to trivial paths (remain homotopically trivial) when subjected to positive and negative perturbations.
+This proof explores the stability and triviality of higher-level homotopies (𝐻ₙ) under perturbations (𝜖). Specifically, we address whether homotopy paths maintain their equivalence to trivial paths (remain homotopically trivial) when subjected to positive and negative perturbations.
 
 The stability condition ensures that paths do not "drift" from their original form under small changes, while triviality implies that paths can continuously be deformed to a constant point, making them homotopically equivalent to trivial paths. Here, we present a rigorous proof, considering different homotopy structures, including loop spaces, product types, and fibrations.
 
@@ -61,31 +61,25 @@ The stability condition ensures that paths do not "drift" from their original fo
 
 ## Definitions and Setup
 
-1. Homotopy Type (\( H_n \)): Let \( H_n \) represent the homotopy type at level \( n \in \mathbb{N} \). Each \( H_n \) corresponds to a specific type of path or structure within a homotopy.
+1. Homotopy Type (𝐻ₙ): Let 𝐻ₙ represent the homotopy type at level 𝑛 ∈ ℕ. Each 𝐻ₙ corresponds to a specific type of path or structure within a homotopy.
 
-2. Perturbation Function (\( P(a_0, \epsilon) \)): Define \( P(a_0, \epsilon) = a_0 + \epsilon \), where \( a_0 \) is the base point and \( \epsilon \in \mathbb{R} \) represents the magnitude of perturbation. This function models the perturbation of a homotopy path.
+2. Perturbation Function (𝑃(𝑎₀, 𝜖)): Define 𝑃(𝑎₀, 𝜖) = 𝑎₀ + 𝜖, where 𝑎₀ is the base point and 𝜖 ∈ ℝ represents the magnitude of perturbation. This function models the perturbation of a homotopy path.
 
-3. Loop Space Type (\( L_n \)): For each homotopy level, let \( L_n \) represent a loop space. The loop space type at homotopy level \( n \) is given by:
+3. Loop Space Type (𝐿ₙ): For each homotopy level, let 𝐿ₙ represent a loop space. The loop space type at homotopy level 𝑛 is given by:
 
-   \[
-   L_n(a_0, \epsilon) = \left(\frac{a_0 + P(a_0, \epsilon)}{2}\right)^{1/n} + \cos(n \cdot (a_0 + \epsilon))
-   \]
+   𝐿ₙ(𝑎₀, 𝜖) = ((𝑎₀ + 𝑃(𝑎₀, 𝜖)) / 2)¹/ⁿ + cos(𝑛 ⋅ (𝑎₀ + 𝜖))
 
    The cosine term is used to model the oscillatory dependencies observed in higher homotopy levels.
 
-4. Product Type (\( P_n \)): Let \( P_n \) represent the product of two paths at level \( n \):
+4. Product Type (𝑃ₙ): Let 𝑃ₙ represent the product of two paths at level 𝑛:
 
-   \[
-   P_n(a_0^{(1)}, a_0^{(2)}, \epsilon) = \frac{\left((a_0^{(1)} + \epsilon)^{1/n} + \cos(n \cdot (a_0^{(1)} + \epsilon))\right) + \left((a_0^{(2)} - \epsilon)^{1/n} + \sin(n \cdot (a_0^{(2)} - \epsilon))\right)}{2}
-   \]
+   𝑃ₙ(𝑎₀¹, 𝑎₀², 𝜖) = ((𝑎₀¹ + 𝜖)¹/ⁿ + cos(𝑛 ⋅ (𝑎₀¹ + 𝜖)) + (𝑎₀² − 𝜖)¹/ⁿ + sin(𝑛 ⋅ (𝑎₀² − 𝜖))) / 2
 
    This definition incorporates an averaging mechanism, enhancing stability through the balance of perturbations in both paths.
 
-5. Fibration Type (\( F_n \)): Define \( F_n \) as a fibration, including interactions between base and fiber, augmented by higher-order cohomological terms:
+5. Fibration Type (𝐹ₙ): Define 𝐹ₙ as a fibration, including interactions between base and fiber, augmented by higher-order cohomological terms:
 
-   \[
-   F_n(a_0^{\text{base}}, a_0^{\text{fiber1}}, a_0^{\text{fiber2}}, \epsilon) = \frac{\left((a_0^{\text{base}} + \epsilon)^{1/n} + \cos(n \cdot a_0^{\text{base}})\right) + \frac{\left((a_0^{\text{fiber1}} + 0.5\epsilon)^{1/(n+1)} + \sin(n \cdot a_0^{\text{fiber1}}) + \text{cup\_product}_1\right)}{2} + \frac{\left((a_0^{\text{fiber2}} + 0.25\epsilon)^{1/(n+2)} + \sin(n \cdot a_0^{\text{fiber2}}) + \text{cup\_product}_2\right)}{2}}{2}
-   \]
+   𝐹ₙ(𝑎₀ᵇᵃˢᵉ, 𝑎₀ᶠⁱᵇᵉʳ¹, 𝑎₀ᶠⁱᵇᵉʳ², 𝜖) = (((𝑎₀ᵇᵃˢᵉ + 𝜖)¹/ⁿ + cos(𝑛 ⋅ 𝑎₀ᵇᵃˢᵉ)) + ((𝑎₀ᶠⁱᵇᵉʳ¹ + 0.5𝜖)¹/(ⁿ + 1) + sin(𝑛 ⋅ 𝑎₀ᶠⁱᵇᵉʳ¹) + cup_product₁) / 2 + ((𝑎₀ᶠⁱᵇᵉʳ² + 0.25𝜖)¹/(ⁿ + 2) + sin(𝑛 ⋅ 𝑎₀ᶠⁱᵇᵉʳ²) + cup_product₂) / 2) / 2
 
    The cup products explicitly model interactions at the cohomological level, which are crucial for the stability of nested fibrations.
 
@@ -93,79 +87,71 @@ The stability condition ensures that paths do not "drift" from their original fo
 
 ## Stability Condition
 
-A homotopy path \( h \) is said to be stable if:
+A homotopy path ℎ is said to be stable if:
 
-\[
-\forall \epsilon, \quad |P(h, \epsilon)| < \delta, \quad \text{for some } \delta > 0
-\]
+∀𝜖,  |𝑃(ℎ, 𝜖)| < δ,  for some δ > 0
 
 ---
 
 ## Theorem Statement
 
-For any homotopy level \( n \geq 1 \), positive perturbations (\( \epsilon > 0 \)) and structural constraints (looping, products, fibrations with cohomological interactions) inherently promote stability and triviality of homotopy paths.
+For any homotopy level 𝑛 ≥ 1, positive perturbations (𝜖 > 0) and structural constraints (looping, products, fibrations with cohomological interactions) inherently promote stability and triviality of homotopy paths.
 
 ---
 
-## Proof by Induction on Homotopy Level \( n \)
+## Proof by Induction on Homotopy Level 𝑛
 
-### Base Case (\( n = 1 \))
+### Base Case (𝑛 = 1)
 
-1. Loop Space \( L_1 \):
+1. Loop Space 𝐿₁:
 
-   \[
-   L_1(a_0, \epsilon) = \frac{a_0}{2} + \frac{\cos(a_0 + \epsilon)}{2} + \frac{\epsilon}{2}
-   \]
+   𝐿₁(𝑎₀, 𝜖) = 𝑎₀ / 2 + cos(𝑎₀ + 𝜖) / 2 + 𝜖 / 2
 
    - Stability: Stability is achieved intrinsically through averaging, which balances contributions from both perturbation and cosine components, ensuring bounded behavior.
 
    - Evaluation:
-     - Positive Perturbation (\( \epsilon = 0.5 \)): \( L_1 = \frac{a_0}{2} + \frac{\cos(a_0 + 0.5)}{2} + 0.25 \)
-     - Negative Perturbation (\( \epsilon = -0.5 \)): \( L_1 = \frac{a_0}{2} + \frac{\cos(a_0 - 0.5)}{2} - 0.25 \)
+     - Positive Perturbation (𝜖 = 0.5): 𝐿₁ = 𝑎₀ / 2 + cos(𝑎₀ + 0.5) / 2 + 0.25
+     - Negative Perturbation (𝜖 = −0.5): 𝐿₁ = 𝑎₀ / 2 + cos(𝑎₀ − 0.5) / 2 − 0.25
 
    - Conclusion: Positive perturbations maintain consistent stability, while negative perturbations can amplify deviations, potentially leading to divergence.
 
-2. Product Type \( P_1 \):
+2. Product Type 𝑃₁:
 
-   \[
-   P_1(a_0^{(1)}, a_0^{(2)}, \epsilon) = \frac{(a_0^{(1)} + \epsilon) + \cos(a_0^{(1)} + \epsilon) + (a_0^{(2)} - \epsilon) + \sin(a_0^{(2)} - \epsilon)}{2}
-   \]
+   𝑃₁(𝑎₀¹, 𝑎₀², 𝜖) = ((𝑎₀¹ + 𝜖) + cos(𝑎₀¹ + 𝜖) + (𝑎₀² − 𝜖) + sin(𝑎₀² − 𝜖)) / 2
 
    - Stability: Positive and negative perturbations in opposing directions help to cancel out instability. Inclusion of sine and cosine terms ensures inherent damping of oscillations.
 
    - Evaluation:
-     - Positive Perturbation (\( \epsilon = 0.5 \)): \( P_1 \approx 1.083 \)
-     - Negative Perturbation (\( \epsilon = -0.5 \)): \( P_1 \approx 1.821 \)
+     - Positive Perturbation (𝜖 = 0.5): 𝑃₁ ≈ 1.083
+     - Negative Perturbation (𝜖 = −0.5): 𝑃₁ ≈ 1.821
 
    - Conclusion: Negative perturbations may induce more significant instability, but averaging still contains it.
 
-3. Fibration Type \( F_1 \):
+3. Fibration Type 𝐹₁:
 
    - Stability: Stability is ensured through the averaging interaction between the base and fiber, moderated by cohomological cup products.
 
    - Evaluation:
-     - Positive Perturbation (\( \epsilon = 0.5 \)): \( F_1 \approx 1.859 \)
-     - Negative Perturbation (\( \epsilon = -0.5 \)): \( F_1 \approx 1.259 \)
+     - Positive Perturbation (𝜖 = 0.5): 𝐹₁ ≈ 1.859
+     - Negative Perturbation (𝜖 = −0.5): 𝐹₁ ≈ 1.259
 
    - Conclusion: Negative perturbations lead to controlled stability, although the impact is more significant than for positive perturbations.
 
-### Inductive Step (\( n > 1 \))
+### Inductive Step (𝑛 > 1)
 
-Assumption: \( H_n \) is stable for level \( n = k \).
+Assumption: 𝐻ₙ is stable for level 𝑛 = 𝑘.
 
-1. Loop Space \( L_{k+1} \):
+1. Loop Space 𝐿ₖ₊₁:
 
-   \[
-   L_{k+1}(a_0, \epsilon) = \left(\frac{a_0 + P(a_0, \epsilon)}{2}\right)^{\frac{1}{k+1}} + \cos((k+1) \cdot (a_0 + \epsilon))
-   \]
+   𝐿ₖ₊₁(𝑎₀, 𝜖) = ((𝑎₀ + 𝑃(𝑎₀, 𝜖)) / 2)^(1 / (𝑘 + 1)) + cos((𝑘 + 1) ⋅ (𝑎₀ + 𝜖))
 
    - Stability: Further averaging ensures bounded growth, and the oscillatory term provides periodic damping, guaranteeing stability for positive perturbations. For negative perturbations, additional care is needed to prevent amplification.
 
-2. Product Type \( P_{k+1} \):
+2. Product Type 𝑃ₖ₊₁:
 
    - Stability: Averaging across product paths and the interaction between sine and cosine terms continues to stabilize the path. Positive perturbations retain stability; negative perturbations need careful balancing to avoid divergence.
 
-3. Nested Fibration with Cohomological Interaction \( F_{k+1} \):
+3. Nested Fibration with Cohomological Interaction 𝐹ₖ₊₁:
 
    - Stability: Higher-order cup products play a crucial role in maintaining stabilization across higher levels. The inductive hypothesis extends due to the additional cohomological structure, ensuring stability for both positive and (with more effort) negative perturbations.
 
@@ -179,7 +165,7 @@ Negative perturbations exhibit potential for divergence or amplification, partic
 
 ## Conclusion
 
-For any homotopy level \( n \geq 1 \), positive perturbations (\( \epsilon > 0 \)) combined with structural constraints (loop spaces, product types, and fibrations with cohomological interactions) ensure that all homotopy paths remain stable and trivial.
+For any homotopy level 𝑛 ≥ 1, positive perturbations (𝜖 > 0) combined with structural constraints (loop spaces, product types, and fibrations with cohomological interactions) ensure that all homotopy paths remain stable and trivial.
 
 ---
 
@@ -202,72 +188,72 @@ This proof uses advanced homotopy structures, emphasizing the role of higher-ord
 #### Homotopy Level 1
 
 - Loop Space:
-  - Positive Perturbation: \( L_1 = \frac{a_0}{2} + \frac{\cos(a_0 + 0.5)}{2} + 0.25 \)
-  - Negative Perturbation: \( L_1 = \frac{a_0}{2} + \frac{\cos(a_0 - 0.5)}{2} - 0.25 \)
+  - Positive Perturbation: 𝐿₁ = 𝑎₀ / 2 + cos(𝑎₀ + 0.5) / 2 + 0.25
+  - Negative Perturbation: 𝐿₁ = 𝑎₀ / 2 + cos(𝑎₀ − 0.5) / 2 − 0.25
 
 - Product Type:
-  - Positive Perturbation: \( P_1 \approx 1.083 \)
-  - Negative Perturbation: \( P_1 \approx 1.821 \)
+  - Positive Perturbation: 𝑃₁ ≈ 1.083
+  - Negative Perturbation: 𝑃₁ ≈ 1.821
 
 - Fibration Type:
-  - Positive Perturbation: \( F_1 \approx 1.859 \)
-  - Negative Perturbation: \( F_1 \approx 1.259 \)
+  - Positive Perturbation: 𝐹₁ ≈ 1.859
+  - Negative Perturbation: 𝐹₁ ≈ 1.259
 
 #### Homotopy Level 2
 
 - Loop Space:
-  - Positive Perturbation: \( L_2 = \sqrt{2} \cdot \frac{\sqrt{a_0 + 0.5}}{2} + \cos(2a_0 + 1.0) \)
-  - Negative Perturbation: \( L_2 = \sqrt{2} \cdot \frac{\sqrt{a_0 - 0.5}}{2} + \cos(2a_0 - 1.0) \)
+  - Positive Perturbation: 𝐿₂ = √2 ⋅ √(𝑎₀ + 0.5) / 2 + cos(2𝑎₀ + 1.0)
+  - Negative Perturbation: 𝐿₂ = √2 ⋅ √(𝑎₀ − 0.5) / 2 + cos(2𝑎₀ − 1.0)
 
 - Product Type:
-  - Positive Perturbation: \( P_2 \approx 0.673 \)
-  - Negative Perturbation: \( P_2 \approx 1.452 \)
+  - Positive Perturbation: 𝑃₂ ≈ 0.673
+  - Negative Perturbation: 𝑃₂ ≈ 1.452
 
 - Fibration Type:
-  - Positive Perturbation: \( F_2 \approx 1.409 \)
-  - Negative Perturbation: \( F_2 \approx 1.078 \)
+  - Positive Perturbation: 𝐹₂ ≈ 1.409
+  - Negative Perturbation: 𝐹₂ ≈ 1.078
 
 #### Homotopy Level 3
 
 - Loop Space:
-  - Positive Perturbation: \( L_3 = 2^{\frac{2}{3}} \cdot \frac{(a_0 + 0.5)^{\frac{1}{3}}}{2} + \cos(3a_0 + 1.5) \)
-  - Negative Perturbation: \( L_3 = 2^{\frac{2}{3}} \cdot \frac{(a_0 - 0.5)^{\frac{1}{3}}}{2} + \cos(3a_0 - 1.5) \)
+  - Positive Perturbation: 𝐿₃ = 2^(2/3) ⋅ (𝑎₀ + 0.5)^(1/3) / 2 + cos(3𝑎₀ + 1.5)
+  - Negative Perturbation: 𝐿₃ = 2^(2/3) ⋅ (𝑎₀ − 0.5)^(1/3) / 2 + cos(3𝑎₀ − 1.5)
 
 - Product Type:
-  - Positive Perturbation: \( P_3 \approx 1.193 \)
-  - Negative Perturbation: \( P_3 \approx 0.634 \)
+  - Positive Perturbation: 𝑃₃ ≈ 1.193
+  - Negative Perturbation: 𝑃₃ ≈ 0.634
 
 - Fibration Type:
-  - Positive Perturbation: \( F_3 \approx 1.015 \)
-  - Negative Perturbation: \( F_3 \approx 0.782 \)
+  - Positive Perturbation: 𝐹₃ ≈ 1.015
+  - Negative Perturbation: 𝐹₃ ≈ 0.782
 
 #### Homotopy Level 4
 
 - Loop Space:
-  - Positive Perturbation: \( L_4 = 2^{\frac{3}{4}} \cdot \frac{(a_0 + 0.5)^{\frac{1}{4}}}{2} + \cos(4a_0 + 2.0) \)
-  - Negative Perturbation: \( L_4 = 2^{\frac{3}{4}} \cdot \frac{(a_0 - 0.5)^{\frac{1}{4}}}{2} + \cos(4a_0 - 2.0) \)
+  - Positive Perturbation: 𝐿₄ = 2^(3/4) ⋅ (𝑎₀ + 0.5)^(1/4) / 2 + cos(4𝑎₀ + 2.0)
+  - Negative Perturbation: 𝐿₄ = 2^(3/4) ⋅ (𝑎₀ − 0.5)^(1/4) / 2 + cos(4𝑎₀ − 2.0)
 
 - Product Type:
-  - Positive Perturbation: \( P_4 \approx 1.870 \)
-  - Negative Perturbation: \( P_4 \approx 0.305 \)
+  - Positive Perturbation: 𝑃₄ ≈ 1.870
+  - Negative Perturbation: 𝑃₄ ≈ 0.305
 
 - Fibration Type:
-  - Positive Perturbation: \( F_4 \approx 0.908 \)
-  - Negative Perturbation: \( F_4 \approx 0.728 \)
+  - Positive Perturbation: 𝐹₄ ≈ 0.908
+  - Negative Perturbation: 𝐹₄ ≈ 0.728
 
 #### Homotopy Level 5
 
 - Loop Space:
-  - Positive Perturbation: \( L_5 = 2^{\frac{4}{5}} \cdot \frac{(a_0 + 0.5)^{\frac{1}{5}}}{2} + \cos(5a_0 + 2.5) \)
-  - Negative Perturbation: \( L_5 = 2^{\frac{4}{5}} \cdot \frac{(a_0 - 0.5)^{\frac{1}{5}}}{2} + \cos(5a_0 - 2.5) \)
+  - Positive Perturbation: 𝐿₅ = 2^(4/5) ⋅ (𝑎₀ + 0.5)^(1/5) / 2 + cos(5𝑎₀ + 2.5)
+  - Negative Perturbation: 𝐿₅ = 2^(4/5) ⋅ (𝑎₀ − 0.5)^(1/5) / 2 + cos(5𝑎₀ − 2.5)
 
 - Product Type:
-  - Positive Perturbation: \( P_5 \approx 1.607 \)
-  - Negative Perturbation: \( P_5 \approx 0.669 \)
+  - Positive Perturbation: 𝑃₅ ≈ 1.607
+  - Negative Perturbation: 𝑃₅ ≈ 0.669
 
 - Fibration Type:
-  - Positive Perturbation: \( F_5 \approx 1.059 \)
-  - Negative Perturbation: \( F_5 \approx 0.912 \)
+  - Positive Perturbation: 𝐹₅ ≈ 1.059
+  - Negative Perturbation: 𝐹₅ ≈ 0.912
 
 ### Appendix B: Additional Insights on Stability at Higher Homotopy Levels
 
@@ -275,15 +261,15 @@ As homotopy levels increase, the behavior of both positive and negative perturba
 
 #### Higher-Order Stability Mechanisms
 
-1. Role of Cosine and Sine Functions: At each level \( n \), the cosine and sine terms help modulate perturbations. For positive perturbations, these oscillatory components add damping effects that reinforce stability. However, for negative perturbations, the phase shifts in cosine and sine can lead to amplification of oscillations, which requires more robust balancing.
+1. Role of Cosine and Sine Functions: At each level 𝑛, the cosine and sine terms help modulate perturbations. For positive perturbations, these oscillatory components add damping effects that reinforce stability. However, for negative perturbations, the phase shifts in cosine and sine can lead to amplification of oscillations, which requires more robust balancing.
 
-2. Averaging and Damping: Each homotopy level \( n \) involves a recursive averaging mechanism, especially in loop spaces and product types. This averaging, combined with the fractional exponents \( \frac{1}{n} \), is crucial for reducing the impact of perturbations. These fractional terms smooth the function's response, preventing abrupt changes that could lead to instability.
+2. Averaging and Damping: Each homotopy level 𝑛 involves a recursive averaging mechanism, especially in loop spaces and product types. This averaging, combined with the fractional exponents 1/𝑛, is crucial for reducing the impact of perturbations. These fractional terms smooth the function's response, preventing abrupt changes that could lead to instability.
 
-3. Cohomological Contributions via Cup Products: The inclusion of cup products (\( \text{cup\_product}_1, \text{cup\_product}_2 \), etc.) at each fibration level helps control interactions within nested fibrations. As \( n \) increases, higher-order cup products contribute non-linearly to stability by incorporating cohomological data that aligns well with the higher-dimensional structure of fibrations, reinforcing the system’s resilience against perturbations.
+3. Cohomological Contributions via Cup Products: The inclusion of cup products (cup_product₁, cup_product₂, etc.) at each fibration level helps control interactions within nested fibrations. As 𝑛 increases, higher-order cup products contribute non-linearly to stability by incorporating cohomological data that aligns well with the higher-dimensional structure of fibrations, reinforcing the system’s resilience against perturbations.
 
 4. Positive vs. Negative Perturbations:
-   - Positive Perturbations (\( \epsilon > 0 \)): Align with the natural stabilizing mechanisms of averaging and damping, creating a feedback loop that promotes bounded and consistent behavior across homotopy levels.
-   - Negative Perturbations (\( \epsilon < 0 \)): While sometimes contained by averaging, may require additional constraints, such as the introduction of phase-adjusted oscillatory terms or higher-order cohomological elements, to fully stabilize the system at high levels.
+   - Positive Perturbations (𝜖 > 0): Align with the natural stabilizing mechanisms of averaging and damping, creating a feedback loop that promotes bounded and consistent behavior across homotopy levels.
+   - Negative Perturbations (𝜖 < 0): While sometimes contained by averaging, may require additional constraints, such as the introduction of phase-adjusted oscillatory terms or higher-order cohomological elements, to fully stabilize the system at high levels.
 
 #### Summary of Stability Trends Across Homotopy Levels
 
@@ -295,7 +281,7 @@ As homotopy levels increase, the behavior of both positive and negative perturba
 
 #### Conclusion and Implications
 
-The proof demonstrates that for any homotopy level \( n \geq 1 \), positive perturbations (\( \epsilon > 0 \)) combined with loop spaces, product types, and fibrations that leverage cohomological interactions can stabilize homotopy paths. The recursive structure of higher homotopy types naturally aligns with these stabilizing elements, especially for positive perturbations, creating a feedback mechanism that maintains bounded behavior even as \( n \) increases. Negative perturbations, while more challenging, are contained through advanced cohomological adjustments and averaging.
+The proof demonstrates that for any homotopy level 𝑛 ≥ 1, positive perturbations (𝜖 > 0) combined with loop spaces, product types, and fibrations that leverage cohomological interactions can stabilize homotopy paths. The recursive structure of higher homotopy types naturally aligns with these stabilizing elements, especially for positive perturbations, creating a feedback mechanism that maintains bounded behavior even as 𝑛 increases. Negative perturbations, while more challenging, are contained through advanced cohomological adjustments and averaging.
 
 This framework suggests that stability in homotopy theory can be systematically managed across levels by incorporating both geometric averaging and algebraic invariants like cup products. Future research might explore refined techniques for negative perturbation control, potentially through adaptive or context-sensitive oscillatory adjustments at each homotopy level.
 
@@ -309,13 +295,11 @@ This appendix provides an analysis of the improved stability achieved by adaptiv
 
 #### Adaptive Scaling Approach
 
-- Scaling Factor: The perturbation parameter, epsilon, was scaled dynamically based on the homotopy level \( n \), using the formula:
+- Scaling Factor: The perturbation parameter, 𝜖, was scaled dynamically based on the homotopy level 𝑛, using the formula:
 
-  \[
-  \text{scaling\_factor} = \frac{1}{1 + n}
-  \]
+  scaling_factor = 1 / (1 + 𝑛)
 
-  - This approach decreases epsilon's magnitude as \( n \) increases, reducing the impact of perturbations at higher homotopy levels and allowing for enhanced stability.
+- This approach decreases 𝜖's magnitude as 𝑛 increases, reducing the impact of perturbations at higher homotopy levels and allowing for enhanced stability.
 
 #### Stability Evaluation Summary with Adaptive Scaling
 
