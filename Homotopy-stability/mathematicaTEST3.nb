@@ -1,0 +1,375 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     14189,        365]
+NotebookOptionsPosition[     13701,        348]
+NotebookOutlinePosition[     14099,        364]
+CellTagsIndexPosition[     14056,        361]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Setup", " ", "for", " ", "Comprehensive", " ", "High"}], "-", 
+    RowBox[{"Frequency", " ", "Stability", " ", "Test"}]}], "*)"}], 
+  RowBox[{"(*", "Parameters", "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"numTrials", "=", "500"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Number", " ", "of", " ", "trials", " ", "for", " ", "each", " ", 
+     "frequency"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"maxFrequency", "=", "50"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Maximum", " ", "frequency", " ", "multiplier", " ", "k"}], 
+    "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"homotopyLevel", "=", "3"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Set", " ", "a", " ", "homotopy", " ", "level", " ", "to", " ", "test"}], 
+    "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"epsilonRange", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", "0.5"}], ",", "0.5"}], "}"}]}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Range", " ", "of", " ", "perturbations"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"a0", "=", "1"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Base", " ", "point"}], "*)"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{"Adaptive", " ", "Scaling", " ", "for", " ", "epsilon"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"adaptiveEpsilon", "[", 
+     RowBox[{"epsilon_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"epsilon", "/", 
+     RowBox[{"(", 
+      RowBox[{"1", "+", "n"}], ")"}]}]}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Loop", " ", "Space"}], ",", 
+     RowBox[{"Product", " ", "Type"}], ",", 
+     RowBox[{
+     "and", " ", "Fibration", " ", "Type", " ", "with", " ", "frequency", " ",
+       "multiplier", " ", "k"}]}], "*)"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"L", "[", 
+     RowBox[{"n_", ",", "a0_", ",", "epsilon_", ",", "k_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"(", 
+           RowBox[{"a0", "+", 
+            RowBox[{"adaptiveEpsilon", "[", 
+             RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], ")"}], "/", 
+        "2"}], ")"}], "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"k", "*", "n", "*", 
+       RowBox[{"(", 
+        RowBox[{"a0", "+", 
+         RowBox[{"adaptiveEpsilon", "[", 
+          RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}]}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"P", "[", 
+     RowBox[{
+     "n_", ",", "a0Base_", ",", "a0Other_", ",", "epsilon_", ",", "k_"}], 
+     "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0Base", "+", 
+          RowBox[{"adaptiveEpsilon", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"k", "*", "n", "*", 
+         RowBox[{"(", 
+          RowBox[{"a0Base", "+", 
+           RowBox[{"adaptiveEpsilon", "[", 
+            RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0Other", "-", 
+          RowBox[{"adaptiveEpsilon", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"k", "*", "n", "*", 
+         RowBox[{"(", 
+          RowBox[{"a0Other", "-", 
+           RowBox[{"adaptiveEpsilon", "[", 
+            RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}]}], ")"}], 
+     "/", "2"}]}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"F", "[", 
+     RowBox[{"n_", ",", "a0_", ",", "epsilon_", ",", "k_", ",", 
+      RowBox[{"cupProduct1_", ":", "0.1"}], ",", 
+      RowBox[{"cupProduct2_", ":", "0.05"}]}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"adaptiveEpsilon", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"a0", "+", 
+             RowBox[{"0.5", "*", 
+              RowBox[{"adaptiveEpsilon", "[", 
+               RowBox[{"epsilon", ",", "n"}], "]"}]}]}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "/", 
+             RowBox[{"(", 
+              RowBox[{"n", "+", "1"}], ")"}]}], ")"}]}], "+", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", "cupProduct1"}], 
+         ")"}], "/", "2"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"a0", "+", 
+             RowBox[{"0.25", "*", 
+              RowBox[{"adaptiveEpsilon", "[", 
+               RowBox[{"epsilon", ",", "n"}], "]"}]}]}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "/", 
+             RowBox[{"(", 
+              RowBox[{"n", "+", "2"}], ")"}]}], ")"}]}], "+", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", "cupProduct2"}], 
+         ")"}], "/", "2"}]}], ")"}], "/", "2"}]}], "\[IndentingNewLine]", 
+   "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Function", " ", "to", " ", "run", " ", "high"}], "-", 
+     RowBox[{
+     "frequency", " ", "oscillation", " ", "trials", " ", "across", " ", 
+      "all", " ", "types"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"runHighFrequencyTrials", "[", 
+     RowBox[{
+     "baseValue_", ",", "homotopyLevel_", ",", "trials_", ",", 
+      "epsilonRange_", ",", "maxFrequency_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"resultsL", ",", "resultsP", ",", "resultsF"}], "}"}], ",", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{"With", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"k", "=", "freq"}], "}"}], ",", 
+          RowBox[{
+           RowBox[{"resultsL", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"L", "[", 
+                RowBox[{
+                "homotopyLevel", ",", "baseValue", ",", "epsilon", ",", "k"}],
+                 "]"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsP", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"P", "[", 
+                RowBox[{"homotopyLevel", ",", "baseValue", ",", 
+                 RowBox[{"baseValue", "+", "0.1"}], ",", "epsilon", ",", 
+                 "k"}], "]"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsF", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"F", "[", 
+                RowBox[{
+                "homotopyLevel", ",", "baseValue", ",", "epsilon", ",", "k"}],
+                 "]"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"<|", 
+            RowBox[{
+             RowBox[{"\"\<Frequency Multiplier (k)\>\"", "->", "k"}], ",", 
+             RowBox[{"\"\<Loop Space Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsL", "]"}]}], ",", 
+             RowBox[{"\"\<Loop Space StdDev\>\"", "->", 
+              RowBox[{"StandardDeviation", "[", "resultsL", "]"}]}], ",", 
+             RowBox[{"\"\<Product Type Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsP", "]"}]}], ",", 
+             RowBox[{"\"\<Product Type StdDev\>\"", "->", 
+              RowBox[{"StandardDeviation", "[", "resultsP", "]"}]}], ",", 
+             RowBox[{"\"\<Fibration Type Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsF", "]"}]}], ",", 
+             RowBox[{"\"\<Fibration Type StdDev\>\"", "->", 
+              RowBox[{"StandardDeviation", "[", "resultsF", "]"}]}]}], 
+            "|>"}]}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"freq", ",", "1", ",", "maxFrequency", ",", "5"}], "}"}]}], 
+       "]"}]}], "]"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Run", " ", "the", " ", "comprehensive", " ", "frequency", " ", 
+     "trials"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"comprehensiveFrequencyResults", "=", 
+     RowBox[{"runHighFrequencyTrials", "[", 
+      RowBox[{
+      "a0", ",", "homotopyLevel", ",", "numTrials", ",", "epsilonRange", ",", 
+       "maxFrequency"}], "]"}]}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Display", " ", "results", " ", "in", " ", "a", " ", "table", " ", 
+     "format", " ", "for", " ", "easy", " ", "interpretation"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"summaryTable", "=", 
+     RowBox[{"Prepend", "[", 
+      RowBox[{
+       RowBox[{"Map", "[", 
+        RowBox[{"Values", ",", "comprehensiveFrequencyResults"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<Frequency Multiplier (k)\>\"", ",", "\"\<Loop Space Mean\>\"", 
+         ",", "\"\<Loop Space StdDev\>\"", ",", "\"\<Product Type Mean\>\"", 
+         ",", "\"\<Product Type StdDev\>\"", ",", 
+         "\"\<Fibration Type Mean\>\"", ",", 
+         "\"\<Fibration Type StdDev\>\""}], "}"}]}], "]"}]}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Grid", "[", 
+    RowBox[{"summaryTable", ",", 
+     RowBox[{"Frame", "->", "All"}], ",", 
+     RowBox[{"Background", "->", 
+      RowBox[{"{", 
+       RowBox[{"None", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Lighter", "[", 
+           RowBox[{"Gray", ",", ".9"}], "]"}], ",", "White"}], "}"}]}], 
+       "}"}]}]}], "]"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.9400586190154457`*^9, 3.9400586190154457`*^9}},
+ CellLabel->"In[52]:=",ExpressionUUID->"f873d90b-0b6b-a943-a228-e09d1d5b7190"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"Frequency Multiplier (k)\"\>", "\<\"Loop Space Mean\"\>", "\<\"Loop \
+Space StdDev\"\>", "\<\"Product Type Mean\"\>", "\<\"Product Type \
+StdDev\"\>", "\<\"Fibration Type Mean\"\>", "\<\"Fibration Type StdDev\"\>"},
+    {"1", "0.034811523398021155`", "0.0283570714240874`", 
+     "0.457050243899246`", "0.09409431062387316`", "0.8313746046203819`", 
+     "0.06461744555977626`"},
+    {"6", "1.2155818988107163`", "0.683258391925764`", "1.2582400914189835`", 
+     "0.38919220385761577`", "2.0865801069198167`", "0.06035517567756358`"},
+    {"11", "0.9953545810640682`", "0.658647999089169`", "1.0937303732398482`",
+      "0.5150693245086184`", "3.336869877941107`", "0.062988672989273`"},
+    {"16", "0.9865756493727674`", "0.6889393710199444`", 
+     "1.0277916392470237`", "0.5664991106772882`", "4.583110134748436`", 
+     "0.06250271799419801`"},
+    {"21", "1.1444753834004204`", "0.690835132546652`", "1.0956770092700974`",
+      "0.579441006596689`", "5.835234249635861`", "0.06326691828529836`"},
+    {"26", "1.0275038359026447`", "0.7188552804200806`", 
+     "1.0139424791864742`", "0.606524424859311`", "7.084986520852221`", 
+     "0.06091503624936359`"},
+    {"31", "1.0010605271158874`", "0.7262768131698852`", "0.9951610053333`", 
+     "0.6002413229553943`", "8.334113041703779`", "0.06176427464657893`"},
+    {"36", "1.0092397919692677`", "0.6849393124455413`", 
+     "1.0353798056238015`", "0.6213798762547647`", "9.580419306914175`", 
+     "0.06254551697279852`"},
+    {"41", "1.041860975630378`", "0.7138068228580435`", "0.9901867392272273`",
+      "0.627221349440527`", "10.834627254397214`", "0.06238695916165874`"},
+    {"46", "0.9131253330452825`", "0.7061284851152488`", 
+     "1.0139144667723217`", "0.6604812984720994`", "12.07884292289693`", 
+     "0.06477309157297517`"}
+   },
+   AutoDelete->False,
+   GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {
+       RGBColor[0.95, 0.95, 0.95], 
+       GrayLevel[1]}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{3.94005862017247*^9},
+ CellLabel->"Out[64]=",ExpressionUUID->"2ea9b559-aaa2-5449-9bfc-c2b68c05f2fe"]
+}, Open  ]]
+},
+WindowSize->{1909, 1037},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"14.1 for Microsoft Windows (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"f6022455-0707-5444-b1c2-2d07939c19d5"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 10843, 282, 694, "Input",ExpressionUUID->"f873d90b-0b6b-a943-a228-e09d1d5b7190"],
+Cell[11422, 306, 2263, 39, 232, "Output",ExpressionUUID->"2ea9b559-aaa2-5449-9bfc-c2b68c05f2fe"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+

@@ -1,0 +1,1100 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     41773,       1092]
+NotebookOptionsPosition[     40003,       1060]
+NotebookOutlinePosition[     40401,       1076]
+CellTagsIndexPosition[     40358,       1073]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Mathematica", " ", "Notebook", " ", "for", " ", "Testing", " ", 
+    "Stability", " ", "Claims", " ", "in", " ", "Higher", " ", "Homotopies"}],
+    "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{"1.", " ", "Setup", " ", "and", " ", "Define", " ", "Parameters"}],
+    "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Monte", " ", "Carlo", " ", "settings", " ", "for", " ", "numeric", " ", 
+    "tests"}], "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"numTrials", "=", "1000"}], ";"}], "  ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Number", " ", "of", " ", "trials", " ", "for", " ", "empirical", " ", 
+     "tests"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"maxHomotopyLevel", "=", "10"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{
+     "Maximum", " ", "homotopy", " ", "level", " ", "to", " ", "test"}], ",", 
+     RowBox[{"extending", " ", "rigorously"}]}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"epsilonRange", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", "0.5"}], ",", "0.5"}], "}"}]}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Range", " ", "of", " ", "perturbations"}], "*)"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Define", " ", "Adaptive", " ", "Scaling", " ", "Functions", " ", "for", 
+     " ", "Analysis"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"adaptiveEpsilon1", "[", 
+     RowBox[{"epsilon_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"epsilon", "/", 
+     RowBox[{"(", 
+      RowBox[{"1", "+", "n"}], ")"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"adaptiveEpsilon2", "[", 
+     RowBox[{"epsilon_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"epsilon", "/", 
+     RowBox[{"(", 
+      RowBox[{"1", "+", 
+       RowBox[{"Log", "[", 
+        RowBox[{"n", "+", "1"}], "]"}]}], ")"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"adaptiveEpsilon3", "[", 
+     RowBox[{"epsilon_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"epsilon", "/", 
+     RowBox[{"(", 
+      RowBox[{"1", "+", 
+       RowBox[{"Sqrt", "[", "n", "]"}]}], ")"}]}]}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"2.", " ", "Define", " ", "Loop", " ", "Space"}], ",", 
+     RowBox[{"Product", " ", "Type"}], ",", 
+     RowBox[{
+     "and", " ", "Fibration", " ", "Type", " ", "Functions", " ", 
+      "Symbolically"}]}], "*)"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"L", "[", 
+     RowBox[{"n_", ",", "a0_", ",", "epsilon_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"(", 
+           RowBox[{"a0", "+", "epsilon"}], ")"}]}], ")"}], "/", "2"}], ")"}], 
+      "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"n", "*", 
+       RowBox[{"(", 
+        RowBox[{"a0", "+", "epsilon"}], ")"}]}], "]"}]}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"P", "[", 
+     RowBox[{"n_", ",", "a0Base_", ",", "a0Other_", ",", "epsilon_"}], "]"}], 
+    ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0Base", "+", "epsilon"}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"n", "*", 
+         RowBox[{"(", 
+          RowBox[{"a0Base", "+", "epsilon"}], ")"}]}], "]"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0Other", "-", "epsilon"}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"n", "*", 
+         RowBox[{"(", 
+          RowBox[{"a0Other", "-", "epsilon"}], ")"}]}], "]"}]}], ")"}], "/", 
+     "2"}]}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"F", "[", 
+     RowBox[{"n_", ",", "a0_", ",", "epsilon_", ",", 
+      RowBox[{"cupProduct1_", ":", "0.1"}], ",", 
+      RowBox[{"cupProduct2_", ":", "0.05"}]}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0", "+", "epsilon"}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"n", "*", "a0"}], "]"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"a0", "+", 
+             RowBox[{"0.5", "*", "epsilon"}]}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "/", 
+             RowBox[{"(", 
+              RowBox[{"n", "+", "1"}], ")"}]}], ")"}]}], "+", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"n", "*", "a0"}], "]"}], "+", "cupProduct1"}], ")"}], "/", 
+        "2"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"a0", "+", 
+             RowBox[{"0.25", "*", "epsilon"}]}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "/", 
+             RowBox[{"(", 
+              RowBox[{"n", "+", "2"}], ")"}]}], ")"}]}], "+", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"n", "*", "a0"}], "]"}], "+", "cupProduct2"}], ")"}], "/", 
+        "2"}]}], ")"}], "/", "2"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{"3.", " ", "Symbolic", " ", "Stability", " ", "Analysis"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", "\"\<Symbolic Stability Analysis\>\"", "]"}], "\n", 
+   RowBox[{"symbolicStabilityResults", "=", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"Expand", "[", 
+       RowBox[{"L", "[", 
+        RowBox[{"n", ",", "a0", ",", 
+         RowBox[{"adaptiveEpsilon1", "[", 
+          RowBox[{"epsilon", ",", "n"}], "]"}]}], "]"}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"n", ",", "1", ",", "3"}], "}"}]}], "]"}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"symbolicProductResults", "=", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"Expand", "[", 
+       RowBox[{"P", "[", 
+        RowBox[{"n", ",", "a0", ",", 
+         RowBox[{"a0", "+", "0.1"}], ",", 
+         RowBox[{"adaptiveEpsilon1", "[", 
+          RowBox[{"epsilon", ",", "n"}], "]"}]}], "]"}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"n", ",", "1", ",", "3"}], "}"}]}], "]"}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"symbolicFibrationResults", "=", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"Expand", "[", 
+       RowBox[{"F", "[", 
+        RowBox[{"n", ",", "a0", ",", 
+         RowBox[{"adaptiveEpsilon1", "[", 
+          RowBox[{"epsilon", ",", "n"}], "]"}]}], "]"}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"n", ",", "1", ",", "3"}], "}"}]}], "]"}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Print", "[", 
+    RowBox[{
+    "\"\<Loop Space Stability Results: \>\"", ",", 
+     "symbolicStabilityResults"}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{
+    "\"\<Product Type Stability Results: \>\"", ",", 
+     "symbolicProductResults"}], "]"}], "\n", 
+   RowBox[{"Print", "[", 
+    RowBox[{
+    "\"\<Fibration Type Stability Results: \>\"", ",", 
+     "symbolicFibrationResults"}], "]"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "4.", " ", "Monte", " ", "Carlo", " ", "Perturbation", " ", "Testing"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", "\"\<Monte Carlo Testing with Randomized Perturbations\>\"", 
+    "]"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"runTrials", "[", 
+     RowBox[{
+     "baseValue_", ",", "homotopyLevel_", ",", "trials_", ",", 
+      "epsilonRange_", ",", "adaptiveEpsFunc_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "resultsL", ",", "resultsP", ",", "resultsF", ",", "scaledEpsilon", 
+        ",", "epsilon"}], "}"}], ",", 
+      RowBox[{
+       RowBox[{"resultsL", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"epsilon", "=", 
+            RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"scaledEpsilon", "=", 
+            RowBox[{"adaptiveEpsFunc", "[", 
+             RowBox[{"epsilon", ",", "homotopyLevel"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"L", "[", 
+            RowBox[{"homotopyLevel", ",", "baseValue", ",", "scaledEpsilon"}],
+             "]"}]}], ",", 
+          RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"resultsP", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"epsilon", "=", 
+            RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"scaledEpsilon", "=", 
+            RowBox[{"adaptiveEpsFunc", "[", 
+             RowBox[{"epsilon", ",", "homotopyLevel"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"P", "[", 
+            RowBox[{"homotopyLevel", ",", "baseValue", ",", 
+             RowBox[{"baseValue", "+", "0.1"}], ",", "scaledEpsilon"}], 
+            "]"}]}], ",", 
+          RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"resultsF", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"epsilon", "=", 
+            RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"scaledEpsilon", "=", 
+            RowBox[{"adaptiveEpsFunc", "[", 
+             RowBox[{"epsilon", ",", "homotopyLevel"}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"F", "[", 
+            RowBox[{"homotopyLevel", ",", "baseValue", ",", "scaledEpsilon"}],
+             "]"}]}], ",", 
+          RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"<|", 
+        RowBox[{
+         RowBox[{"\"\<Homotopy Level\>\"", "->", "homotopyLevel"}], ",", 
+         RowBox[{"\"\<Loop Space Mean\>\"", "->", 
+          RowBox[{"Mean", "[", "resultsL", "]"}]}], ",", 
+         RowBox[{"\"\<Loop Space StdDev\>\"", "->", 
+          RowBox[{"StandardDeviation", "[", "resultsL", "]"}]}], ",", 
+         RowBox[{"\"\<Product Type Mean\>\"", "->", 
+          RowBox[{"Mean", "[", "resultsP", "]"}]}], ",", 
+         RowBox[{"\"\<Product Type StdDev\>\"", "->", 
+          RowBox[{"StandardDeviation", "[", "resultsP", "]"}]}], ",", 
+         RowBox[{"\"\<Fibration Type Mean\>\"", "->", 
+          RowBox[{"Mean", "[", "resultsF", "]"}]}], ",", 
+         RowBox[{"\"\<Fibration Type StdDev\>\"", "->", 
+          RowBox[{"StandardDeviation", "[", "resultsF", "]"}]}]}], "|>"}]}]}],
+      "]"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Collect", " ", "Results", " ", "Over", " ", "Homotopy", " ", "Levels", 
+     " ", "and", " ", "Adaptive", " ", "Scaling", " ", "Functions"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", "\"\<Testing with Different Adaptive Scaling Functions\>\"", 
+    "]"}], "\n", 
+   RowBox[{
+    RowBox[{"stabilityResults1", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"runTrials", "[", 
+        RowBox[{
+        "1", ",", "n", ",", "numTrials", ",", "epsilonRange", ",", 
+         "adaptiveEpsilon1"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"n", ",", "1", ",", "maxHomotopyLevel"}], "}"}]}], "]"}]}], 
+    ";"}], "\n", 
+   RowBox[{
+    RowBox[{"stabilityResults2", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"runTrials", "[", 
+        RowBox[{
+        "1", ",", "n", ",", "numTrials", ",", "epsilonRange", ",", 
+         "adaptiveEpsilon2"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"n", ",", "1", ",", "maxHomotopyLevel"}], "}"}]}], "]"}]}], 
+    ";"}], "\n", 
+   RowBox[{
+    RowBox[{"stabilityResults3", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"runTrials", "[", 
+        RowBox[{
+        "1", ",", "n", ",", "numTrials", ",", "epsilonRange", ",", 
+         "adaptiveEpsilon3"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"n", ",", "1", ",", "maxHomotopyLevel"}], "}"}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "5.", " ", "Statistical", " ", "Summaries", " ", "and", " ", 
+     "Interpretations"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", 
+    "\"\<Statistical Summary of Stability for Each Homotopy Level and Scaling \
+Function\>\"", "]"}], "\n", 
+   RowBox[{
+    RowBox[{"summaryTable1", "=", 
+     RowBox[{"Prepend", "[", 
+      RowBox[{
+       RowBox[{"Map", "[", 
+        RowBox[{"Values", ",", "stabilityResults1"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<Homotopy Level\>\"", ",", "\"\<Loop Space Mean\>\"", ",", 
+         "\"\<Loop Space StdDev\>\"", ",", "\"\<Product Type Mean\>\"", ",", 
+         "\"\<Product Type StdDev\>\"", ",", "\"\<Fibration Type Mean\>\"", 
+         ",", "\"\<Fibration Type StdDev\>\""}], "}"}]}], "]"}]}], ";"}], 
+   "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"summaryTable2", "=", 
+     RowBox[{"Prepend", "[", 
+      RowBox[{
+       RowBox[{"Map", "[", 
+        RowBox[{"Values", ",", "stabilityResults2"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<Homotopy Level\>\"", ",", "\"\<Loop Space Mean\>\"", ",", 
+         "\"\<Loop Space StdDev\>\"", ",", "\"\<Product Type Mean\>\"", ",", 
+         "\"\<Product Type StdDev\>\"", ",", "\"\<Fibration Type Mean\>\"", 
+         ",", "\"\<Fibration Type StdDev\>\""}], "}"}]}], "]"}]}], ";"}], 
+   "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"summaryTable3", "=", 
+     RowBox[{"Prepend", "[", 
+      RowBox[{
+       RowBox[{"Map", "[", 
+        RowBox[{"Values", ",", "stabilityResults3"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<Homotopy Level\>\"", ",", "\"\<Loop Space Mean\>\"", ",", 
+         "\"\<Loop Space StdDev\>\"", ",", "\"\<Product Type Mean\>\"", ",", 
+         "\"\<Product Type StdDev\>\"", ",", "\"\<Fibration Type Mean\>\"", 
+         ",", "\"\<Fibration Type StdDev\>\""}], "}"}]}], "]"}]}], ";"}], 
+   "\n", "\[IndentingNewLine]", 
+   RowBox[{"Grid", "[", 
+    RowBox[{"summaryTable1", ",", 
+     RowBox[{"Frame", "->", "All"}], ",", 
+     RowBox[{"Background", "->", 
+      RowBox[{"{", 
+       RowBox[{"None", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Lighter", "[", 
+           RowBox[{"Gray", ",", ".9"}], "]"}], ",", "White"}], "}"}]}], 
+       "}"}]}]}], "]"}], "\n", 
+   RowBox[{"Grid", "[", 
+    RowBox[{"summaryTable2", ",", 
+     RowBox[{"Frame", "->", "All"}], ",", 
+     RowBox[{"Background", "->", 
+      RowBox[{"{", 
+       RowBox[{"None", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Lighter", "[", 
+           RowBox[{"Gray", ",", ".9"}], "]"}], ",", "White"}], "}"}]}], 
+       "}"}]}]}], "]"}], "\n", 
+   RowBox[{"Grid", "[", 
+    RowBox[{"summaryTable3", ",", 
+     RowBox[{"Frame", "->", "All"}], ",", 
+     RowBox[{"Background", "->", 
+      RowBox[{"{", 
+       RowBox[{"None", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Lighter", "[", 
+           RowBox[{"Gray", ",", ".9"}], "]"}], ",", "White"}], "}"}]}], 
+       "}"}]}]}], "]"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "6.", " ", "Conclusion", " ", "on", " ", "Stability", " ", "Patterns"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+   "Print", "[", 
+    "\"\<Conclusion: Analyze summaries for any instability trends and confirm \
+theoretical predictions.\>\"", "]"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.940058140688452*^9, 3.940058140689451*^9}},
+ CellLabel->"In[12]:=",ExpressionUUID->"1b9724a8-952d-7943-ba9f-aef001fe72c5"],
+
+Cell[BoxData["\<\"Symbolic Stability Analysis\"\>"], "Print",
+ CellChangeTimes->{3.940058142135412*^9},
+ CellLabel->
+  "During evaluation of \
+In[12]:=",ExpressionUUID->"4f6b9733-2e28-1b43-bd61-61152e1ed84e"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"a0", "+", 
+    FractionBox["epsilon", "4"], "+", 
+    RowBox[{"Cos", "[", 
+     RowBox[{"a0", "+", 
+      FractionBox["epsilon", "2"]}], "]"}]}], ",", 
+   RowBox[{
+    FractionBox[
+     SqrtBox[
+      RowBox[{
+       RowBox[{"2", " ", "a0"}], "+", 
+       FractionBox["epsilon", "3"]}]], 
+     SqrtBox["2"]], "+", 
+    RowBox[{"Cos", "[", 
+     RowBox[{"2", " ", 
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        FractionBox["epsilon", "3"]}], ")"}]}], "]"}]}], ",", 
+   RowBox[{
+    FractionBox[
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"2", " ", "a0"}], "+", 
+        FractionBox["epsilon", "4"]}], ")"}], 
+      RowBox[{"1", "/", "3"}]], 
+     SuperscriptBox["2", 
+      RowBox[{"1", "/", "3"}]]], "+", 
+    RowBox[{"Cos", "[", 
+     RowBox[{"3", " ", 
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        FractionBox["epsilon", "4"]}], ")"}]}], "]"}]}]}], "}"}]], "Output",
+ CellChangeTimes->{3.940058142140423*^9},
+ CellLabel->"Out[22]=",ExpressionUUID->"0e95e1d6-1299-6f45-97aa-d9137ddcf5da"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"0.05`", "\[VeryThinSpace]", "+", "a0", "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"a0", "+", 
+       FractionBox["epsilon", "2"]}], "]"}]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+       FractionBox["epsilon", "2"]}], "]"}]}]}], ",", 
+   RowBox[{
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     SqrtBox[
+      RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+       FractionBox["epsilon", "3"]}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     SqrtBox[
+      RowBox[{"a0", "+", 
+       FractionBox["epsilon", "3"]}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"2", " ", 
+       RowBox[{"(", 
+        RowBox[{"a0", "+", 
+         FractionBox["epsilon", "3"]}], ")"}]}], "]"}]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"2", " ", 
+       RowBox[{"(", 
+        RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+         FractionBox["epsilon", "3"]}], ")"}]}], "]"}]}]}], ",", 
+   RowBox[{
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+        FractionBox["epsilon", "4"]}], ")"}], 
+      RowBox[{"1", "/", "3"}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        FractionBox["epsilon", "4"]}], ")"}], 
+      RowBox[{"1", "/", "3"}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"3", " ", 
+       RowBox[{"(", 
+        RowBox[{"a0", "+", 
+         FractionBox["epsilon", "4"]}], ")"}]}], "]"}]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"3", " ", 
+       RowBox[{"(", 
+        RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+         FractionBox["epsilon", "4"]}], ")"}]}], "]"}]}]}]}], "}"}]], "Output",
+ CellChangeTimes->{3.9400581421464233`*^9},
+ CellLabel->"Out[23]=",ExpressionUUID->"4a71ca97-ceb9-8f41-8a4d-9f49163b27ab"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"0.037500000000000006`", "\[VeryThinSpace]", "+", 
+    FractionBox["a0", "2"], "+", 
+    RowBox[{
+     FractionBox["1", "4"], " ", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        RowBox[{"0.125`", " ", "epsilon"}]}], ")"}], 
+      RowBox[{"1", "/", "3"}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "4"], " ", 
+     SqrtBox[
+      RowBox[{"a0", "+", 
+       RowBox[{"0.25`", " ", "epsilon"}]}]]}], "+", 
+    FractionBox["epsilon", "4"], "+", 
+    FractionBox[
+     RowBox[{"Cos", "[", "a0", "]"}], "2"], "+", 
+    FractionBox[
+     RowBox[{"Sin", "[", "a0", "]"}], "2"]}], ",", 
+   RowBox[{"0.037500000000000006`", "\[VeryThinSpace]", "+", 
+    RowBox[{
+     FractionBox["1", "4"], " ", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        RowBox[{"0.08333333333333333`", " ", "epsilon"}]}], ")"}], 
+      RowBox[{"1", "/", "4"}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "4"], " ", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        RowBox[{"0.16666666666666666`", " ", "epsilon"}]}], ")"}], 
+      RowBox[{"1", "/", "3"}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     SqrtBox[
+      RowBox[{"a0", "+", 
+       FractionBox["epsilon", "3"]}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"2", " ", "a0"}], "]"}]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"2", " ", "a0"}], "]"}]}]}], ",", 
+   RowBox[{"0.037500000000000006`", "\[VeryThinSpace]", "+", 
+    RowBox[{
+     FractionBox["1", "4"], " ", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        RowBox[{"0.0625`", " ", "epsilon"}]}], ")"}], 
+      RowBox[{"1", "/", "5"}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "4"], " ", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        RowBox[{"0.125`", " ", "epsilon"}]}], ")"}], 
+      RowBox[{"1", "/", "4"}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"a0", "+", 
+        FractionBox["epsilon", "4"]}], ")"}], 
+      RowBox[{"1", "/", "3"}]]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"3", " ", "a0"}], "]"}]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     RowBox[{"Sin", "[", 
+      RowBox[{"3", " ", "a0"}], "]"}]}]}]}], "}"}]], "Output",
+ CellChangeTimes->{3.94005814214802*^9},
+ CellLabel->"Out[24]=",ExpressionUUID->"16257198-66b4-3942-9d88-9647bc06deae"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Loop Space Stability Results: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"a0", "+", 
+      FractionBox["epsilon", "4"], "+", 
+      RowBox[{"Cos", "[", 
+       RowBox[{"a0", "+", 
+        FractionBox["epsilon", "2"]}], "]"}]}], ",", 
+     RowBox[{
+      FractionBox[
+       SqrtBox[
+        RowBox[{
+         RowBox[{"2", " ", "a0"}], "+", 
+         FractionBox["epsilon", "3"]}]], 
+       SqrtBox["2"]], "+", 
+      RowBox[{"Cos", "[", 
+       RowBox[{"2", " ", 
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          FractionBox["epsilon", "3"]}], ")"}]}], "]"}]}], ",", 
+     RowBox[{
+      FractionBox[
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"2", " ", "a0"}], "+", 
+          FractionBox["epsilon", "4"]}], ")"}], 
+        RowBox[{"1", "/", "3"}]], 
+       SuperscriptBox["2", 
+        RowBox[{"1", "/", "3"}]]], "+", 
+      RowBox[{"Cos", "[", 
+       RowBox[{"3", " ", 
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          FractionBox["epsilon", "4"]}], ")"}]}], "]"}]}]}], "}"}]}],
+  SequenceForm[
+  "Loop Space Stability Results: ", {$CellContext`a0 + 
+    Rational[1, 4] $CellContext`epsilon + 
+    Cos[$CellContext`a0 + Rational[1, 2] $CellContext`epsilon], 
+    2^Rational[-1, 2] (2 $CellContext`a0 + 
+       Rational[1, 3] $CellContext`epsilon)^Rational[1, 2] + 
+    Cos[2 ($CellContext`a0 + Rational[1, 3] $CellContext`epsilon)], 
+    2^Rational[-1, 3] (2 $CellContext`a0 + 
+       Rational[1, 4] $CellContext`epsilon)^Rational[1, 3] + 
+    Cos[3 ($CellContext`a0 + Rational[1, 4] $CellContext`epsilon)]}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9400581421495323`*^9},
+ CellLabel->
+  "During evaluation of \
+In[12]:=",ExpressionUUID->"ecc9e7d1-b6f3-b845-9613-78538703312d"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Product Type Stability Results: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"0.05`", "\[VeryThinSpace]", "+", "a0", "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"a0", "+", 
+         FractionBox["epsilon", "2"]}], "]"}]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+         FractionBox["epsilon", "2"]}], "]"}]}]}], ",", 
+     RowBox[{
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       SqrtBox[
+        RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+         FractionBox["epsilon", "3"]}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       SqrtBox[
+        RowBox[{"a0", "+", 
+         FractionBox["epsilon", "3"]}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"2", " ", 
+         RowBox[{"(", 
+          RowBox[{"a0", "+", 
+           FractionBox["epsilon", "3"]}], ")"}]}], "]"}]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"2", " ", 
+         RowBox[{"(", 
+          RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+           FractionBox["epsilon", "3"]}], ")"}]}], "]"}]}]}], ",", 
+     RowBox[{
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+          FractionBox["epsilon", "4"]}], ")"}], 
+        RowBox[{"1", "/", "3"}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          FractionBox["epsilon", "4"]}], ")"}], 
+        RowBox[{"1", "/", "3"}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"3", " ", 
+         RowBox[{"(", 
+          RowBox[{"a0", "+", 
+           FractionBox["epsilon", "4"]}], ")"}]}], "]"}]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"3", " ", 
+         RowBox[{"(", 
+          RowBox[{"0.1`", "\[VeryThinSpace]", "+", "a0", "-", 
+           FractionBox["epsilon", "4"]}], ")"}]}], "]"}]}]}]}], "}"}]}],
+  SequenceForm[
+  "Product Type Stability Results: ", {
+   0.05 + $CellContext`a0 + 
+    Rational[1, 2] Cos[$CellContext`a0 + Rational[1, 2] $CellContext`epsilon] + 
+    Rational[1, 2] 
+     Sin[0.1 + $CellContext`a0 + Rational[-1, 2] $CellContext`epsilon], 
+    Rational[1, 2] (0.1 + $CellContext`a0 + 
+       Rational[-1, 3] $CellContext`epsilon)^Rational[1, 2] + 
+    Rational[1, 2] ($CellContext`a0 + Rational[1, 3] $CellContext`epsilon)^
+      Rational[1, 2] + 
+    Rational[1, 2] 
+     Cos[2 ($CellContext`a0 + Rational[1, 3] $CellContext`epsilon)] + 
+    Rational[1, 2] 
+     Sin[2 (0.1 + $CellContext`a0 + Rational[-1, 3] $CellContext`epsilon)], 
+    Rational[1, 2] (0.1 + $CellContext`a0 + 
+       Rational[-1, 4] $CellContext`epsilon)^Rational[1, 3] + 
+    Rational[1, 2] ($CellContext`a0 + Rational[1, 4] $CellContext`epsilon)^
+      Rational[1, 3] + 
+    Rational[1, 2] 
+     Cos[3 ($CellContext`a0 + Rational[1, 4] $CellContext`epsilon)] + 
+    Rational[1, 2] 
+     Sin[3 (0.1 + $CellContext`a0 + Rational[-1, 4] $CellContext`epsilon)]}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940058142155037*^9},
+ CellLabel->
+  "During evaluation of \
+In[12]:=",ExpressionUUID->"a7668d9a-0a06-d14e-8c89-ec5347348766"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Fibration Type Stability Results: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"0.037500000000000006`", "\[VeryThinSpace]", "+", 
+      FractionBox["a0", "2"], "+", 
+      RowBox[{
+       FractionBox["1", "4"], " ", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"0.125`", " ", "epsilon"}]}], ")"}], 
+        RowBox[{"1", "/", "3"}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "4"], " ", 
+       SqrtBox[
+        RowBox[{"a0", "+", 
+         RowBox[{"0.25`", " ", "epsilon"}]}]]}], "+", 
+      FractionBox["epsilon", "4"], "+", 
+      FractionBox[
+       RowBox[{"Cos", "[", "a0", "]"}], "2"], "+", 
+      FractionBox[
+       RowBox[{"Sin", "[", "a0", "]"}], "2"]}], ",", 
+     RowBox[{"0.037500000000000006`", "\[VeryThinSpace]", "+", 
+      RowBox[{
+       FractionBox["1", "4"], " ", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"0.08333333333333333`", " ", "epsilon"}]}], ")"}], 
+        RowBox[{"1", "/", "4"}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "4"], " ", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"0.16666666666666666`", " ", "epsilon"}]}], ")"}], 
+        RowBox[{"1", "/", "3"}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       SqrtBox[
+        RowBox[{"a0", "+", 
+         FractionBox["epsilon", "3"]}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"2", " ", "a0"}], "]"}]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"2", " ", "a0"}], "]"}]}]}], ",", 
+     RowBox[{"0.037500000000000006`", "\[VeryThinSpace]", "+", 
+      RowBox[{
+       FractionBox["1", "4"], " ", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"0.0625`", " ", "epsilon"}]}], ")"}], 
+        RowBox[{"1", "/", "5"}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "4"], " ", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"0.125`", " ", "epsilon"}]}], ")"}], 
+        RowBox[{"1", "/", "4"}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       SuperscriptBox[
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          FractionBox["epsilon", "4"]}], ")"}], 
+        RowBox[{"1", "/", "3"}]]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"3", " ", "a0"}], "]"}]}], "+", 
+      RowBox[{
+       FractionBox["1", "2"], " ", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"3", " ", "a0"}], "]"}]}]}]}], "}"}]}],
+  SequenceForm[
+  "Fibration Type Stability Results: ", {
+   0.037500000000000006` + Rational[1, 2] $CellContext`a0 + 
+    Rational[1, 4] ($CellContext`a0 + 0.125 $CellContext`epsilon)^
+      Rational[1, 3] + 
+    Rational[1, 4] ($CellContext`a0 + 0.25 $CellContext`epsilon)^
+      Rational[1, 2] + Rational[1, 4] $CellContext`epsilon + 
+    Rational[1, 2] Cos[$CellContext`a0] + Rational[1, 2] Sin[$CellContext`a0],
+     0.037500000000000006` + 
+    Rational[1, 4] ($CellContext`a0 + 
+       0.08333333333333333 $CellContext`epsilon)^Rational[1, 4] + 
+    Rational[1, 4] ($CellContext`a0 + 
+       0.16666666666666666` $CellContext`epsilon)^Rational[1, 3] + 
+    Rational[1, 2] ($CellContext`a0 + Rational[1, 3] $CellContext`epsilon)^
+      Rational[1, 2] + Rational[1, 2] Cos[2 $CellContext`a0] + 
+    Rational[1, 2] Sin[2 $CellContext`a0], 0.037500000000000006` + 
+    Rational[1, 4] ($CellContext`a0 + 0.0625 $CellContext`epsilon)^
+      Rational[1, 5] + 
+    Rational[1, 4] ($CellContext`a0 + 0.125 $CellContext`epsilon)^
+      Rational[1, 4] + 
+    Rational[1, 2] ($CellContext`a0 + Rational[1, 4] $CellContext`epsilon)^
+      Rational[1, 3] + Rational[1, 2] Cos[3 $CellContext`a0] + 
+    Rational[1, 2] Sin[3 $CellContext`a0]}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940058142159052*^9},
+ CellLabel->
+  "During evaluation of \
+In[12]:=",ExpressionUUID->"904a135d-d3f8-d247-bd7f-02e82d3f44cb"],
+
+Cell[BoxData["\<\"Monte Carlo Testing with Randomized Perturbations\"\>"], \
+"Print",
+ CellChangeTimes->{3.9400581421600513`*^9},
+ CellLabel->
+  "During evaluation of \
+In[12]:=",ExpressionUUID->"e5728dd3-f064-334e-b529-5237bb3d1844"],
+
+Cell[BoxData["\<\"Testing with Different Adaptive Scaling Functions\"\>"], \
+"Print",
+ CellChangeTimes->{3.9400581421620502`*^9},
+ CellLabel->
+  "During evaluation of \
+In[12]:=",ExpressionUUID->"d04bf325-cd46-a544-ba84-ef178966ab69"],
+
+Cell[BoxData["\<\"Statistical Summary of Stability for Each Homotopy Level \
+and Scaling Function\"\>"], "Print",
+ CellChangeTimes->{3.9400581425805664`*^9},
+ CellLabel->
+  "During evaluation of \
+In[12]:=",ExpressionUUID->"48cbbccd-d149-eb4f-bfb8-3590bfbe4f52"]
+}, Open  ]],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"Homotopy Level\"\>", "\<\"Loop Space Mean\"\>", "\<\"Loop Space \
+StdDev\"\>", "\<\"Product Type Mean\"\>", "\<\"Product Type StdDev\"\>", \
+"\<\"Fibration Type Mean\"\>", "\<\"Fibration Type StdDev\"\>"},
+    {"1", "1.5364616993260287`", "0.04785893429513667`", 
+     "1.7577303712794032`", "0.0960580841674514`", "1.732421248272778`", 
+     "0.08303544848612439`"},
+    {"2", "0.599855925791554`", "0.1471020089477785`", "1.2155018271111147`", 
+     "0.03015285738662085`", "1.2844814194532064`", "0.029836539889952645`"},
+    {"3", "0.03422459647638212`", "0.028344148316604513`", 
+     "0.4518036069560925`", "0.09019844551639232`", "0.6130464536032388`", 
+     "0.015104143317583878`"},
+    {"4", "0.36158954135968435`", "0.17726345533528462`", 
+     "0.23376765940208274`", "0.12163375926538417`", "0.33218562072127544`", 
+     "0.009294381994584041`"},
+    {"5", "1.2790210273814342`", "0.23439785674710986`", 
+     "0.8040291952617287`", "0.030403311243094134`", "0.6998692209812254`", 
+     "0.006217461830524537`"},
+    {"6", "1.9228439570776563`", "0.07677798952213898`", "1.624079500224465`",
+      "0.084388854585906`", "1.377770578387726`", "0.0045232097876546085`"},
+    {"7", "1.7292865031668212`", "0.16059154010711443`", 
+     "1.8460244230407965`", "0.10458697451225962`", "1.742922924531751`", 
+     "0.0034233626642804337`"},
+    {"8", "0.8349562718481068`", "0.24611584715412987`", 
+     "1.2176572987051788`", "0.023071224237516005`", "1.4594051759100912`", 
+     "0.002640285918565092`"},
+    {"9", "0.11816108151558372`", "0.1071876680351631`", 
+     "0.3444865677463018`", "0.06294882532716589`", "0.7879709120342302`", 
+     "0.002159412082981995`"},
+    {"10", "0.1911760616556631`", "0.14156827483555984`", 
+     "0.11481566660415428`", "0.07353824483494752`", "0.3459052810107173`", 
+     "0.001782377998688425`"}
+   },
+   AutoDelete->False,
+   GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {
+       RGBColor[0.95, 0.95, 0.95], 
+       GrayLevel[1]}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{3.940058142581566*^9},
+ CellLabel->"Out[38]=",ExpressionUUID->"a6ce324f-ca49-a84a-8086-2c059e3af143"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"Homotopy Level\"\>", "\<\"Loop Space Mean\"\>", "\<\"Loop Space \
+StdDev\"\>", "\<\"Product Type Mean\"\>", "\<\"Product Type StdDev\"\>", \
+"\<\"Fibration Type Mean\"\>", "\<\"Fibration Type StdDev\"\>"},
+    {"1", "1.532085513794708`", "0.05773731624690642`", "1.7547210735501237`",
+      "0.1104432630047797`", "1.7294248590166692`", "0.09977231604619859`"},
+    {"2", "0.615778851693228`", "0.21489976911822864`", "1.2113562976316548`",
+      "0.04252152199534848`", "1.2857861098305026`", "0.04210934538334969`"},
+    {"3", "0.07253407633845532`", "0.061410054086541016`", 
+     "0.4742144559735443`", "0.14965902027343558`", "0.6120465427224604`", 
+     "0.025620822227366905`"},
+    {"4", "0.3990949044212146`", "0.3314752362411953`", 
+     "0.27268155517442744`", "0.2253823795054575`", "0.3315989863642013`", 
+     "0.018406639268424473`"},
+    {"5", "1.24969779239979`", "0.47384749476393123`", "0.8255884195493807`", 
+     "0.06544276206082682`", "0.6999656579312757`", "0.013291452501903155`"},
+    {"6", "1.8014940394209993`", "0.21134777280304579`", 
+     "1.5277853258621343`", "0.20244867578996414`", "1.377361184941939`", 
+     "0.010462954509860175`"},
+    {"7", "1.5920322559626974`", "0.40284006981172515`", "1.698999564504357`",
+      "0.283703641646452`", "1.7435538082147641`", "0.008527528431031831`"},
+    {"8", "0.8995352823589243`", "0.599594754695488`", "1.1701158051808034`", 
+     "0.0737493948962738`", "1.4591675185004702`", "0.007475862679834893`"},
+    {"9", "0.3597667784104327`", "0.3390329447409851`", "0.5041431040725034`",
+      "0.22318471119840536`", "0.787735298552301`", "0.0064762458103091195`"},
+    {"10", "0.4289257425082509`", "0.45250475229733744`", 
+     "0.3910207115725334`", "0.3145875075264233`", "0.3456707082790448`", 
+     "0.0057327763450754`"}
+   },
+   AutoDelete->False,
+   GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {
+       RGBColor[0.95, 0.95, 0.95], 
+       GrayLevel[1]}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{3.940058142584568*^9},
+ CellLabel->"Out[39]=",ExpressionUUID->"5fa14271-77e4-884e-be6b-f34703a94deb"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"Homotopy Level\"\>", "\<\"Loop Space Mean\"\>", "\<\"Loop Space \
+StdDev\"\>", "\<\"Product Type Mean\"\>", "\<\"Product Type StdDev\"\>", \
+"\<\"Fibration Type Mean\"\>", "\<\"Fibration Type StdDev\"\>"},
+    {"1", "1.5367975661538644`", "0.048446122328127096`", 
+     "1.7598572403686148`", "0.09472534666579394`", "1.725562725267819`", 
+     "0.0844446501184505`"},
+    {"2", "0.5970445946638554`", "0.18385431253629725`", 
+     "1.2130870669007539`", "0.0377652806715908`", "1.2829827489680161`", 
+     "0.03702914389114837`"},
+    {"3", "0.0613839276014974`", "0.05143051296007832`", 
+     "0.4671321765829207`", "0.13241802818308537`", "0.6125025147688629`", 
+     "0.02228179804228652`"},
+    {"4", "0.3974152370514095`", "0.2976902137807293`", 
+     "0.26405356358073206`", "0.20535946419842985`", "0.33187562122797565`", 
+     "0.015316150323029971`"},
+    {"5", "1.2703175821650188`", "0.4137605820008566`", "0.819296149662604`", 
+     "0.05681741603539531`", "0.699454937518613`", "0.011628611198280072`"},
+    {"6", "1.8465928712447792`", "0.16571082077769755`", "1.56712380482472`", 
+     "0.16803540618352608`", "1.3777283900747357`", "0.009324167621000499`"},
+    {"7", "1.6406522813606115`", "0.3373348950909154`", "1.7567496904281625`",
+      "0.23133061297281626`", "1.7427156691042642`", "0.007402101831395045`"},
+    {"8", "0.8748449661976989`", "0.5204118815084654`", "1.1879472845856904`",
+      "0.05828221494179301`", "1.4590977165094252`", "0.006324944234054622`"},
+    {"9", "0.24804580806451457`", "0.2683819634481496`", 
+     "0.45194954831471057`", "0.18502849007805985`", "0.7879069047462643`", 
+     "0.005240572249242803`"},
+    {"10", "0.3093497467140643`", "0.34647017687305287`", 
+     "0.2863312521499067`", "0.24236010478572637`", "0.3459829964371686`", 
+     "0.004529918200699919`"}
+   },
+   AutoDelete->False,
+   GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {
+       RGBColor[0.95, 0.95, 0.95], 
+       GrayLevel[1]}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{3.9400581425870686`*^9},
+ CellLabel->"Out[40]=",ExpressionUUID->"df096c03-eb96-4747-80e0-85f5e10f8e6c"],
+
+Cell[BoxData["\<\"Conclusion: Analyze summaries for any instability trends \
+and confirm theoretical predictions.\"\>"], "Print",
+ CellChangeTimes->{3.9400581425885735`*^9},
+ CellLabel->
+  "During evaluation of \
+In[12]:=",ExpressionUUID->"60a69b2f-80c6-1a44-8cde-67ae852dc6ae"]
+}, Open  ]]
+},
+WindowSize->{1909, 1037},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"14.1 for Microsoft Windows (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"2af7afaf-a530-4043-a234-13931a1fb80c"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 15758, 418, 1245, "Input",ExpressionUUID->"1b9724a8-952d-7943-ba9f-aef001fe72c5"],
+Cell[16337, 442, 208, 4, 22, "Print",ExpressionUUID->"4f6b9733-2e28-1b43-bd61-61152e1ed84e"],
+Cell[16548, 448, 1090, 36, 62, "Output",ExpressionUUID->"0e95e1d6-1299-6f45-97aa-d9137ddcf5da"],
+Cell[17641, 486, 2248, 69, 51, "Output",ExpressionUUID->"4a71ca97-ceb9-8f41-8a4d-9f49163b27ab"],
+Cell[19892, 557, 2602, 81, 88, "Output",ExpressionUUID->"16257198-66b4-3942-9d88-9647bc06deae"],
+Cell[CellGroupData[{
+Cell[22519, 642, 1832, 51, 52, "Print",ExpressionUUID->"ecc9e7d1-b6f3-b845-9613-78538703312d"],
+Cell[24354, 695, 3575, 96, 60, "Print",ExpressionUUID->"a7668d9a-0a06-d14e-8c89-ec5347348766"],
+Cell[27932, 793, 4142, 109, 76, "Print",ExpressionUUID->"904a135d-d3f8-d247-bd7f-02e82d3f44cb"],
+Cell[32077, 904, 234, 5, 22, "Print",ExpressionUUID->"e5728dd3-f064-334e-b529-5237bb3d1844"],
+Cell[32314, 911, 234, 5, 22, "Print",ExpressionUUID->"d04bf325-cd46-a544-ba84-ef178966ab69"],
+Cell[32551, 918, 262, 5, 22, "Print",ExpressionUUID->"48cbbccd-d149-eb4f-bfb8-3590bfbe4f52"]
+}, Open  ]],
+Cell[32828, 926, 2311, 42, 213, "Output",ExpressionUUID->"a6ce324f-ca49-a84a-8086-2c059e3af143"],
+Cell[35142, 970, 2270, 38, 213, "Output",ExpressionUUID->"5fa14271-77e4-884e-be6b-f34703a94deb"],
+Cell[37415, 1010, 2291, 40, 213, "Output",ExpressionUUID->"df096c03-eb96-4747-80e0-85f5e10f8e6c"],
+Cell[39709, 1052, 278, 5, 22, "Print",ExpressionUUID->"60a69b2f-80c6-1a44-8cde-67ae852dc6ae"]
+}, Open  ]]
+}
+]
+*)
+

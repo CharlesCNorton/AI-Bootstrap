@@ -1,0 +1,1192 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     52434,       1182]
+NotebookOptionsPosition[     51844,       1164]
+NotebookOutlinePosition[     52242,       1180]
+CellTagsIndexPosition[     52199,       1177]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Setup", " ", "for", " ", "Maximum", " ", "Variability", " ", "Mix", " ", 
+    "Test"}], "*)"}], 
+  RowBox[{"(*", "Parameters", "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"numTrials", "=", "100"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Number", " ", "of", " ", "trials", " ", "for", " ", "each", " ", 
+     "configuration"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"maxFrequency", "=", "50"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Maximum", " ", "frequency", " ", "multiplier", " ", "k"}], 
+    "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"maxHomotopyLevel", "=", "20"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Test", " ", "up", " ", "to", " ", "homotopy", " ", "level", " ", "20"}], 
+    "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"epsilonRange", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", "0.5"}], ",", "0.5"}], "}"}]}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Range", " ", "of", " ", "perturbations"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"a0", "=", "1"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Base", " ", "point"}], "*)"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Define", " ", "Adaptive", " ", "Scaling", " ", "Functions", " ", "for", 
+     " ", "Variable", " ", "Intensity"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"adaptiveEpsilonLow", "[", 
+     RowBox[{"epsilon_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"epsilon", "/", 
+     RowBox[{"(", 
+      RowBox[{"1", "+", "n"}], ")"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"adaptiveEpsilonHigh", "[", 
+     RowBox[{"epsilon_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"epsilon", "/", 
+     RowBox[{"(", 
+      RowBox[{"1", "+", 
+       RowBox[{"Log", "[", 
+        RowBox[{"n", "+", "1"}], "]"}]}], ")"}]}]}], "\[IndentingNewLine]", 
+   "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Loop", " ", "Space"}], ",", 
+     RowBox[{"Product", " ", "Type"}], ",", 
+     RowBox[{
+     "and", " ", "Fibration", " ", "Type", " ", "with", " ", "mixed", " ", 
+      "modulation"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"L", "[", 
+     RowBox[{
+     "n_", ",", "a0_", ",", "epsilon_", ",", "k_", ",", 
+      "adaptiveScaleFunc_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"(", 
+           RowBox[{"a0", "+", 
+            RowBox[{"adaptiveScaleFunc", "[", 
+             RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], ")"}], "/", 
+        "2"}], ")"}], "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"k", "*", "n", "*", 
+       RowBox[{"(", 
+        RowBox[{"a0", "+", 
+         RowBox[{"adaptiveScaleFunc", "[", 
+          RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}]}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"P", "[", 
+     RowBox[{
+     "n_", ",", "a0Base_", ",", "a0Other_", ",", "epsilon_", ",", "k_", ",", 
+      "adaptiveScaleFunc_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0Base", "+", 
+          RowBox[{"adaptiveScaleFunc", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"k", "*", "n", "*", 
+         RowBox[{"(", 
+          RowBox[{"a0Base", "+", 
+           RowBox[{"adaptiveScaleFunc", "[", 
+            RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0Other", "-", 
+          RowBox[{"adaptiveScaleFunc", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"k", "*", "n", "*", 
+         RowBox[{"(", 
+          RowBox[{"a0Other", "-", 
+           RowBox[{"adaptiveScaleFunc", "[", 
+            RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}]}], ")"}], 
+     "/", "2"}]}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"F", "[", 
+     RowBox[{
+     "n_", ",", "a0_", ",", "epsilon_", ",", "k_", ",", "adaptiveScaleFunc_", 
+      ",", 
+      RowBox[{"cupProduct1_", ":", "0.1"}], ",", 
+      RowBox[{"cupProduct2_", ":", "0.05"}]}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"adaptiveScaleFunc", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"a0", "+", 
+             RowBox[{"0.5", "*", 
+              RowBox[{"adaptiveScaleFunc", "[", 
+               RowBox[{"epsilon", ",", "n"}], "]"}]}]}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "/", 
+             RowBox[{"(", 
+              RowBox[{"n", "+", "1"}], ")"}]}], ")"}]}], "+", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", "cupProduct1"}], 
+         ")"}], "/", "2"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"a0", "+", 
+             RowBox[{"0.25", "*", 
+              RowBox[{"adaptiveScaleFunc", "[", 
+               RowBox[{"epsilon", ",", "n"}], "]"}]}]}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "/", 
+             RowBox[{"(", 
+              RowBox[{"n", "+", "2"}], ")"}]}], ")"}]}], "+", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", "cupProduct2"}], 
+         ")"}], "/", "2"}]}], ")"}], "/", "2"}]}], "\[IndentingNewLine]", 
+   "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Function", " ", "to", " ", "run", " ", "parallel"}], ",", 
+     RowBox[{"mixed", " ", "modulation"}], ",", 
+     RowBox[{"and", " ", "variable", " ", "intensity", " ", "tests"}]}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"runMixedVariabilityTests", "[", 
+     RowBox[{
+     "baseValue_", ",", "maxHomotopyLevel_", ",", "trials_", ",", 
+      "epsilonRange_", ",", "maxFrequency_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "results", "}"}], ",", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{"With", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"n", "=", "homotopyLevel"}], ",", 
+            RowBox[{"k", "=", "freq"}]}], "}"}], ",", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Parallel", " ", "and", " ", "Mixed", " ", "Configurations"}], 
+           "*)"}], 
+          RowBox[{
+           RowBox[{"resultsLWithModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"L", "[", 
+                RowBox[{
+                "n", ",", "baseValue", ",", "epsilon", ",", "k", ",", 
+                 "adaptiveEpsilonLow"}], "]"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsLWithoutModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{"a0", "+", "epsilon"}], ")"}], "/", "2"}], ")"}], 
+                 "^", 
+                 RowBox[{"(", 
+                  RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+                RowBox[{"Cos", "[", 
+                 RowBox[{"k", "*", "n", "*", 
+                  RowBox[{"(", 
+                   RowBox[{"a0", "+", "epsilon"}], ")"}]}], "]"}]}]}], ",", 
+              RowBox[{"(*", 
+               RowBox[{"No", " ", "adaptive", " ", "scaling"}], "*)"}], 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsPWithModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"P", "[", 
+                RowBox[{"n", ",", "baseValue", ",", 
+                 RowBox[{"baseValue", "+", "0.1"}], ",", "epsilon", ",", "k", 
+                 ",", "adaptiveEpsilonHigh"}], "]"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsPWithoutModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{"baseValue", "+", "epsilon"}], ")"}], "^", 
+                   RowBox[{"(", 
+                    RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+                  RowBox[{"Cos", "[", 
+                   RowBox[{"k", "*", "n", "*", 
+                    RowBox[{"(", 
+                    RowBox[{"baseValue", "+", "epsilon"}], ")"}]}], "]"}], 
+                  "+", 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{"baseValue", "+", "0.1", "-", "epsilon"}], ")"}], 
+                   "^", 
+                   RowBox[{"(", 
+                    RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+                  RowBox[{"Sin", "[", 
+                   RowBox[{"k", "*", "n", "*", 
+                    RowBox[{"(", 
+                    RowBox[{"baseValue", "+", "0.1", "-", "epsilon"}], 
+                    ")"}]}], "]"}]}], ")"}], "/", "2"}]}], ",", 
+              RowBox[{"(*", 
+               RowBox[{"No", " ", "adaptive", " ", "scaling"}], "*)"}], 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsFWithModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"F", "[", 
+                RowBox[{
+                "n", ",", "baseValue", ",", "epsilon", ",", "k", ",", 
+                 "adaptiveEpsilonHigh", ",", "0.15", ",", "0.1"}], "]"}]}], 
+              ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsFWithoutModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{"a0", "+", "epsilon"}], ")"}], "^", 
+                   RowBox[{"(", 
+                    RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+                  RowBox[{"Cos", "[", 
+                   RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", 
+                  RowBox[{"(*", 
+                   RowBox[{
+                   "No", " ", "adaptive", " ", "scaling", " ", "or", " ", 
+                    "cup", " ", "products"}], "*)"}], 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"a0", "+", 
+                    RowBox[{"0.5", "*", "epsilon"}]}], ")"}], "^", 
+                    RowBox[{"(", 
+                    RowBox[{"1", "/", 
+                    RowBox[{"(", 
+                    RowBox[{"n", "+", "1"}], ")"}]}], ")"}]}], "+", 
+                    RowBox[{"Sin", "[", 
+                    RowBox[{"k", "*", "n", "*", "a0"}], "]"}]}], ")"}], "/", 
+                   "2"}], "+", 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"a0", "+", 
+                    RowBox[{"0.25", "*", "epsilon"}]}], ")"}], "^", 
+                    RowBox[{"(", 
+                    RowBox[{"1", "/", 
+                    RowBox[{"(", 
+                    RowBox[{"n", "+", "2"}], ")"}]}], ")"}]}], "+", 
+                    RowBox[{"Sin", "[", 
+                    RowBox[{"k", "*", "n", "*", "a0"}], "]"}]}], ")"}], "/", 
+                   "2"}]}], ")"}], "/", "2"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"<|", 
+            RowBox[{
+             RowBox[{"\"\<Homotopy Level (N)\>\"", "->", "n"}], ",", 
+             RowBox[{"\"\<Frequency Multiplier (k)\>\"", "->", "k"}], ",", 
+             RowBox[{"\"\<Loop Space With Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsLWithModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Loop Space With Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsLWithModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Loop Space Without Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsLWithoutModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Loop Space Without Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsLWithoutModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Product Type With Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsPWithModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Product Type With Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsPWithModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Product Type Without Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsPWithoutModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Product Type Without Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsPWithoutModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Fibration Type With Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsFWithModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Fibration Type With Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsFWithModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Fibration Type Without Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsFWithoutModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Fibration Type Without Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsFWithoutModulation", 
+               "]"}]}]}], "|>"}]}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+         "homotopyLevel", ",", "1", ",", "maxHomotopyLevel", ",", "5"}], 
+         "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"freq", ",", "1", ",", "maxFrequency", ",", "10"}], "}"}]}], 
+       "]"}]}], "]"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Flatten", " ", "results", " ", "for", " ", "better", " ", "display"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"mixedVariabilityResults", "=", 
+     RowBox[{"Flatten", "[", 
+      RowBox[{
+       RowBox[{"runMixedVariabilityTests", "[", 
+        RowBox[{
+        "a0", ",", "maxHomotopyLevel", ",", "numTrials", ",", "epsilonRange", 
+         ",", "maxFrequency"}], "]"}], ",", "1"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Display", " ", "results", " ", "in", " ", "a", " ", "table", " ", 
+     "format", " ", "for", " ", "easy", " ", "interpretation"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"summaryTable", "=", 
+     RowBox[{"Prepend", "[", 
+      RowBox[{
+       RowBox[{"Map", "[", 
+        RowBox[{"Values", ",", "mixedVariabilityResults"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<Homotopy Level (N)\>\"", ",", "\"\<Frequency Multiplier (k)\>\"",
+          ",", "\"\<Loop Space With Mod Mean\>\"", ",", 
+         "\"\<Loop Space With Mod StdDev\>\"", ",", 
+         "\"\<Loop Space Without Mod Mean\>\"", ",", 
+         "\"\<Loop Space Without Mod StdDev\>\"", ",", 
+         "\"\<Product Type With Mod Mean\>\"", ",", 
+         "\"\<Product Type With Mod StdDev\>\"", ",", 
+         "\"\<Product Type Without Mod Mean\>\"", ",", 
+         "\"\<Product Type Without Mod StdDev\>\"", ",", 
+         "\"\<Fibration Type With Mod Mean\>\"", ",", 
+         "\"\<Fibration Type With Mod StdDev\>\"", ",", 
+         "\"\<Fibration Type Without Mod Mean\>\"", ",", 
+         "\"\<Fibration Type Without Mod StdDev\>\""}], "}"}]}], "]"}]}], 
+    ";"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{"Grid", "[", 
+    RowBox[{"summaryTable", ",", 
+     RowBox[{"Frame", "->", "All"}], ",", 
+     RowBox[{"Background", "->", 
+      RowBox[{"{", 
+       RowBox[{"None", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Lighter", "[", 
+           RowBox[{"Gray", ",", ".9"}], "]"}], ",", "White"}], "}"}]}], 
+       "}"}]}]}], "]"}], "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Setup", " ", "for", " ", "Maximum", " ", "Variability", " ", "Mix", " ", 
+     "Test"}], "*)"}], 
+   RowBox[{"(*", "Parameters", "*)"}], 
+   RowBox[{
+    RowBox[{"numTrials", "=", "100"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Number", " ", "of", " ", "trials", " ", "for", " ", "each", " ", 
+     "configuration"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"maxFrequency", "=", "50"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Maximum", " ", "frequency", " ", "multiplier", " ", "k"}], 
+    "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"maxHomotopyLevel", "=", "20"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Test", " ", "up", " ", "to", " ", "homotopy", " ", "level", " ", "20"}], 
+    "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"epsilonRange", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", "0.5"}], ",", "0.5"}], "}"}]}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Range", " ", "of", " ", "perturbations"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"a0", "=", "1"}], ";"}], " ", 
+   RowBox[{"(*", 
+    RowBox[{"Base", " ", "point"}], "*)"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Define", " ", "Adaptive", " ", "Scaling", " ", "Functions", " ", "for", 
+     " ", "Variable", " ", "Intensity"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"adaptiveEpsilonLow", "[", 
+     RowBox[{"epsilon_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"epsilon", "/", 
+     RowBox[{"(", 
+      RowBox[{"1", "+", "n"}], ")"}]}]}], "\n", 
+   RowBox[{
+    RowBox[{"adaptiveEpsilonHigh", "[", 
+     RowBox[{"epsilon_", ",", "n_"}], "]"}], ":=", 
+    RowBox[{"epsilon", "/", 
+     RowBox[{"(", 
+      RowBox[{"1", "+", 
+       RowBox[{"Log", "[", 
+        RowBox[{"n", "+", "1"}], "]"}]}], ")"}]}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Loop", " ", "Space"}], ",", 
+     RowBox[{"Product", " ", "Type"}], ",", 
+     RowBox[{
+     "and", " ", "Fibration", " ", "Type", " ", "with", " ", "mixed", " ", 
+      "modulation"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"L", "[", 
+     RowBox[{
+     "n_", ",", "a0_", ",", "epsilon_", ",", "k_", ",", 
+      "adaptiveScaleFunc_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"(", 
+           RowBox[{"a0", "+", 
+            RowBox[{"adaptiveScaleFunc", "[", 
+             RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], ")"}], "/", 
+        "2"}], ")"}], "^", 
+      RowBox[{"(", 
+       RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+     RowBox[{"Cos", "[", 
+      RowBox[{"k", "*", "n", "*", 
+       RowBox[{"(", 
+        RowBox[{"a0", "+", 
+         RowBox[{"adaptiveScaleFunc", "[", 
+          RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}]}]}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{"P", "[", 
+     RowBox[{
+     "n_", ",", "a0Base_", ",", "a0Other_", ",", "epsilon_", ",", "k_", ",", 
+      "adaptiveScaleFunc_"}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0Base", "+", 
+          RowBox[{"adaptiveScaleFunc", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"k", "*", "n", "*", 
+         RowBox[{"(", 
+          RowBox[{"a0Base", "+", 
+           RowBox[{"adaptiveScaleFunc", "[", 
+            RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0Other", "-", 
+          RowBox[{"adaptiveScaleFunc", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Sin", "[", 
+        RowBox[{"k", "*", "n", "*", 
+         RowBox[{"(", 
+          RowBox[{"a0Other", "-", 
+           RowBox[{"adaptiveScaleFunc", "[", 
+            RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}]}], "]"}]}], ")"}], 
+     "/", "2"}]}], "\[IndentingNewLine]", "\n", 
+   RowBox[{
+    RowBox[{"F", "[", 
+     RowBox[{
+     "n_", ",", "a0_", ",", "epsilon_", ",", "k_", ",", "adaptiveScaleFunc_", 
+      ",", 
+      RowBox[{"cupProduct1_", ":", "0.1"}], ",", 
+      RowBox[{"cupProduct2_", ":", "0.05"}]}], "]"}], ":=", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"a0", "+", 
+          RowBox[{"adaptiveScaleFunc", "[", 
+           RowBox[{"epsilon", ",", "n"}], "]"}]}], ")"}], "^", 
+        RowBox[{"(", 
+         RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+       RowBox[{"Cos", "[", 
+        RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"a0", "+", 
+             RowBox[{"0.5", "*", 
+              RowBox[{"adaptiveScaleFunc", "[", 
+               RowBox[{"epsilon", ",", "n"}], "]"}]}]}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "/", 
+             RowBox[{"(", 
+              RowBox[{"n", "+", "1"}], ")"}]}], ")"}]}], "+", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", "cupProduct1"}], 
+         ")"}], "/", "2"}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"(", 
+            RowBox[{"a0", "+", 
+             RowBox[{"0.25", "*", 
+              RowBox[{"adaptiveScaleFunc", "[", 
+               RowBox[{"epsilon", ",", "n"}], "]"}]}]}], ")"}], "^", 
+           RowBox[{"(", 
+            RowBox[{"1", "/", 
+             RowBox[{"(", 
+              RowBox[{"n", "+", "2"}], ")"}]}], ")"}]}], "+", 
+          RowBox[{"Sin", "[", 
+           RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", "cupProduct2"}], 
+         ")"}], "/", "2"}]}], ")"}], "/", "2"}]}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Function", " ", "to", " ", "run", " ", "parallel"}], ",", 
+     RowBox[{"mixed", " ", "modulation"}], ",", 
+     RowBox[{"and", " ", "variable", " ", "intensity", " ", "tests"}]}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"runMixedVariabilityTests", "[", 
+     RowBox[{
+     "baseValue_", ",", "maxHomotopyLevel_", ",", "trials_", ",", 
+      "epsilonRange_", ",", "maxFrequency_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", "results", "}"}], ",", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{"With", "[", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"n", "=", "homotopyLevel"}], ",", 
+            RowBox[{"k", "=", "freq"}]}], "}"}], ",", 
+          RowBox[{"(*", 
+           RowBox[{
+           "Parallel", " ", "and", " ", "Mixed", " ", "Configurations"}], 
+           "*)"}], 
+          RowBox[{
+           RowBox[{"resultsLWithModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"L", "[", 
+                RowBox[{
+                "n", ",", "baseValue", ",", "epsilon", ",", "k", ",", 
+                 "adaptiveEpsilonLow"}], "]"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsLWithoutModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{
+                 RowBox[{"(", 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{"a0", "+", "epsilon"}], ")"}], "/", "2"}], ")"}], 
+                 "^", 
+                 RowBox[{"(", 
+                  RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+                RowBox[{"Cos", "[", 
+                 RowBox[{"k", "*", "n", "*", 
+                  RowBox[{"(", 
+                   RowBox[{"a0", "+", "epsilon"}], ")"}]}], "]"}]}]}], ",", 
+              RowBox[{"(*", 
+               RowBox[{"No", " ", "adaptive", " ", "scaling"}], "*)"}], 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsPWithModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"P", "[", 
+                RowBox[{"n", ",", "baseValue", ",", 
+                 RowBox[{"baseValue", "+", "0.1"}], ",", "epsilon", ",", "k", 
+                 ",", "adaptiveEpsilonHigh"}], "]"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsPWithoutModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{"baseValue", "+", "epsilon"}], ")"}], "^", 
+                   RowBox[{"(", 
+                    RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+                  RowBox[{"Cos", "[", 
+                   RowBox[{"k", "*", "n", "*", 
+                    RowBox[{"(", 
+                    RowBox[{"baseValue", "+", "epsilon"}], ")"}]}], "]"}], 
+                  "+", 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{"baseValue", "+", "0.1", "-", "epsilon"}], ")"}], 
+                   "^", 
+                   RowBox[{"(", 
+                    RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+                  RowBox[{"Sin", "[", 
+                   RowBox[{"k", "*", "n", "*", 
+                    RowBox[{"(", 
+                    RowBox[{"baseValue", "+", "0.1", "-", "epsilon"}], 
+                    ")"}]}], "]"}]}], ")"}], "/", "2"}]}], ",", 
+              RowBox[{"(*", 
+               RowBox[{"No", " ", "adaptive", " ", "scaling"}], "*)"}], 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsFWithModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{"F", "[", 
+                RowBox[{
+                "n", ",", "baseValue", ",", "epsilon", ",", "k", ",", 
+                 "adaptiveEpsilonHigh", ",", "0.15", ",", "0.1"}], "]"}]}], 
+              ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"resultsFWithoutModulation", "=", 
+            RowBox[{"Table", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"epsilon", "=", 
+                RowBox[{"RandomReal", "[", "epsilonRange", "]"}]}], ";", 
+               "\[IndentingNewLine]", 
+               RowBox[{
+                RowBox[{"(", 
+                 RowBox[{
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{"a0", "+", "epsilon"}], ")"}], "^", 
+                   RowBox[{"(", 
+                    RowBox[{"1", "/", "n"}], ")"}]}], "+", 
+                  RowBox[{"Cos", "[", 
+                   RowBox[{"k", "*", "n", "*", "a0"}], "]"}], "+", 
+                  RowBox[{"(*", 
+                   RowBox[{
+                   "No", " ", "adaptive", " ", "scaling", " ", "or", " ", 
+                    "cup", " ", "products"}], "*)"}], 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"a0", "+", 
+                    RowBox[{"0.5", "*", "epsilon"}]}], ")"}], "^", 
+                    RowBox[{"(", 
+                    RowBox[{"1", "/", 
+                    RowBox[{"(", 
+                    RowBox[{"n", "+", "1"}], ")"}]}], ")"}]}], "+", 
+                    RowBox[{"Sin", "[", 
+                    RowBox[{"k", "*", "n", "*", "a0"}], "]"}]}], ")"}], "/", 
+                   "2"}], "+", 
+                  RowBox[{
+                   RowBox[{"(", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"(", 
+                    RowBox[{"a0", "+", 
+                    RowBox[{"0.25", "*", "epsilon"}]}], ")"}], "^", 
+                    RowBox[{"(", 
+                    RowBox[{"1", "/", 
+                    RowBox[{"(", 
+                    RowBox[{"n", "+", "2"}], ")"}]}], ")"}]}], "+", 
+                    RowBox[{"Sin", "[", 
+                    RowBox[{"k", "*", "n", "*", "a0"}], "]"}]}], ")"}], "/", 
+                   "2"}]}], ")"}], "/", "2"}]}], ",", 
+              RowBox[{"{", "trials", "}"}]}], "]"}]}], ";", 
+           "\[IndentingNewLine]", 
+           RowBox[{"<|", 
+            RowBox[{
+             RowBox[{"\"\<Homotopy Level (N)\>\"", "->", "n"}], ",", 
+             RowBox[{"\"\<Frequency Multiplier (k)\>\"", "->", "k"}], ",", 
+             RowBox[{"\"\<Loop Space With Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsLWithModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Loop Space With Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsLWithModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Loop Space Without Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsLWithoutModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Loop Space Without Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsLWithoutModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Product Type With Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsPWithModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Product Type With Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsPWithModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Product Type Without Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsPWithoutModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Product Type Without Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsPWithoutModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Fibration Type With Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsFWithModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Fibration Type With Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsFWithModulation", "]"}]}], 
+             ",", 
+             RowBox[{"\"\<Fibration Type Without Modulation Mean\>\"", "->", 
+              RowBox[{"Mean", "[", "resultsFWithoutModulation", "]"}]}], ",", 
+             RowBox[{"\"\<Fibration Type Without Modulation StdDev\>\"", "->", 
+              RowBox[{
+              "StandardDeviation", "[", "resultsFWithoutModulation", 
+               "]"}]}]}], "|>"}]}]}], "]"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+         "homotopyLevel", ",", "1", ",", "maxHomotopyLevel", ",", "5"}], 
+         "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"freq", ",", "1", ",", "maxFrequency", ",", "10"}], "}"}]}], 
+       "]"}]}], "]"}]}], "\n", "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Flatten", " ", "results", " ", "for", " ", "better", " ", "display"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"mixedVariabilityResults", "=", 
+     RowBox[{"Flatten", "[", 
+      RowBox[{
+       RowBox[{"runMixedVariabilityTests", "[", 
+        RowBox[{
+        "a0", ",", "maxHomotopyLevel", ",", "numTrials", ",", "epsilonRange", 
+         ",", "maxFrequency"}], "]"}], ",", "1"}], "]"}]}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Display", " ", "results", " ", "in", " ", "a", " ", "table", " ", 
+     "format", " ", "for", " ", "easy", " ", "interpretation"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"summaryTable", "=", 
+     RowBox[{"Prepend", "[", 
+      RowBox[{
+       RowBox[{"Map", "[", 
+        RowBox[{"Values", ",", "mixedVariabilityResults"}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+        "\"\<Homotopy Level (N)\>\"", ",", "\"\<Frequency Multiplier (k)\>\"",
+          ",", "\"\<Loop Space With Mod Mean\>\"", ",", 
+         "\"\<Loop Space With Mod StdDev\>\"", ",", 
+         "\"\<Loop Space Without Mod Mean\>\"", ",", 
+         "\"\<Loop Space Without Mod StdDev\>\"", ",", 
+         "\"\<Product Type With Mod Mean\>\"", ",", 
+         "\"\<Product Type With Mod StdDev\>\"", ",", 
+         "\"\<Product Type Without Mod Mean\>\"", ",", 
+         "\"\<Product Type Without Mod StdDev\>\"", ",", 
+         "\"\<Fibration Type With Mod Mean\>\"", ",", 
+         "\"\<Fibration Type With Mod StdDev\>\"", ",", 
+         "\"\<Fibration Type Without Mod Mean\>\"", ",", 
+         "\"\<Fibration Type Without Mod StdDev\>\""}], "}"}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"Grid", "[", 
+    RowBox[{"summaryTable", ",", 
+     RowBox[{"Frame", "->", "All"}], ",", 
+     RowBox[{"Background", "->", 
+      RowBox[{"{", 
+       RowBox[{"None", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Lighter", "[", 
+           RowBox[{"Gray", ",", ".9"}], "]"}], ",", "White"}], "}"}]}], 
+       "}"}]}]}], "]"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.9400592420390224`*^9, 3.940059242158415*^9}},
+ CellLabel->"In[78]:=",ExpressionUUID->"bcf6127f-6daf-e741-9cb4-2477046c7d75"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"Homotopy Level (N)\"\>", "\<\"Frequency Multiplier (k)\"\>", \
+"\<\"Loop Space With Mod Mean\"\>", "\<\"Loop Space With Mod StdDev\"\>", "\<\
+\"Loop Space Without Mod Mean\"\>", "\<\"Loop Space Without Mod StdDev\"\>", \
+"\<\"Product Type With Mod Mean\"\>", "\<\"Product Type With Mod StdDev\"\>", \
+"\<\"Product Type Without Mod Mean\"\>", "\<\"Product Type Without Mod StdDev\
+\"\>", "\<\"Fibration Type With Mod Mean\"\>", "\<\"Fibration Type With Mod \
+StdDev\"\>", "\<\"Fibration Type Without Mod Mean\"\>", "\<\"Fibration Type \
+Without Mod StdDev\"\>"},
+    {"1", "1", "1.5410715924517404`", "0.04865608104681645`", 
+     "1.0130476935608235`", "0.09132679268313927`", "1.756781900307187`", 
+     "0.11217776168795496`", "1.7121349263014602`", "0.1825674644160149`", 
+     "1.7761046389566575`", "0.10539718914755725`", "1.691972293110513`", 
+     "0.1745577484616632`"},
+    {"1", "11", "0.937721397475378`", "0.8371292083769791`", 
+     "0.49036731954296764`", "0.6598698601684881`", "1.0668881969989268`", 
+     "0.16548286603617648`", "1.077646102277317`", "0.1501148317501309`", 
+     "0.5524353252040585`", "0.10293540991263923`", "0.49293260367018943`", 
+     "0.16693137440310188`"},
+    {"1", "21", "0.9755706389964596`", "0.7378076104353904`", 
+     "0.382649111044769`", "0.6969326522395685`", "0.9360573697188961`", 
+     "0.5047960104752665`", "1.1028229707187007`", "0.5050285651909406`", 
+     "1.2086046743151142`", "0.1060019003312718`", "1.1183305733137536`", 
+     "0.15827927857934396`"},
+    {"1", "31", "1.1099601208892194`", "0.6810463847028718`", 
+     "0.460581557500648`", "0.7290396977575657`", "1.0777133093574252`", 
+     "0.6441334951769669`", "1.0820155740942634`", "0.6616671028573394`", 
+     "1.3329520196260818`", "0.09874321157259498`", "1.2050781442741416`", 
+     "0.17670226816916101`"},
+    {"1", "41", "1.1165878172113057`", "0.7584535889935355`", 
+     "0.46847434887078365`", "0.7377257835461233`", "1.0576021755360663`", 
+     "0.10225085002054284`", "1.0456515740602812`", "0.10746898100301874`", 
+     "0.49719944727937665`", "0.09747299040199124`", "0.4236265386021239`", 
+     "0.15559096849680482`"},
+    {"6", "1", "1.9337202716475865`", "0.07671950961383632`", 
+     "0.9277468157011568`", "0.6223579469921334`", "1.553475928887123`", 
+     "0.203855843300202`", "1.0590978352447618`", "0.47327094525154584`", 
+     "1.4031826773095903`", "0.010233515455176095`", "1.3366407778881326`", 
+     "0.034124017445563544`"},
+    {"6", "11", "1.121714661859352`", "0.6763274381480016`", 
+     "0.9307128431962961`", "0.7250255986743325`", "1.013184458613725`", 
+     "0.5653815388377275`", "1.0893620396150425`", "0.5592738141620776`", 
+     "0.5476899560506896`", "0.010950051362961634`", "0.48190104555908986`", 
+     "0.03449225449381019`"},
+    {"6", "21", "1.0257307431598783`", "0.6651998402342237`", 
+     "0.9048395826838445`", "0.7044592663440163`", "1.0543549084107036`", 
+     "0.663218797476083`", "1.0682496746145047`", "0.581064885630582`", 
+     "1.6996058400056249`", "0.01076913796737539`", "1.6354241528281337`", 
+     "0.034692101214031504`"},
+    {"6", "31", "1.016560542329749`", "0.6942503294468183`", 
+     "1.0280326947630818`", "0.6891429195601163`", "1.1332533569449548`", 
+     "0.6735161931658774`", "1.1054773645774125`", "0.7059865047097093`", 
+     "0.3607291808718665`", "0.010711006122257713`", "0.29559293919439217`", 
+     "0.03576738689900907`"},
+    {"6", "41", "0.884563284226443`", "0.7016028394921481`", 
+     "0.9035308911796729`", "0.7446780281008577`", "1.097045501077381`", 
+     "0.7127682303193534`", "1.0090029284052562`", "0.6842492368958096`", 
+     "1.7599292553129338`", "0.010308998109195812`", "1.6934413807474398`", 
+     "0.033039088520367424`"},
+    {"11", "1", "0.9859181647668812`", "0.24255896035788196`", 
+     "0.8880198693160714`", "0.7295713957667669`", "0.8636949890586778`", 
+     "0.07151783881581777`", "1.0058344790540064`", "0.1469015348987176`", 
+     "0.5646455801459351`", "0.005047427105740355`", "0.5003511874605238`", 
+     "0.01712504460389242`"},
+    {"11", "11", "1.012448614487916`", "0.6976835595970996`", 
+     "0.9716787753038596`", "0.7109129609116536`", "0.9638659971641748`", 
+     "0.5713964997112024`", "1.0477888263066735`", "0.6051351221633028`", 
+     "1.537224523000735`", "0.005091400249289199`", "1.470695367896808`", 
+     "0.017963317934914114`"},
+    {"11", "21", "1.0926219864013687`", "0.6692372305709227`", 
+     "0.9654538746028889`", "0.6516404429624402`", "1.0670046687515058`", 
+     "0.652839012991656`", "0.9940293622106412`", "0.7151451477136117`", 
+     "0.6111321951844277`", "0.004882498720592151`", "0.5481703087202819`", 
+     "0.017894471437527773`"},
+    {"11", "31", "0.8200974277505155`", "0.6928500263380444`", 
+     "0.9506184023138984`", "0.7365875430534562`", "1.0698690667740873`", 
+     "0.44313293308121837`", "0.9399635770524992`", "0.47333723623759244`", 
+     "1.4899542218635824`", "0.004778801446878219`", "1.4241760495261653`", 
+     "0.01675142799346918`"},
+    {"11", "41", "1.0469046984488468`", "0.7390837583317214`", 
+     "1.0307357833463067`", "0.711662307982834`", "0.99963673751692`", 
+     "0.032783989064185746`", "1.0051599697045617`", "0.03150812024820172`", 
+     "0.6613984664077058`", "0.004853908867673475`", "0.5950705654508772`", 
+     "0.01875245478230674`"},
+    {"16", "1", "0.0850630393143955`", "0.08684671919701632`", 
+     "0.7428425019183134`", "0.6775378162496998`", "0.5503075954036228`", 
+     "0.4164481378203576`", "0.8099345557037577`", "0.6296080431615281`", 
+     "0.4390411073103823`", "0.0030901845610635443`", "0.37522973722004016`", 
+     "0.012737634225916006`"},
+    {"16", "11", "0.7796598287520203`", "0.6204027753254044`", 
+     "0.9329047709261213`", "0.6360134599741053`", "1.0318875731421127`", 
+     "0.15087921893479259`", "1.0065042840512444`", "0.15912684607186744`", 
+     "1.5969845887794245`", "0.0031226807562458065`", "1.532473473067735`", 
+     "0.012600499006045521`"},
+    {"16", "21", "1.0965742502030227`", "0.6997630810029951`", 
+     "0.9461740164965892`", "0.7268578954975425`", "1.054740445243923`", 
+     "0.6811894662553619`", "1.0153602358902714`", "0.6779243274588719`", 
+     "0.6425677655270945`", "0.00308748984067819`", "0.5798021230737267`", 
+     "0.012992485554166433`"},
+    {"16", "31", "1.002811006171889`", "0.6919197442754195`", 
+     "0.8522435604804542`", "0.73130422088323`", "1.004290392439767`", 
+     "0.05367194351746956`", "1.006311765815455`", "0.05908437173536095`", 
+     "1.34690249045549`", "0.0029448310449605975`", "1.2824184473639588`", 
+     "0.011988858369866816`"},
+    {"16", "41", "1.0020137509777562`", "0.7515536702981154`", 
+     "0.9915894598615758`", "0.7340306015867872`", "0.964958521596774`", 
+     "0.7040611173048906`", "1.0447494727415374`", "0.7221661758075721`", 
+     "0.9265567918323768`", "0.0031598667317276063`", "0.8625503688860063`", 
+     "0.012483117832819343`"}
+   },
+   AutoDelete->False,
+   GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {
+       RGBColor[0.95, 0.95, 0.95], 
+       GrayLevel[1]}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{3.940059243228817*^9},
+ CellLabel->"Out[91]=",ExpressionUUID->"887be386-dcb0-f34c-82e0-aebf52435613"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"Homotopy Level (N)\"\>", "\<\"Frequency Multiplier (k)\"\>", \
+"\<\"Loop Space With Mod Mean\"\>", "\<\"Loop Space With Mod StdDev\"\>", "\<\
+\"Loop Space Without Mod Mean\"\>", "\<\"Loop Space Without Mod StdDev\"\>", \
+"\<\"Product Type With Mod Mean\"\>", "\<\"Product Type With Mod StdDev\"\>", \
+"\<\"Product Type Without Mod Mean\"\>", "\<\"Product Type Without Mod StdDev\
+\"\>", "\<\"Fibration Type With Mod Mean\"\>", "\<\"Fibration Type With Mod \
+StdDev\"\>", "\<\"Fibration Type Without Mod Mean\"\>", "\<\"Fibration Type \
+Without Mod StdDev\"\>"},
+    {"1", "1", "1.5389284226130115`", "0.05099156385197623`", 
+     "1.014200162301307`", "0.09459375609962552`", "1.7740325058479707`", 
+     "0.11287183819700417`", "1.7289960498666794`", "0.18683417867263136`", 
+     "1.7583476792321406`", "0.0965545982084529`", "1.6793883601850508`", 
+     "0.16237549114920538`"},
+    {"1", "11", "1.001963905789381`", "0.8344414513191153`", 
+     "0.49172443481062245`", "0.6835836361831474`", "1.056357238418012`", 
+     "0.16129402211417232`", "1.096714524034068`", "0.14451112161820157`", 
+     "0.570309800975656`", "0.09376655937619793`", "0.5219062777668765`", 
+     "0.17198410748563644`"},
+    {"1", "21", "1.079440870596481`", "0.7294268931157496`", 
+     "0.542165656864112`", "0.6721392828267907`", "1.049584141039157`", 
+     "0.5336315905336206`", "1.1816620385759586`", "0.5421878042410669`", 
+     "1.2212419603208389`", "0.09749479703268582`", "1.1530889138422618`", 
+     "0.17184238455258255`"},
+    {"1", "31", "1.0307035182167712`", "0.6692556863806911`", 
+     "0.5216331442448232`", "0.7482068633785471`", "0.9398867212548272`", 
+     "0.6223829527240606`", "1.1120165670282343`", "0.6612303292587076`", 
+     "1.309981067932263`", "0.10620131319447972`", "1.232164151086365`", 
+     "0.17244092267939407`"},
+    {"1", "41", "0.9834316483218088`", "0.7336130251042113`", 
+     "0.4844209560488328`", "0.7130538284580646`", "1.0580243680497488`", 
+     "0.10510007163433426`", "1.0543294262872291`", "0.1033955623634291`", 
+     "0.4875254226449035`", "0.11057756831702402`", "0.4522884212296846`", 
+     "0.16596156500679832`"},
+    {"6", "1", "1.928458295443707`", "0.07256495811282333`", 
+     "0.8445166192102971`", "0.687624470522352`", "1.522450285710573`", 
+     "0.1964635895493382`", "0.9841727130728358`", "0.5151419685546474`", 
+     "1.4031972871877259`", "0.011067128799798827`", "1.340440770279532`", 
+     "0.03226343713036664`"},
+    {"6", "11", "1.230449353431808`", "0.6741672785255258`", 
+     "0.8490101632298195`", "0.7121956711346059`", "1.1165485419955177`", 
+     "0.5849746495357051`", "0.9277886457505027`", "0.5850135412654961`", 
+     "0.54802231798254`", "0.010748170242562066`", "0.49283349611209404`", 
+     "0.030989474291738192`"},
+    {"6", "21", "0.9904755463541661`", "0.7039112556839663`", 
+     "0.8866643642250527`", "0.7816519770702979`", "0.8718243089464349`", 
+     "0.6458756683182242`", "0.9710746150527041`", "0.6349964663502268`", 
+     "1.70184615680917`", "0.010452062060531848`", "1.6364964886217999`", 
+     "0.0331446836941924`"},
+    {"6", "31", "0.9254425773104832`", "0.7227025640516395`", 
+     "0.8209190518724344`", "0.7248990267608557`", "1.00529543500555`", 
+     "0.665505488815542`", "0.9583703782203987`", "0.7067549877989706`", 
+     "0.3624108750262494`", "0.011840651557601748`", "0.3013451823589088`", 
+     "0.03287766748132165`"},
+    {"6", "41", "0.937420995716651`", "0.7339750123700279`", 
+     "0.9792773757183553`", "0.6831555435595925`", "1.118267258917402`", 
+     "0.7347005667130284`", "0.9889568953510454`", "0.6564802241882092`", 
+     "1.7598107115116295`", "0.010959109466229631`", "1.693033840959372`", 
+     "0.030815345947816417`"},
+    {"11", "1", "1.0029519249117769`", "0.2540596203185904`", 
+     "0.9177679399176604`", "0.7274415616050589`", "0.8635111414585243`", 
+     "0.07572495307191969`", "1.0381687209046297`", "0.15804922742475677`", 
+     "0.5644020247164249`", "0.00494566219151757`", "0.5024967011946195`", 
+     "0.01574799365109913`"},
+    {"11", "11", "1.003661994026974`", "0.7055365306603032`", 
+     "0.7418837123592225`", "0.7015828671914747`", "0.9862128828150718`", 
+     "0.5941146815052248`", "1.0254985845847282`", "0.5780394630373129`", 
+     "1.5373614803639613`", "0.004673795241557507`", "1.4715870371312496`", 
+     "0.017328442951338476`"},
+    {"11", "21", "1.0010810611542198`", "0.7327191304138037`", 
+     "1.000679892859663`", "0.6863384819301743`", "1.138336271275295`", 
+     "0.7260147902405629`", "1.043204147988728`", "0.6682146322627506`", 
+     "0.6116185441199251`", "0.004957934519137562`", "0.5445652174727674`", 
+     "0.018000560980713738`"},
+    {"11", "31", "0.9570699941750692`", "0.7253850702505764`", 
+     "1.0534771315194402`", "0.736092073959708`", "1.0882201300942922`", 
+     "0.45700194153849366`", "0.9700175660497434`", "0.45188718502627806`", 
+     "1.4898727385416053`", "0.005115375871298743`", "1.4220860808589777`", 
+     "0.019601918209425074`"},
+    {"11", "41", "0.9051429660789707`", "0.716346976221998`", 
+     "0.9091671809024742`", "0.7283403770163991`", "1.0006915737632558`", 
+     "0.030488027017365495`", "1.0030062253202963`", "0.032861640692709124`", 
+     "0.6608031930257842`", "0.00559409958564229`", "0.593409519110845`", 
+     "0.018377495055187622`"},
+    {"16", "1", "0.08295805916650453`", "0.08010867018380845`", 
+     "0.9475827188045902`", "0.7348475522323175`", "0.6225553761355657`", 
+     "0.44061250964237425`", "0.8558351006739484`", "0.6806977151195376`", 
+     "0.43969475832717897`", "0.0033493693580317033`", "0.376729406722943`", 
+     "0.013495107005677425`"},
+    {"16", "11", "0.7408756120022448`", "0.6462665085265626`", 
+     "1.0048525335921832`", "0.7148329932582553`", "1.0122603017122276`", 
+     "0.1700423451512028`", "0.9937435914475365`", "0.16486572436607083`", 
+     "1.5964713131691002`", "0.0030093126220866544`", "1.5343347987282652`", 
+     "0.013339789569009849`"},
+    {"16", "21", "1.116261622215663`", "0.6902045916685364`", 
+     "1.0091986888038946`", "0.6864775501701813`", "0.9437668882864655`", 
+     "0.7316304093272786`", "1.0388727275928082`", "0.7028963269622419`", 
+     "0.6429265378719738`", "0.003388739741265888`", "0.5826032269251727`", 
+     "0.012066217287280353`"},
+    {"16", "31", "1.1627589844856039`", "0.6652207473262699`", 
+     "0.9615808977318403`", "0.6571582044538377`", "1.0025909812239457`", 
+     "0.0566972753376052`", "0.9941246003221835`", "0.05673383312293322`", 
+     "1.34674747578337`", "0.0031154589390320476`", "1.2837035175082254`", 
+     "0.012936131512315978`"},
+    {"16", "41", "0.864753701137464`", "0.7182950504245824`", 
+     "0.990402344308364`", "0.647876227042756`", "1.071557447814375`", 
+     "0.7179756014891184`", "1.1570496085246023`", "0.6416516938758997`", 
+     "0.926760166818833`", "0.0030651841894483644`", "0.8623702372972974`", 
+     "0.012996336156532775`"}
+   },
+   AutoDelete->False,
+   GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {
+       RGBColor[0.95, 0.95, 0.95], 
+       GrayLevel[1]}},
+   GridBoxFrame->{"Columns" -> {{True}}, "Rows" -> {{True}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellChangeTimes->{3.940059243297325*^9},
+ CellLabel->
+  "Out[105]=",ExpressionUUID->"b0ad4de4-b0ad-7347-8993-9d7a2feecb6d"]
+}, Open  ]]
+},
+WindowSize->{1909, 1037},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"14.1 for Microsoft Windows (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"6829c8e1-a6dd-9e4f-bdfc-2daadebd804b"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 36385, 896, 1854, "Input",ExpressionUUID->"bcf6127f-6daf-e741-9cb4-2477046c7d75"],
+Cell[36964, 920, 7434, 119, 433, "Output",ExpressionUUID->"887be386-dcb0-f34c-82e0-aebf52435613"],
+Cell[44401, 1041, 7427, 120, 452, "Output",ExpressionUUID->"b0ad4de4-b0ad-7347-8993-9d7a2feecb6d"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
