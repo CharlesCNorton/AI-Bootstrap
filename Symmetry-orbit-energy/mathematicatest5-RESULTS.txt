@@ -1,0 +1,66 @@
+In[24]:= Print["Loading packages..."];
+(*Uncomment below lines if packages are properly installed*)
+(*Needs["GroupTheory`"];*)
+(*Needs["LieART`"];*)
+Print["Packages loaded (or skipped if not available)."];
+
+(*Adjust Haar measures directly for each group as before*)
+haarMeasure[group_]:=Switch[group,"SU(2)",1/(2 Pi),"SU(3)",1/(2 Pi^2),"SO(3)",1/(4 Pi),"G2",1/(16 Pi^3),"F4",1/(32 Pi^4),"E6",1/(72 Pi^5),"E7",1/(144 Pi^6),"E8",1/(240 Pi^7),_,(Message[haarMeasure::notfound,group];1)];
+
+(*Define density function without placeholder syntax issues*)
+densityFunction[group_,theta_,phi_]:=Switch[group,"SU(2)",Sin[theta]+10^-4,"SU(3)",Sin[theta] Cos[phi]^2+10^-4,"SO(3)",Sin[theta]+10^-4,"G2",Sin[theta] Cos[phi]^2+10^-4,"F4",Sin[theta]^3 Cos[phi]^2+10^-4,"E6",Sin[theta]^4 Cos[phi]^2+10^-4,"E7",Sin[theta]^5 Cos[phi]^2+10^-4,"E8",Sin[theta]^6 Cos[phi]^2+10^-4,_,1];
+
+(*SOE Calculation with corrected integration limits*)
+CalculateSOE[group_,cutoff_:10^-4]:=Module[{measure,densityInt,logInt,entropy},Print["Calculating SOE for ",group,"..."];
+measure=haarMeasure[group];
+(*Explicitly provide integration limits to avoid ilim errors*)densityInt=NIntegrate[densityFunction[group,theta,phi],{theta,0,Pi},{phi,0,2 Pi},Method->"GlobalAdaptive",MaxRecursion->20,PrecisionGoal->8];
+Print["Density Integral for ",group,": ",densityInt];
+logInt=NIntegrate[Max[densityFunction[group,theta,phi],cutoff] Log[Max[densityFunction[group,theta,phi],cutoff]],{theta,0,Pi},{phi,0,2 Pi},Method->"GlobalAdaptive",MaxRecursion->20,PrecisionGoal->8];
+Print["Log Integral for ",group,": ",logInt];
+entropy=-measure*logInt;
+Print["Entropy (SOE) for ",group,": ",entropy];
+entropy];
+
+(*Testing with several groups without external dependencies*)
+groups={"SU(2)","SU(3)","SO(3)","G2","F4","E6","E7","E8"};
+results=Association[];
+
+Do[results[group]=CalculateSOE[group],{group,groups}];
+
+Print["All calculations completed. Results: ",results];
+
+During evaluation of In[24]:= Loading packages...
+During evaluation of In[24]:= Packages loaded (or skipped if not available).
+During evaluation of In[24]:= Calculating SOE for SU(2)...
+During evaluation of In[24]:= Density Integral for SU(2): 12.5683
+During evaluation of In[24]:= Log Integral for SU(2): -3.85542
+During evaluation of In[24]:= Entropy (SOE) for SU(2): 0.613609
+During evaluation of In[24]:= Calculating SOE for SU(3)...
+During evaluation of In[24]:= Density Integral for SU(3): 6.28516
+During evaluation of In[24]:= Log Integral for SU(3): -4.35726
+During evaluation of In[24]:= Entropy (SOE) for SU(3): 0.220741
+During evaluation of In[24]:= Calculating SOE for SO(3)...
+During evaluation of In[24]:= Density Integral for SO(3): 12.5683
+During evaluation of In[24]:= Log Integral for SO(3): -3.85542
+During evaluation of In[24]:= Entropy (SOE) for SO(3): 0.306805
+During evaluation of In[24]:= Calculating SOE for G2...
+During evaluation of In[24]:= Density Integral for G2: 6.28516
+During evaluation of In[24]:= Log Integral for G2: -4.35726
+During evaluation of In[24]:= Entropy (SOE) for G2: 0.00878302
+During evaluation of In[24]:= Calculating SOE for F4...
+During evaluation of In[24]:= Density Integral for F4: 4.19076
+During evaluation of In[24]:= Log Integral for F4: -3.38426
+During evaluation of In[24]:= Entropy (SOE) for F4: 0.00108571
+During evaluation of In[24]:= Calculating SOE for E6...
+During evaluation of In[24]:= Density Integral for E6: 3.70308
+During evaluation of In[24]:= Log Integral for E6: -3.06093
+During evaluation of In[24]:= Entropy (SOE) for E6: 0.000138922
+During evaluation of In[24]:= Calculating SOE for E7...
+During evaluation of In[24]:= Density Integral for E7: 3.35301
+During evaluation of In[24]:= Log Integral for E7: -2.81188
+During evaluation of In[24]:= Entropy (SOE) for E7: 0.0000203111
+During evaluation of In[24]:= Calculating SOE for E8...
+During evaluation of In[24]:= Density Integral for E8: 3.08623
+During evaluation of In[24]:= Log Integral for E8: -2.61374
+During evaluation of In[24]:= Entropy (SOE) for E8: 3.6058*10^-6
+During evaluation of In[24]:= All calculations completed. Results: <|SU(2)->0.613609,SU(3)->0.220741,SO(3)->0.306805,G2->0.00878302,F4->0.00108571,E6->0.000138922,E7->0.0000203111,E8->3.6058*10^-6|>

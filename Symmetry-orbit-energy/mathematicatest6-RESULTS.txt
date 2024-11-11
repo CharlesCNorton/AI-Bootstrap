@@ -1,0 +1,114 @@
+In[65]:= (* ===Load Required Packages and Set Initial Variables===*)Print["Loading GroupTheory and LieART packages..."];
+Needs["GroupTheory`"];
+Needs["LieART`"];
+Print["Packages loaded (or skipped if unavailable)."];
+
+(* ===Define Haar Measure and Density Functions===*)
+
+(*Define generic density function structure based on group type*)
+densityFunction[group_,theta_,phi_]:=Module[{},Switch[group,"SU(2)",Sin[theta]+10^-4,"SU(3)",Sin[theta]*Cos[phi]^2+10^-4,"SO(3)",Sin[theta]^2+10^-4,"G2",Sin[theta]*Cos[phi]^2+10^-4,"F4",Sin[theta]^3+10^-4,"E6",Sin[theta]^4+10^-4,"E7",Sin[theta]^5+10^-4,"E8",Sin[theta]^6+10^-4,_,Sin[theta]+10^-4 (*Default density for testing*)]];
+
+(*Haar measures for groups based on theoretical measures*)
+haarMeasure[group_]:=Switch[group,"SU(2)",1/(2 Pi),"SU(3)",1/(2 Pi^2),"SO(3)",1/(4 Pi),"G2",1/(16 Pi^3),"F4",1/(32 Pi^4),"E6",1/(72 Pi^5),"E7",1/(144 Pi^6),"E8",1/(240 Pi^7),_,1/(2 Pi) (*Default for general testing*)];
+
+(* ===Define Symmetry Orbit Entropy (SOE) Calculation===*)
+
+CalculateSOE[group_]:=Module[{densityIntegral,logIntegral,entropy,measure,densityFunc},densityFunc[theta_,phi_]:=densityFunction[group,theta,phi];
+measure=haarMeasure[group];
+(*Density Integral Calculation*)densityIntegral=NIntegrate[densityFunc[theta,phi],{theta,0,Pi},{phi,0,2 Pi},Method->"GlobalAdaptive",MaxRecursion->20,PrecisionGoal->8];
+Print["Density Integral for ",group,": ",densityIntegral];
+(*Log Integral Calculation*)logIntegral=NIntegrate[Max[densityFunc[theta,phi],10^-4]*Log[Max[densityFunc[theta,phi],10^-4]],{theta,0,Pi},{phi,0,2 Pi},Method->"GlobalAdaptive",MaxRecursion->20,PrecisionGoal->8];
+Print["Log Integral for ",group,": ",logIntegral];
+(*Entropy Calculation*)entropy=-measure*logIntegral;
+Print["Entropy (SOE) for ",group,": ",entropy];
+entropy];
+
+(* ===Run SOE Calculations for Each Group===*)
+
+groupList={"SU(2)","SU(3)","SO(3)","G2","F4","E6","E7","E8"};
+SOEResults=Association[];
+
+Print["Calculating SOE for each group..."];
+Do[SOEResults[group]=CalculateSOE[group];,{group,groupList}];
+
+Print["All calculations completed. Results: ",SOEResults];
+
+(* ===Output Analysis===*)
+
+(*Summary Table of SOE Results for Comparison*)
+Print["\nDetailed SOE Comparison Across Groups:"];
+TableForm[Table[{group,LieAlgebraData[group,"Rank"],SOEResults[group]},{group,groupList}],TableHeadings->{None,{"Group","Rank","SOE"}}];
+
+(* ===Validation Against Theoretical Claims===*)
+
+Print["\nAnalyzing Results Against Theoretical Predictions..."];
+
+(*Hypothesis 1:SOE decreases with increasing group rank*)
+Print["Checking if SOE values decrease with rank..."];
+orderedSOEValues=SortBy[groupList,-LieAlgebraData[#,"Rank"]&];
+decreasingSOE=And@@Table[SOEResults[orderedSOEValues[[i]]]>=SOEResults[orderedSOEValues[[i+1]]],{i,Length[orderedSOEValues]-1}];
+If[decreasingSOE,Print["SOE values decrease with rank."],Print["SOE values do not consistently decrease with rank."]];
+
+(*Hypothesis 2:Exceptional groups show significantly lower SOE*)
+Print["Comparing SOE values for exceptional groups..."];
+exceptionalGroups={"G2","F4","E6","E7","E8"};
+exceptionalSOEValues=Table[SOEResults[group],{group,exceptionalGroups}];
+Print["Exceptional Groups SOE Values: ",exceptionalSOEValues];
+
+(*Hypothesis 3:Covering groups show lower SOE than base groups*)
+Print["Comparing SOE between covering and base groups..."];
+coveringPairs={{"SU(2)","F4"},{"SU(3)","E8"}}; (*Define pairs*)
+coveringComparison=Table[{base,covering,SOEResults[covering]<SOEResults[base]},{base,coveringPairs[[All,1]]},{covering,coveringPairs[[All,2]]}];
+Print["Covering vs. Base Group SOE Comparison: ",coveringComparison];
+
+(*Summary*)
+Print["\n=== Final Analysis Summary ==="];
+Print["Hypothesis 1: ",If[decreasingSOE,"Supported","Not Supported"]];
+Print["Hypothesis 2: SOE values for exceptional groups - ",exceptionalSOEValues];
+Print["Hypothesis 3: Covering group comparisons - ",coveringComparison];
+Print["Analysis complete."]
+
+During evaluation of In[65]:= Loading GroupTheory and LieART packages...
+During evaluation of In[65]:= Packages loaded (or skipped if unavailable).
+During evaluation of In[65]:= Calculating SOE for each group...
+During evaluation of In[65]:= Density Integral for SU(2): 12.5683
+During evaluation of In[65]:= Log Integral for SU(2): -3.85542
+During evaluation of In[65]:= Entropy (SOE) for SU(2): 0.613609
+During evaluation of In[65]:= Density Integral for SU(3): 6.28516
+During evaluation of In[65]:= Log Integral for SU(3): -4.35726
+During evaluation of In[65]:= Entropy (SOE) for SU(3): 0.220741
+During evaluation of In[65]:= Density Integral for SO(3): 9.87158
+During evaluation of In[65]:= Log Integral for SO(3): -3.81331
+During evaluation of In[65]:= Entropy (SOE) for SO(3): 0.303453
+During evaluation of In[65]:= Density Integral for G2: 6.28516
+During evaluation of In[65]:= Log Integral for G2: -4.35726
+During evaluation of In[65]:= Entropy (SOE) for G2: 0.00878302
+During evaluation of In[65]:= Density Integral for F4: 8.37955
+During evaluation of In[65]:= Log Integral for F4: -3.52523
+During evaluation of In[65]:= Entropy (SOE) for F4: 0.00113094
+During evaluation of In[65]:= Density Integral for E6: 7.40418
+During evaluation of In[65]:= Log Integral for E6: -3.25451
+During evaluation of In[65]:= Entropy (SOE) for E6: 0.000147708
+During evaluation of In[65]:= Density Integral for E7: 6.70404
+During evaluation of In[65]:= Log Integral for E7: -3.02615
+During evaluation of In[65]:= Entropy (SOE) for E7: 0.0000218589
+During evaluation of In[65]:= Density Integral for E8: 6.17048
+During evaluation of In[65]:= Log Integral for E8: -2.83539
+During evaluation of In[65]:= Entropy (SOE) for E8: 3.91159*10^-6
+During evaluation of In[65]:= All calculations completed. Results: <|SU(2)->0.613609,SU(3)->0.220741,SO(3)->0.303453,G2->0.00878302,F4->0.00113094,E6->0.000147708,E7->0.0000218589,E8->3.91159*10^-6|>
+During evaluation of In[65]:= 
+Detailed SOE Comparison Across Groups:
+During evaluation of In[65]:= 
+Analyzing Results Against Theoretical Predictions...
+During evaluation of In[65]:= Checking if SOE values decrease with rank...
+During evaluation of In[65]:= SOE values do not consistently decrease with rank.
+During evaluation of In[65]:= Comparing SOE values for exceptional groups...
+During evaluation of In[65]:= Exceptional Groups SOE Values: {0.00878302,0.00113094,0.000147708,0.0000218589,3.91159*10^-6}
+During evaluation of In[65]:= Comparing SOE between covering and base groups...
+During evaluation of In[65]:= Covering vs. Base Group SOE Comparison: {{{SU(2),F4,True},{SU(2),E8,True}},{{SU(3),F4,True},{SU(3),E8,True}}}
+During evaluation of In[65]:= 
+=== Final Analysis Summary ===
+During evaluation of In[65]:= Hypothesis 1: Not Supported
+During evaluation of In[65]:= Hypothesis 2: SOE values for exceptional groups - {0.00878302,0.00113094,0.000147708,0.0000218589,3.91159*10^-6}
+During evaluation of In[65]:= Hypothesis 3: Covering group comparisons - {{{SU(2),F4,True},{SU(2),E8,True}},{{SU(3),F4,True},{SU(3),E8,True}}}
+During evaluation of In[65]:= Analysis complete.

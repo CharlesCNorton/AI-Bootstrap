@@ -1,0 +1,41 @@
+In[171]:= (*Comprehensive SOE Calculation for Lie Groups*)(*Load required packages*)Print["Loading GroupTheory and LieART packages..."];
+Needs["GroupTheory`"];
+Needs["LieART`"];
+Print["Packages loaded successfully."];
+
+(*Define Haar Measures for Classic and Exceptional Groups*)
+DefineHaarMeasure[group_]:=Module[{measure},Switch[group,"SU(2)",1/(2 Pi),"SU(3)",1/(2 Pi^2),"SO(3)",1/(4 Pi),"G2",1/(16 Pi^3),"E8",1/(240 Pi^7),_,Message[DefineHaarMeasure::nogrp,group];Return[$Failed];]];
+
+(*Define density functions for each group to capture clustering*)
+DensityFunction[group_,theta_,phi_]:=Module[{density},Switch[group,"SU(2)",Sin[theta]+10^-4,(*SU(2) with small offset for stability*)"SU(3)",Sin[theta]*Cos[phi]^2+10^-4,"SO(3)",Cos[theta]^2+10^-4,"G2",Sin[theta]^3*Cos[phi]^2+10^-4,"E8",Sin[theta]^7*Cos[phi]^6+10^-4,_,Message[DensityFunction::nogrp,group];Return[$Failed];]];
+
+(*Calculate Symmetry Orbit Entropy for each group with robust numeric evaluation*)
+CalculateSOE[group_,vars_,cutoff_:10^-4]:=Module[{density,measure,entropy},Print["Calculating SOE for ",group,"..."];
+measure=DefineHaarMeasure[group];
+density=DensityFunction[group,Sequence@@vars];
+entropy=-NIntegrate[Max[density,cutoff]*Log[Max[density,cutoff]],Evaluate[Sequence@@vars]]*measure;
+Print["SOE for ",group,": ",entropy];
+entropy];
+
+(*Run full analysis for multiple groups to evaluate theoretical claims*)
+groups={"SU(2)","SU(3)","SO(3)","G2","E8"};
+results=Table[CalculateSOE[group,{{theta,0,Pi},{phi,0,2 Pi}}],{group,groups}];
+
+(*Output results for comparison and analysis*)
+Print["All calculations completed. Results:"];
+results
+
+During evaluation of In[171]:= Loading GroupTheory and LieART packages...
+During evaluation of In[171]:= Packages loaded successfully.
+During evaluation of In[171]:= Calculating SOE for SU(2)...
+During evaluation of In[171]:= SOE for SU(2): 0.613609
+During evaluation of In[171]:= Calculating SOE for SU(3)...
+During evaluation of In[171]:= SOE for SU(3): 0.220741
+During evaluation of In[171]:= Calculating SOE for SO(3)...
+During evaluation of In[171]:= SOE for SO(3): -0.000157087
+During evaluation of In[171]:= Calculating SOE for G2...
+During evaluation of In[171]:= SOE for G2: 0.00682172
+During evaluation of In[171]:= Calculating SOE for E8...
+During evaluation of In[171]:= SOE for E8: 2.30134*10^-6
+During evaluation of In[171]:= All calculations completed. Results:
+Out[181]= {0.613609,0.220741,-0.000157087,0.00682172,2.30134*10^-6}

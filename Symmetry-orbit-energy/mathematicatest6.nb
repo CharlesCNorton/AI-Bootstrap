@@ -1,0 +1,1027 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     40198,       1019]
+NotebookOptionsPosition[     35888,        960]
+NotebookOutlinePosition[     36286,        976]
+CellTagsIndexPosition[     36243,        973]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{"===", 
+    RowBox[{
+    "Load", " ", "Required", " ", "Packages", " ", "and", " ", "Set", " ", 
+     "Initial", " ", "Variables"}], "==="}], "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+    "Print", "[", "\"\<Loading GroupTheory and LieART packages...\>\"", "]"}],
+     ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Needs", "[", "\"\<GroupTheory`\>\"", "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Needs", "[", "\"\<LieART`\>\"", "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{
+    "Print", "[", "\"\<Packages loaded (or skipped if unavailable).\>\"", 
+     "]"}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"===", 
+     RowBox[{
+     "Define", " ", "Haar", " ", "Measure", " ", "and", " ", "Density", " ", 
+      "Functions"}], "==="}], "*)"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Define", " ", "generic", " ", "density", " ", "function", " ", 
+     "structure", " ", "based", " ", "on", " ", "group", " ", "type"}], 
+    "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"densityFunction", "[", 
+      RowBox[{"group_", ",", "theta_", ",", "phi_"}], "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "}"}], ",", 
+       RowBox[{"Switch", "[", 
+        RowBox[{"group", ",", "\"\<SU(2)\>\"", ",", 
+         RowBox[{
+          RowBox[{"Sin", "[", "theta", "]"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<SU(3)\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sin", "[", "theta", "]"}], "*", 
+           RowBox[{
+            RowBox[{"Cos", "[", "phi", "]"}], "^", "2"}]}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<SO(3)\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sin", "[", "theta", "]"}], "^", "2"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<G2\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sin", "[", "theta", "]"}], "*", 
+           RowBox[{
+            RowBox[{"Cos", "[", "phi", "]"}], "^", "2"}]}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<F4\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sin", "[", "theta", "]"}], "^", "3"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<E6\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sin", "[", "theta", "]"}], "^", "4"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<E7\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sin", "[", "theta", "]"}], "^", "5"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<E8\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sin", "[", "theta", "]"}], "^", "6"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "_", ",", 
+         RowBox[{
+          RowBox[{"Sin", "[", "theta", "]"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}]}], " ", 
+        RowBox[{"(*", 
+         RowBox[{"Default", " ", "density", " ", "for", " ", "testing"}], 
+         "*)"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Haar", " ", "measures", " ", "for", " ", "groups", " ", "based", " ", 
+     "on", " ", "theoretical", " ", "measures"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"haarMeasure", "[", "group_", "]"}], ":=", 
+     RowBox[{"Switch", "[", 
+      RowBox[{"group", ",", "\"\<SU(2)\>\"", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"2", " ", "Pi"}], ")"}]}], ",", "\"\<SU(3)\>\"", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"2", " ", 
+          RowBox[{"Pi", "^", "2"}]}], ")"}]}], ",", "\"\<SO(3)\>\"", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"4", " ", "Pi"}], ")"}]}], ",", "\"\<G2\>\"", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"16", " ", 
+          RowBox[{"Pi", "^", "3"}]}], ")"}]}], ",", "\"\<F4\>\"", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"32", " ", 
+          RowBox[{"Pi", "^", "4"}]}], ")"}]}], ",", "\"\<E6\>\"", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"72", " ", 
+          RowBox[{"Pi", "^", "5"}]}], ")"}]}], ",", "\"\<E7\>\"", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"144", " ", 
+          RowBox[{"Pi", "^", "6"}]}], ")"}]}], ",", "\"\<E8\>\"", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"240", " ", 
+          RowBox[{"Pi", "^", "7"}]}], ")"}]}], ",", "_", ",", 
+       RowBox[{"1", "/", 
+        RowBox[{"(", 
+         RowBox[{"2", " ", "Pi"}], ")"}]}]}], " ", 
+      RowBox[{"(*", 
+       RowBox[{"Default", " ", "for", " ", "general", " ", "testing"}], 
+       "*)"}], "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"===", 
+     RowBox[{"Define", " ", "Symmetry", " ", "Orbit", " ", "Entropy", " ", 
+      RowBox[{"(", "SOE", ")"}], " ", "Calculation"}], "==="}], "*)"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"CalculateSOE", "[", "group_", "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "densityIntegral", ",", "logIntegral", ",", "entropy", ",", "measure",
+          ",", "densityFunc"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"densityFunc", "[", 
+          RowBox[{"theta_", ",", "phi_"}], "]"}], ":=", 
+         RowBox[{"densityFunction", "[", 
+          RowBox[{"group", ",", "theta", ",", "phi"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"measure", "=", 
+         RowBox[{"haarMeasure", "[", "group", "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"Density", " ", "Integral", " ", "Calculation"}], "*)"}], 
+        RowBox[{"densityIntegral", "=", 
+         RowBox[{"NIntegrate", "[", 
+          RowBox[{
+           RowBox[{"densityFunc", "[", 
+            RowBox[{"theta", ",", "phi"}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"theta", ",", "0", ",", "Pi"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"phi", ",", "0", ",", 
+             RowBox[{"2", " ", "Pi"}]}], "}"}], ",", 
+           RowBox[{"Method", "->", "\"\<GlobalAdaptive\>\""}], ",", 
+           RowBox[{"MaxRecursion", "->", "20"}], ",", 
+           RowBox[{"PrecisionGoal", "->", "8"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", 
+         RowBox[{
+         "\"\<Density Integral for \>\"", ",", "group", ",", "\"\<: \>\"", 
+          ",", "densityIntegral"}], "]"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"Log", " ", "Integral", " ", "Calculation"}], "*)"}], 
+        RowBox[{"logIntegral", "=", 
+         RowBox[{"NIntegrate", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"Max", "[", 
+             RowBox[{
+              RowBox[{"densityFunc", "[", 
+               RowBox[{"theta", ",", "phi"}], "]"}], ",", 
+              RowBox[{"10", "^", 
+               RowBox[{"-", "4"}]}]}], "]"}], "*", 
+            RowBox[{"Log", "[", 
+             RowBox[{"Max", "[", 
+              RowBox[{
+               RowBox[{"densityFunc", "[", 
+                RowBox[{"theta", ",", "phi"}], "]"}], ",", 
+               RowBox[{"10", "^", 
+                RowBox[{"-", "4"}]}]}], "]"}], "]"}]}], ",", 
+           RowBox[{"{", 
+            RowBox[{"theta", ",", "0", ",", "Pi"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"phi", ",", "0", ",", 
+             RowBox[{"2", " ", "Pi"}]}], "}"}], ",", 
+           RowBox[{"Method", "->", "\"\<GlobalAdaptive\>\""}], ",", 
+           RowBox[{"MaxRecursion", "->", "20"}], ",", 
+           RowBox[{"PrecisionGoal", "->", "8"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", 
+         RowBox[{
+         "\"\<Log Integral for \>\"", ",", "group", ",", "\"\<: \>\"", ",", 
+          "logIntegral"}], "]"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"(*", 
+         RowBox[{"Entropy", " ", "Calculation"}], "*)"}], 
+        RowBox[{"entropy", "=", 
+         RowBox[{
+          RowBox[{"-", "measure"}], "*", "logIntegral"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", 
+         RowBox[{
+         "\"\<Entropy (SOE) for \>\"", ",", "group", ",", "\"\<: \>\"", ",", 
+          "entropy"}], "]"}], ";", "\[IndentingNewLine]", "entropy"}]}], 
+      "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"===", 
+     RowBox[{
+     "Run", " ", "SOE", " ", "Calculations", " ", "for", " ", "Each", " ", 
+      "Group"}], "==="}], "*)"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"groupList", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<SU(2)\>\"", ",", "\"\<SU(3)\>\"", ",", "\"\<SO(3)\>\"", ",", 
+       "\"\<G2\>\"", ",", "\"\<F4\>\"", ",", "\"\<E6\>\"", ",", "\"\<E7\>\"", 
+       ",", "\"\<E8\>\""}], "}"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"SOEResults", "=", 
+     RowBox[{"Association", "[", "]"}]}], ";"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Print", "[", "\"\<Calculating SOE for each group...\>\"", "]"}], 
+    ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Do", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"SOEResults", "[", "group", "]"}], "=", 
+        RowBox[{"CalculateSOE", "[", "group", "]"}]}], ";"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"group", ",", "groupList"}], "}"}]}], "]"}], ";"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<All calculations completed. Results: \>\"", ",", "SOEResults"}], 
+     "]"}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"===", 
+     RowBox[{"Output", " ", "Analysis"}], "==="}], "*)"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Summary", " ", "Table", " ", "of", " ", "SOE", " ", "Results", " ", 
+     "for", " ", "Comparison"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "Print", "[", "\"\<\\nDetailed SOE Comparison Across Groups:\>\"", "]"}], 
+    ";"}], "\n", 
+   RowBox[{
+    RowBox[{"TableForm", "[", 
+     RowBox[{
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"group", ",", 
+          RowBox[{"LieAlgebraData", "[", 
+           RowBox[{"group", ",", "\"\<Rank\>\""}], "]"}], ",", 
+          RowBox[{"SOEResults", "[", "group", "]"}]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"group", ",", "groupList"}], "}"}]}], "]"}], ",", 
+      RowBox[{"TableHeadings", "->", 
+       RowBox[{"{", 
+        RowBox[{"None", ",", 
+         RowBox[{"{", 
+          RowBox[{"\"\<Group\>\"", ",", "\"\<Rank\>\"", ",", "\"\<SOE\>\""}], 
+          "}"}]}], "}"}]}]}], "]"}], ";"}], "\[IndentingNewLine]", 
+   "\[IndentingNewLine]", 
+   RowBox[{"(*", " ", 
+    RowBox[{"===", 
+     RowBox[{
+     "Validation", " ", "Against", " ", "Theoretical", " ", "Claims"}], 
+     "==="}], "*)"}], "\n", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "Print", "[", 
+     "\"\<\\nAnalyzing Results Against Theoretical Predictions...\>\"", "]"}],
+     ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Hypothesis", " ", "1"}], ":", 
+     RowBox[{
+     "SOE", " ", "decreases", " ", "with", " ", "increasing", " ", "group", 
+      " ", "rank"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "Print", "[", "\"\<Checking if SOE values decrease with rank...\>\"", 
+     "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"orderedSOEValues", "=", 
+     RowBox[{"SortBy", "[", 
+      RowBox[{"groupList", ",", 
+       RowBox[{
+        RowBox[{"-", 
+         RowBox[{"LieAlgebraData", "[", 
+          RowBox[{"#", ",", "\"\<Rank\>\""}], "]"}]}], "&"}]}], "]"}]}], 
+    ";"}], "\n", 
+   RowBox[{
+    RowBox[{"decreasingSOE", "=", 
+     RowBox[{"And", "@@", 
+      RowBox[{"Table", "[", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"SOEResults", "[", 
+          RowBox[{"orderedSOEValues", "[", 
+           RowBox[{"[", "i", "]"}], "]"}], "]"}], ">=", 
+         RowBox[{"SOEResults", "[", 
+          RowBox[{"orderedSOEValues", "[", 
+           RowBox[{"[", 
+            RowBox[{"i", "+", "1"}], "]"}], "]"}], "]"}]}], ",", 
+        RowBox[{"{", 
+         RowBox[{"i", ",", 
+          RowBox[{
+           RowBox[{"Length", "[", "orderedSOEValues", "]"}], "-", "1"}]}], 
+         "}"}]}], "]"}]}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"If", "[", 
+     RowBox[{"decreasingSOE", ",", 
+      RowBox[{"Print", "[", "\"\<SOE values decrease with rank.\>\"", "]"}], 
+      ",", 
+      RowBox[{
+      "Print", "[", 
+       "\"\<SOE values do not consistently decrease with rank.\>\"", "]"}]}], 
+     "]"}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Hypothesis", " ", "2"}], ":", 
+     RowBox[{
+     "Exceptional", " ", "groups", " ", "show", " ", "significantly", " ", 
+      "lower", " ", "SOE"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "Print", "[", "\"\<Comparing SOE values for exceptional groups...\>\"", 
+     "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"exceptionalGroups", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<G2\>\"", ",", "\"\<F4\>\"", ",", "\"\<E6\>\"", ",", "\"\<E7\>\"", 
+       ",", "\"\<E8\>\""}], "}"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"exceptionalSOEValues", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"SOEResults", "[", "group", "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"group", ",", "exceptionalGroups"}], "}"}]}], "]"}]}], ";"}], 
+   "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<Exceptional Groups SOE Values: \>\"", ",", "exceptionalSOEValues"}],
+      "]"}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+     RowBox[{"Hypothesis", " ", "3"}], ":", 
+     RowBox[{
+     "Covering", " ", "groups", " ", "show", " ", "lower", " ", "SOE", " ", 
+      "than", " ", "base", " ", "groups"}]}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "Print", "[", "\"\<Comparing SOE between covering and base groups...\>\"",
+      "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"coveringPairs", "=", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\"\<SU(2)\>\"", ",", "\"\<F4\>\""}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"\"\<SU(3)\>\"", ",", "\"\<E8\>\""}], "}"}]}], "}"}]}], ";"}],
+    " ", 
+   RowBox[{"(*", 
+    RowBox[{"Define", " ", "pairs"}], "*)"}], "\n", 
+   RowBox[{
+    RowBox[{"coveringComparison", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"base", ",", "covering", ",", 
+         RowBox[{
+          RowBox[{"SOEResults", "[", "covering", "]"}], "<", 
+          RowBox[{"SOEResults", "[", "base", "]"}]}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"base", ",", 
+         RowBox[{"coveringPairs", "[", 
+          RowBox[{"[", 
+           RowBox[{"All", ",", "1"}], "]"}], "]"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"covering", ",", 
+         RowBox[{"coveringPairs", "[", 
+          RowBox[{"[", 
+           RowBox[{"All", ",", "2"}], "]"}], "]"}]}], "}"}]}], "]"}]}], ";"}],
+    "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<Covering vs. Base Group SOE Comparison: \>\"", ",", 
+      "coveringComparison"}], "]"}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", "Summary", "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Print", "[", "\"\<\\n=== Final Analysis Summary ===\>\"", "]"}], 
+    ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<Hypothesis 1: \>\"", ",", 
+      RowBox[{"If", "[", 
+       RowBox[{
+       "decreasingSOE", ",", "\"\<Supported\>\"", ",", 
+        "\"\<Not Supported\>\""}], "]"}]}], "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<Hypothesis 2: SOE values for exceptional groups - \>\"", ",", 
+      "exceptionalSOEValues"}], "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<Hypothesis 3: Covering group comparisons - \>\"", ",", 
+      "coveringComparison"}], "]"}], ";"}], "\n", 
+   RowBox[{"Print", "[", "\"\<Analysis complete.\>\"", "]"}], 
+   "\n"}]}]], "Input",
+ CellChangeTimes->{{3.9403357753490295`*^9, 3.940335775350029*^9}},
+ CellLabel->"In[65]:=",ExpressionUUID->"1cbbf99f-8eff-ad46-831f-b567bcdd5275"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Loading GroupTheory and LieART packages...\"\>"], "Print",
+ CellChangeTimes->{3.9403357761817684`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"b6623faa-b2ac-114d-a224-ab70733f4611"],
+
+Cell[BoxData["\<\"Packages loaded (or skipped if unavailable).\"\>"], "Print",
+ CellChangeTimes->{3.940335776183769*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"f432b9f1-865a-8146-b7e6-4058ccfd1c25"],
+
+Cell[BoxData["\<\"Calculating SOE for each group...\"\>"], "Print",
+ CellChangeTimes->{3.940335776185768*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"3927115d-ed9d-0644-be08-d3e857e5f022"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Density Integral for \"\>", 
+   "\[InvisibleSpace]", "\<\"SU(2)\"\>", "\[InvisibleSpace]", "\<\": \"\>", 
+   "\[InvisibleSpace]", "12.568344535240207`"}],
+  SequenceForm["Density Integral for ", "SU(2)", ": ", 12.568344535240207`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776186571*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"08ce29fe-8ee7-674e-889f-23415c8fdc91"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Log Integral for \"\>", "\[InvisibleSpace]", "\<\"SU(2)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "3.8554198335158962`"}]}],
+  SequenceForm["Log Integral for ", "SU(2)", ": ", -3.8554198335158962`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776211691*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"69baed12-2944-b54a-8d31-574168dcac45"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Entropy (SOE) for \"\>", "\[InvisibleSpace]", "\<\"SU(2)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.613609124198587`"}],
+  SequenceForm["Entropy (SOE) for ", "SU(2)", ": ", 0.613609124198587],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357762126904`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"478100a9-d94d-3b49-ad38-ba2bf6a8a4d6"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Density Integral for \"\>", 
+   "\[InvisibleSpace]", "\<\"SU(3)\"\>", "\[InvisibleSpace]", "\<\": \"\>", 
+   "\[InvisibleSpace]", "6.28515922806409`"}],
+  SequenceForm["Density Integral for ", "SU(3)", ": ", 6.28515922806409],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357762336006`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"fbeae5b0-2c28-d746-8074-6e10fb56edd2"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Log Integral for \"\>", "\[InvisibleSpace]", "\<\"SU(3)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "4.357259105302197`"}]}],
+  SequenceForm["Log Integral for ", "SU(3)", ": ", -4.357259105302197],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357765042953`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"742aa82d-c515-8043-95a4-7be5159db19a"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Entropy (SOE) for \"\>", "\[InvisibleSpace]", "\<\"SU(3)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.22074132499278615`"}],
+  SequenceForm["Entropy (SOE) for ", "SU(3)", ": ", 0.22074132499278615`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357765058002`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"1aa3f94b-76a3-d546-bf8c-9d5c89695c46"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Density Integral for \"\>", 
+   "\[InvisibleSpace]", "\<\"SO(3)\"\>", "\[InvisibleSpace]", "\<\": \"\>", 
+   "\[InvisibleSpace]", "9.871578321969576`"}],
+  SequenceForm["Density Integral for ", "SO(3)", ": ", 9.871578321969576],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776507309*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"c3d9e170-1717-3240-852a-cf2cd3781a0e"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Log Integral for \"\>", "\[InvisibleSpace]", "\<\"SO(3)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "3.813308722472001`"}]}],
+  SequenceForm["Log Integral for ", "SO(3)", ": ", -3.813308722472001],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776529913*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"a3fb2f65-31f7-1e48-b5b4-22f79e3da0e0"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Entropy (SOE) for \"\>", "\[InvisibleSpace]", "\<\"SO(3)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.30345346635842974`"}],
+  SequenceForm["Entropy (SOE) for ", "SO(3)", ": ", 0.30345346635842974`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357765319138`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"f806f186-63c2-484d-87d0-52c432c6fe6e"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Density Integral for \"\>", "\[InvisibleSpace]", "\<\"G2\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "6.28515922806409`"}],
+  SequenceForm["Density Integral for ", "G2", ": ", 6.28515922806409],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776532913*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"db17567c-727b-0948-a6ad-694bfff5b958"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Log Integral for \"\>", "\[InvisibleSpace]", "\<\"G2\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "4.357259105302197`"}]}],
+  SequenceForm["Log Integral for ", "G2", ": ", -4.357259105302197],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776805113*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"542ccceb-b670-b74a-bdfa-e291a151460c"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Entropy (SOE) for \"\>", "\[InvisibleSpace]", "\<\"G2\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.008783018254314115`"}],
+  SequenceForm["Entropy (SOE) for ", "G2", ": ", 0.008783018254314115],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776806616*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"02de0bc8-3edb-7042-93d4-21fceccbfa8e"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Density Integral for \"\>", "\[InvisibleSpace]", "\<\"F4\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "8.379554330451246`"}],
+  SequenceForm["Density Integral for ", "F4", ": ", 8.379554330451246],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776807619*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"293a78da-4dfc-3649-a177-5ef78ead7665"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Log Integral for \"\>", "\[InvisibleSpace]", "\<\"F4\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "3.5252342234624416`"}]}],
+  SequenceForm["Log Integral for ", "F4", ": ", -3.5252342234624416`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776837511*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"34ae3745-6b17-0e4d-817e-6591bbf1930f"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Entropy (SOE) for \"\>", "\[InvisibleSpace]", "\<\"F4\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.0011309372494272293`"}],
+  SequenceForm["Entropy (SOE) for ", "F4", ": ", 0.0011309372494272293`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357768395157`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"313d26cc-330c-8f47-83aa-fc0b758c9aa0"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Density Integral for \"\>", "\[InvisibleSpace]", "\<\"E6\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "7.404177222017854`"}],
+  SequenceForm["Density Integral for ", "E6", ": ", 7.404177222017854],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357768415146`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"0feb35c9-f0c0-4940-9f20-2ec1122d0787"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Log Integral for \"\>", "\[InvisibleSpace]", "\<\"E6\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "3.2545094624156623`"}]}],
+  SequenceForm["Log Integral for ", "E6", ": ", -3.2545094624156623`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776857044*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"090c96cc-c8e9-8044-ab3c-f13bfecfc269"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Entropy (SOE) for \"\>", "\[InvisibleSpace]", "\<\"E6\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.0001477078846840989`"}],
+  SequenceForm["Entropy (SOE) for ", "E6", ": ", 0.0001477078846840989],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357768586216`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"6180248b-974b-3d4c-aa08-71238caaadfc"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Density Integral for \"\>", "\[InvisibleSpace]", "\<\"E7\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "6.704038248801569`"}],
+  SequenceForm["Density Integral for ", "E7", ": ", 6.704038248801569],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776859625*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"64d546ff-d566-8544-8800-4d538f0d7fcd"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Log Integral for \"\>", "\[InvisibleSpace]", "\<\"E7\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "3.0261453061781878`"}]}],
+  SequenceForm["Log Integral for ", "E7", ": ", -3.0261453061781878`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776883259*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"a4cebfcb-9e9a-fa44-98c7-7fbd481e1a95"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Entropy (SOE) for \"\>", "\[InvisibleSpace]", "\<\"E7\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.000021858887222789112`"}],
+  SequenceForm["Entropy (SOE) for ", "E7", ": ", 0.000021858887222789112`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357768842583`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"aee00a47-bf3f-9e42-9781-2b90899634d2"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Density Integral for \"\>", "\[InvisibleSpace]", "\<\"E8\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "6.170476671548722`"}],
+  SequenceForm["Density Integral for ", "E8", ": ", 6.170476671548722],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357768857613`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"3e95c7e7-c850-8749-8cc3-639edd81d1ef"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Log Integral for \"\>", "\[InvisibleSpace]", "\<\"E8\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "2.8353943514242532`"}]}],
+  SequenceForm["Log Integral for ", "E8", ": ", -2.8353943514242532`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776901207*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"0819bba0-9c2d-3f49-adf5-b984d2d18a62"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Entropy (SOE) for \"\>", "\[InvisibleSpace]", "\<\"E8\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "3.911588127365589`*^-6"}],
+  SequenceForm["Entropy (SOE) for ", "E8", ": ", 3.911588127365589*^-6],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776903206*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"0ab38c12-a917-ca42-8f16-23f493729dd4"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"All calculations completed. Results: \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"\[LeftAssociation]", 
+    RowBox[{
+     RowBox[{"\<\"SU(2)\"\>", "\[Rule]", "0.613609124198587`"}], ",", 
+     RowBox[{"\<\"SU(3)\"\>", "\[Rule]", "0.22074132499278615`"}], ",", 
+     RowBox[{"\<\"SO(3)\"\>", "\[Rule]", "0.30345346635842974`"}], ",", 
+     RowBox[{"\<\"G2\"\>", "\[Rule]", "0.008783018254314115`"}], ",", 
+     RowBox[{"\<\"F4\"\>", "\[Rule]", "0.0011309372494272293`"}], ",", 
+     RowBox[{"\<\"E6\"\>", "\[Rule]", "0.0001477078846840989`"}], ",", 
+     RowBox[{"\<\"E7\"\>", "\[Rule]", "0.000021858887222789112`"}], ",", 
+     RowBox[{"\<\"E8\"\>", "\[Rule]", "3.911588127365589`*^-6"}]}], 
+    "\[RightAssociation]"}]}],
+  SequenceForm[
+  "All calculations completed. Results: ", <|
+   "SU(2)" -> 0.613609124198587, "SU(3)" -> 0.22074132499278615`, "SO(3)" -> 
+    0.30345346635842974`, "G2" -> 0.008783018254314115, "F4" -> 
+    0.0011309372494272293`, "E6" -> 0.0001477078846840989, "E7" -> 
+    0.000021858887222789112`, "E8" -> 3.911588127365589*^-6|>],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335776904207*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"503b6ff0-e5da-c243-a5f4-54d020f0e275"],
+
+Cell[BoxData["\<\"\\nDetailed SOE Comparison Across Groups:\"\>"], "Print",
+ CellChangeTimes->{3.940335776904207*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"14756044-9eb4-5a44-8f83-2cac70021f28"],
+
+Cell[BoxData["\<\"\\nAnalyzing Results Against Theoretical \
+Predictions...\"\>"], "Print",
+ CellChangeTimes->{3.94033577690571*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"911bfb82-f9f9-8140-9699-454beff40d07"],
+
+Cell[BoxData["\<\"Checking if SOE values decrease with rank...\"\>"], "Print",
+ CellChangeTimes->{3.940335776907219*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"cdd8249c-b1b7-7b45-92a1-59605ecdd219"],
+
+Cell[BoxData["\<\"SOE values do not consistently decrease with rank.\"\>"], \
+"Print",
+ CellChangeTimes->{3.940335776907219*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"ed24fc50-1569-ba4c-a76c-b066f2adf594"],
+
+Cell[BoxData["\<\"Comparing SOE values for exceptional groups...\"\>"], \
+"Print",
+ CellChangeTimes->{3.940335776908222*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"423af6e9-d850-9f45-af75-03144648d9c6"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Exceptional Groups SOE Values: \"\>", "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+    "0.008783018254314115`", ",", "0.0011309372494272293`", ",", 
+     "0.0001477078846840989`", ",", "0.000021858887222789112`", ",", 
+     "3.911588127365589`*^-6"}], "}"}]}],
+  SequenceForm[
+  "Exceptional Groups SOE Values: ", {0.008783018254314115, 
+   0.0011309372494272293`, 0.0001477078846840989, 0.000021858887222789112`, 
+   3.911588127365589*^-6}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357769092216`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"6d48eb73-3727-b141-88a0-cb86929ba857"],
+
+Cell[BoxData["\<\"Comparing SOE between covering and base groups...\"\>"], \
+"Print",
+ CellChangeTimes->{3.940335776910223*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"fff05af8-1990-a849-b47e-f323d71aa46f"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Covering vs. Base Group SOE Comparison: \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\<\"SU(2)\"\>", ",", "\<\"F4\"\>", ",", "True"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"\<\"SU(2)\"\>", ",", "\<\"E8\"\>", ",", "True"}], "}"}]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\<\"SU(3)\"\>", ",", "\<\"F4\"\>", ",", "True"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"\<\"SU(3)\"\>", ",", "\<\"E8\"\>", ",", "True"}], "}"}]}], 
+      "}"}]}], "}"}]}],
+  SequenceForm[
+  "Covering vs. Base Group SOE Comparison: ", {{{"SU(2)", "F4", True}, {
+     "SU(2)", "E8", True}}, {{"SU(3)", "F4", True}, {"SU(3)", "E8", True}}}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357769112225`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"fb13aab6-a408-2d4a-ba66-dd9dde5715d6"],
+
+Cell[BoxData["\<\"\\n=== Final Analysis Summary ===\"\>"], "Print",
+ CellChangeTimes->{3.940335776912222*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"d207b0dc-5183-9441-8f51-7451c6b1b9c1"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Hypothesis 1: \"\>", 
+   "\[InvisibleSpace]", "\<\"Not Supported\"\>"}],
+  SequenceForm["Hypothesis 1: ", "Not Supported"],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357769132233`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"2526bf33-495a-bd45-9ee5-719952dd606b"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Hypothesis 2: SOE values for exceptional groups - \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+    "0.008783018254314115`", ",", "0.0011309372494272293`", ",", 
+     "0.0001477078846840989`", ",", "0.000021858887222789112`", ",", 
+     "3.911588127365589`*^-6"}], "}"}]}],
+  SequenceForm[
+  "Hypothesis 2: SOE values for exceptional groups - ", {0.008783018254314115,
+    0.0011309372494272293`, 0.0001477078846840989, 0.000021858887222789112`, 
+   3.911588127365589*^-6}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357769142227`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"f5562b92-3997-254b-a83a-65e05377c355"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Hypothesis 3: Covering group comparisons - \"\>", 
+   "\[InvisibleSpace]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\<\"SU(2)\"\>", ",", "\<\"F4\"\>", ",", "True"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"\<\"SU(2)\"\>", ",", "\<\"E8\"\>", ",", "True"}], "}"}]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"\<\"SU(3)\"\>", ",", "\<\"F4\"\>", ",", "True"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"\<\"SU(3)\"\>", ",", "\<\"E8\"\>", ",", "True"}], "}"}]}], 
+      "}"}]}], "}"}]}],
+  SequenceForm[
+  "Hypothesis 3: Covering group comparisons - ", {{{"SU(2)", "F4", True}, {
+     "SU(2)", "E8", True}}, {{"SU(3)", "F4", True}, {"SU(3)", "E8", True}}}],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403357769157257`*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"420ad925-1577-d248-8772-3e8c3fe5aff0"],
+
+Cell[BoxData["\<\"Analysis complete.\"\>"], "Print",
+ CellChangeTimes->{3.940335776916727*^9},
+ CellLabel->
+  "During evaluation of \
+In[65]:=",ExpressionUUID->"94784750-0aba-4f40-857a-f9b2efd754d4"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{1909, 1037},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"14.1 for Microsoft Windows (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"70d09932-1528-a34d-bac5-108e7e545f00"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 16724, 441, 1379, "Input",ExpressionUUID->"1cbbf99f-8eff-ad46-831f-b567bcdd5275"],
+Cell[CellGroupData[{
+Cell[17325, 467, 225, 4, 22, "Print",ExpressionUUID->"b6623faa-b2ac-114d-a224-ab70733f4611"],
+Cell[17553, 473, 225, 4, 22, "Print",ExpressionUUID->"f432b9f1-865a-8146-b7e6-4058ccfd1c25"],
+Cell[17781, 479, 214, 4, 22, "Print",ExpressionUUID->"3927115d-ed9d-0644-be08-d3e857e5f022"],
+Cell[17998, 485, 457, 10, 22, "Print",ExpressionUUID->"08ce29fe-8ee7-674e-889f-23415c8fdc91"],
+Cell[18458, 497, 465, 10, 22, "Print",ExpressionUUID->"69baed12-2944-b54a-8d31-574168dcac45"],
+Cell[18926, 509, 450, 10, 22, "Print",ExpressionUUID->"478100a9-d94d-3b49-ad38-ba2bf6a8a4d6"],
+Cell[19379, 521, 454, 10, 22, "Print",ExpressionUUID->"fbeae5b0-2c28-d746-8074-6e10fb56edd2"],
+Cell[19836, 533, 464, 10, 22, "Print",ExpressionUUID->"742aa82d-c515-8043-95a4-7be5159db19a"],
+Cell[20303, 545, 455, 10, 22, "Print",ExpressionUUID->"1aa3f94b-76a3-d546-bf8c-9d5c89695c46"],
+Cell[20761, 557, 454, 10, 22, "Print",ExpressionUUID->"c3d9e170-1717-3240-852a-cf2cd3781a0e"],
+Cell[21218, 569, 462, 10, 22, "Print",ExpressionUUID->"a3fb2f65-31f7-1e48-b5b4-22f79e3da0e0"],
+Cell[21683, 581, 455, 10, 22, "Print",ExpressionUUID->"f806f186-63c2-484d-87d0-52c432c6fe6e"],
+Cell[22141, 593, 446, 10, 22, "Print",ExpressionUUID->"db17567c-727b-0948-a6ad-694bfff5b958"],
+Cell[22590, 605, 456, 10, 22, "Print",ExpressionUUID->"542ccceb-b670-b74a-bdfa-e291a151460c"],
+Cell[23049, 617, 448, 10, 22, "Print",ExpressionUUID->"02de0bc8-3edb-7042-93d4-21fceccbfa8e"],
+Cell[23500, 629, 448, 10, 22, "Print",ExpressionUUID->"293a78da-4dfc-3649-a177-5ef78ead7665"],
+Cell[23951, 641, 459, 10, 22, "Print",ExpressionUUID->"34ae3745-6b17-0e4d-817e-6591bbf1930f"],
+Cell[24413, 653, 453, 10, 22, "Print",ExpressionUUID->"313d26cc-330c-8f47-83aa-fc0b758c9aa0"],
+Cell[24869, 665, 450, 10, 22, "Print",ExpressionUUID->"0feb35c9-f0c0-4940-9f20-2ec1122d0787"],
+Cell[25322, 677, 459, 10, 22, "Print",ExpressionUUID->"090c96cc-c8e9-8044-ab3c-f13bfecfc269"],
+Cell[25784, 689, 452, 10, 22, "Print",ExpressionUUID->"6180248b-974b-3d4c-aa08-71238caaadfc"],
+Cell[26239, 701, 448, 10, 22, "Print",ExpressionUUID->"64d546ff-d566-8544-8800-4d538f0d7fcd"],
+Cell[26690, 713, 459, 10, 22, "Print",ExpressionUUID->"a4cebfcb-9e9a-fa44-98c7-7fbd481e1a95"],
+Cell[27152, 725, 457, 10, 22, "Print",ExpressionUUID->"aee00a47-bf3f-9e42-9781-2b90899634d2"],
+Cell[27612, 737, 450, 10, 22, "Print",ExpressionUUID->"3e95c7e7-c850-8749-8cc3-639edd81d1ef"],
+Cell[28065, 749, 459, 10, 22, "Print",ExpressionUUID->"0819bba0-9c2d-3f49-adf5-b984d2d18a62"],
+Cell[28527, 761, 450, 10, 22, "Print",ExpressionUUID->"0ab38c12-a917-ca42-8f16-23f493729dd4"],
+Cell[28980, 773, 1285, 25, 23, "Print",ExpressionUUID->"503b6ff0-e5da-c243-a5f4-54d020f0e275"],
+Cell[30268, 800, 222, 4, 39, "Print",ExpressionUUID->"14756044-9eb4-5a44-8f83-2cac70021f28"],
+Cell[30493, 806, 237, 5, 39, "Print",ExpressionUUID->"911bfb82-f9f9-8140-9699-454beff40d07"],
+Cell[30733, 813, 225, 4, 22, "Print",ExpressionUUID->"cdd8249c-b1b7-7b45-92a1-59605ecdd219"],
+Cell[30961, 819, 233, 5, 22, "Print",ExpressionUUID->"ed24fc50-1569-ba4c-a76c-b066f2adf594"],
+Cell[31197, 826, 229, 5, 22, "Print",ExpressionUUID->"423af6e9-d850-9f45-af75-03144648d9c6"],
+Cell[31429, 833, 677, 16, 24, "Print",ExpressionUUID->"6d48eb73-3727-b141-88a0-cb86929ba857"],
+Cell[32109, 851, 232, 5, 22, "Print",ExpressionUUID->"fff05af8-1990-a849-b47e-f323d71aa46f"],
+Cell[32344, 858, 1006, 27, 22, "Print",ExpressionUUID->"fb13aab6-a408-2d4a-ba66-dd9dde5715d6"],
+Cell[33353, 887, 214, 4, 39, "Print",ExpressionUUID->"d207b0dc-5183-9441-8f51-7451c6b1b9c1"],
+Cell[33570, 893, 351, 9, 22, "Print",ExpressionUUID->"2526bf33-495a-bd45-9ee5-719952dd606b"],
+Cell[33924, 904, 719, 17, 24, "Print",ExpressionUUID->"f5562b92-3997-254b-a83a-65e05377c355"],
+Cell[34646, 923, 1012, 27, 22, "Print",ExpressionUUID->"420ad925-1577-d248-8772-3e8c3fe5aff0"],
+Cell[35661, 952, 199, 4, 22, "Print",ExpressionUUID->"94784750-0aba-4f40-857a-f9b2efd754d4"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+

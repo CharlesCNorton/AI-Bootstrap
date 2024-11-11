@@ -1,0 +1,412 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     15221,        402]
+NotebookOptionsPosition[     13483,        370]
+NotebookOutlinePosition[     13881,        386]
+CellTagsIndexPosition[     13838,        383]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Comprehensive", " ", "SOE", " ", "Calculation", " ", "for", " ", "Lie", 
+    " ", "Groups"}], "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{"Load", " ", "required", " ", "packages"}], "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+    "Print", "[", "\"\<Loading GroupTheory and LieART packages...\>\"", "]"}],
+     ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Needs", "[", "\"\<GroupTheory`\>\"", "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Needs", "[", "\"\<LieART`\>\"", "]"}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"Print", "[", "\"\<Packages loaded successfully.\>\"", "]"}], 
+    ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Define", " ", "Haar", " ", "Measures", " ", "for", " ", "Classic", " ", 
+     "and", " ", "Exceptional", " ", "Groups"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"DefineHaarMeasure", "[", "group_", "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "measure", "}"}], ",", 
+       RowBox[{"Switch", "[", 
+        RowBox[{"group", ",", "\"\<SU(2)\>\"", ",", 
+         RowBox[{"1", "/", 
+          RowBox[{"(", 
+           RowBox[{"2", " ", "Pi"}], ")"}]}], ",", "\"\<SU(3)\>\"", ",", 
+         RowBox[{"1", "/", 
+          RowBox[{"(", 
+           RowBox[{"2", " ", 
+            RowBox[{"Pi", "^", "2"}]}], ")"}]}], ",", "\"\<SO(3)\>\"", ",", 
+         RowBox[{"1", "/", 
+          RowBox[{"(", 
+           RowBox[{"4", " ", "Pi"}], ")"}]}], ",", "\"\<G2\>\"", ",", 
+         RowBox[{"1", "/", 
+          RowBox[{"(", 
+           RowBox[{"16", " ", 
+            RowBox[{"Pi", "^", "3"}]}], ")"}]}], ",", "\"\<E8\>\"", ",", 
+         RowBox[{"1", "/", 
+          RowBox[{"(", 
+           RowBox[{"240", " ", 
+            RowBox[{"Pi", "^", "7"}]}], ")"}]}], ",", "_", ",", 
+         RowBox[{
+          RowBox[{"Message", "[", 
+           RowBox[{
+            RowBox[{"DefineHaarMeasure", "::", "nogrp"}], ",", "group"}], 
+           "]"}], ";", 
+          RowBox[{"Return", "[", "$Failed", "]"}], ";"}]}], "]"}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Define", " ", "density", " ", "functions", " ", "for", " ", "each", " ", 
+     "group", " ", "to", " ", "capture", " ", "clustering"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"DensityFunction", "[", 
+      RowBox[{"group_", ",", "theta_", ",", "phi_"}], "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", "density", "}"}], ",", 
+       RowBox[{"Switch", "[", 
+        RowBox[{"group", ",", "\"\<SU(2)\>\"", ",", 
+         RowBox[{
+          RowBox[{"Sin", "[", "theta", "]"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", 
+         RowBox[{"(*", 
+          RowBox[{"SU", 
+           RowBox[{"(", "2", ")"}], " ", "with", " ", "small", " ", "offset", 
+           " ", "for", " ", "stability"}], "*)"}], "\"\<SU(3)\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Sin", "[", "theta", "]"}], "*", 
+           RowBox[{
+            RowBox[{"Cos", "[", "phi", "]"}], "^", "2"}]}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<SO(3)\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"Cos", "[", "theta", "]"}], "^", "2"}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<G2\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"Sin", "[", "theta", "]"}], "^", "3"}], "*", 
+           RowBox[{
+            RowBox[{"Cos", "[", "phi", "]"}], "^", "2"}]}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "\"\<E8\>\"", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{
+            RowBox[{"Sin", "[", "theta", "]"}], "^", "7"}], "*", 
+           RowBox[{
+            RowBox[{"Cos", "[", "phi", "]"}], "^", "6"}]}], "+", 
+          RowBox[{"10", "^", 
+           RowBox[{"-", "4"}]}]}], ",", "_", ",", 
+         RowBox[{
+          RowBox[{"Message", "[", 
+           RowBox[{
+            RowBox[{"DensityFunction", "::", "nogrp"}], ",", "group"}], "]"}],
+           ";", 
+          RowBox[{"Return", "[", "$Failed", "]"}], ";"}]}], "]"}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Calculate", " ", "Symmetry", " ", "Orbit", " ", "Entropy", " ", "for", 
+     " ", "each", " ", "group", " ", "with", " ", "robust", " ", "numeric", 
+     " ", "evaluation"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"CalculateSOE", "[", 
+      RowBox[{"group_", ",", "vars_", ",", 
+       RowBox[{"cutoff_", ":", 
+        RowBox[{"10", "^", 
+         RowBox[{"-", "4"}]}]}]}], "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"density", ",", "measure", ",", "entropy"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"Print", "[", 
+         RowBox[{
+         "\"\<Calculating SOE for \>\"", ",", "group", ",", "\"\<...\>\""}], 
+         "]"}], ";", "\[IndentingNewLine]", 
+        RowBox[{"measure", "=", 
+         RowBox[{"DefineHaarMeasure", "[", "group", "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"density", "=", 
+         RowBox[{"DensityFunction", "[", 
+          RowBox[{"group", ",", 
+           RowBox[{"Sequence", "@@", "vars"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"entropy", "=", 
+         RowBox[{
+          RowBox[{"-", 
+           RowBox[{"NIntegrate", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Max", "[", 
+               RowBox[{"density", ",", "cutoff"}], "]"}], "*", 
+              RowBox[{"Log", "[", 
+               RowBox[{"Max", "[", 
+                RowBox[{"density", ",", "cutoff"}], "]"}], "]"}]}], ",", 
+             RowBox[{"Evaluate", "[", 
+              RowBox[{"Sequence", "@@", "vars"}], "]"}]}], "]"}]}], "*", 
+          "measure"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"Print", "[", 
+         RowBox[{
+         "\"\<SOE for \>\"", ",", "group", ",", "\"\<: \>\"", ",", 
+          "entropy"}], "]"}], ";", "\[IndentingNewLine]", "entropy"}]}], 
+      "]"}]}], ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Run", " ", "full", " ", "analysis", " ", "for", " ", "multiple", " ", 
+     "groups", " ", "to", " ", "evaluate", " ", "theoretical", " ", 
+     "claims"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"groups", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\"\<SU(2)\>\"", ",", "\"\<SU(3)\>\"", ",", "\"\<SO(3)\>\"", ",", 
+       "\"\<G2\>\"", ",", "\"\<E8\>\""}], "}"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"results", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"CalculateSOE", "[", 
+        RowBox[{"group", ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{"theta", ",", "0", ",", "Pi"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"phi", ",", "0", ",", 
+             RowBox[{"2", " ", "Pi"}]}], "}"}]}], "}"}]}], "]"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"group", ",", "groups"}], "}"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Output", " ", "results", " ", "for", " ", "comparison", " ", "and", " ", 
+     "analysis"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+    "Print", "[", "\"\<All calculations completed. Results:\>\"", "]"}], 
+    ";"}], "\n", "results", "\n"}]}]], "Input",
+ CellChangeTimes->{{3.9403351181611786`*^9, 3.940335118161682*^9}},
+ CellLabel->
+  "In[171]:=",ExpressionUUID->"d345b13a-15c5-cc4f-8874-896ded0448ec"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Loading GroupTheory and LieART packages...\"\>"], "Print",
+ CellChangeTimes->{3.9403351192654076`*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"a2869fd6-8db6-2a49-a03b-5f3a4d363944"],
+
+Cell[BoxData["\<\"Packages loaded successfully.\"\>"], "Print",
+ CellChangeTimes->{3.9403351192674084`*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"d7f00504-565c-4442-bab0-a17e9fda199f"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Calculating SOE for \"\>", 
+   "\[InvisibleSpace]", "\<\"SU(2)\"\>", "\[InvisibleSpace]", "\<\"...\"\>"}],
+  SequenceForm["Calculating SOE for ", "SU(2)", "..."],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403351192694073`*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"dfde02a7-540b-0044-814a-74a9df032f6c"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"SOE for \"\>", "\[InvisibleSpace]", "\<\"SU(2)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.613609123794178`"}],
+  SequenceForm["SOE for ", "SU(2)", ": ", 0.613609123794178],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335119338545*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"721b1508-941e-2043-9c2c-86bdae872441"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Calculating SOE for \"\>", 
+   "\[InvisibleSpace]", "\<\"SU(3)\"\>", "\[InvisibleSpace]", "\<\"...\"\>"}],
+  SequenceForm["Calculating SOE for ", "SU(3)", "..."],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335119339546*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"045b0469-ad58-b342-8f9c-013e7f2563d5"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"SOE for \"\>", "\[InvisibleSpace]", "\<\"SU(3)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.2207413250833826`"}],
+  SequenceForm["SOE for ", "SU(3)", ": ", 0.2207413250833826],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403351194334583`*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"4381b0a3-0e7a-de48-8f7e-7f59b641c8bb"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Calculating SOE for \"\>", 
+   "\[InvisibleSpace]", "\<\"SO(3)\"\>", "\[InvisibleSpace]", "\<\"...\"\>"}],
+  SequenceForm["Calculating SOE for ", "SO(3)", "..."],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335119435459*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"86b94298-0c36-7645-966d-2dbb516d31e5"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"SOE for \"\>", "\[InvisibleSpace]", "\<\"SO(3)\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   RowBox[{"-", "0.00015708748639932003`"}]}],
+  SequenceForm["SOE for ", "SO(3)", ": ", -0.00015708748639932003`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335119479553*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"0fb17255-3522-1848-ba58-30375d661abd"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Calculating SOE for \"\>", "\[InvisibleSpace]", "\<\"G2\"\>", 
+   "\[InvisibleSpace]", "\<\"...\"\>"}],
+  SequenceForm["Calculating SOE for ", "G2", "..."],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403351194805527`*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"0e7dbaa0-1fe2-134e-9ceb-e054e9f8b363"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"SOE for \"\>", "\[InvisibleSpace]", "\<\"G2\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "0.006821716424550954`"}],
+  SequenceForm["SOE for ", "G2", ": ", 0.006821716424550954],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335119562296*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"7ade366d-ab3d-b349-919b-9b653b950554"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Calculating SOE for \"\>", "\[InvisibleSpace]", "\<\"E8\"\>", 
+   "\[InvisibleSpace]", "\<\"...\"\>"}],
+  SequenceForm["Calculating SOE for ", "E8", "..."],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9403351195632954`*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"d32a9f66-ee22-fd44-93c5-7ebebde6488e"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"SOE for \"\>", "\[InvisibleSpace]", "\<\"E8\"\>", 
+   "\[InvisibleSpace]", "\<\": \"\>", "\[InvisibleSpace]", 
+   "2.3013427527001604`*^-6"}],
+  SequenceForm["SOE for ", "E8", ": ", 2.3013427527001604`*^-6],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940335119650055*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"a8570103-4a4a-9d40-82b5-73adf1e91497"],
+
+Cell[BoxData["\<\"All calculations completed. Results:\"\>"], "Print",
+ CellChangeTimes->{3.940335119651556*^9},
+ CellLabel->
+  "During evaluation of \
+In[171]:=",ExpressionUUID->"d14b1159-fa07-5d47-a16e-76678e15a71a"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0.613609123794178`", ",", "0.2207413250833826`", ",", 
+   RowBox[{"-", "0.00015708748639932003`"}], ",", "0.006821716424550954`", 
+   ",", "2.3013427527001604`*^-6"}], "}"}]], "Output",
+ CellChangeTimes->{3.940335119666067*^9},
+ CellLabel->
+  "Out[181]=",ExpressionUUID->"18e286b1-3d0d-2d48-bb87-49a5348a9d73"]
+}, Open  ]]
+},
+WindowSize->{1909, 1037},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"14.1 for Microsoft Windows (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"d2bc9b78-4f6e-3f4e-a84c-08ac0e7c0343"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 7688, 200, 599, "Input",ExpressionUUID->"d345b13a-15c5-cc4f-8874-896ded0448ec"],
+Cell[CellGroupData[{
+Cell[8289, 226, 226, 4, 22, "Print",ExpressionUUID->"a2869fd6-8db6-2a49-a03b-5f3a4d363944"],
+Cell[8518, 232, 213, 4, 22, "Print",ExpressionUUID->"d7f00504-565c-4442-bab0-a17e9fda199f"],
+Cell[8734, 238, 391, 9, 22, "Print",ExpressionUUID->"dfde02a7-540b-0044-814a-74a9df032f6c"],
+Cell[9128, 249, 429, 10, 22, "Print",ExpressionUUID->"721b1508-941e-2043-9c2c-86bdae872441"],
+Cell[9560, 261, 389, 9, 22, "Print",ExpressionUUID->"045b0469-ad58-b342-8f9c-013e7f2563d5"],
+Cell[9952, 272, 433, 10, 22, "Print",ExpressionUUID->"4381b0a3-0e7a-de48-8f7e-7f59b641c8bb"],
+Cell[10388, 284, 389, 9, 22, "Print",ExpressionUUID->"86b94298-0c36-7645-966d-2dbb516d31e5"],
+Cell[10780, 295, 456, 10, 22, "Print",ExpressionUUID->"0fb17255-3522-1848-ba58-30375d661abd"],
+Cell[11239, 307, 385, 9, 22, "Print",ExpressionUUID->"0e7dbaa0-1fe2-134e-9ceb-e054e9f8b363"],
+Cell[11627, 318, 429, 10, 22, "Print",ExpressionUUID->"7ade366d-ab3d-b349-919b-9b653b950554"],
+Cell[12059, 330, 385, 9, 22, "Print",ExpressionUUID->"d32a9f66-ee22-fd44-93c5-7ebebde6488e"],
+Cell[12447, 341, 434, 10, 22, "Print",ExpressionUUID->"a8570103-4a4a-9d40-82b5-73adf1e91497"],
+Cell[12884, 353, 218, 4, 22, "Print",ExpressionUUID->"d14b1159-fa07-5d47-a16e-76678e15a71a"]
+}, Open  ]],
+Cell[13117, 360, 350, 7, 78, "Output",ExpressionUUID->"18e286b1-3d0d-2d48-bb87-49a5348a9d73"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
