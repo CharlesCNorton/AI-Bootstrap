@@ -1,0 +1,55 @@
+In[149]:= (*Main Program for Symmetry Orbit Entropy (SOE) Calculations*)(*Loading Packages and Dependencies*)Print["Loading packages..."];
+Needs["GroupTheory`"];
+Needs["LieART`"];
+Print["Packages loaded."];
+
+(*Step 1:Define Haar Measures for Groups*)
+haarMeasureSU2:=1/(2 Pi);        (*SU(2) Haar measure*)
+haarMeasureSU3:=1/(2 Pi^2);      (*SU(3) Haar measure*)
+haarMeasureSO3:=1/(4 Pi);        (*SO(3) Haar measure*)
+haarMeasureG2:=1/(16 Pi^3);      (*G2 Haar measure*)
+haarMeasureE8:=1/(240 Pi^7);     (*E8 Haar measure*)
+
+(*Step 2:Density Functions for Entropy Calculations*)
+densitySU2[theta_?NumericQ]:=Sin[theta]+10^-4;
+densitySU3[theta_?NumericQ,phi_?NumericQ]:=Sin[theta]*Cos[phi]^2+10^-4;
+densitySO3[theta_?NumericQ]:=Sin[theta]+10^-4;
+
+(*Step 3:Helper Functions for SOE Calculation*)
+calculateDensityIntegral[density_,range_]:=NIntegrate[density,range];
+calculateLogIntegral[density_,range_]:=NIntegrate[Log[density],range];
+
+(*Step 4:SOE Calculation*)
+CalculateSOE[densityFunc_,measure_,range_]:=Module[{densityIntegral,logIntegral,entropy},densityIntegral=calculateDensityIntegral[densityFunc,range];
+logIntegral=calculateLogIntegral[densityFunc,range];
+entropy=-densityIntegral*logIntegral*measure;
+Print["Density Integral: ",densityIntegral];
+Print["Log Integral: ",logIntegral];
+Print["Entropy (SOE): ",entropy];
+entropy];
+
+(*Step 5:Group-Specific Calculations with SOE*)
+Print["Calculating SOE for SU(2)..."];
+SOE_SU2=CalculateSOE[densitySU2[theta],haarMeasureSU2,{theta,0,Pi}];
+
+Print["Calculating SOE for SU(3)..."];
+SOE_SU3=CalculateSOE[densitySU3[theta,phi],haarMeasureSU3,{theta,0,Pi},{phi,0,2 Pi}];
+
+(*Step 6:Additional Groups*)
+Print["Calculating SOE for SO(3)..."];
+SOE_SO3=CalculateSOE[densitySO3[theta],haarMeasureSO3,{theta,0,Pi}];
+
+Print["All SOE calculations completed."];
+
+During evaluation of In[149]:= Loading packages...
+During evaluation of In[149]:= Packages loaded.
+During evaluation of In[149]:= Calculating SOE for SU(2)...
+During evaluation of In[149]:= Density Integral: 2.00031
+During evaluation of In[149]:= Log Integral: -2.17541
+During evaluation of In[149]:= Entropy (SOE): 0.692562
+During evaluation of In[149]:= Calculating SOE for SU(3)...
+During evaluation of In[149]:= Calculating SOE for SO(3)...
+During evaluation of In[149]:= Density Integral: 2.00031
+During evaluation of In[149]:= Log Integral: -2.17541
+During evaluation of In[149]:= Entropy (SOE): 0.346281
+During evaluation of In[149]:= All SOE calculations completed.
