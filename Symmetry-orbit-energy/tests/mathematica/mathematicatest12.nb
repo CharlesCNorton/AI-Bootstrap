@@ -1,0 +1,207 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[      7076,        197]
+NotebookOptionsPosition[      6585,        180]
+NotebookOutlinePosition[      6989,        196]
+CellTagsIndexPosition[      6946,        193]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Monte", " ", "Carlo", " ", "Simulation", " ", "for", " ", "Parameter", 
+    " ", "Space"}], "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "Define", " ", "a", " ", "broad", " ", "range", " ", "of", " ", 
+    "parameter", " ", "variation"}], "*)"}], 
+  RowBox[{
+   RowBox[{
+    RowBox[{"paramVariations", "=", 
+     RowBox[{"RandomReal", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0.95", ",", "1.05"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"1000", ",", "3"}], "}"}]}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Function", " ", "to", " ", "calculate", " ", "decay", " ", "lifetimes", 
+     " ", "for", " ", "given", " ", "couplings"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"CalculateLifetimesMC", "[", 
+      RowBox[{"alpha1_", ",", "alpha2_", ",", "alpha3_"}], "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "ampEPi0", ",", "ampKNu", ",", "decayRateEPi0", ",", "decayRateKNu", 
+         ",", "lifetimeEPi0", ",", "lifetimeKNu"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"ampEPi0", "=", 
+         RowBox[{"alpha1", "*", 
+          RowBox[{"alpha2", "^", "2"}], "*", 
+          RowBox[{"(", 
+           RowBox[{"1", "/", 
+            RowBox[{"Sqrt", "[", "alpha3", "]"}]}], ")"}]}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"ampKNu", "=", 
+         RowBox[{
+          RowBox[{"alpha1", "^", 
+           RowBox[{"(", 
+            RowBox[{"3", "/", "2"}], ")"}]}], "*", "alpha3", "*", 
+          RowBox[{"(", 
+           RowBox[{"1", "/", 
+            RowBox[{"Sqrt", "[", "alpha2", "]"}]}], ")"}]}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"decayRateEPi0", "=", 
+         RowBox[{
+          RowBox[{"Abs", "[", "ampEPi0", "]"}], "^", "2"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"decayRateKNu", "=", 
+         RowBox[{
+          RowBox[{"Abs", "[", "ampKNu", "]"}], "^", "2"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"lifetimeEPi0", "=", 
+         RowBox[{"1", "/", "decayRateEPi0"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"lifetimeKNu", "=", 
+         RowBox[{"1", "/", "decayRateKNu"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"{", 
+         RowBox[{"lifetimeEPi0", ",", "lifetimeKNu"}], "}"}]}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Perform", " ", "Monte", " ", "Carlo", " ", "over", " ", "parameter", " ",
+      "space", " ", "and", " ", "collect", " ", "statistics"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"lifetimeResults", "=", 
+     RowBox[{"ParallelTable", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"CalculateLifetimesMC", "[", 
+         RowBox[{
+          RowBox[{"alphaGUT1Base", "*", 
+           RowBox[{"paramVariations", "[", 
+            RowBox[{"[", 
+             RowBox[{"i", ",", "1"}], "]"}], "]"}]}], ",", 
+          RowBox[{"alphaGUT2Base", "*", 
+           RowBox[{"paramVariations", "[", 
+            RowBox[{"[", 
+             RowBox[{"i", ",", "2"}], "]"}], "]"}]}], ",", 
+          RowBox[{"alphaGUT3Base", "*", 
+           RowBox[{"paramVariations", "[", 
+            RowBox[{"[", 
+             RowBox[{"i", ",", "3"}], "]"}], "]"}]}]}], "]"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", "1", ",", 
+         RowBox[{"Length", "[", "paramVariations", "]"}]}], "}"}]}], "]"}]}], 
+    ";"}], "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Extract", " ", "results", " ", "for", " ", "statistical", " ", 
+     "analysis"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"lifetimesEPi0", "=", 
+     RowBox[{"lifetimeResults", "[", 
+      RowBox[{"[", 
+       RowBox[{"All", ",", "1", ",", "1"}], "]"}], "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"lifetimesKNu", "=", 
+     RowBox[{"lifetimeResults", "[", 
+      RowBox[{"[", 
+       RowBox[{"All", ",", "1", ",", "2"}], "]"}], "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{
+    "Calculate", " ", "mean", " ", "and", " ", "standard", " ", "deviation", 
+     " ", "for", " ", "both", " ", "channels"}], "*)"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"meanEPi0", "=", 
+     RowBox[{"Mean", "[", "lifetimesEPi0", "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"stdDevEPi0", "=", 
+     RowBox[{"StandardDeviation", "[", "lifetimesEPi0", "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"meanKNu", "=", 
+     RowBox[{"Mean", "[", "lifetimesKNu", "]"}]}], ";"}], "\n", 
+   RowBox[{
+    RowBox[{"stdDevKNu", "=", 
+     RowBox[{"StandardDeviation", "[", "lifetimesKNu", "]"}]}], ";"}], 
+   "\[IndentingNewLine]", "\n", 
+   RowBox[{"(*", 
+    RowBox[{"Display", " ", "results"}], "*)"}], "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"\"\<Mean Lifetime p -> e+ pi0 (years)\>\"", "->", "meanEPi0"}], 
+     ",", 
+     RowBox[{"\"\<Standard Deviation p -> e+ pi0\>\"", "->", "stdDevEPi0"}], 
+     ",", 
+     RowBox[{"\"\<Mean Lifetime p -> K+ nu (years)\>\"", "->", "meanKNu"}], 
+     ",", 
+     RowBox[{"\"\<Standard Deviation p -> K+ nu\>\"", "->", "stdDevKNu"}]}], 
+    "}"}], "\n"}]}]], "Input",
+ CellChangeTimes->{{3.940490316344591*^9, 3.940490316344591*^9}},
+ CellLabel->"In[9]:=",ExpressionUUID->"16711bf7-a930-5b47-b3cb-b571dc3e23c3"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\<\"Mean Lifetime p -> e+ pi0 (years)\"\>", "\[Rule]", 
+    "1.5267629931780273`*^7"}], ",", 
+   RowBox[{"\<\"Standard Deviation p -> e+ pi0\"\>", "\[Rule]", 
+    "1.9919174466698808`*^6"}], ",", 
+   RowBox[{"\<\"Mean Lifetime p -> K+ nu (years)\"\>", "\[Rule]", 
+    "20337.339214330168`"}], ",", 
+   RowBox[{"\<\"Standard Deviation p -> K+ nu\"\>", "\[Rule]", 
+    "2162.230691512976`"}]}], "}"}]], "Output",
+ CellChangeTimes->{3.9404903191243*^9},
+ CellLabel->"Out[18]=",ExpressionUUID->"2a2ee80c-95f5-1646-a836-cca5a2649e07"]
+}, Open  ]]
+},
+WindowSize->{571, 627.5},
+WindowMargins->{{Automatic, 650.5}, {190, Automatic}},
+FrontEndVersion->"14.1 for Microsoft Windows (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"632bcfd0-c58d-4144-b7ea-b9ebb341c1ab"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 5409, 141, 789, "Input",ExpressionUUID->"16711bf7-a930-5b47-b3cb-b571dc3e23c3"],
+Cell[5988, 165, 581, 12, 138, "Output",ExpressionUUID->"2a2ee80c-95f5-1646-a836-cca5a2649e07"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
