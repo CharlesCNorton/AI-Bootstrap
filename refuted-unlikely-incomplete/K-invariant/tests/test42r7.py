@@ -1,7 +1,7 @@
 import numpy as np
 from gudhi import RipsComplex
 from scipy.spatial.distance import pdist, squareform
-from scipy.stats import pearsonr, spearmanr, ks_2samp
+from scipy.stats import ks_2samp
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -23,7 +23,6 @@ class InvariantAnalyzer:
         spaces['sphere_squashed'] = self._sample_stretched_sphere(2, 0.5)
 
         # 2. Geometrically similar, topologically different
-        # Ensure each space gets the full number of points
         spaces['torus_standard'] = self._sample_torus(1, 0.5)
         spaces['double_torus'] = self._sample_connected_tori(2, 1, 0.5)
         spaces['triple_torus'] = self._sample_connected_tori(3, 1, 0.5)
@@ -79,10 +78,7 @@ class InvariantAnalyzer:
         current_offset = 0
 
         for i in range(num_tori):
-            # Add extra point from remainder if needed
             current_points = points_per_torus + (1 if i < remainder else 0)
-
-            # Generate torus points
             theta = 2 * np.pi * np.random.random(current_points)
             phi = 2 * np.pi * np.random.random(current_points)
 
@@ -91,7 +87,7 @@ class InvariantAnalyzer:
             z = r * np.sin(phi)
 
             all_points.append(np.column_stack([x, y, z]))
-            current_offset += 2*R  # Offset for next torus
+            current_offset += 2 * R
 
         return np.vstack(all_points)
 
@@ -104,7 +100,6 @@ class InvariantAnalyzer:
 
     def compute_invariants(self, points):
         """Compute both geometric and topological invariants"""
-        # Geometric invariants
         geometric_invariants = {
             'mean_distance': np.mean(pdist(points)),
             'std_distance': np.std(pdist(points)),
@@ -113,7 +108,6 @@ class InvariantAnalyzer:
             'curvature': self._estimate_curvature(points)
         }
 
-        # Topological invariants
         rips = RipsComplex(points=points, max_edge_length=2.0)
         st = rips.create_simplex_tree(max_dimension=self.max_dim)
         persistence = st.persistence()
@@ -147,11 +141,8 @@ class InvariantAnalyzer:
 
     def _compute_persistence_entropy(self, persistence):
         """Compute persistence entropy"""
-        if not persistence:
-            return 0
-
         lifetimes = np.array([death - birth for _, (birth, death) in persistence
-                            if death != float('inf')])
+                              if death != float('inf')])
         if len(lifetimes) == 0:
             return 0
 
@@ -161,14 +152,8 @@ class InvariantAnalyzer:
 
     def _compute_persistence_landscape(self, persistence):
         """Compute first persistence landscape"""
-        if not persistence:
-            return np.zeros(10)
-
         lifetimes = np.array([death - birth for _, (birth, death) in persistence
-                            if death != float('inf')])
-        if len(lifetimes) == 0:
-            return np.zeros(10)
-
+                              if death != float('inf')])
         t = np.linspace(0, np.max(lifetimes) if len(lifetimes) > 0 else 1, 10)
         landscape = np.zeros_like(t)
 
@@ -180,42 +165,11 @@ class InvariantAnalyzer:
 
     def _compute_bottleneck_distance(self, persistence1, persistence2=None):
         """Compute bottleneck distance to empty diagram"""
-        if not persistence1:
-            return 0
-
         lifetimes = np.array([death - birth for _, (birth, death) in persistence1
-                            if death != float('inf')])
-        if len(lifetimes) == 0:
-            return 0
+                              if death != float('inf')])
+        return np.max(lifetimes) if len(lifetimes) > 0 else 0
 
-        return np.max(lifetimes)
-
-    def analyze_spaces(self):
-        """Perform comprehensive analysis of test spaces"""
-        spaces = self.generate_test_spaces()
-        results = {}
-
-        print("Computing invariants for all spaces...")
-        for name, points in tqdm(spaces.items()):
-            geometric, topological = self.compute_invariants(points)
-            results[name] = {
-                'geometric': geometric,
-                'topological': topological,
-                'points': points
-            }
-
-        # Analyze correlations
-        correlations = self._analyze_correlations(results)
-
-        # Analyze geometric vs topological separation
-        separation = self._analyze_separation(results)
-
-        # Analyze random space behavior
-        random_analysis = self._analyze_random_behavior(results)
-
-        return results, correlations, separation, random_analysis
-
-    def _analyze_correlations(self, results):
+    def analyze_correlations(self, results):
         """Analyze correlations between invariants"""
         invariant_names = []
         invariant_values = []
@@ -224,13 +178,11 @@ class InvariantAnalyzer:
             values = []
             names = []
 
-            # Geometric invariants
             for name, value in space_results['geometric'].items():
                 if isinstance(value, (int, float)):
                     values.append(value)
                     names.append(f'geo_{name}')
 
-            # Topological invariants
             for name, value in space_results['topological'].items():
                 if isinstance(value, (int, float)):
                     values.append(value)
@@ -243,7 +195,6 @@ class InvariantAnalyzer:
                 invariant_names = names
             invariant_values.append(values)
 
-        # Compute correlation matrix
         corr_matrix = np.corrcoef(np.array(invariant_values).T)
 
         return {
@@ -251,33 +202,20 @@ class InvariantAnalyzer:
             'matrix': corr_matrix
         }
 
-    def _analyze_separation(self, results):
+    def analyze_separation(self, results):
         """Analyze separation between geometric and topological features"""
         geometric_features = []
         topological_features = []
         labels = []
 
         for space_name, space_results in results.items():
-            geo_vector = []
-            top_vector = []
-
-            # Geometric features
-            for name, value in space_results['geometric'].items():
-                if isinstance(value, (int, float)):
-                    geo_vector.append(value)
-
-            # Topological features
-            for name, value in space_results['topological'].items():
-                if isinstance(value, (int, float)):
-                    top_vector.append(value)
-                elif isinstance(value, np.ndarray) and len(value.shape) == 1:
-                    top_vector.extend(value)
+            geo_vector = [v for k, v in space_results['geometric'].items() if isinstance(v, (int, float))]
+            top_vector = [v for k, v in space_results['topological'].items() if isinstance(v, (int, float))]
 
             geometric_features.append(geo_vector)
             topological_features.append(top_vector)
             labels.append(space_name)
 
-        # Perform PCA
         pca_geo = PCA(n_components=2).fit_transform(geometric_features)
         pca_top = PCA(n_components=2).fit_transform(topological_features)
 
@@ -287,19 +225,15 @@ class InvariantAnalyzer:
             'labels': labels
         }
 
-    def _analyze_random_behavior(self, results):
+    def analyze_random_behavior(self, results):
         """Analyze why random spaces show similar behavior"""
         random_spaces = ['random_uniform', 'random_normal', 'random_sphere']
         structured_spaces = [name for name in results.keys() if name not in random_spaces]
 
-        distributions = {
-            'geometric': {},
-            'topological': {}
-        }
+        distributions = {'geometric': {}, 'topological': {}}
 
         for space_type in ['random', 'structured']:
             spaces = random_spaces if space_type == 'random' else structured_spaces
-
             for space_name in spaces:
                 for inv_type in ['geometric', 'topological']:
                     for name, value in results[space_name][inv_type].items():
@@ -308,11 +242,7 @@ class InvariantAnalyzer:
                                 distributions[inv_type][name] = {'random': [], 'structured': []}
                             distributions[inv_type][name][space_type].append(value)
 
-        # Compute KS statistics
-        ks_stats = {
-            'geometric': {},
-            'topological': {}
-        }
+        ks_stats = {'geometric': {}, 'topological': {}}
 
         for inv_type in ['geometric', 'topological']:
             for name, dist in distributions[inv_type].items():
@@ -320,42 +250,36 @@ class InvariantAnalyzer:
                     stat, pval = ks_2samp(dist['random'], dist['structured'])
                     ks_stats[inv_type][name] = {'statistic': stat, 'pvalue': pval}
 
-        return {
-            'distributions': distributions,
-            'ks_stats': ks_stats
-        }
+        return {'distributions': distributions, 'ks_stats': ks_stats}
 
     def visualize_results(self, results, correlations, separation, random_analysis):
         """Create comprehensive visualizations"""
         plt.figure(figsize=(20, 15))
 
-        # 1. Correlation heatmap
         plt.subplot(221)
         sns.heatmap(correlations['matrix'],
-                   xticklabels=correlations['names'],
-                   yticklabels=correlations['names'])
+                    xticklabels=correlations['names'],
+                    yticklabels=correlations['names'])
         plt.title('Correlation between Invariants')
         plt.xticks(rotation=90)
         plt.yticks(rotation=0)
 
-        # 2. Geometric vs Topological PCA
         plt.subplot(222)
         for i, label in enumerate(separation['labels']):
             plt.scatter(separation['geometric_pca'][i, 0],
-                       separation['geometric_pca'][i, 1],
-                       label=label)
+                        separation['geometric_pca'][i, 1],
+                        label=label)
         plt.title('PCA of Geometric Features')
         plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 
-        # 3. Random vs Structured Distributions
         plt.subplot(223)
         x_pos = np.arange(len(random_analysis['ks_stats']['geometric']))
         for inv_type in ['geometric', 'topological']:
             stats = [v['statistic'] for v in random_analysis['ks_stats'][inv_type].values()]
             plt.bar(x_pos + (0.4 if inv_type == 'topological' else 0),
-                   stats,
-                   width=0.4,
-                   label=inv_type)
+                    stats,
+                    width=0.4,
+                    label=inv_type)
             x_pos = np.arange(len(stats))
         plt.title('KS Statistics: Random vs Structured')
         plt.xticks(x_pos + 0.4, list(random_analysis['ks_stats']['geometric'].keys()), rotation=45)
@@ -366,24 +290,21 @@ class InvariantAnalyzer:
 
 def main():
     analyzer = InvariantAnalyzer(num_points=100, max_dim=5, num_trials=50)
-    results, correlations, separation, random_analysis = analyzer.analyze_spaces()
+    results = analyzer.generate_test_spaces()
+    print("Generated Test Spaces")
 
-    print("\nCorrelation Analysis:")
-    high_correlations = []
-    for i, name1 in enumerate(correlations['names']):
-        for j, name2 in enumerate(correlations['names']):
-            if i < j and abs(correlations['matrix'][i,j]) > 0.9:
-                high_correlations.append((name1, name2, correlations['matrix'][i,j]))
+    for name, points in results.items():
+        geometric, topological = analyzer.compute_invariants(points)
+        print(f"Invariants computed for space: {name}")
 
-    print("\nHighly correlated invariants (|r| > 0.9):")
-    for name1, name2, corr in high_correlations:
-        print(f"{name1} - {name2}: {corr:.3f}")
+    correlations = analyzer.analyze_correlations(results)
+    print("Correlations Analyzed")
 
-    print("\nRandom vs Structured Analysis:")
-    for inv_type in ['geometric', 'topological']:
-        print(f"\n{inv_type.capitalize()} Invariants:")
-        for name, stats in random_analysis['ks_stats'][inv_type].items():
-            print(f"{name}: KS stat = {stats['statistic']:.3f}, p-value = {stats['pvalue']:.3f}")
+    separation = analyzer.analyze_separation(results)
+    print("Geometric vs Topological Separation Analyzed")
+
+    random_analysis = analyzer.analyze_random_behavior(results)
+    print("Random vs Structured Behavior Analyzed")
 
     analyzer.visualize_results(results, correlations, separation, random_analysis)
 
