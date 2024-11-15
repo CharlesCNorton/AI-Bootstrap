@@ -1,0 +1,923 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     38988,        913]
+NotebookOptionsPosition[     36014,        868]
+NotebookOutlinePosition[     36416,        884]
+CellTagsIndexPosition[     36373,        881]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{"Block", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"$IterationLimit", "=", "\[Infinity]"}], ",", 
+     RowBox[{"$RecursionLimit", "=", "\[Infinity]"}]}], "}"}], ",", 
+   RowBox[{"(*", 
+    RowBox[{"Core", " ", "parameters"}], "*)"}], 
+   RowBox[{
+    RowBox[{"dimensions", "=", 
+     RowBox[{"Range", "[", 
+      RowBox[{"1", ",", "20"}], "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"sampleSize", "=", "1000"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"tolerance", "=", 
+     RowBox[{"10", "^", 
+      RowBox[{"-", "6"}]}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Basic", " ", "path", " ", "space"}], "*)"}], 
+    RowBox[{
+     RowBox[{"pathSpace", "[", 
+      RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"dist", "=", 
+          RowBox[{"Norm", "[", 
+           RowBox[{"x", "-", "y"}], "]"}]}], ",", 
+         RowBox[{"dim", "=", 
+          RowBox[{"Length", "[", "x", "]"}]}]}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"IdentityMatrix", "[", "dim", "]"}], "+", 
+        RowBox[{"0.01", "*", 
+         RowBox[{"Exp", "[", 
+          RowBox[{
+           RowBox[{"-", "0.3"}], "*", "dist"}], "]"}], "*", 
+         RowBox[{
+          RowBox[{"RandomReal", "[", 
+           RowBox[{
+            RowBox[{"{", 
+             RowBox[{
+              RowBox[{"-", "0.1"}], ",", "0.1"}], "}"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"dim", ",", "dim"}], "}"}]}], "]"}], "/", 
+          RowBox[{"(", 
+           RowBox[{"1", "+", 
+            RowBox[{"0.01", "*", "dim"}]}], ")"}]}]}]}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Core", " ", "tests"}], "*)"}], 
+    RowBox[{
+     RowBox[{"testReflexivity", "[", "dim_", "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"points", ",", "paths"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"points", "=", 
+         RowBox[{"RandomReal", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"sampleSize", ",", "dim"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"paths", "=", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"pathSpace", "[", 
+             RowBox[{"#", ",", "#"}], "]"}], "&"}], ",", "points"}], "]"}]}], 
+        ";", "\[IndentingNewLine]", 
+        RowBox[{"N", "[", 
+         RowBox[{"Mean", "[", 
+          RowBox[{"Map", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"1", "-", 
+              RowBox[{"Norm", "[", 
+               RowBox[{"#", "-", 
+                RowBox[{"IdentityMatrix", "[", "dim", "]"}]}], "]"}]}], "&"}],
+             ",", "paths"}], "]"}], "]"}], "]"}]}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"testSymmetry", "[", "dim_", "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"points1", ",", "points2", ",", "paths1", ",", "paths2"}], 
+        "}"}], ",", 
+       RowBox[{
+        RowBox[{"points1", "=", 
+         RowBox[{"RandomReal", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"sampleSize", ",", "dim"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"points2", "=", 
+         RowBox[{"RandomReal", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"sampleSize", ",", "dim"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"paths1", "=", 
+         RowBox[{"MapThread", "[", 
+          RowBox[{"pathSpace", ",", 
+           RowBox[{"{", 
+            RowBox[{"points1", ",", "points2"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"paths2", "=", 
+         RowBox[{"MapThread", "[", 
+          RowBox[{"pathSpace", ",", 
+           RowBox[{"{", 
+            RowBox[{"points2", ",", "points1"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"N", "[", 
+         RowBox[{"Mean", "[", 
+          RowBox[{"MapThread", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"1", "-", 
+              RowBox[{"Norm", "[", 
+               RowBox[{"#1", "-", 
+                RowBox[{"Transpose", "[", "#2", "]"}]}], "]"}]}], "&"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"paths1", ",", "paths2"}], "}"}]}], "]"}], "]"}], 
+         "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"testTransitivity", "[", "dim_", "]"}], ":=", 
+     RowBox[{"Module", "[", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+        "points1", ",", "points2", ",", "points3", ",", "paths12", ",", 
+         "paths23", ",", "paths13"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"points1", "=", 
+         RowBox[{"RandomReal", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"sampleSize", ",", "dim"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"points2", "=", 
+         RowBox[{"RandomReal", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"sampleSize", ",", "dim"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"points3", "=", 
+         RowBox[{"RandomReal", "[", 
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"sampleSize", ",", "dim"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"paths12", "=", 
+         RowBox[{"MapThread", "[", 
+          RowBox[{"pathSpace", ",", 
+           RowBox[{"{", 
+            RowBox[{"points1", ",", "points2"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"paths23", "=", 
+         RowBox[{"MapThread", "[", 
+          RowBox[{"pathSpace", ",", 
+           RowBox[{"{", 
+            RowBox[{"points2", ",", "points3"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"paths13", "=", 
+         RowBox[{"MapThread", "[", 
+          RowBox[{"pathSpace", ",", 
+           RowBox[{"{", 
+            RowBox[{"points1", ",", "points3"}], "}"}]}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"N", "[", 
+         RowBox[{"Mean", "[", 
+          RowBox[{"MapThread", "[", 
+           RowBox[{
+            RowBox[{
+             RowBox[{"1", "-", 
+              RowBox[{"Norm", "[", 
+               RowBox[{
+                RowBox[{"#1", ".", "#2"}], "-", "#3"}], "]"}]}], "&"}], ",", 
+            RowBox[{"{", 
+             RowBox[{"paths12", ",", "paths23", ",", "paths13"}], "}"}]}], 
+           "]"}], "]"}], "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Execute", " ", "tests"}], "*)"}], 
+    RowBox[{
+    "Print", "[", "\"\<Computing results for dimensions 1 to 20...\>\"", 
+     "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"results", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Print", "[", 
+         RowBox[{"\"\<Processing dimension \>\"", ",", "dim"}], "]"}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"\"\<Dimension\>\"", "->", "dim"}], ",", 
+          RowBox[{"\"\<Reflexivity\>\"", "->", 
+           RowBox[{"testReflexivity", "[", "dim", "]"}]}], ",", 
+          RowBox[{"\"\<Symmetry\>\"", "->", 
+           RowBox[{"testSymmetry", "[", "dim", "]"}]}], ",", 
+          RowBox[{"\"\<Transitivity\>\"", "->", 
+           RowBox[{"testTransitivity", "[", "dim", "]"}]}], ",", 
+          RowBox[{"\"\<TheoreticalDecay\>\"", "->", 
+           RowBox[{"Exp", "[", 
+            RowBox[{
+             RowBox[{"-", "0.3"}], "*", "dim"}], "]"}]}], ",", 
+          RowBox[{"\"\<ExperimentalDecay\>\"", "->", 
+           RowBox[{"Exp", "[", 
+            RowBox[{
+             RowBox[{"-", "0.114169"}], "*", "dim"}], "]"}]}]}], "}"}]}], ",", 
+       RowBox[{"{", 
+        RowBox[{"dim", ",", "dimensions"}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Compute", " ", "decay", " ", "rates"}], "*)"}], 
+    RowBox[{"decayRates", "=", 
+     RowBox[{"Table", "[", 
+      RowBox[{
+       RowBox[{"With", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"d", "=", 
+           RowBox[{"dimensions", "[", 
+            RowBox[{"[", "i", "]"}], "]"}]}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"\"\<Dimension\>\"", "->", "d"}], ",", 
+           RowBox[{"\"\<TheoreticalRate\>\"", "->", "0.3"}], ",", 
+           RowBox[{"\"\<ExperimentalRate\>\"", "->", "0.114169"}], ",", 
+           RowBox[{"\"\<ObservedRate\>\"", "->", 
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{"i", ">", "1"}], ",", 
+              RowBox[{"-", 
+               RowBox[{"Log", "[", 
+                RowBox[{
+                 RowBox[{"Mean", "[", 
+                  RowBox[{"Values", "[", 
+                   RowBox[{"Rest", "[", 
+                    RowBox[{"results", "[", 
+                    RowBox[{"[", "i", "]"}], "]"}], "]"}], "]"}], "]"}], "/", 
+                 RowBox[{"Mean", "[", 
+                  RowBox[{"Values", "[", 
+                   RowBox[{"Rest", "[", 
+                    RowBox[{"results", "[", 
+                    RowBox[{"[", 
+                    RowBox[{"i", "-", "1"}], "]"}], "]"}], "]"}], "]"}], 
+                  "]"}]}], "]"}]}], ",", "Null"}], "]"}]}]}], "}"}]}], "]"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{"i", ",", 
+         RowBox[{"Length", "[", "dimensions", "]"}]}], "}"}]}], "]"}]}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Output", " ", "results"}], "*)"}], 
+    RowBox[{"Print", "[", "\"\<\\nTest Results:\>\"", "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"TableForm", "[", "results", "]"}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", "\"\<\\nDecay Rate Analysis:\>\"", "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"TableForm", "[", "decayRates", "]"}], "]"}], ";", 
+    "\[IndentingNewLine]", 
+    RowBox[{"(*", 
+     RowBox[{"Compute", " ", "final", " ", "statistics"}], "*)"}], 
+    RowBox[{"metaPathConsistency", "=", 
+     RowBox[{"N", "[", 
+      RowBox[{"Mean", "[", 
+       RowBox[{"Map", "[", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+           RowBox[{"Mean", "[", 
+            RowBox[{"Values", "[", 
+             RowBox[{"Rest", "[", "#", "]"}], "]"}], "]"}], "*", 
+           RowBox[{"Exp", "[", 
+            RowBox[{
+             RowBox[{"-", "0.3"}], "*", 
+             RowBox[{"First", "[", 
+              RowBox[{"Values", "[", "#", "]"}], "]"}]}], "]"}]}], "&"}], ",",
+          "results"}], "]"}], "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{
+     "\"\<\\nMeta-Path Consistency Score: \>\"", ",", "metaPathConsistency"}],
+      "]"}], ";", "\[IndentingNewLine]", 
+    RowBox[{"Print", "[", 
+     RowBox[{"\"\<\\nObserved \[Gamma] = \>\"", ",", 
+      RowBox[{"Mean", "[", 
+       RowBox[{"Cases", "[", 
+        RowBox[{"decayRates", ",", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"\"\<Dimension\>\"", "->", "_"}], ",", 
+             RowBox[{"\"\<TheoreticalRate\>\"", "->", "_"}], ",", 
+             RowBox[{"\"\<ExperimentalRate\>\"", "->", "_"}], ",", 
+             RowBox[{"\"\<ObservedRate\>\"", "->", "x_"}]}], "}"}], "/;", 
+           RowBox[{"x", "=!=", "Null"}]}], ":>", "x"}]}], "]"}], "]"}]}], 
+     "]"}], ";"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.9406664757154827`*^9, 3.940666475716484*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"6a811e97-2868-8341-b53a-9d17e143455b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Computing results for dimensions 1 to 20...\"\>"], "Print",
+ CellChangeTimes->{3.9406664765314846`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"08f318a0-be0b-5b47-9397-010172db795b"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "1"}],
+  SequenceForm["Processing dimension ", 1],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666476537483*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"72c9eb18-8b7a-1240-becf-e655f56e22ef"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "2"}],
+  SequenceForm["Processing dimension ", 2],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666476685484*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"f2216232-2b69-6f4c-a728-c9454a96bcb9"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "3"}],
+  SequenceForm["Processing dimension ", 3],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666476826559*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"9d60e584-f4db-b24e-9b43-52c4a40c5cb6"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "4"}],
+  SequenceForm["Processing dimension ", 4],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664769685593`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"2b604e03-a40b-8041-9964-0e5b59c41006"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "5"}],
+  SequenceForm["Processing dimension ", 5],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664771158657`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"33afc498-c181-a246-8c2d-2fb0aafa4973"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "6"}],
+  SequenceForm["Processing dimension ", 6],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664772658653`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"e1a446c4-3c3c-0840-a41c-e0101a5ad667"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "7"}],
+  SequenceForm["Processing dimension ", 7],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664774178658`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"7b27b99e-f4e9-e64d-91ff-ab3b565d3fd0"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "8"}],
+  SequenceForm["Processing dimension ", 8],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664775778656`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"dc87c0dd-f07c-a54a-a55c-4bea82aa70b1"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "9"}],
+  SequenceForm["Processing dimension ", 9],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666477741865*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"7ffcd471-e93a-ab45-addf-fd3d7da2db5a"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "10"}],
+  SequenceForm["Processing dimension ", 10],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664779189568`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"da040900-db4f-be49-b4a6-f1fec495cd0c"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "11"}],
+  SequenceForm["Processing dimension ", 11],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664781069584`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"07375c60-5ac8-b241-b419-9411182dd8fa"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "12"}],
+  SequenceForm["Processing dimension ", 12],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666478300247*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"a9025652-65ef-4445-81fe-1b6f0b249054"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "13"}],
+  SequenceForm["Processing dimension ", 13],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.94066647850025*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"91f93c76-f1c3-044e-9f91-25888a6c93b5"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "14"}],
+  SequenceForm["Processing dimension ", 14],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666478703249*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"b6606c90-24f3-5042-8908-3a83bb92ae24"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "15"}],
+  SequenceForm["Processing dimension ", 15],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666478917248*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"060243ba-64fc-8142-b739-88f7b4fd2077"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "16"}],
+  SequenceForm["Processing dimension ", 16],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666479147249*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"dab1558c-a9b5-4344-bde3-68ebe0890219"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "17"}],
+  SequenceForm["Processing dimension ", 17],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664793952503`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"fd7923f7-76f2-5e46-94dc-78bd32f8ea53"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "18"}],
+  SequenceForm["Processing dimension ", 18],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664796407967`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"451f57cc-4550-a042-bbfa-c4cb41d309cf"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "19"}],
+  SequenceForm["Processing dimension ", 19],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666479903797*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"afef2103-13ac-f742-8be2-9ce979bb64f5"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"Processing dimension \"\>", "\[InvisibleSpace]", "20"}],
+  SequenceForm["Processing dimension ", 20],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666480179796*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"a6ba418b-bc57-9747-a41d-98e080a55e7f"],
+
+Cell[BoxData["\<\"\\nTest Results:\"\>"], "Print",
+ CellChangeTimes->{3.9406664804757977`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"3f601060-e7f0-d845-97a5-dc231d37160d"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "1"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9995145430013102`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.99944643258256`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9993349683825493`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.7408182206817179`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.8921071770290362`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "2"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9989742734842121`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9989225343745698`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9987079316305303`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.5488116360940265`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.7958552153067161`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "3"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9986169901065307`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9986552905405106`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9983266213102224`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.40656965974059917`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.7099881494511102`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "4"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.998305501268971`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9984511722564521`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9980888808219184`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.30119421191220214`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.6333855237308994`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "5"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9980527468596181`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.998336739292464`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9979420885244331`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.22313016014842982`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.5650477715466302`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "6"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9978181867132703`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.998217658022506`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9978300326253098`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.16529888822158656`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.5040831723610121`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "7"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9976129683670126`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9981570159434785`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9977269218531224`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.1224564282529819`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.44969621588282355`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "8"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.997423911577067`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980942946205915`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9976623347466065`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.09071795328941251`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.40117722167186576`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "9"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9972600504564636`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.998066104249549`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.997620029931432`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.06720551273974978`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.35789307871403997`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "10"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9971069521025`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980558383305458`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9975826111724421`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.049787068367863944`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.31927898412981287`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "11"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9969800577150861`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980281028289479`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9975738027732926`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.036883167401240015`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.2848310732167458`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "12"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9968396811392323`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980301314339404`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.997541109278361`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.02732372244729257`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.2540998446575418`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "13"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9967210339750578`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980122051704668`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9975543878591896`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.02024191144580439`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.22668429510095625`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "14"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9966085352864497`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980097847211836`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.997548588722801`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.014995576820477703`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.20222668657933102`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "15"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9964927443468599`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980050705169197`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9975552806674605`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.011108996538242306`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.18040787848422268`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "16"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.996390227726818`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980127520260391`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9975569029130374`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.00822974704902003`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.1609431631883573`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "17"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9963054603412281`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980355397196994`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9975761908429435`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.006096746565515638`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.14357855097408892`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "18"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9962077493044798`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980449010923887`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9975723139186127`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.00451658094261267`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.128087455791414`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "19"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.996129022859639`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980643034059722`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9976214452946642`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", "0.003345965457471272`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.11426773859890983`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "20"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9960470759501586`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9980785269120223`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9976170583532613`"}], 
+     RowBox[{"\<\"TheoreticalDecay\"\>", "\[Rule]", 
+      "0.0024787521766663585`"}], 
+     RowBox[{"\<\"ExperimentalDecay\"\>", "\[Rule]", "0.10193906970696529`"}]}
+   },
+   GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+   GridBoxSpacings->{"Columns" -> {
+       Offset[0.27999999999999997`], {
+        Offset[2.0999999999999996`]}, 
+       Offset[0.27999999999999997`]}, "Rows" -> {
+       Offset[0.2], {
+        Offset[0.4]}, 
+       Offset[0.2]}}],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Print",
+ CellChangeTimes->{3.9406664804917965`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"9b6f40de-de15-1c44-8b4e-b85ec9400047"],
+
+Cell[BoxData["\<\"\\nDecay Rate Analysis:\"\>"], "Print",
+ CellChangeTimes->{3.9406664805057964`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"0ae65ce8-7319-1e44-9a93-5ac5cffce3d6"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "1"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "Null"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "2"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.06465332352039443`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "3"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.054219660376150336`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "4"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.045454459570753995`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "5"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.03810549861576809`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "6"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.03203751129580771`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "7"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.027003929315315117`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "8"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.022856469112252375`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "9"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.01942108551195275`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "10"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.016588732747422622`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "11"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.014234657352952663`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "12"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.012283370080661118`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "13"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.010631268115929368`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "14"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.009250026417168234`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "15"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.008077430617349312`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "16"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.007072757233799237`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "17"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.0062006088458241085`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "18"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.005478286452757278`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "19"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.004812607423730807`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "20"}], 
+     RowBox[{"\<\"TheoreticalRate\"\>", "\[Rule]", "0.3`"}], 
+     RowBox[{"\<\"ExperimentalRate\"\>", "\[Rule]", "0.114169`"}], 
+     RowBox[{"\<\"ObservedRate\"\>", "\[Rule]", "0.00427614939482795`"}]}
+   },
+   GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+   GridBoxSpacings->{"Columns" -> {
+       Offset[0.27999999999999997`], {
+        Offset[2.0999999999999996`]}, 
+       Offset[0.27999999999999997`]}, "Rows" -> {
+       Offset[0.2], {
+        Offset[0.4]}, 
+       Offset[0.2]}}],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Print",
+ CellChangeTimes->{3.940666480507799*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"0fa5a11f-1bfc-bd42-bee9-a3961eb2f98b"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\\nMeta-Path Consistency Score: \"\>", "\[InvisibleSpace]", 
+   "0.11706351506550124`"}],
+  SequenceForm["\nMeta-Path Consistency Score: ", 0.11706351506550124`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.940666480509796*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"452e049f-780a-6e46-9741-f6bfcf9f9593"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\\nObserved \[Gamma] = \"\>", "\[InvisibleSpace]", 
+   "0.021192517473727236`"}],
+  SequenceForm["\nObserved \[Gamma] = ", 0.021192517473727236`],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406664805107975`*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"87791774-a41d-7a4f-81c4-91eb50d5d0d7"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{571, 627.5},
+WindowMargins->{{669, Automatic}, {Automatic, 197}},
+FrontEndVersion->"14.1 for Microsoft Windows (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"7c692077-3882-5546-97b1-7c81d64dc49e"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 12319, 323, 1303, "Input",ExpressionUUID->"6a811e97-2868-8341-b53a-9d17e143455b"],
+Cell[CellGroupData[{
+Cell[12920, 349, 225, 4, 22, "Print",ExpressionUUID->"08f318a0-be0b-5b47-9397-010172db795b"],
+Cell[13148, 355, 324, 8, 22, "Print",ExpressionUUID->"72c9eb18-8b7a-1240-becf-e655f56e22ef"],
+Cell[13475, 365, 324, 8, 22, "Print",ExpressionUUID->"f2216232-2b69-6f4c-a728-c9454a96bcb9"],
+Cell[13802, 375, 324, 8, 22, "Print",ExpressionUUID->"9d60e584-f4db-b24e-9b43-52c4a40c5cb6"],
+Cell[14129, 385, 326, 8, 22, "Print",ExpressionUUID->"2b604e03-a40b-8041-9964-0e5b59c41006"],
+Cell[14458, 395, 326, 8, 22, "Print",ExpressionUUID->"33afc498-c181-a246-8c2d-2fb0aafa4973"],
+Cell[14787, 405, 326, 8, 22, "Print",ExpressionUUID->"e1a446c4-3c3c-0840-a41c-e0101a5ad667"],
+Cell[15116, 415, 326, 8, 22, "Print",ExpressionUUID->"7b27b99e-f4e9-e64d-91ff-ab3b565d3fd0"],
+Cell[15445, 425, 326, 8, 22, "Print",ExpressionUUID->"dc87c0dd-f07c-a54a-a55c-4bea82aa70b1"],
+Cell[15774, 435, 324, 8, 22, "Print",ExpressionUUID->"7ffcd471-e93a-ab45-addf-fd3d7da2db5a"],
+Cell[16101, 445, 328, 8, 22, "Print",ExpressionUUID->"da040900-db4f-be49-b4a6-f1fec495cd0c"],
+Cell[16432, 455, 328, 8, 22, "Print",ExpressionUUID->"07375c60-5ac8-b241-b419-9411182dd8fa"],
+Cell[16763, 465, 326, 8, 22, "Print",ExpressionUUID->"a9025652-65ef-4445-81fe-1b6f0b249054"],
+Cell[17092, 475, 325, 8, 22, "Print",ExpressionUUID->"91f93c76-f1c3-044e-9f91-25888a6c93b5"],
+Cell[17420, 485, 326, 8, 22, "Print",ExpressionUUID->"b6606c90-24f3-5042-8908-3a83bb92ae24"],
+Cell[17749, 495, 326, 8, 22, "Print",ExpressionUUID->"060243ba-64fc-8142-b739-88f7b4fd2077"],
+Cell[18078, 505, 326, 8, 22, "Print",ExpressionUUID->"dab1558c-a9b5-4344-bde3-68ebe0890219"],
+Cell[18407, 515, 328, 8, 22, "Print",ExpressionUUID->"fd7923f7-76f2-5e46-94dc-78bd32f8ea53"],
+Cell[18738, 525, 328, 8, 22, "Print",ExpressionUUID->"451f57cc-4550-a042-bbfa-c4cb41d309cf"],
+Cell[19069, 535, 326, 8, 22, "Print",ExpressionUUID->"afef2103-13ac-f742-8be2-9ce979bb64f5"],
+Cell[19398, 545, 326, 8, 22, "Print",ExpressionUUID->"a6ba418b-bc57-9747-a41d-98e080a55e7f"],
+Cell[19727, 555, 198, 4, 39, "Print",ExpressionUUID->"3f601060-e7f0-d845-97a5-dc231d37160d"],
+Cell[19928, 561, 9245, 157, 314, "Print",ExpressionUUID->"9b6f40de-de15-1c44-8b4e-b85ec9400047"],
+Cell[29176, 720, 205, 4, 39, "Print",ExpressionUUID->"0ae65ce8-7319-1e44-9a93-5ac5cffce3d6"],
+Cell[29384, 726, 5836, 116, 314, "Print",ExpressionUUID->"0fa5a11f-1bfc-bd42-bee9-a3961eb2f98b"],
+Cell[35223, 844, 387, 9, 39, "Print",ExpressionUUID->"452e049f-780a-6e46-9741-f6bfcf9f9593"],
+Cell[35613, 855, 373, 9, 39, "Print",ExpressionUUID->"87791774-a41d-7a4f-81c4-91eb50d5d0d7"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+

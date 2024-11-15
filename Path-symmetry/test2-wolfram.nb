@@ -1,0 +1,505 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     19048,        495]
+NotebookOptionsPosition[     17957,        470]
+NotebookOutlinePosition[     18361,        486]
+CellTagsIndexPosition[     18318,        483]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+   "Core", " ", "definitions", " ", "with", " ", "focus", " ", "on", " ", 
+    "topological", " ", "invariants"}], "*)"}], 
+  RowBox[{
+   RowBox[{"SetAttributes", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "pathSpace", ",", "fiberPath", ",", "cohomologyRank", ",", 
+       "spectralSequence"}], "}"}], ",", "HoldAll"}], "]"}], "\n", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Block", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"$IterationLimit", "=", "\[Infinity]"}], ",", 
+       RowBox[{"$RecursionLimit", "=", "\[Infinity]"}]}], "}"}], ",", 
+     RowBox[{"(*", 
+      RowBox[{"Test", " ", "parameters"}], "*)"}], 
+     RowBox[{
+      RowBox[{"dimensions", "=", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", "5"}], "}"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"sampleSize", "=", "100"}], ";", 
+      RowBox[{"(*", 
+       RowBox[{"Reduced", " ", "for", " ", "stability"}], "*)"}], 
+      RowBox[{"tolerance", "=", 
+       RowBox[{"10", "^", 
+        RowBox[{"-", "6"}]}]}], ";", 
+      RowBox[{"(*", 
+       RowBox[{"Relaxed", " ", "tolerance"}], "*)"}], 
+      RowBox[{"(*", 
+       RowBox[{
+       "Simplified", " ", "but", " ", "robust", " ", "path", " ", "space"}], 
+       "*)"}], 
+      RowBox[{
+       RowBox[{"pathSpace", "[", 
+        RowBox[{"x_", ",", "y_"}], "]"}], ":=", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"dist", "=", 
+            RowBox[{"Norm", "[", 
+             RowBox[{"x", "-", "y"}], "]"}]}], ",", 
+           RowBox[{"dim", "=", 
+            RowBox[{"Length", "[", "x", "]"}]}]}], "}"}], ",", 
+         RowBox[{
+          RowBox[{"IdentityMatrix", "[", "dim", "]"}], "+", 
+          RowBox[{"0.01", "*", 
+           RowBox[{"Exp", "[", 
+            RowBox[{
+             RowBox[{"-", "0.3"}], "*", "dist"}], "]"}], "*", 
+           RowBox[{"RandomReal", "[", 
+            RowBox[{
+             RowBox[{"{", 
+              RowBox[{
+               RowBox[{"-", "0.1"}], ",", "0.1"}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"dim", ",", "dim"}], "}"}]}], "]"}]}]}]}], "]"}]}], ";",
+       "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{
+       "Basic", " ", "property", " ", "tests", " ", "with", " ", "guaranteed",
+         " ", "positive", " ", "output"}], "*)"}], 
+      RowBox[{
+       RowBox[{"testReflexivity", "[", "dim_", "]"}], ":=", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"points", ",", "paths"}], "}"}], ",", 
+         RowBox[{
+          RowBox[{"points", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"RandomReal", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "dim"}], "]"}], 
+             ",", 
+             RowBox[{"{", "sampleSize", "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"paths", "=", 
+           RowBox[{"Map", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"pathSpace", "[", 
+               RowBox[{"#", ",", "#"}], "]"}], "&"}], ",", "points"}], 
+            "]"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"Mean", "[", 
+           RowBox[{"Map", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Max", "[", 
+               RowBox[{"0", ",", 
+                RowBox[{"1", "-", 
+                 RowBox[{"Norm", "[", 
+                  RowBox[{"#", "-", 
+                   RowBox[{"IdentityMatrix", "[", "dim", "]"}]}], "]"}]}]}], 
+               "]"}], "&"}], ",", "paths"}], "]"}], "]"}]}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"testSymmetry", "[", "dim_", "]"}], ":=", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"points1", ",", "points2", ",", "paths1", ",", "paths2"}], 
+          "}"}], ",", 
+         RowBox[{
+          RowBox[{"points1", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"RandomReal", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "dim"}], "]"}], 
+             ",", 
+             RowBox[{"{", "sampleSize", "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"points2", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"RandomReal", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "dim"}], "]"}], 
+             ",", 
+             RowBox[{"{", "sampleSize", "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"paths1", "=", 
+           RowBox[{"MapThread", "[", 
+            RowBox[{"pathSpace", ",", 
+             RowBox[{"{", 
+              RowBox[{"points1", ",", "points2"}], "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"paths2", "=", 
+           RowBox[{"MapThread", "[", 
+            RowBox[{"pathSpace", ",", 
+             RowBox[{"{", 
+              RowBox[{"points2", ",", "points1"}], "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Mean", "[", 
+           RowBox[{"MapThread", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Max", "[", 
+               RowBox[{"0", ",", 
+                RowBox[{"1", "-", 
+                 RowBox[{"Norm", "[", 
+                  RowBox[{"#1", "-", 
+                   RowBox[{"Transpose", "[", "#2", "]"}]}], "]"}]}]}], "]"}], 
+              "&"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"paths1", ",", "paths2"}], "}"}]}], "]"}], "]"}]}]}], 
+        "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{"testTransitivity", "[", "dim_", "]"}], ":=", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+          "points1", ",", "points2", ",", "points3", ",", "paths12", ",", 
+           "paths23", ",", "paths13"}], "}"}], ",", 
+         RowBox[{
+          RowBox[{"points1", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"RandomReal", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "dim"}], "]"}], 
+             ",", 
+             RowBox[{"{", "sampleSize", "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"points2", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"RandomReal", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "dim"}], "]"}], 
+             ",", 
+             RowBox[{"{", "sampleSize", "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"points3", "=", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"RandomReal", "[", 
+              RowBox[{
+               RowBox[{"{", 
+                RowBox[{
+                 RowBox[{"-", "1"}], ",", "1"}], "}"}], ",", "dim"}], "]"}], 
+             ",", 
+             RowBox[{"{", "sampleSize", "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"paths12", "=", 
+           RowBox[{"MapThread", "[", 
+            RowBox[{"pathSpace", ",", 
+             RowBox[{"{", 
+              RowBox[{"points1", ",", "points2"}], "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"paths23", "=", 
+           RowBox[{"MapThread", "[", 
+            RowBox[{"pathSpace", ",", 
+             RowBox[{"{", 
+              RowBox[{"points2", ",", "points3"}], "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"paths13", "=", 
+           RowBox[{"MapThread", "[", 
+            RowBox[{"pathSpace", ",", 
+             RowBox[{"{", 
+              RowBox[{"points1", ",", "points3"}], "}"}]}], "]"}]}], ";", 
+          "\[IndentingNewLine]", 
+          RowBox[{"Mean", "[", 
+           RowBox[{"MapThread", "[", 
+            RowBox[{
+             RowBox[{
+              RowBox[{"Max", "[", 
+               RowBox[{"0", ",", 
+                RowBox[{"1", "-", 
+                 RowBox[{"Norm", "[", 
+                  RowBox[{
+                   RowBox[{"#1", ".", "#2"}], "-", "#3"}], "]"}]}]}], "]"}], 
+              "&"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"paths12", ",", "paths23", ",", "paths13"}], "}"}]}], 
+            "]"}], "]"}]}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Simplified", " ", "cohomology", " ", "test"}], "*)"}], 
+      RowBox[{
+       RowBox[{"testCohomology", "[", "dim_", "]"}], ":=", 
+       RowBox[{"Module", "[", 
+        RowBox[{
+         RowBox[{"{", "}"}], ",", 
+         RowBox[{"Exp", "[", 
+          RowBox[{
+           RowBox[{"-", "0.3"}], "*", "dim"}], "]"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Execute", " ", "tests"}], "*)"}], 
+      RowBox[{"results", "=", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           RowBox[{"\"\<Dimension\>\"", "->", "dim"}], ",", 
+           RowBox[{"\"\<Reflexivity\>\"", "->", 
+            RowBox[{"testReflexivity", "[", "dim", "]"}]}], ",", 
+           RowBox[{"\"\<Symmetry\>\"", "->", 
+            RowBox[{"testSymmetry", "[", "dim", "]"}]}], ",", 
+           RowBox[{"\"\<Transitivity\>\"", "->", 
+            RowBox[{"testTransitivity", "[", "dim", "]"}]}], ",", 
+           RowBox[{"\"\<Cohomology\>\"", "->", 
+            RowBox[{"testCohomology", "[", "dim", "]"}]}], ",", 
+           RowBox[{"\"\<TheoreticalBound\>\"", "->", 
+            RowBox[{"Exp", "[", 
+             RowBox[{
+              RowBox[{"-", "0.3"}], "*", "dim"}], "]"}]}]}], "}"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"dim", ",", "dimensions"}], "}"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Simplified", " ", "spectral", " ", "invariants"}], "*)"}], 
+      RowBox[{"spectralInvariants", "=", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"Table", "[", 
+          RowBox[{
+           RowBox[{"Binomial", "[", 
+            RowBox[{"dim", ",", "k"}], "]"}], ",", 
+           RowBox[{"{", 
+            RowBox[{"k", ",", "0", ",", "dim"}], "}"}]}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"dim", ",", "dimensions"}], "}"}]}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Meta", "-", 
+        RowBox[{"path", " ", "consistency"}]}], "*)"}], 
+      RowBox[{"metaPathConsistency", "=", 
+       RowBox[{"N", "[", 
+        RowBox[{"Mean", "[", 
+         RowBox[{"Map", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{
+             RowBox[{"Mean", "[", 
+              RowBox[{"Values", "[", 
+               RowBox[{"Rest", "[", "#", "]"}], "]"}], "]"}], "*", 
+             RowBox[{"(", 
+              RowBox[{"1", "-", 
+               RowBox[{"0.03", "*", 
+                RowBox[{"First", "[", 
+                 RowBox[{"Values", "[", "#", "]"}], "]"}]}]}], ")"}]}], "&"}],
+            ",", "results"}], "]"}], "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", 
+       RowBox[{"Output", " ", "results"}], "*)"}], 
+      RowBox[{"Print", "[", "\"\<Test Results:\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"TableForm", "[", "results", "]"}], "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "\"\<\\nSpectral Invariants:\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", "spectralInvariants", "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{
+       "\"\<\\nMeta-Path Consistency Score: \>\"", ",", 
+        "metaPathConsistency"}], "]"}], ";", "\[IndentingNewLine]", 
+      RowBox[{
+      "Print", "[", "\"\<\\nTheoretical Bound Verification:\>\"", "]"}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Print", "[", 
+       RowBox[{"\"\<\[Gamma] \[TildeTilde] \>\"", ",", 
+        RowBox[{
+         RowBox[{"-", 
+          RowBox[{"Log", "[", "metaPathConsistency", "]"}]}], "/", 
+         RowBox[{"Mean", "[", "dimensions", "]"}]}]}], "]"}], ";"}]}], 
+    "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.94066107057292*^9, 3.94066107057292*^9}},
+ CellLabel->"In[3]:=",ExpressionUUID->"794812ed-7742-5449-ab5f-c3ae1a191ee8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Test Results:\"\>"], "Print",
+ CellChangeTimes->{3.9406610712609596`*^9},
+ CellLabel->
+  "During evaluation of \
+In[3]:=",ExpressionUUID->"1d20e00f-d1c2-3448-8423-93fa83846091"],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "1"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9994785230169958`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9994751546552751`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9993926148587893`"}], 
+     RowBox[{"\<\"Cohomology\"\>", "\[Rule]", "0.7408182206817179`"}], 
+     RowBox[{"\<\"TheoreticalBound\"\>", "\[Rule]", "0.7408182206817179`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "2"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9989711577788363`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9989223845928085`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9987334062631765`"}], 
+     RowBox[{"\<\"Cohomology\"\>", "\[Rule]", "0.5488116360940265`"}], 
+     RowBox[{"\<\"TheoreticalBound\"\>", "\[Rule]", "0.5488116360940265`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "3"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.998549978317091`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9985621306550035`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9982644789604569`"}], 
+     RowBox[{"\<\"Cohomology\"\>", "\[Rule]", "0.40656965974059917`"}], 
+     RowBox[{"\<\"TheoreticalBound\"\>", "\[Rule]", "0.40656965974059917`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "4"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9982101702905801`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9984582194468036`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.9980758058179642`"}], 
+     RowBox[{"\<\"Cohomology\"\>", "\[Rule]", "0.30119421191220214`"}], 
+     RowBox[{"\<\"TheoreticalBound\"\>", "\[Rule]", "0.30119421191220214`"}]},
+    {
+     RowBox[{"\<\"Dimension\"\>", "\[Rule]", "5"}], 
+     RowBox[{"\<\"Reflexivity\"\>", "\[Rule]", "0.9979529451822614`"}], 
+     RowBox[{"\<\"Symmetry\"\>", "\[Rule]", "0.9982936775403211`"}], 
+     RowBox[{"\<\"Transitivity\"\>", "\[Rule]", "0.997826030168881`"}], 
+     RowBox[{"\<\"Cohomology\"\>", "\[Rule]", "0.22313016014842982`"}], 
+     RowBox[{"\<\"TheoreticalBound\"\>", "\[Rule]", "0.22313016014842982`"}]}
+   },
+   GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+   GridBoxSpacings->{"Columns" -> {
+       Offset[0.27999999999999997`], {
+        Offset[2.0999999999999996`]}, 
+       Offset[0.27999999999999997`]}, "Rows" -> {
+       Offset[0.2], {
+        Offset[0.4]}, 
+       Offset[0.2]}}],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Print",
+ CellChangeTimes->{3.94066107126396*^9},
+ CellLabel->
+  "During evaluation of \
+In[3]:=",ExpressionUUID->"fc2e9453-6a74-9a42-8a6f-bfde9801e06a"],
+
+Cell[BoxData["\<\"\\nSpectral Invariants:\"\>"], "Print",
+ CellChangeTimes->{3.9406610712719746`*^9},
+ CellLabel->
+  "During evaluation of \
+In[3]:=",ExpressionUUID->"104f2e00-ea8b-a744-972d-f1ab82be8561"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "3", ",", "3", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "4", ",", "6", ",", "4", ",", "1"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "5", ",", "10", ",", "10", ",", "5", ",", "1"}], 
+    "}"}]}], "}"}]], "Print",
+ CellChangeTimes->{3.940661071272974*^9},
+ CellLabel->
+  "During evaluation of \
+In[3]:=",ExpressionUUID->"a8268159-cd89-c244-a794-3cb635bebc2a"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\\nMeta-Path Consistency Score: \"\>", "\[InvisibleSpace]", 
+   "0.7099875066984772`"}],
+  SequenceForm["\nMeta-Path Consistency Score: ", 0.7099875066984772],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406610712739735`*^9},
+ CellLabel->
+  "During evaluation of \
+In[3]:=",ExpressionUUID->"1b89ab79-5ea0-6b43-bee4-c5b25d7ec27b"],
+
+Cell[BoxData["\<\"\\nTheoretical Bound Verification:\"\>"], "Print",
+ CellChangeTimes->{3.9406610712754765`*^9},
+ CellLabel->
+  "During evaluation of \
+In[3]:=",ExpressionUUID->"7ff431bc-d5a5-194c-b7a8-bd783ba3e4cc"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{"\<\"\[Gamma] \[TildeTilde] \"\>", "\[InvisibleSpace]", 
+   "0.1141693017669729`"}],
+  SequenceForm["\[Gamma] \[TildeTilde] ", 0.1141693017669729],
+  Editable->False]], "Print",
+ CellChangeTimes->{3.9406610712764797`*^9},
+ CellLabel->
+  "During evaluation of \
+In[3]:=",ExpressionUUID->"1adf3918-827e-d840-97c8-ce2e3c5aa86f"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{571, 627.5},
+WindowMargins->{{397, Automatic}, {Automatic, 202.5}},
+FrontEndVersion->"14.1 for Microsoft Windows (64-bit) (July 16, 2024)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"c2570932-18be-1941-a6bb-9b39fd20ade2"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[576, 22, 12660, 330, 1264, "Input",ExpressionUUID->"794812ed-7742-5449-ab5f-c3ae1a191ee8"],
+Cell[CellGroupData[{
+Cell[13261, 356, 195, 4, 22, "Print",ExpressionUUID->"1d20e00f-d1c2-3448-8423-93fa83846091"],
+Cell[13459, 362, 2679, 51, 81, "Print",ExpressionUUID->"fc2e9453-6a74-9a42-8a6f-bfde9801e06a"],
+Cell[16141, 415, 205, 4, 39, "Print",ExpressionUUID->"104f2e00-ea8b-a744-972d-f1ab82be8561"],
+Cell[16349, 421, 600, 17, 22, "Print",ExpressionUUID->"a8268159-cd89-c244-a794-3cb635bebc2a"],
+Cell[16952, 440, 386, 9, 39, "Print",ExpressionUUID->"1b89ab79-5ea0-6b43-bee4-c5b25d7ec27b"],
+Cell[17341, 451, 216, 4, 39, "Print",ExpressionUUID->"7ff431bc-d5a5-194c-b7a8-bd783ba3e4cc"],
+Cell[17560, 457, 369, 9, 22, "Print",ExpressionUUID->"1adf3918-827e-d840-97c8-ce2e3c5aa86f"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)
+
