@@ -5,71 +5,65 @@ Date: November 15, 2024
 
 ## Abstract
 
-We present a complete characterization of minimal coherence conditions required for \( n \)-categorical structures. Through analysis of known cases and structural patterns, we derive a piecewise function that exactly predicts the number of necessary coherences for any dimension \( n \geq 2 \).
+We present a complete characterization of minimal coherence conditions required for n-categorical structures. Through analysis of known cases and structural patterns, we derive a piecewise function that exactly predicts the number of necessary coherences for any dimension n ≥ 2.
 
 ## 1. Introduction
 
-Let \( C(n) \) denote the minimal number of coherence conditions required for an \( n \)-category. Previous work has established specific values for \( n \leq 7 \), but the general pattern remained unclear. We demonstrate that \( C(n) \) follows a strict piecewise function reflecting three fundamental phases of categorical structure.
+Let C(n) denote the minimal number of coherence conditions required for an n-category. Previous work has established specific values for n ≤ 7, but the general pattern remained unclear. We demonstrate that C(n) follows a strict piecewise function reflecting three fundamental phases of categorical structure.
 
 ## 2. Main Result
 
 ### Theorem 1:
-The minimal number of coherence conditions \( C(n) \) for an \( n \)-category is given by:
+The minimal number of coherence conditions C(n) for an n-category is given by:
 
-```
 C(n) = {
-    n-1         for n ∈ {2,3}    [foundational phase]
-    2n-3        for n ∈ {4,5}    [transitional phase]
-    2n-1        for n ≥ 6        [linear phase]
+    n−1         for n ∈ {2,3}    [foundational phase]
+    2n−3        for n ∈ {4,5}    [transitional phase]
+    2n−1        for n ≥ 6        [linear phase]
 }
-```
 
 ## 3. Verification
 
 ### Known Values:
-```
-n=2: C(2)=1     [categories]
-n=3: C(3)=2     [bicategories]
-n=4: C(4)=5     [tricategories]
-n=5: C(5)=7     [tetracategories]
-n=6: C(6)=11    [pentacategories]
-n=7: C(7)=13    [hexacategories]
-```
+n=2: C(2)=1     [categories]  
+n=3: C(3)=2     [bicategories]  
+n=4: C(4)=5     [tricategories]  
+n=5: C(5)=7     [tetracategories]  
+n=6: C(6)=11    [pentacategories]  
+n=7: C(7)=13    [hexacategories]  
 
 ## 4. Phase Analysis
 
-### 4.1 Foundational Phase (\( n \in \{2,3\} \))
+### 4.1 Foundational Phase (n ∈ {2,3})
 - Growth matches categorical dimension.
-- \( C(n) = n-1 \).
+- C(n) = n−1.
 - Reflects basic categorical structures.
 
-### 4.2 Transitional Phase (\( n \in \{4,5\} \))
+### 4.2 Transitional Phase (n ∈ {4,5})
 - Quadratic growth pattern.
-- \( C(n) = 2n-3 \).
+- C(n) = 2n−3.
 - Captures emergence of higher coherences.
 
-### 4.3 Linear Phase (\( n \geq 6 \))
+### 4.3 Linear Phase (n ≥ 6)
 - Stable linear growth.
-- \( C(n) = 2n-1 \).
+- C(n) = 2n−1.
 - Suggests fundamental stability in categorical structures.
 
 ## 5. Predictions
 
-For \( n > 7 \):
-```
-C(8) = 15
-C(9) = 17
-C(10) = 19
-...
-C(n) = 2n-1
-```
+For n > 7:
+C(8) = 15  
+C(9) = 17  
+C(10) = 19  
+...  
+C(n) = 2n−1  
 
 ## 6. Falsification Criteria
 
 The theorem can be falsified by:
-1. Exhibition of an \( n \)-category requiring more coherences than \( C(n) \).
-2. Proof of necessary coherences exceeding \( C(n) \) for any \( n \).
-3. Construction showing \( C(n) \) is not minimal for any \( n \).
+1. Exhibition of an n-category requiring more coherences than C(n).
+2. Proof of necessary coherences exceeding C(n) for any n.
+3. Construction showing C(n) is not minimal for any n.
 
 ## 7. Implications
 
@@ -86,7 +80,7 @@ The theorem can be falsified by:
 ## 8. Extensions
 
 The pattern extends to:
-- Weak \( n \)-categories.
+- Weak n-categories.
 - Enriched categorical structures.
 - Higher categorical algebras.
 
@@ -98,7 +92,7 @@ The pattern extends to:
 
 ## 10. Conclusion
 
-The piecewise characterization of \( C(n) \) provides a complete and testable description of coherence requirements in higher categories. The pattern suggests fundamental principles in categorical structure that warrant further investigation.
+The piecewise characterization of C(n) provides a complete and testable description of coherence requirements in higher categories. The pattern suggests fundamental principles in categorical structure that warrant further investigation.
 
 ## Appendix A: Comprehensive Analysis Results
 
