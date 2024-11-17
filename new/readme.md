@@ -1,6 +1,6 @@
-The Higher Derivative Zeta Structure Conjecture
+# The Higher Derivative Zeta Structure Conjecture
 
-*Authored by Charles NOrton, Claude (Sonnet), and GPT-4o*  
+*Authored by Charles Norton, Claude (Sonnet), and GPT-4o*  
 *Date: November 17, 2024*
 
 Let \( \rho \) be a non-trivial zero of the Riemann zeta function \( \zeta(s) \). Let \( Z(t) \) denote the Riemann-Siegel \( Z \)-function and \( \frac{d^n Z}{dt^n} \) denote its \( n \)th derivative. Then:
