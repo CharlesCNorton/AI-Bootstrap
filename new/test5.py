@@ -1,91 +1,46 @@
 import numpy as np
+import mpmath as mp
 import csv
-from ripser import ripser
-from sklearn.cluster import KMeans
-from scipy.stats import pearsonr
 
-# Load the derivatives data from CSV file in smaller parts
-subset_size = 5
-all_data = []
+# Set very low precision to manage memory
+mp.dps = 10  # Set the number of decimal places for precision to a very low value
 
-# Load data in smaller chunks to manage memory
-with open('zeta_derivatives.csv', mode='r') as file:
-    reader = csv.reader(file)
-    next(reader)  # Skip header
-    for row in reader:
-        all_data.append([float(value) for value in row])
+# Function to compute the Riemann-Siegel Z-function
+def riemann_siegel_Z(t):
+    return mp.zeta(0.5 + 1j * t).real
 
-        # Process in subsets to manage memory
-        if len(all_data) == subset_size:
-            V_rho = np.array(all_data)[:, 1:]  # Exclude 'zero' column, we need derivatives only
-            rho_values = np.array(all_data)[:, 0]
+# Function to compute the nth derivative of the Riemann-Siegel Z-function
+def nth_derivative_Z(t, n):
+    return mp.diff(riemann_siegel_Z, t, n)
 
-            # Normalize V_rho by log(rho) for enhanced analysis
-            positive_indices = rho_values > 0
-            V_rho_filtered = V_rho[positive_indices, :]
-            rho_filtered = rho_values[positive_indices]
-            log_rho_filtered = np.log(rho_filtered)
+# Compute a limited number of non-trivial zeros of the Riemann zeta function
+def find_zeros_zeta(start_points, max_attempts=5):
+    zeros = []
+    for t in start_points:
+        attempt = 0
+        found = False
+        while attempt < max_attempts and not found:
+            try:
+                zero = mp.findroot(lambda s: mp.zeta(s), 0.5 + 1j * t, solver='newton')
+                zeros.append(zero.imag)  # Record only the imaginary part of the zero
+                found = True
+            except ValueError:
+                t += 1  # Adjust starting point slightly and retry
+                attempt += 1
+    return zeros
 
-            # Normalize the vector space
-            V_rho_enhanced = np.array([V_rho_filtered[:, i] / log_rho_filtered for i in range(V_rho_filtered.shape[1])]).T
+# Reduce the number of zeros computed to manage memory
+start_points = list(range(14, 64, 5))
 
-            # Run persistent homology on the subset
-            result = ripser(V_rho_enhanced)
+# Find non-trivial zeros
+zeros = find_zeros_zeta(start_points)
 
-            # Extract the persistence diagrams
-            dgms = result['dgms']
-
-            # Statistical and numerical analysis of the persistence diagrams for each subset
-            for i, dgm in enumerate(dgms):
-                if len(dgm) == 0:
-                    print(f"Dimension {i}: No features detected in this subset.")
-                    continue
-
-                print(f"\nSubset processed, Dimension {i}:")
-                births = dgm[:, 0]
-                deaths = dgm[:, 1]
-                lifetimes = deaths - births
-
-                # Numerical details
-                print(f"Number of features: {len(dgm)}")
-                print(f"Average birth time: {np.mean(births):.5f}")
-                print(f"Average death time: {np.mean(deaths):.5f}")
-                print(f"Average lifetime: {np.mean(lifetimes):.5f}")
-                print(f"Max lifetime: {np.max(lifetimes):.5f}")
-
-                # Persistent pairs details
-                print(f"Top birth-death pairs:")
-                for b, d in dgm:
-                    print(f"Birth: {b:.5f}, Death: {d:.5f}, Lifetime: {d - b:.5f}")
-
-            # Clear subset to process the next batch
-            all_data = []
-
-# If there are remaining rows to process after the last full batch
-if len(all_data) > 0:
-    V_rho = np.array(all_data)[:, 1:]  # Process the remaining data
-    rho_values = np.array(all_data)[:, 0]
-    positive_indices = rho_values > 0
-    V_rho_filtered = V_rho[positive_indices, :]
-    rho_filtered = rho_values[positive_indices]
-    log_rho_filtered = np.log(rho_filtered)
-    V_rho_enhanced = np.array([V_rho_filtered[:, i] / log_rho_filtered for i in range(V_rho_filtered.shape[1])]).T
-    result = ripser(V_rho_enhanced)
-    dgms = result['dgms']
-
-    # Output the results for the final subset
-    for i, dgm in enumerate(dgms):
-        if len(dgm) == 0:
-            print(f"Dimension {i}: No features detected in the final subset.")
-            continue
-
-        print(f"\nFinal subset, Dimension {i}:")
-        births = dgm[:, 0]
-        deaths = dgm[:, 1]
-        lifetimes = deaths - births
-
-        print(f"Number of features: {len(dgm)}")
-        print(f"Average birth time: {np.mean(births):.5f}")
-        print(f"Average death time: {np.mean(deaths):.5f}")
-        print(f"Average lifetime: {np.mean(lifetimes):.5f}")
-        print(f"Max lifetime: {np.max(lifetimes):.5f}")
+# Compute derivatives for these zeros and save to a CSV file
+with open('zeta_derivatives.csv', mode='w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerow(["zero", "dZ/dt", "d^2Z/dt^2", "d^3Z/dt^3", "d^4Z/dt^4"])  # Header
+    for zero in zeros:
+        row = [float(zero)]
+        for n in range(1, 5):  # Compute up to the 4th derivative
+            row.append(float(nth_derivative_Z(zero, n)))
+        writer.writerow(row)
