@@ -20,11 +20,11 @@ def z_function_cpu(t):
     """
     Compute the Riemann-Siegel Z-function using mpmath.
     Parameters:
-        t (torch.Tensor or list): Points at which to evaluate Z(t).
+        t (list): Points at which to evaluate Z(t).
     Returns:
         list: Real part of Z(t).
     """
-    return [float(mpmath.zeta(0.5 + 1j * float(val))) for val in t]
+    return [float(mpmath.zeta(0.5 + 1j * float(val)).real) for val in t]
 
 # Compute derivatives using finite differences
 def compute_derivatives_gpu(zeros, max_order, h=1e-6):
@@ -43,8 +43,8 @@ def compute_derivatives_gpu(zeros, max_order, h=1e-6):
     for n in tqdm(range(1, max_order + 1), desc="Computing Derivatives"):
         for i, zero in enumerate(zeros.cpu().numpy()):  # Transfer zero to CPU for mpmath
             zero = float(zero)
-            f_plus = float(z_function_cpu([zero + h])[0])
-            f_minus = float(z_function_cpu([zero - h])[0])
+            f_plus = z_function_cpu([zero + h])[0]
+            f_minus = z_function_cpu([zero - h])[0]
             derivative = (f_plus - f_minus) / (2 * h)
 
             # Normalize derivative

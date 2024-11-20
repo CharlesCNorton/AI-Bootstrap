@@ -1,7 +1,6 @@
-import numpy as np  # Import numpy for numerical operations
+import numpy as np
 from scipy.optimize import differential_evolution
 from mpmath import zeta, re
-import matplotlib.pyplot as plt
 import logging
 
 # Configure logging for debugging
@@ -29,8 +28,17 @@ def approximation_error(coeffs, t_zero, n_terms, f, region):
             coeffs[i] * z_derivative(t_zero, i + 1) * np.exp(1j * t_zero * s) for i in range(n_terms)
         )
         error += abs(f(s) - approximation)**2
-    logging.info(f"Current error: {error}")
     return error
+
+# Reconstruct approximation using the optimized coefficients
+def approximation(t_zero, coeffs, n_terms, region):
+    approx_values = []
+    for s in region:
+        approx = sum(
+            coeffs[i] * z_derivative(t_zero, i + 1) * np.exp(1j * t_zero * s) for i in range(n_terms)
+        )
+        approx_values.append(np.real(approx))  # Take real part for visualization
+    return approx_values
 
 # Main test function using differential evolution
 def run_test(t_zero, n_terms, region):
@@ -61,46 +69,28 @@ def run_test(t_zero, n_terms, region):
         logging.error(f"Reason: {result.message}")
         return None
 
-# Debugging utilities
-def validate_derivatives(t_zero, max_n):
-    logging.info(f"Validating derivatives for t_zero={t_zero} up to order {max_n}")
-    for n in range(1, max_n + 1):
-        derivative = z_derivative(t_zero, n)
-        logging.info(f"Order {n} derivative at t_zero={t_zero}: {derivative}")
+# Summary statistics calculation
+def calculate_summary_statistics(target_values, approx_values):
+    differences = np.array(target_values) - np.array(approx_values)
+    mse = np.mean(differences**2)  # Mean Squared Error
+    mae = np.mean(np.abs(differences))  # Mean Absolute Error
+    max_error = np.max(np.abs(differences))  # Maximum Error
 
-# Reconstruct approximation using the optimized coefficients
-def approximation(t_zero, coeffs, n_terms, region):
-    approx_values = []
-    for s in region:
-        approx = sum(
-            coeffs[i] * z_derivative(t_zero, i + 1) * np.exp(1j * t_zero * s) for i in range(n_terms)
-        )
-        approx_values.append(np.real(approx))  # Take real part for visualization
-    return approx_values
+    print("\n--- Summary Statistics ---")
+    print(f"Mean Squared Error (MSE): {mse:.6f}")
+    print(f"Mean Absolute Error (MAE): {mae:.6f}")
+    print(f"Maximum Absolute Error: {max_error:.6f}")
 
 # Define test parameters
 t_zero = 14.134725141  # Example: first non-trivial zero
 n_terms = 5  # Number of derivatives to consider
 region = np.linspace(-1, 1, 100)  # Region of approximation in the critical strip
 
-# Run derivative validation (optional, for debugging)
-validate_derivatives(t_zero, n_terms)
-
 # Run the test
 optimized_coeffs = run_test(t_zero, n_terms, region)
 
-# Plot results if optimization succeeded
+# Generate summary statistics if optimization succeeded
 if optimized_coeffs is not None:
     target_values = [target_function(s) for s in region]
     approx_values = approximation(t_zero, optimized_coeffs, n_terms, region)
-
-    # Plot the results
-    plt.figure(figsize=(10, 6))
-    plt.plot(region, target_values, label="Target Function", linestyle='--')
-    plt.plot(region, approx_values, label="Approximation", linestyle='-')
-    plt.title("Target Function vs. Approximation")
-    plt.xlabel("s")
-    plt.ylabel("Function Value")
-    plt.legend()
-    plt.grid()
-    plt.show()
+    calculate_summary_statistics(target_values, approx_values)
