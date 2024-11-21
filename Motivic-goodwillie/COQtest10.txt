@@ -1,0 +1,74 @@
+From Coq Require Import List.
+From Coq Require Import Arith.
+Import ListNotations.
+
+(* Previous definitions *)
+Record bidegree := mk_bidegree {
+  p_index : nat;
+  q_index : nat
+}.
+
+Record term := mk_term {
+  degree : bidegree;
+  level : nat
+}.
+
+Record differential_value := mk_diff_value {
+  value : nat;
+  is_zero : bool
+}.
+
+Definition bound := nat.
+
+(* Stage counting *)
+Definition stage := nat.
+
+(* New: Stage-dependent size measurement *)
+Definition stage_size (s: stage) : nat :=
+  match s with
+  | 0 => 2    (* Initial stage *)
+  | 1 => 1    (* First reduction *)
+  | _ => 0    (* All higher stages reduce to 0 *)
+  end.
+
+(* Updated diff_size to account for stages *)
+Definition diff_size (d: differential_value) (t: term) (s: stage) : nat :=
+  match level t, is_zero d with
+  | 0, _ => 0      (* Base level has size 0 *)
+  | _, true => 0   (* Zero differentials have size 0 *)
+  | _, false => stage_size s  (* Size depends on stage *)
+  end.
+
+(* Size-based boundedness with stages *)
+Definition is_bounded (d: differential_value) (t: term) (s: stage) : bool :=
+  match diff_size d t s with
+  | 0 => true
+  | 1 => true
+  | 2 => true
+  | _ => false
+  end.
+
+(* Prove stage progression reduces size *)
+Theorem stage_decay :
+  forall (s1 s2: stage),
+  s1 < s2 ->
+  stage_size s2 <= stage_size s1.
+Proof.
+  intros s1 s2 H.
+  destruct s1; destruct s2; try (simpl; auto).
+  destruct s2; try (simpl; auto).
+Qed.
+
+(* Prove eventual vanishing *)
+Theorem eventually_vanishes :
+  forall (s: stage),
+  s > 1 ->
+  stage_size s = 0.
+Proof.
+  intros s H.
+  destruct s.
+  - inversion H.
+  - destruct s.
+    + inversion H.
+    + reflexivity.
+Qed.
