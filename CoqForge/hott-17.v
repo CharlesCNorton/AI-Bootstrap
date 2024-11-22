@@ -2,6 +2,7 @@
 From HoTT.Basics Require Import PathGroupoids.
 From HoTT.Types Require Import Paths.
 Import Overture (idpath, paths, concat).
+
 (* Import Peano arithmetic for natural number operations *)
 Require Import Coq.Arith.PeanoNat.
 
@@ -34,6 +35,21 @@ Proof.
     + right. right. exact ltyx.
 Qed.
 
+(* Irreflexivity axiom *)
+Axiom Rlt_irrefl : forall x : R, ~ Rlt x x.
+
+(* Lemma: If Rlt x y, then x ≠ y *)
+Lemma Rlt_neq : forall x y : R, Rlt x y -> x <> y.
+Proof.
+  intros x y Hlt. (* Assume Rlt x y *)
+  unfold not. (* Expand definition of not: x <> y means ~(x = y) *)
+  intros Heq. (* Assume x = y *)
+  rewrite Heq in Hlt. (* Substitute x = y into Hlt *)
+  apply Rlt_irrefl in Hlt. (* Apply irreflexivity to derive contradiction *)
+  exact Hlt. (* Contradiction proves the goal *)
+Qed.
+
+(* Additional axioms about positivity of real numbers *)
 Axiom Rinv_pos : forall x : R, Rlt R0 x -> Rlt R0 (Rinv x).
 Axiom nat_to_R_pos : forall n : nat, Rlt R0 (nat_to_R n).
 Axiom Rplus_pos : forall x y : R, Rlt R0 x -> Rlt R0 y -> Rlt R0 (Rplus x y).
@@ -47,7 +63,7 @@ Proof.
 Qed.
 
 Axiom Rmult_pos : forall x y : R, Rlt R0 x -> Rlt R0 y -> Rlt R0 (Rmult x y).
-Axiom Rlt_asymm : forall x y : R, Rlt x y -> ~(Rlt y x).
+Axiom Rlt_asymm : forall x y : R, Rlt x y -> ~ Rlt y x.
 
 (* Monotonicity axioms for real operations *)
 Axiom Rplus_monotone : forall w x y : R, Rlt x y -> Rlt (Rplus w x) (Rplus w y).
@@ -234,19 +250,12 @@ Proof.
 Qed.
 
 (* Basic properties of Rlt *)
-Lemma Rlt_irrefl : forall x : R, ~(Rlt x x).
+Lemma Rlt_irrefl_proof : forall x : R, ~(Rlt x x).
 Proof.
   intros x H.
   apply (Rlt_asymm x x).
   - exact H.
   - exact H.
-Qed.
-
-Lemma Rlt_neq : forall x y : R, Rlt x y -> x <> y.
-Proof.
-  intros x y H Heq.
-  rewrite Heq in H.
-  apply (Rlt_irrefl y H).
 Qed.
 
 Lemma Rlt_not_gt : forall x y : R, 
