@@ -1,0 +1,38 @@
+Require Import Coq.Arith.PeanoNat.
+From HoTT.Basics Require Import PathGroupoids.
+From HoTT.Types Require Import Paths.
+
+(* First let's define a more concrete obstruction class structure *)
+Record ObstructionClass := mkObstruction {
+  (* The degree of the polynomial approximation *)
+  stage : nat;
+  (* A measure of uncaptured structure - should decrease with stage *)
+  uncaptured : nat;
+  (* Property that higher stages have less uncaptured structure *)
+  stage_property : stage > 0 -> uncaptured > 0
+}.
+
+(* Now we can define the measure concretely *)
+Definition obstruction_measure (o : ObstructionClass) : R :=
+  nat_to_R (uncaptured o).
+
+(* Helper lemma about successive stages *)
+Lemma successive_stages_property : forall n,
+  n > 0 -> S n > n.
+Proof.
+  intros n H.
+  apply Nat.lt_succ_diag_r.
+Qed.
+
+(* The key theorem *)
+Theorem obstruction_strict_decrease : 
+  forall (X : MotivicSpace) (n : nat),
+    Rlt (obstruction_measure (stage_obstruction (S n) X))
+        (obstruction_measure (stage_obstruction n X)).
+Proof.
+  intros X n.
+  unfold obstruction_measure.
+  (* Here we need to relate stage_obstruction to our ObstructionClass *)
+  (* This is where we'll need to show the connection between stages and uncaptured structure *)
+  (* To be continued based on any type errors or missing pieces *)
+Admitted.
