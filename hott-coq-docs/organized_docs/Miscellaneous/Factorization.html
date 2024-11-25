@@ -1,0 +1,473 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Factorization</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Factorization</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab50"></a><h1 class="section">Factorizations and factorization systems.</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Extensions</span> <span class="id" title="var">PathAny</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab51"></a><h2 class="section">Factorizations</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Factorization</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Universes</span> <span class="id" title="var">ctxi</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">class1</span> <span class="id" title="var">class2</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">ctxi</span>}), (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">ctxi</span>}}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">ctxi</span>}) (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>), <span class="id" title="var">IsHProp</span> (<span class="id" title="var">class1</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">g</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">ctxi</span>}) (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>), <span class="id" title="var">IsHProp</span> (<span class="id" title="var">class2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">g</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">ctxi</span>}} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A factorization of <span class="inlinecode"><span class="id" title="var">f</span></span> into a first factor lying in <span class="inlinecode"><span class="id" title="var">class1</span></span> and a second factor lying in <span class="inlinecode"><span class="id" title="var">class2</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Record</span> <span class="id" title="var">Factorization</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">intermediate</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">ctxi</span>} ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">factor1</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">intermediate</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">factor2</span> : <span class="id" title="var">intermediate</span> -&gt; <span class="id" title="var">B</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fact_factors</span> : <span class="id" title="var">factor2</span> <span class="id" title="var">o</span> <span class="id" title="var">factor1</span> == <span class="id" title="var">f</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">inclass1</span> : <span class="id" title="var">class1</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">factor1</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">inclass2</span> : <span class="id" title="var">class2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">factor2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">issig_Factorization</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span> &amp; { <span class="id" title="var">g</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">I</span> &amp; { <span class="id" title="var">h</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">B</span> &amp; { <span class="id" title="var">p</span> : <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">f</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">gin1</span> : <span class="id" title="var">class1</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">g</span> &amp; <span class="id" title="var">class2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span> }}}}}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; <span class="id" title="var">Factorization</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">issig</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A path between factorizations is equivalent to a structure of the following sort. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Record</span> <span class="id" title="var">PathFactorization</span> {<span class="id" title="var">fact</span> <span class="id" title="var">fact'</span> : <span class="id" title="var">Factorization</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">path_intermediate</span> : <span class="id" title="var">intermediate</span> <span class="id" title="var">fact</span> &lt;~&gt; <span class="id" title="var">intermediate</span> <span class="id" title="var">fact'</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_factor1</span> : <span class="id" title="var">path_intermediate</span> <span class="id" title="var">o</span> <span class="id" title="var">factor1</span> <span class="id" title="var">fact</span> == <span class="id" title="var">factor1</span> <span class="id" title="var">fact'</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_factor2</span> : <span class="id" title="var">factor2</span> <span class="id" title="var">fact</span> == <span class="id" title="var">factor2</span> <span class="id" title="var">fact'</span> <span class="id" title="var">o</span> <span class="id" title="var">path_intermediate</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_fact_factors</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">path_factor2</span> (<span class="id" title="var">factor1</span> <span class="id" title="var">fact</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> (<span class="id" title="var">factor2</span> <span class="id" title="var">fact'</span>) (<span class="id" title="var">path_factor1</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">fact_factors</span> <span class="id" title="var">fact'</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">fact_factors</span> <span class="id" title="var">fact</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Arguments</span> <span class="id" title="var">PathFactorization</span> <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span> : <span class="id" title="tactic">clear</span> <span class="id" title="var">implicits</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">issig_PathFactorization</span> (<span class="id" title="var">fact</span> <span class="id" title="var">fact'</span> : <span class="id" title="var">Factorization</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">path_intermediate</span> : <span class="id" title="var">intermediate</span> <span class="id" title="var">fact</span> &lt;~&gt; <span class="id" title="var">intermediate</span> <span class="id" title="var">fact'</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">path_factor1</span> : <span class="id" title="var">path_intermediate</span> <span class="id" title="var">o</span> <span class="id" title="var">factor1</span> <span class="id" title="var">fact</span> == <span class="id" title="var">factor1</span> <span class="id" title="var">fact'</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">path_factor2</span> : <span class="id" title="var">factor2</span> <span class="id" title="var">fact</span> == <span class="id" title="var">factor2</span> <span class="id" title="var">fact'</span> <span class="id" title="var">o</span> <span class="id" title="var">path_intermediate</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">path_factor2</span> (<span class="id" title="var">factor1</span> <span class="id" title="var">fact</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> (<span class="id" title="var">factor2</span> <span class="id" title="var">fact'</span>) (<span class="id" title="var">path_factor1</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">fact_factors</span> <span class="id" title="var">fact'</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">fact_factors</span> <span class="id" title="var">fact</span> <span class="id" title="var">a</span> }}}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; <span class="id" title="var">PathFactorization</span> <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">issig</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_factorization</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fact</span> <span class="id" title="var">fact'</span> : <span class="id" title="var">Factorization</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">PathFactorization</span> <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span> &lt;~&gt; <span class="id" title="var">fact</span> = <span class="id" title="var">fact'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">issig_PathFactorization</span> <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>)^-1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_path_issig_contr</span> <span class="id" title="var">issig_Factorization</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> [<span class="id" title="var">I</span> [<span class="id" title="var">f1</span> [<span class="id" title="var">f2</span> [<span class="id" title="var">ff</span> [<span class="id" title="var">oc1</span> <span class="id" title="var">oc2</span>]]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">I</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">A</span> =&gt; 1%<span class="id" title="var">path</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">I</span> =&gt; 1%<span class="id" title="var">path</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">I</span> [<span class="id" title="var">f1</span> [<span class="id" title="var">f2</span> [<span class="id" title="var">ff</span> [<span class="id" title="var">oc1</span> <span class="id" title="var">oc2</span>]]]]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contr_sigsig</span> <span class="id" title="var">I</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">I</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contr_sigsig</span> <span class="id" title="var">f1</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">A</span> =&gt; <span class="id" title="var">idpath</span> (<span class="id" title="var">f1</span> <span class="id" title="var">x</span>)); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contr_sigsig</span> <span class="id" title="var">f2</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">I</span> =&gt; <span class="id" title="var">idpath</span> (<span class="id" title="var">f2</span> <span class="id" title="var">x</span>)); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">contr_equiv'</span> {<span class="id" title="var">ff'</span> : <span class="id" title="var">f2</span> <span class="id" title="var">o</span> <span class="id" title="var">f1</span> == <span class="id" title="var">f</span> &amp; <span class="id" title="var">ff</span> == <span class="id" title="var">ff'</span>} <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="var">srefine</span> (<span class="id" title="var">equiv_functor_sigma'</span> (<span class="id" title="var">equiv_sigma_contr</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srefine</span> (@<span class="id" title="var">istrunc_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); [ | <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">contr_inhabited_hprop</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>; <span class="id" title="tactic">assumption</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">ff'</span> [<span class="id" title="var">oc1'</span> <span class="id" title="var">oc2'</span>]]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_forall'</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_path_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_concat_l</span>; <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_factorization</span> `{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">fact</span> <span class="id" title="var">fact'</span> : <span class="id" title="var">Factorization</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">PathFactorization</span> <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span> -&gt; <span class="id" title="var">fact</span> = <span class="id" title="var">fact'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">equiv_path_factorization</span> <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Factorization</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Factorization</span> <span class="id" title="var">class1</span> <span class="id" title="var">class2</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">PathFactorization</span> {<span class="id" title="var">class1</span> <span class="id" title="var">class2</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;This&nbsp;enables&nbsp;us&nbsp;to&nbsp;talk&nbsp;about&nbsp;"the&nbsp;image&nbsp;of&nbsp;a&nbsp;map"&nbsp;as&nbsp;a&nbsp;factorization&nbsp;but&nbsp;also&nbsp;as&nbsp;the&nbsp;intermediate&nbsp;object&nbsp;appearing&nbsp;in&nbsp;it,&nbsp;as&nbsp;is&nbsp;common&nbsp;in&nbsp;informal&nbsp;mathematics.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">intermediate</span> : <span class="id" title="var">Factorization</span> &gt;-&gt; <span class="id" title="var">Sortclass</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab52"></a><h2 class="section">Factorization Systems</h2>
+
+<div class="paragraph"> </div>
+
+ A ("unique" or "orthogonal") factorization system consists of a couple of classes of maps, closed under composition, such that every map admits a unique factorization. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Record</span> <span class="id" title="var">FactorizationSystem@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} :=<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">class1</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}}, (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>} ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ishprop_class1</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>), <span class="id" title="var">IsHProp</span> (<span class="id" title="var">class1</span> <span class="id" title="var">g</span>) ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">class1_isequiv</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>) {<span class="id" title="var">geq</span>:<span class="id" title="var">IsEquiv</span> <span class="id" title="var">g</span>}, <span class="id" title="var">class1</span> <span class="id" title="var">g</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">class1_compose</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>) (<span class="id" title="var">h</span>:<span class="id" title="var">Y</span>-&gt;<span class="id" title="var">Z</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">class1</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">class1</span> <span class="id" title="var">h</span> -&gt; <span class="id" title="var">class1</span> (<span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>) ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">class2</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}}, (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">k</span>} ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ishprop_class2</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>), <span class="id" title="var">IsHProp</span> (<span class="id" title="var">class2</span> <span class="id" title="var">g</span>) ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">class2_isequiv</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>) {<span class="id" title="var">geq</span>:<span class="id" title="var">IsEquiv</span> <span class="id" title="var">g</span>}, <span class="id" title="var">class2</span> <span class="id" title="var">g</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">class2_compose</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>) (<span class="id" title="var">h</span>:<span class="id" title="var">Y</span>-&gt;<span class="id" title="var">Z</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">class2</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">class2</span> <span class="id" title="var">h</span> -&gt; <span class="id" title="var">class2</span> (<span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>) ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Morally, the uniqueness of factorizations says that <span class="inlinecode"><span class="id" title="var">Factorization</span></span> <span class="inlinecode"><span class="id" title="var">class1</span></span> <span class="inlinecode"><span class="id" title="var">class2</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> is contractible.  However, in practice we always *prove* that by way of <span class="inlinecode"><span class="id" title="var">path_factorization</span></span>, and we frequently want to *use* the components of a <span class="inlinecode"><span class="id" title="var">PathFactorization</span></span> as well.  Thus, as data we store the canonical factorization and a <span class="inlinecode"><span class="id" title="var">PathFactorization</span></span> between any two such, and prove in a moment that this implies contractibility of the space of factorizations. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">factor</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} (<span class="id" title="var">f</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>), <span class="id" title="var">Factorization@</span>{<span class="id" title="var">i</span>} (@<span class="id" title="var">class1</span>) (@<span class="id" title="var">class2</span>) <span class="id" title="var">f</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_factor</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} (<span class="id" title="var">f</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fact</span> : <span class="id" title="var">Factorization@</span>{<span class="id" title="var">i</span>} (@<span class="id" title="var">class1</span>) (@<span class="id" title="var">class2</span>) <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fact'</span> : <span class="id" title="var">Factorization@</span>{<span class="id" title="var">i</span>} (@<span class="id" title="var">class1</span>) (@<span class="id" title="var">class2</span>) <span class="id" title="var">f</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">PathFactorization@</span>{<span class="id" title="var">i</span>} <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span><br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instances</span> <span class="id" title="var">ishprop_class1</span> <span class="id" title="var">ishprop_class2</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The type of factorizations is, as promised, contractible. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">contr_factor</span> `{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">factsys</span> : <span class="id" title="var">FactorizationSystem</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Contr</span> (<span class="id" title="var">Factorization</span> (@<span class="id" title="var">class1</span> <span class="id" title="var">factsys</span>) (@<span class="id" title="var">class2</span> <span class="id" title="var">factsys</span>) <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_allpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_factorization</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_factor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">factor</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">FactSys</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">factsys</span> : <span class="id" title="var">FactorizationSystem</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_Factorization'</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">Build_Factorization</span> (@<span class="id" title="var">class1</span> <span class="id" title="var">factsys</span>) (@<span class="id" title="var">class2</span> <span class="id" title="var">factsys</span>) <span class="id" title="var">X</span> <span class="id" title="var">Y</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_PathFactorization'</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">Build_PathFactorization</span> (@<span class="id" title="var">class1</span> <span class="id" title="var">factsys</span>) (@<span class="id" title="var">class2</span> <span class="id" title="var">factsys</span>) <span class="id" title="var">X</span> <span class="id" title="var">Y</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The left class is right-cancellable and the right class is left-cancellable. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelR_class1</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">class1</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">class1</span> <span class="id" title="var">factsys</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) -&gt; <span class="id" title="var">class1</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c1f</span> <span class="id" title="var">c1gf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">I</span> <span class="id" title="var">g1</span> <span class="id" title="var">g2</span> <span class="id" title="var">gf</span> <span class="id" title="var">c1g1</span> <span class="id" title="var">c2g2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">fact</span>  := <span class="id" title="var">Build_Factorization'</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">Z</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) (<span class="id" title="var">idmap</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; 1) <span class="id" title="var">c1gf</span> (<span class="id" title="var">class2_isequiv</span> <span class="id" title="var">factsys</span> <span class="id" title="var">idmap</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">fact'</span> := <span class="id" title="var">Build_Factorization'</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">I</span> (<span class="id" title="var">g1</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">g2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">gf</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">class1_compose</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span> <span class="id" title="var">g1</span> <span class="id" title="var">c1f</span> <span class="id" title="var">c1g1</span>) <span class="id" title="var">c2g2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">path_factor</span> <span class="id" title="var">factsys</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">fact'</span> <span class="id" title="var">fact</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> [<span class="id" title="var">q</span> <span class="id" title="var">q1</span> <span class="id" title="var">q2</span> <span class="id" title="var">qf</span>]; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">class1</span> <span class="id" title="var">factsys</span>) (<span class="id" title="var">path_arrow</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">gf</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">class1_compose</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g1</span> <span class="id" title="var">g2</span> <span class="id" title="var">c1g1</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">class1_isequiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">isequiv_homotopic</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; (<span class="id" title="var">q2</span> <span class="id" title="var">i</span>)^)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelL_class2</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">class2</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">class2</span> <span class="id" title="var">factsys</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) -&gt; <span class="id" title="var">class2</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c2g</span> <span class="id" title="var">c2gf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">I</span> <span class="id" title="var">f1</span> <span class="id" title="var">f2</span> <span class="id" title="var">ff</span> <span class="id" title="var">c1f1</span> <span class="id" title="var">c2f2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">fact</span>  := <span class="id" title="var">Build_Factorization'</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">X</span> (<span class="id" title="var">idmap</span>) (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; 1) (<span class="id" title="var">class1_isequiv</span> <span class="id" title="var">factsys</span> <span class="id" title="var">idmap</span>) <span class="id" title="var">c2gf</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">fact'</span> := <span class="id" title="var">Build_Factorization'</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">I</span> <span class="id" title="var">f1</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">ff</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">c1f1</span> (<span class="id" title="var">class2_compose</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f2</span> <span class="id" title="var">g</span> <span class="id" title="var">c2f2</span> <span class="id" title="var">c2g</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">path_factor</span> <span class="id" title="var">factsys</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> [<span class="id" title="var">q</span> <span class="id" title="var">q1</span> <span class="id" title="var">q2</span> <span class="id" title="var">qf</span>]; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">class2</span> <span class="id" title="var">factsys</span>) (<span class="id" title="var">path_arrow</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">ff</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">class2_compose</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f1</span> <span class="id" title="var">f2</span> <span class="id" title="var">_</span> <span class="id" title="var">c2f2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">class2_isequiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">isequiv_homotopic</span> <span class="id" title="var">_</span> <span class="id" title="var">q1</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The two classes of maps are automatically orthogonal, i.e. any commutative square from a <span class="inlinecode"><span class="id" title="var">class1</span></span> map to a <span class="inlinecode"><span class="id" title="var">class2</span></span> map has a unique diagonal filler.  For now, we only bother to define the lift; in principle we ought to show that the type of lifts is contractible. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Universe</span> <span class="id" title="var">ctxi</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">ctxi</span>}}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">c1i</span> : <span class="id" title="var">class1</span> <span class="id" title="var">factsys</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">c2p</span> : <span class="id" title="var">class2</span> <span class="id" title="var">factsys</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">X</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+First we factor <span class="inlinecode"><span class="id" title="var">f</span></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">C</span>  : <span class="id" title="keyword">Type</span>         := <span class="id" title="var">intermediate</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">f1</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>       := <span class="id" title="var">factor1</span>      (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">f2</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">X</span>       := <span class="id" title="var">factor2</span>      (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">ff</span> : <span class="id" title="var">f2</span> <span class="id" title="var">o</span> <span class="id" title="var">f1</span> == <span class="id" title="var">f</span> := <span class="id" title="var">fact_factors</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+and <span class="inlinecode"><span class="id" title="var">g</span></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">D</span>  : <span class="id" title="keyword">Type</span>         := <span class="id" title="var">intermediate</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">g1</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">D</span>       := <span class="id" title="var">factor1</span>      (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">g2</span> : <span class="id" title="var">D</span> -&gt; <span class="id" title="var">Y</span>       := <span class="id" title="var">factor2</span>      (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">gf</span> : <span class="id" title="var">g2</span> <span class="id" title="var">o</span> <span class="id" title="var">g1</span> == <span class="id" title="var">g</span> := <span class="id" title="var">fact_factors</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we observe that <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">f2</span></span> and <span class="inlinecode"><span class="id" title="var">f1</span></span>, and <span class="inlinecode"><span class="id" title="var">g2</span></span> and <span class="inlinecode"><span class="id" title="var">g1</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span>, are both factorizations of the common diagonal of the commutative square (for which we use <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span>, but we could equally well use <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">fact</span>  : <span class="id" title="var">Factorization</span> (@<span class="id" title="var">class1</span> <span class="id" title="var">factsys</span>) (@<span class="id" title="var">class2</span> <span class="id" title="var">factsys</span>) (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Factorization'</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">C</span> <span class="id" title="var">f1</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">p</span> (<span class="id" title="var">ff</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">inclass1</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">class2_compose</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f2</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">inclass2</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">c2p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">fact'</span> : <span class="id" title="var">Factorization</span> (@<span class="id" title="var">class1</span> <span class="id" title="var">factsys</span>) (@<span class="id" title="var">class2</span> <span class="id" title="var">factsys</span>) (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Factorization'</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">D</span> (<span class="id" title="var">g1</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span>) <span class="id" title="var">g2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">gf</span> (<span class="id" title="var">i</span> <span class="id" title="var">a</span>) @ (<span class="id" title="var">h</span> <span class="id" title="var">a</span>)^)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">class1_compose</span> <span class="id" title="var">factsys</span> <span class="id" title="var">i</span> <span class="id" title="var">g1</span> <span class="id" title="var">c1i</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">inclass1</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">inclass2</span> (<span class="id" title="var">factor</span> <span class="id" title="var">factsys</span> <span class="id" title="var">g</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Therefore, by the uniqueness of factorizations, we have an equivalence <span class="inlinecode"><span class="id" title="var">q</span></span> relating them. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">q</span>  : <span class="id" title="var">C</span> &lt;~&gt; <span class="id" title="var">D</span>          := <span class="id" title="var">path_intermediate</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">path_factor</span> <span class="id" title="var">factsys</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">q1</span> : <span class="id" title="var">q</span> <span class="id" title="var">o</span> <span class="id" title="var">f1</span> == <span class="id" title="var">g1</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span> := <span class="id" title="var">path_factor1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">path_factor</span> <span class="id" title="var">factsys</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">q2</span> : <span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f2</span> == <span class="id" title="var">g2</span> <span class="id" title="var">o</span> <span class="id" title="var">q</span> := <span class="id" title="var">path_factor2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">path_factor</span> <span class="id" title="var">factsys</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Using this, we can define the lift. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lift_factsys</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">f2</span> <span class="id" title="var">o</span> <span class="id" title="var">q</span>^-1 <span class="id" title="var">o</span> <span class="id" title="var">g1</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And the commutative triangles making it a lift 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lift_factsys_tri1</span> : <span class="id" title="var">lift_factsys</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span> == <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">f2</span> <span class="id" title="var">o</span> <span class="id" title="var">q</span>^-1) (<span class="id" title="var">q1</span> <span class="id" title="var">x</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">f2</span> (<span class="id" title="var">f1</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">ff</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lift_factsys_tri2</span> : <span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">lift_factsys</span> == <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">q2</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">g2</span> (<span class="id" title="var">g1</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">gf</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And finally prove that these two triangles compose to the given commutative square. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lift_factsys_square</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">p</span> (<span class="id" title="var">lift_factsys_tri1</span> <span class="id" title="var">x</span>)^ @ <span class="id" title="var">lift_factsys_tri2</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) = <span class="id" title="var">h</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">lift_factsys_tri1</span>, <span class="id" title="var">lift_factsys_tri2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;First&nbsp;we&nbsp;use&nbsp;the&nbsp;one&nbsp;aspect&nbsp;of&nbsp;the&nbsp;uniqueness&nbsp;of&nbsp;factorizations&nbsp;that&nbsp;we&nbsp;haven't&nbsp;mentioned&nbsp;yet.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">r</span> := <span class="id" title="var">path_fact_factors</span> (<span class="id" title="var">path_factor</span> <span class="id" title="var">factsys</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">fact</span> <span class="id" title="var">fact'</span>) <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">q2</span> (<span class="id" title="var">f1</span> <span class="id" title="var">x</span>) @ <span class="id" title="var">ap</span> <span class="id" title="var">g2</span> (<span class="id" title="var">q1</span> <span class="id" title="var">x</span>) @ (<span class="id" title="var">gf</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) @ (<span class="id" title="var">h</span> <span class="id" title="var">x</span>)^) = <span class="id" title="var">ap</span> <span class="id" title="var">p</span> (<span class="id" title="var">ff</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p_pp</span> <span class="id" title="tactic">in</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_pM</span>, <span class="id" title="var">moveR_Vp</span> <span class="id" title="tactic">in</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">r</span>); <span class="id" title="tactic">clear</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Now&nbsp;we&nbsp;can&nbsp;cancel&nbsp;some&nbsp;whiskered&nbsp;paths&nbsp;on&nbsp;both&nbsp;sides.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">inv_pp</span>; <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pp</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p_pp</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerR</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Next&nbsp;we&nbsp;set&nbsp;up&nbsp;for&nbsp;a&nbsp;naturality.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">q</span>^-1 <span class="id" title="var">f2</span>), &lt;- <span class="id" title="var">ap_pp</span>, &lt;- <span class="id" title="var">inv_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;The&nbsp;next&nbsp;line&nbsp;appears&nbsp;to&nbsp;do&nbsp;nothing,&nbsp;but&nbsp;in&nbsp;fact&nbsp;it&nbsp;is&nbsp;necessary&nbsp;for&nbsp;the&nbsp;subsequent&nbsp;<span class="inlinecode"><span class="id" title="tactic">rewrite</span></span>&nbsp;to&nbsp;succeed,&nbsp;because&nbsp;<span class="inlinecode"><span class="id" title="var">lift_factsys</span></span>&nbsp;appears&nbsp;in&nbsp;the&nbsp;invisible&nbsp;implicit&nbsp;point-arguments&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">paths</span></span>.&nbsp;&nbsp;One&nbsp;way&nbsp;to&nbsp;discover&nbsp;issues&nbsp;of&nbsp;that&nbsp;sort&nbsp;is&nbsp;to&nbsp;turn&nbsp;on&nbsp;printing&nbsp;of&nbsp;all&nbsp;implicit&nbsp;argumnets&nbsp;with&nbsp;<span class="inlinecode"><span class="id" title="keyword">Set</span></span> <span class="inlinecode"><span class="id" title="keyword">Printing</span></span> <span class="inlinecode"><span class="id" title="keyword">All</span></span>;&nbsp;another&nbsp;is&nbsp;to&nbsp;use&nbsp;<span class="inlinecode"><span class="id" title="keyword">Set</span></span> <span class="inlinecode"><span class="id" title="keyword">Debug</span></span> <span class="inlinecode"><span class="id" title="keyword">Tactic</span></span> <span class="inlinecode"><span class="id" title="var">Unification</span></span>&nbsp;and&nbsp;inspect&nbsp;the&nbsp;output&nbsp;to&nbsp;see&nbsp;what&nbsp;<span class="inlinecode"><span class="id" title="tactic">rewrite</span></span>&nbsp;is&nbsp;trying&nbsp;and&nbsp;failing&nbsp;to&nbsp;unify.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">lift_factsys</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_V</span>, &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_Ap</span> <span class="id" title="var">q2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Now&nbsp;we&nbsp;can&nbsp;cancel&nbsp;another&nbsp;path&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;And&nbsp;set&nbsp;up&nbsp;for&nbsp;an&nbsp;application&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">ap</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Now&nbsp;we&nbsp;apply&nbsp;the&nbsp;triangle&nbsp;identity&nbsp;<span class="inlinecode"><span class="id" title="var">eisadj</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">inv_pp</span>, <span class="id" title="var">ap_pp</span>, <span class="id" title="var">ap_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">eisadj</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Finally,&nbsp;we&nbsp;rearrange&nbsp;and&nbsp;it&nbsp;becomes&nbsp;a&nbsp;naturality&nbsp;square.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_V</span>, <span class="id" title="var">inv_V</span>, &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_A1p</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">q</span>) (<span class="id" title="var">q1</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">FactSys</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">FactsysExtensions</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">factsys</span> : <span class="id" title="var">FactorizationSystem</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can deduce the lifting property in terms of extensions fairly easily from the version in terms of commutative squares. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">extension_factsys</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">c1f</span> : <span class="id" title="var">class1</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">c2P</span> : <span class="id" title="var">class2</span> <span class="id" title="var">factsys</span> (@<span class="id" title="var">pr1</span> <span class="id" title="var">B</span> <span class="id" title="var">P</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">d</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>:<span class="id" title="var">A</span>, <span class="id" title="var">P</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ExtensionAlong</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">d</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">e</span> := <span class="id" title="var">lift_factsys</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span> <span class="id" title="var">c1f</span> <span class="id" title="var">pr1</span> <span class="id" title="var">c2P</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">f</span> <span class="id" title="var">a</span> ; <span class="id" title="var">d</span> <span class="id" title="var">a</span>)) <span class="id" title="var">idmap</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; 1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">e2</span> := <span class="id" title="var">lift_factsys_tri2</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span> <span class="id" title="var">c1f</span> <span class="id" title="var">pr1</span> <span class="id" title="var">c2P</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">f</span> <span class="id" title="var">a</span> ; <span class="id" title="var">d</span> <span class="id" title="var">a</span>)) <span class="id" title="var">idmap</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; 1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">e2</span> <span class="id" title="var">a</span>) # (<span class="id" title="var">e</span> <span class="id" title="var">a</span>).2).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">e1</span> := <span class="id" title="var">lift_factsys_tri1</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span> <span class="id" title="var">c1f</span> <span class="id" title="var">pr1</span> <span class="id" title="var">c2P</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">f</span> <span class="id" title="var">a</span> ; <span class="id" title="var">d</span> <span class="id" title="var">a</span>)) <span class="id" title="var">idmap</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; 1) <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">e</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) = (<span class="id" title="var">f</span> <span class="id" title="var">a</span> ; <span class="id" title="var">d</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">e3</span> := <span class="id" title="var">moveL_M1</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (((<span class="id" title="var">ap_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @@ 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">lift_factsys_square</span> <span class="id" title="var">factsys</span> <span class="id" title="var">f</span> <span class="id" title="var">c1f</span> <span class="id" title="var">pr1</span> <span class="id" title="var">c2P</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">f</span> <span class="id" title="var">a</span> ; <span class="id" title="var">d</span> <span class="id" title="var">a</span>)) <span class="id" title="var">idmap</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; 1) <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">e2</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) = <span class="id" title="var">pr1_path</span> <span class="id" title="var">e1</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">transport</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span> (<span class="id" title="var">e</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>)).2) <span class="id" title="var">e3</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">pr2_path</span> <span class="id" title="var">e1</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">FactsysExtensions</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

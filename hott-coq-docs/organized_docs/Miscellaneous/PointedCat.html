@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>PointedCat</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library PointedCat</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span> <span class="id" title="var">WildCat.Opposite</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Equiv</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A wild category is pointed if the initial and terminal object are the same. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsPointedCat</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">zero_object</span> : <span class="id" title="var">A</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">isinitial_zero_object</span> : <span class="id" title="var">IsInitial</span> <span class="id" title="var">zero_object</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">isterminal_zero_object</span> : <span class="id" title="var">IsTerminal</span> <span class="id" title="var">zero_object</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">isinitial_zero_object</span>.<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">isterminal_zero_object</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The zero morphism between objects <span class="inlinecode"><span class="id" title="var">a</span></span> and <span class="inlinecode"><span class="id" title="var">b</span></span> of a pointed category <span class="inlinecode"><span class="id" title="var">A</span></span> is the unique morphism that factors throguh the zero object. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">zero_morphism</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">mor_initial</span> <span class="id" title="var">_</span> <span class="id" title="var">b</span>) $<span class="id" title="var">o</span> (<span class="id" title="var">mor_terminal</span> <span class="id" title="var">a</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">ZeroLaws</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_zero_source</span> (<span class="id" title="var">h</span> : <span class="id" title="var">zero_object</span> $-&gt; <span class="id" title="var">a</span>) : <span class="id" title="var">h</span> $== <span class="id" title="var">zero_morphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">mor_initial_unique</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ (<span class="id" title="var">mor_initial_unique</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_zero_target</span> (<span class="id" title="var">h</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">zero_object</span>) : <span class="id" title="var">h</span> $== <span class="id" title="var">zero_morphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">mor_terminal_unique</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ (<span class="id" title="var">mor_terminal_unique</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We show the last two arguments so that end pointes can easily be specified. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Arguments</span> <span class="id" title="var">zero_morphism</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_zero_l</span> : <span class="id" title="var">zero_morphism</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">zero_morphism</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span>^$)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">mor_terminal_unique</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_zero_r</span> : <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">zero_morphism</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> $== <span class="id" title="var">zero_morphism</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">mor_initial_unique</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Any morphism which factors through an object equivalent to the zero object is homotopic to the zero morphism. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_zero_m</span> `{!<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>} (<span class="id" title="var">be</span> : <span class="id" title="var">b</span> $&lt;~&gt; <span class="id" title="var">zero_object</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">zero_morphism</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">compose_V_hh</span> <span class="id" title="var">be</span> <span class="id" title="var">f</span>)^$ $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">mor_terminal_unique</span> <span class="id" title="var">a</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">mor_initial_unique</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">ZeroLaws</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We make the last two arguments explicit so that end points can easily be specified. We had to do this again, since the section encapsulated the previous attempt. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Local Arguments</span> <span class="id" title="var">zero_morphism</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A functor is pointed if it preserves the zero object. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsPointedFunctor</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">Is1Functor</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} :=<br/>
+{<br/>
+&nbsp;&nbsp;<span class="id" title="var">preservesinitial_pfunctor</span> : <span class="id" title="var">PreservesInitial</span> <span class="id" title="var">F</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">preservesterminal_pfunctor</span> : <span class="id" title="var">PreservesTerminal</span> <span class="id" title="var">F</span> ;<br/>
+}.<br/>
+<span class="id" title="keyword">Global Existing Instances</span> <span class="id" title="var">preservesinitial_pfunctor</span> <span class="id" title="var">preservesterminal_pfunctor</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here is an alternative constructor using preservation of the zero object. This requires more structure on the categories however. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_IsPointedFunctor'</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>, !<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">F</span> <span class="id" title="var">zero_object</span> $&lt;~&gt; <span class="id" title="var">zero_object</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsPointedFunctor</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_IsPointedFunctor</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">inx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isinitial_cate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">p</span> $<span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">emap</span> <span class="id" title="var">F</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">cate_isinitial</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">tex</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isterminal_cate</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">p</span> $<span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">emap</span> <span class="id" title="var">F</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">cate_isterminal</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Pointed functors preserve the zero object upto isomorphism. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pfunctor_zero</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>, <span class="id" title="var">IsPointedCat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">IsPointedFunctor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> <span class="id" title="var">zero_object</span> $&lt;~&gt; <span class="id" title="var">zero_object</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">cate_isinitial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Pointed functors preserve the zero morphism upto homotopy 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fmap_zero_morphism</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>, <span class="id" title="var">IsPointedCat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">IsPointedFunctor</span> <span class="id" title="var">F</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> (<span class="id" title="var">zero_morphism</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) $== <span class="id" title="var">zero_morphism</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>) (<span class="id" title="var">F</span> <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fmap_comp</span> <span class="id" title="var">F</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">fmap_initial</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">fmap_terminal</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">cat_zero_m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">pfunctor_zero</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Opposite category of a pointed category is also pointed. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispointedcat_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>} : <span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsPointedCat</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">unfold</span> <span class="id" title="var">op</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">zero_object</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

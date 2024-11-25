@@ -1,0 +1,175 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Nullification</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Nullification</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab1242"></a><h1 class="section">Nullification</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Extensions</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Modality</span> <span class="id" title="var">Accessible</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Modalities.Localization</span>. </div>
+
+<div class="doc">
+Nullification is a special case of localization 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Nullification is the special case of localization where the codomains of the generating maps are all <span class="inlinecode"><span class="id" title="var">Unit</span></span>.  In this case, we get a modality and not just a reflective subuniverse. 
+<div class="paragraph"> </div>
+
+ The hypotheses of this lemma may look slightly odd (why are we bothering to talk about type families dependent over <span class="inlinecode"><span class="id" title="var">Unit</span></span>?), but they seem to be the most convenient to make the induction go through.  
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">extendable_over_unit</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">a</span>}) (<span class="id" title="var">C</span> : <span class="id" title="var">Unit</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) (<span class="id" title="var">D</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">u</span>, <span class="id" title="var">C</span> <span class="id" title="var">u</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>})<br/>
+&nbsp;&nbsp;(<span class="id" title="var">ext</span> : <span class="id" title="var">ExtendableAlong@</span>{<span class="id" title="var">a</span> <span class="id" title="var">a</span> <span class="id" title="var">i</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> (<span class="id" title="var">const_tt</span> <span class="id" title="var">A</span>) <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">ext'</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">u</span>, <span class="id" title="var">C</span> <span class="id" title="var">u</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ExtendableAlong@</span>{<span class="id" title="var">a</span> <span class="id" title="var">a</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> (<span class="id" title="var">const_tt</span> <span class="id" title="var">A</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; (<span class="id" title="var">D</span> <span class="id" title="var">u</span> (<span class="id" title="var">c</span> <span class="id" title="var">u</span>))))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ExtendableAlong_Over@</span>{<span class="id" title="var">a</span> <span class="id" title="var">a</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> (<span class="id" title="var">const_tt</span> <span class="id" title="var">A</span>) <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">ext</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">C</span>; <span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IH</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">ext</span> <span class="id" title="var">ext'</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">tt</span> | <span class="id" title="tactic">split</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">g</span> <span class="id" title="var">g'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> ((<span class="id" title="var">fst</span> (<span class="id" title="var">ext'</span> (<span class="id" title="var">fst</span> <span class="id" title="var">ext</span> <span class="id" title="var">g</span>).1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; ((<span class="id" title="var">fst</span> <span class="id" title="var">ext</span> <span class="id" title="var">g</span>).2 <span class="id" title="var">a</span>)^ # (<span class="id" title="var">g'</span> <span class="id" title="var">a</span>))).1);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_transport_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">fst</span> (<span class="id" title="var">ext'</span> (<span class="id" title="var">fst</span> <span class="id" title="var">ext</span> <span class="id" title="var">g</span>).1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; ((<span class="id" title="var">fst</span> <span class="id" title="var">ext</span> <span class="id" title="var">g</span>).2 <span class="id" title="var">a</span>)^ # (<span class="id" title="var">g'</span> <span class="id" title="var">a</span>))).2 <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">h'</span> <span class="id" title="var">k'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">ext'</span> <span class="id" title="var">k</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">g</span> <span class="id" title="var">u</span> # <span class="id" title="var">h'</span> <span class="id" title="var">u</span>) <span class="id" title="var">k'</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ooextendable_over_unit@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">m</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) (<span class="id" title="var">C</span> : <span class="id" title="var">Unit</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}) (<span class="id" title="var">D</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">u</span>, <span class="id" title="var">C</span> <span class="id" title="var">u</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">k</span>})<br/>
+&nbsp;&nbsp;(<span class="id" title="var">ext</span> : <span class="id" title="var">ooExtendableAlong@</span>{<span class="id" title="var">l</span> <span class="id" title="var">l</span> <span class="id" title="var">j</span> <span class="id" title="var">m</span>} (<span class="id" title="var">const_tt</span> <span class="id" title="var">A</span>) <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">ext'</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">u</span>, <span class="id" title="var">C</span> <span class="id" title="var">u</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ooExtendableAlong</span> (<span class="id" title="var">const_tt</span> <span class="id" title="var">A</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; (<span class="id" title="var">D</span> <span class="id" title="var">u</span> (<span class="id" title="var">c</span> <span class="id" title="var">u</span>))))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ooExtendableAlong_Over</span> (<span class="id" title="var">const_tt</span> <span class="id" title="var">A</span>) <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">ext</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">extendable_over_unit</span> <span class="id" title="var">n</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> (<span class="id" title="var">ext</span> <span class="id" title="var">n</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">ext'</span> <span class="id" title="var">c</span> <span class="id" title="var">n</span>).<br/>
+
+<br/>
+#[<span class="id" title="var">local</span>] <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 =&gt; <span class="id" title="tactic">progress</span> (<span class="id" title="tactic">cbv</span> <span class="id" title="keyword">beta</span> <span class="id" title="keyword">iota</span>) : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Nul@</span>{<span class="id" title="var">a</span> <span class="id" title="var">i</span>} (<span class="id" title="var">S</span> : <span class="id" title="var">NullGenerators@</span>{<span class="id" title="var">a</span>}) : <span class="id" title="var">Modality@</span>{<span class="id" title="var">i</span>}.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+We use the localization reflective subuniverses for most of the necessary data. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Modality'</span> (<span class="id" title="var">Loc</span> (<span class="id" title="var">null_to_local_generators</span> <span class="id" title="var">S</span>)) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span>.<br/>
+</div>
+
+<div class="doc">
+We take care with universes. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">reflectsD_from_OO_ind@</span>{<span class="id" title="var">i</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">B</span> <span class="id" title="var">B_inO</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Localize_ind@</span>{<span class="id" title="var">a</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span>} (<span class="id" title="var">null_to_local_generators</span> <span class="id" title="var">S</span>) <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">g</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ooextendable_over_unit</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ooextendable_postcompose@</span>{<span class="id" title="var">a</span> <span class="id" title="var">a</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">_</span>:<span class="id" title="var">Unit</span>) =&gt; <span class="id" title="var">B</span> (<span class="id" title="var">c</span> <span class="id" title="var">tt</span>)) <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">transport</span> <span class="id" title="var">B</span> (<span class="id" title="var">ap@</span>{<span class="id" title="keyword">Set</span> <span class="id" title="var">_</span>} <span class="id" title="var">c</span> (<span class="id" title="var">path_unit</span> <span class="id" title="var">tt</span> <span class="id" title="var">u</span>))) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ooextendable_islocal</span> <span class="id" title="var">_</span> <span class="id" title="var">i</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">inO_paths@</span>{<span class="id" title="var">i</span> <span class="id" title="var">i</span>}.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And here is the "real" definition of the notation <span class="inlinecode"><span class="id" title="var">IsNull</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">IsNull</span> <span class="id" title="var">f</span> := (<span class="id" title="var">In</span> (<span class="id" title="var">Nul</span> <span class="id" title="var">f</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1243"></a><h2 class="section">Nullification and Accessibility</h2>
+
+<div class="paragraph"> </div>
+
+ Nullification modalities are accessible, essentially by definition. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">accmodality_nul</span> (<span class="id" title="var">S</span> : <span class="id" title="var">NullGenerators</span>) : <span class="id" title="var">IsAccModality</span> (<span class="id" title="var">Nul</span> <span class="id" title="var">S</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">unshelve</span> <span class="id" title="tactic">econstructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">S</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And accessible modalities can be lifted to other universes. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lift_accmodality@</span>{<span class="id" title="var">a</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">O</span> : <span class="id" title="var">Subuniverse@</span>{<span class="id" title="var">i</span>}) `{<span class="id" title="var">IsAccModality@</span>{<span class="id" title="var">a</span> <span class="id" title="var">i</span>} <span class="id" title="var">O</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Modality@</span>{<span class="id" title="var">j</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Nul@</span>{<span class="id" title="var">a</span> <span class="id" title="var">j</span>} (<span class="id" title="var">acc_ngen</span> <span class="id" title="var">O</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">O_eq_lift_accmodality</span> (<span class="id" title="var">O</span> : <span class="id" title="var">Subuniverse@</span>{<span class="id" title="var">i</span>}) `{<span class="id" title="var">IsAccModality@</span>{<span class="id" title="var">a</span> <span class="id" title="var">i</span>} <span class="id" title="var">O</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">O</span> &lt;=&gt; <span class="id" title="var">lift_accmodality</span> <span class="id" title="var">O</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">inO_iff_isnull</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

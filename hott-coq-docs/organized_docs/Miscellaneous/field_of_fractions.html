@@ -1,0 +1,676 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>field_of_fractions</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library field_of_fractions</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.HIT.quotient</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.abstract_algebra</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.dec_fields</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="var">Frac</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">contents</span>.<br/>
+<span class="id" title="keyword">Universe</span> <span class="id" title="var">UR</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>} `{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">R</span>:<span class="id" title="var">Type@</span>{<span class="id" title="var">UR</span>})<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsIntegralDomain</span> <span class="id" title="var">R</span>} `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">R</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">Frac@</span>{} : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">frac</span> { <span class="id" title="var">num</span>: <span class="id" title="var">R</span>; <span class="id" title="var">den</span>: <span class="id" title="var">R</span>; <span class="id" title="var">den_ne_0</span>: <span class="id" title="var">PropHolds</span> (<span class="id" title="var">den</span> &lt;&gt; 0) }.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;used&nbsp;to&nbsp;have&nbsp;<span class="inlinecode"><span class="id" title="var">den</span></span>&nbsp;and&nbsp;<span class="inlinecode"><span class="id" title="var">den_nonzero</span></span>&nbsp;bundled,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;which&nbsp;did&nbsp;work&nbsp;relatively&nbsp;nicely&nbsp;with&nbsp;Program,&nbsp;but&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;extra&nbsp;messyness&nbsp;in&nbsp;proofs&nbsp;etc&nbsp;turned&nbsp;out&nbsp;not&nbsp;to&nbsp;be&nbsp;worth&nbsp;it.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Frac_ishset'</span> : <span class="id" title="var">IsHSet</span> <span class="id" title="var">Frac</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">assert</span> (<span class="id" title="var">E</span> : <span class="id" title="var">sig</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> : <span class="id" title="var">R</span> =&gt; <span class="id" title="var">sig</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">d</span> : <span class="id" title="var">R</span> =&gt; <span class="id" title="var">d</span> &lt;&gt; 0 )) &lt;~&gt; <span class="id" title="var">Frac</span>).<br/>
+- <span class="id" title="var">issig</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">E</span>).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">Frac_ishset@</span>{} : <span class="id" title="var">IsHSet</span> <span class="id" title="var">Frac</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="tactic">first</span> [<span class="id" title="tactic">exact</span> <span class="id" title="var">Frac_ishset'@</span>{<span class="id" title="var">UR</span> <span class="id" title="var">Ularge</span> <span class="id" title="keyword">Set</span>}|<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">Frac_ishset'@</span>{}]).<br/>
+
+<br/>
+<span class="id" title="keyword">Local Existing Instance</span> <span class="id" title="var">den_ne_0</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">Frac_inject@</span>{} : <span class="id" title="var">Cast</span> <span class="id" title="var">R</span> <span class="id" title="var">Frac</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">frac</span> <span class="id" title="var">x</span> 1 <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">Frac_0@</span>{} : <span class="id" title="var">Zero</span> <span class="id" title="var">Frac</span> := ('0 : <span class="id" title="var">Frac</span>).<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">Frac_1@</span>{} : <span class="id" title="var">One</span> <span class="id" title="var">Frac</span> := ('1 : <span class="id" title="var">Frac</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">pl@</span>{} : <span class="id" title="var">Plus</span> <span class="id" title="var">Frac</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">frac</span> (<span class="id" title="var">num</span> <span class="id" title="var">q</span> * <span class="id" title="var">den</span> <span class="id" title="var">r</span> + <span class="id" title="var">num</span> <span class="id" title="var">r</span> * <span class="id" title="var">den</span> <span class="id" title="var">q</span>) (<span class="id" title="var">den</span> <span class="id" title="var">q</span> * <span class="id" title="var">den</span> <span class="id" title="var">r</span>) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv@</span>{} := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">num</span> <span class="id" title="var">x</span> * <span class="id" title="var">den</span> <span class="id" title="var">y</span> = <span class="id" title="var">num</span> <span class="id" title="var">y</span> * <span class="id" title="var">den</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">equiv_equiv_rel@</span>{} : <span class="id" title="var">EquivRel</span> <span class="id" title="var">equiv</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">E1</span> <span class="id" title="var">E2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">mult_left_cancel</span> (<span class="id" title="var">den</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">solve_propholds</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">mult_assoc</span>, !(<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">E1</span>, &lt;-<span class="id" title="var">E2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-!<span class="id" title="var">mult_assoc</span>. <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">equiv_dec@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>: <span class="id" title="var">Frac</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">equiv</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">decide_rel</span> (=) (<span class="id" title="var">num</span> <span class="id" title="var">x</span> * <span class="id" title="var">den</span> <span class="id" title="var">y</span>) (<span class="id" title="var">num</span> <span class="id" title="var">y</span> * <span class="id" title="var">den</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pl_respect@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q1</span> <span class="id" title="var">q2</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">q1</span> <span class="id" title="var">q2</span> -&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">r1</span> <span class="id" title="var">r2</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">r1</span> <span class="id" title="var">r2</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">equiv</span> (<span class="id" title="var">q1</span> + <span class="id" title="var">r1</span>) (<span class="id" title="var">q2</span> + <span class="id" title="var">r2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>;<span class="id" title="tactic">intros</span> <span class="id" title="var">q1</span> <span class="id" title="var">q2</span> <span class="id" title="var">Eq</span> <span class="id" title="var">r1</span> <span class="id" title="var">r2</span> <span class="id" title="var">Er</span>.<br/>
+<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">plus_mult_distr_r</span>.<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q1</span>) (<span class="id" title="var">den</span> <span class="id" title="var">r1</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">r1</span>)), (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">r1</span>)), &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">q2</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q1</span>)), <span class="id" title="var">Eq</span>.<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">q2</span>)), &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">r1</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">q1</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">q1</span>)), &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">r2</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">r1</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Er</span>.<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">r1</span>)), &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q2</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">q1</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">q1</span>)), &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">r2</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q2</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">r2</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">r1</span>)),<br/>
+&nbsp;&nbsp;(<span class="id" title="var">mult_comm</span> <span class="id" title="var">_</span> (<span class="id" title="var">den</span> <span class="id" title="var">q2</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">r1</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">r2</span>)).<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">plus_mult_distr_r</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pl_comm@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>, <span class="id" title="var">equiv</span> (<span class="id" title="var">pl</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>) (<span class="id" title="var">pl</span> <span class="id" title="var">r</span> <span class="id" title="var">q</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>;<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">r</span>)), <span class="id" title="var">plus_comm</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pl_assoc@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> <span class="id" title="var">t</span>, <span class="id" title="var">equiv</span> (<span class="id" title="var">pl</span> <span class="id" title="var">q</span> (<span class="id" title="var">pl</span> <span class="id" title="var">r</span> <span class="id" title="var">t</span>)) (<span class="id" title="var">pl</span> (<span class="id" title="var">pl</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>) <span class="id" title="var">t</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">ap011</span>;[|<span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>,<span class="id" title="keyword">associativity</span>].<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">plus_mult_distr_r</span>.<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">plus_mult_distr_r</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">den</span> <span class="id" title="var">t</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">plus_assoc</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">ap011</span>;[<span class="id" title="tactic">apply</span> <span class="id" title="var">ap011</span>|].<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">r</span>)), &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">r</span>) (<span class="id" title="var">den</span> <span class="id" title="var">q</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">t</span>)). <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">q</span>));<span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>,<span class="id" title="keyword">associativity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">ml@</span>{} : <span class="id" title="var">Mult</span> <span class="id" title="var">Frac</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">frac</span> (<span class="id" title="var">num</span> <span class="id" title="var">q</span> * <span class="id" title="var">num</span> <span class="id" title="var">r</span>) (<span class="id" title="var">den</span> <span class="id" title="var">q</span> * <span class="id" title="var">den</span> <span class="id" title="var">r</span>) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ml_respect@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q1</span> <span class="id" title="var">q2</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">q1</span> <span class="id" title="var">q2</span> -&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">r1</span> <span class="id" title="var">r2</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">r1</span> <span class="id" title="var">r2</span> -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">equiv</span> (<span class="id" title="var">q1</span> * <span class="id" title="var">r1</span>) (<span class="id" title="var">q2</span> * <span class="id" title="var">r2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>;<span class="id" title="tactic">intros</span> <span class="id" title="var">q1</span> <span class="id" title="var">q2</span> <span class="id" title="var">Eq</span> <span class="id" title="var">r1</span> <span class="id" title="var">r2</span> <span class="id" title="var">Er</span>.<br/>
+<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q1</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">r1</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">num</span> <span class="id" title="var">r1</span>)), &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">q2</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q1</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Eq</span>, <span class="id" title="var">Er</span>.<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q2</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">q1</span>)), (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">q1</span>)).<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">simple_associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">r2</span>)), &lt;-(<span class="id" title="var">simple_associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q2</span>)).<br/>
+<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">neg@</span>{} : <span class="id" title="var">Negate</span> <span class="id" title="var">Frac</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>;<span class="id" title="tactic">refine</span> (<span class="id" title="var">frac</span> (- <span class="id" title="var">num</span> <span class="id" title="var">q</span>) (<span class="id" title="var">den</span> <span class="id" title="var">q</span>) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">neg_respect@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> -&gt; <span class="id" title="var">equiv</span> (- <span class="id" title="var">q</span>) (- <span class="id" title="var">r</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>;<span class="id" title="tactic">simpl</span>;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-2!<span class="id" title="var">negate_mult_distr_l</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">nonzero_num@</span>{} <span class="id" title="var">x</span> : ~ (<span class="id" title="var">equiv</span> <span class="id" title="var">x</span> 0) &lt;-&gt; <span class="id" title="var">num</span> <span class="id" title="var">x</span> &lt;&gt; 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">E</span>.<br/>
+- <span class="id" title="tactic">red</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">F</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> 2!<span class="id" title="var">mult_0_l</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">red</span> <span class="id" title="tactic">in</span> <span class="id" title="var">F</span>;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">F</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>, <span class="id" title="var">mult_0_l</span> <span class="id" title="tactic">in</span> <span class="id" title="var">F</span>. <span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pl_0_l@</span>{} <span class="id" title="var">x</span> : <span class="id" title="var">equiv</span> (0 + <span class="id" title="var">x</span>) <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>, <span class="id" title="var">mult_0_l</span>, <span class="id" title="var">mult_1_l</span>, <span class="id" title="var">plus_0_l</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pl_0_r@</span>{} <span class="id" title="var">x</span> : <span class="id" title="var">equiv</span> (<span class="id" title="var">x</span> + 0) <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> 2!<span class="id" title="var">mult_1_r</span>, <span class="id" title="var">mult_0_l</span>, <span class="id" title="var">plus_0_r</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pl_neg_l@</span>{} <span class="id" title="var">x</span> : <span class="id" title="var">equiv</span> (- <span class="id" title="var">x</span> + <span class="id" title="var">x</span>) 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>, <span class="id" title="var">mult_0_l</span>.<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-<span class="id" title="var">plus_mult_distr_r</span>.<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">plus_negate_l</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">mult_0_l</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ml_assoc@</span>{} <span class="id" title="var">q</span> <span class="id" title="var">r</span> <span class="id" title="var">t</span> : <span class="id" title="var">equiv</span> (<span class="id" title="var">ml</span> <span class="id" title="var">q</span> (<span class="id" title="var">ml</span> <span class="id" title="var">r</span> <span class="id" title="var">t</span>)) (<span class="id" title="var">ml</span> (<span class="id" title="var">ml</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>) <span class="id" title="var">t</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">rewrite</span> (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">num</span> <span class="id" title="var">q</span>)), (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">den</span> <span class="id" title="var">q</span>)).<br/>
+<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">dec_rec@</span>{} : <span class="id" title="var">DecRecip</span> <span class="id" title="var">Frac</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">decide_rel</span> (=) (<span class="id" title="var">num</span> <span class="id" title="var">x</span>) 0 <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">inl</span> <span class="id" title="var">_</span> =&gt; 0<br/>
+&nbsp;&nbsp;| <span class="id" title="var">inr</span> <span class="id" title="var">P</span> =&gt; <span class="id" title="var">frac</span> (<span class="id" title="var">den</span> <span class="id" title="var">x</span>) (<span class="id" title="var">num</span> <span class="id" title="var">x</span>) <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_respect@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> -&gt; <span class="id" title="var">equiv</span> (/ <span class="id" title="var">q</span>) (/ <span class="id" title="var">r</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>,<span class="id" title="var">dec_recip</span>,<span class="id" title="var">dec_rec</span>;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">decide_rel</span> <span class="id" title="var">paths</span> (<span class="id" title="var">num</span> <span class="id" title="var">q</span>) 0) <span class="id" title="keyword">as</span> [<span class="id" title="var">E1</span>|<span class="id" title="var">E1</span>],<br/>
+(<span class="id" title="var">decide_rel</span> <span class="id" title="var">paths</span> (<span class="id" title="var">num</span> <span class="id" title="var">r</span>) 0) <span class="id" title="keyword">as</span> [<span class="id" title="var">E2</span>|<span class="id" title="var">E2</span>];<span class="id" title="tactic">simpl</span>.<br/>
+- <span class="id" title="tactic">trivial</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E1</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_0_l</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">right_cancellation_ne_0</span> <span class="id" title="var">mult</span> (<span class="id" title="var">den</span> <span class="id" title="var">q</span>));<span class="id" title="tactic">try</span> <span class="id" title="var">solve_propholds</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_0_l</span>;<span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>,<span class="id" title="var">E</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E2</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_0_l</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">right_cancellation_ne_0</span> <span class="id" title="var">mult</span> (<span class="id" title="var">den</span> <span class="id" title="var">r</span>));<span class="id" title="tactic">try</span> <span class="id" title="var">solve_propholds</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_0_l</span>;<span class="id" title="tactic">trivial</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">q</span>)), (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">r</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>, <span class="id" title="var">E</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">contents</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Frac</span> <span class="id" title="var">R</span> {<span class="id" title="var">Rzero</span>} : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">frac</span> {<span class="id" title="var">R</span> <span class="id" title="var">Rzero</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">num</span> {<span class="id" title="var">R</span> <span class="id" title="var">Rzero</span>} <span class="id" title="var">_</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">den</span> {<span class="id" title="var">R</span> <span class="id" title="var">Rzero</span>} <span class="id" title="var">_</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">den_ne_0</span> {<span class="id" title="var">R</span> <span class="id" title="var">Rzero</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">equiv</span> {<span class="id" title="var">R</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">morphisms</span>.<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">R1</span>} `{<span class="id" title="var">IsIntegralDomain</span> <span class="id" title="var">R1</span>} `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">R1</span>}.<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">R2</span>} `{<span class="id" title="var">IsIntegralDomain</span> <span class="id" title="var">R2</span>} `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">R2</span>}.<br/>
+<span class="id" title="keyword">Context</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">R1</span> -&gt; <span class="id" title="var">R2</span>) `{!<span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">f</span>} `{!<span class="id" title="var">IsInjective</span> <span class="id" title="var">f</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lift</span> (<span class="id" title="var">x</span> : <span class="id" title="var">Frac</span> <span class="id" title="var">R1</span>) : <span class="id" title="var">Frac</span> <span class="id" title="var">R2</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">frac</span> (<span class="id" title="var">f</span> (<span class="id" title="var">num</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">f</span> (<span class="id" title="var">den</span> <span class="id" title="var">x</span>))).<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">isinjective_ne_0</span>.<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">den_ne_0</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">lift_respects</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> -&gt; <span class="id" title="var">equiv</span> (<span class="id" title="var">lift</span> <span class="id" title="var">q</span>) (<span class="id" title="var">lift</span> <span class="id" title="var">r</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>;<span class="id" title="tactic">simpl</span>;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-2!<span class="id" title="var">preserves_mult</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>,<span class="id" title="var">E</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">morphisms</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Frac</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Frac</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="var">FracField</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">contents</span>.<br/>
+<span class="comment">(*&nbsp;NB:&nbsp;we&nbsp;need&nbsp;a&nbsp;separate&nbsp;IsHSet&nbsp;instance<br/>
+&nbsp;&nbsp;&nbsp;so&nbsp;we&nbsp;don't&nbsp;need&nbsp;to&nbsp;depend&nbsp;on&nbsp;everything&nbsp;to&nbsp;define&nbsp;F.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Universe</span> <span class="id" title="var">UR</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>} `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">R</span>:<span class="id" title="var">Type@</span>{<span class="id" title="var">UR</span>} } `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">R</span>} `{<span class="id" title="var">IsIntegralDomain</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">R</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Existing Instance</span> <span class="id" title="var">den_ne_0</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Add&nbsp;Ring&nbsp;R:&nbsp;(stdlib_ring_theory&nbsp;R).&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F@</span>{} := <span class="id" title="var">quotient</span> <span class="id" title="var">equiv</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">class@</span>{} : <span class="id" title="var">Cast</span> (<span class="id" title="var">Frac</span> <span class="id" title="var">R</span>) <span class="id" title="var">F</span> := <span class="id" title="var">class_of</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;injection&nbsp;from&nbsp;R&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">inject@</span>{} : <span class="id" title="var">Cast</span> <span class="id" title="var">R</span> <span class="id" title="var">F</span> := <span class="id" title="var">Compose</span> <span class="id" title="var">class</span> (<span class="id" title="var">Frac_inject</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path@</span>{} {<span class="id" title="var">x</span> <span class="id" title="var">y</span>} : <span class="id" title="var">equiv</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> -&gt; ' <span class="id" title="var">x</span> = ' <span class="id" title="var">y</span> := <span class="id" title="var">related_classes_eq</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_rect@</span>{<span class="id" title="var">i</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">F</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) {<span class="id" title="var">sP</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHSet</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">dclass</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">Frac</span> <span class="id" title="var">R</span>, <span class="id" title="var">P</span> (' <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">dequiv</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>, (<span class="id" title="var">path</span> <span class="id" title="var">E</span>) # (<span class="id" title="var">dclass</span> <span class="id" title="var">x</span>) = (<span class="id" title="var">dclass</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span>, <span class="id" title="var">P</span> <span class="id" title="var">q</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">quotient_ind</span> <span class="id" title="var">equiv</span> <span class="id" title="var">P</span> <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_compute</span> <span class="id" title="var">P</span> {<span class="id" title="var">sP</span>} <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span> <span class="id" title="var">x</span><br/>
+&nbsp;: @<span class="id" title="var">F_rect</span> <span class="id" title="var">P</span> <span class="id" title="var">sP</span> <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span> (' <span class="id" title="var">x</span>) = <span class="id" title="var">dclass</span> <span class="id" title="var">x</span> := 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_compute_path</span> <span class="id" title="var">P</span> {<span class="id" title="var">sP</span>} <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> (<span class="id" title="var">E</span> : <span class="id" title="var">equiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">apD</span> (@<span class="id" title="var">F_rect</span> <span class="id" title="var">P</span> <span class="id" title="var">sP</span> <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span>) (<span class="id" title="var">path</span> <span class="id" title="var">E</span>) = <span class="id" title="var">dequiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">quotient_ind_compute_path</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_ind@</span>{<span class="id" title="var">i</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">F</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) {<span class="id" title="var">sP</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">dclass</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">Frac</span> <span class="id" title="var">R</span>, <span class="id" title="var">P</span> (' <span class="id" title="var">x</span>)) : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> (@<span class="id" title="var">F_rect</span> <span class="id" title="var">P</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">istrunc_hprop</span>) <span class="id" title="var">dclass</span>).<br/>
+<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_ind2@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">F</span> -&gt; <span class="id" title="var">F</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) {<span class="id" title="var">sP</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">dclass</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Frac</span> <span class="id" title="var">R</span>, <span class="id" title="var">P</span> (' <span class="id" title="var">x</span>) (' <span class="id" title="var">y</span>)) : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> (@<span class="id" title="var">F_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">_</span>)).<br/>
+- <span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_forall@</span>{<span class="id" title="var">UR</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>}.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind</span> <span class="id" title="var">_</span>);<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">dclass</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_ind3@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">F</span> -&gt; <span class="id" title="var">F</span> -&gt; <span class="id" title="var">F</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>})<br/>
+&nbsp;&nbsp;{<span class="id" title="var">sP</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">dclass</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">Frac</span> <span class="id" title="var">R</span>, <span class="id" title="var">P</span> (' <span class="id" title="var">x</span>) (' <span class="id" title="var">y</span>) (' <span class="id" title="var">z</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> (@<span class="id" title="var">F_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>, <span class="id" title="var">_</span>)).<br/>
+- <span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_forall@</span>{<span class="id" title="var">UR</span> <span class="id" title="var">j</span> <span class="id" title="var">j</span>}.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind2@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">_</span>). <span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_rec@</span>{<span class="id" title="var">i</span>} {<span class="id" title="var">T</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>} } {<span class="id" title="var">sT</span> : <span class="id" title="var">IsHSet</span> <span class="id" title="var">T</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">dclass</span> : <span class="id" title="var">Frac</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">dequiv</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">dclass</span> <span class="id" title="var">x</span> = <span class="id" title="var">dclass</span> <span class="id" title="var">y</span>),<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> -&gt; <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">quotient_rec</span> <span class="id" title="var">equiv</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_rec_compute</span> <span class="id" title="var">T</span> <span class="id" title="var">sT</span> <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;: @<span class="id" title="var">F_rec</span> <span class="id" title="var">T</span> <span class="id" title="var">sT</span> <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span> (' <span class="id" title="var">x</span>) = <span class="id" title="var">dclass</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_rec2@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} {<span class="id" title="var">T</span>:<span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>} } {<span class="id" title="var">sT</span> : <span class="id" title="var">IsHSet</span> <span class="id" title="var">T</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">dclass</span> : <span class="id" title="var">Frac</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">Frac</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">T</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">dequiv</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x1</span> <span class="id" title="var">x2</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">x1</span> <span class="id" title="var">x2</span> -&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">y1</span> <span class="id" title="var">y2</span>, <span class="id" title="var">equiv</span> <span class="id" title="var">y1</span> <span class="id" title="var">y2</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">dclass</span> <span class="id" title="var">x1</span> <span class="id" title="var">y1</span> = <span class="id" title="var">dclass</span> <span class="id" title="var">x2</span> <span class="id" title="var">y2</span>),<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> -&gt; <span class="id" title="var">F</span> -&gt; <span class="id" title="var">T</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">quotient_rec2@</span>{<span class="id" title="var">UR</span> <span class="id" title="var">UR</span> <span class="id" title="var">UR</span> <span class="id" title="var">j</span> <span class="id" title="var">i</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Build_HSet</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">F_rec2_compute</span> {<span class="id" title="var">T</span> <span class="id" title="var">sT</span>} <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;: @<span class="id" title="var">F_rec2</span> <span class="id" title="var">T</span> <span class="id" title="var">sT</span> <span class="id" title="var">dclass</span> <span class="id" title="var">dequiv</span> (' <span class="id" title="var">x</span>) (' <span class="id" title="var">y</span>) = <span class="id" title="var">dclass</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Relations,&nbsp;operations&nbsp;and&nbsp;constants&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">F0@</span>{} : <span class="id" title="var">Zero</span> <span class="id" title="var">F</span> := ('0 : <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">F1@</span>{} : <span class="id" title="var">One</span> <span class="id" title="var">F</span> := ('1 : <span class="id" title="var">F</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">Fplus@</span>{} : <span class="id" title="var">Plus</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">refine</span> (<span class="id" title="var">F_rec2</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; ' (<span class="id" title="var">Frac.pl</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Frac.pl_respect</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Fplus_compute@</span>{} <span class="id" title="var">q</span> <span class="id" title="var">r</span> : (' <span class="id" title="var">q</span>) + (' <span class="id" title="var">r</span>) = ' (<span class="id" title="var">Frac.pl</span> <span class="id" title="var">_</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">Fneg@</span>{} : <span class="id" title="var">Negate</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">refine</span> (<span class="id" title="var">F_rec</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; ' (<span class="id" title="var">Frac.neg</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>)) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>; <span class="id" title="tactic">eapply</span> <span class="id" title="var">Frac.neg_respect</span>;<span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>. <span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Fneg_compute@</span>{} <span class="id" title="var">q</span> : - (' <span class="id" title="var">q</span>) = ' (<span class="id" title="var">Frac.neg</span> <span class="id" title="var">_</span> <span class="id" title="var">q</span>) := 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">Fmult@</span>{} : <span class="id" title="var">Mult</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">refine</span> (<span class="id" title="var">F_rec2</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; ' (<span class="id" title="var">Frac.ml</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Frac.ml_respect</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Fmult_compute@</span>{} <span class="id" title="var">q</span> <span class="id" title="var">r</span> : (' <span class="id" title="var">q</span>) * (' <span class="id" title="var">r</span>) = ' (<span class="id" title="var">Frac.ml</span> <span class="id" title="var">_</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">Fmult_comm@</span>{} : <span class="id" title="var">Commutative</span> <span class="id" title="var">Fplus</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind2</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>, <span class="id" title="var">Frac.pl_comm</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">F_ring@</span>{} : <span class="id" title="var">IsCRing</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>;<br/>
+<span class="id" title="tactic">first</span> [<span class="id" title="tactic">change</span> <span class="id" title="var">sg_op</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mult</span>; <span class="id" title="tactic">change</span> <span class="id" title="var">mon_unit</span> <span class="id" title="keyword">with</span> 1|<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">sg_op</span> <span class="id" title="keyword">with</span> <span class="id" title="var">plus</span>; <span class="id" title="tactic">change</span> <span class="id" title="var">mon_unit</span> <span class="id" title="keyword">with</span> 0].<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind3</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Frac.pl_assoc</span>.<br/>
+- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>, <span class="id" title="var">Frac.pl_0_l</span>.<br/>
+- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>, <span class="id" title="var">Frac.pl_0_r</span>.<br/>
+- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>, <span class="id" title="var">Frac.pl_neg_l</span>.<br/>
+- <span class="id" title="tactic">hnf</span>;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">commutativity</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">plus</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span>;<span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>, <span class="id" title="var">Frac.pl_neg_l</span>.<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+- <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind3</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>, <span class="id" title="var">Frac.ml_assoc</span>.<br/>
+- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2!<span class="id" title="var">mult_1_l</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2!<span class="id" title="var">mult_1_r</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind2</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">num</span> <span class="id" title="var">y</span>)), (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind3</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-!(<span class="id" title="var">mult_assoc</span> (<span class="id" title="var">num</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-<span class="id" title="var">plus_mult_distr_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">mult_assoc</span> (<span class="id" title="var">num</span> <span class="id" title="var">a</span>)). <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">a</span>) (<span class="id" title="var">den</span> <span class="id" title="var">c</span>)), (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">a</span>) (<span class="id" title="var">den</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_assoc</span> (<span class="id" title="var">num</span> <span class="id" title="var">b</span>)), (<span class="id" title="var">mult_assoc</span> (<span class="id" title="var">num</span> <span class="id" title="var">c</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-<span class="id" title="var">plus_mult_distr_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">mult_assoc</span> <span class="id" title="var">_</span> (<span class="id" title="var">den</span> <span class="id" title="var">a</span>) (<span class="id" title="var">den</span> <span class="id" title="var">a</span> * <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">b</span>)), &lt;-<span class="id" title="var">mult_assoc</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> (<span class="id" title="var">den</span> <span class="id" title="var">a</span>)). <span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">Fdec_rec@</span>{} : <span class="id" title="var">DecRecip</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">refine</span> (<span class="id" title="var">F_rec</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; ' (<span class="id" title="var">Frac.dec_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>)) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Frac.dec_recip_respect</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">classes_eq_related@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>, ' <span class="id" title="var">q</span> = ' <span class="id" title="var">r</span> -&gt; <span class="id" title="var">equiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">classes_eq_related@</span>{<span class="id" title="var">UR</span> <span class="id" title="var">UR</span> <span class="id" title="var">Ularge</span> <span class="id" title="var">UR</span> <span class="id" title="var">Ularge</span>};<span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">class_neq@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>, ~ (<span class="id" title="var">equiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>) -&gt; ' <span class="id" title="var">q</span> &lt;&gt; ' <span class="id" title="var">r</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> <span class="id" title="var">E1</span> <span class="id" title="var">E2</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">E1</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">classes_eq_related</span>, <span class="id" title="var">E2</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">classes_neq_related@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>, ' <span class="id" title="var">q</span> &lt;&gt; ' <span class="id" title="var">r</span> -&gt; ~ (<span class="id" title="var">equiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span> <span class="id" title="var">E1</span> <span class="id" title="var">E2</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">E1</span>,<span class="id" title="var">path</span>,<span class="id" title="var">E2</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_0@</span>{} : / 0 = 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">dec_recip</span>. <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">Frac.dec_rec</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">decide_rel</span> <span class="id" title="var">paths</span> 0 0) <span class="id" title="keyword">as</span> [<span class="id" title="var">_</span>|<span class="id" title="var">E</span>].<br/>
+- <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_nonzero_aux@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span>, ' <span class="id" title="var">q</span> &lt;&gt; 0 -&gt; <span class="id" title="var">num</span> <span class="id" title="var">q</span> &lt;&gt; 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">classes_neq_related</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">Frac.nonzero_num</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_nonzero@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> (<span class="id" title="var">E</span> : ' <span class="id" title="var">q</span> &lt;&gt; 0),<br/>
+&nbsp;&nbsp;/ (' <span class="id" title="var">q</span>) = ' (<span class="id" title="var">frac</span> (<span class="id" title="var">den</span> <span class="id" title="var">q</span>) (<span class="id" title="var">num</span> <span class="id" title="var">q</span>) (<span class="id" title="var">dec_recip_nonzero_aux</span> <span class="id" title="var">q</span> <span class="id" title="var">E</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>.<br/>
+<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">Frac.dec_rec</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">classes_neq_related</span>, <span class="id" title="var">Frac.nonzero_num</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">decide_rel</span> <span class="id" title="var">paths</span> (<span class="id" title="var">num</span> <span class="id" title="var">q</span>) 0) <span class="id" title="keyword">as</span> [<span class="id" title="var">E'</span>|?];[<span class="id" title="tactic">destruct</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">E'</span>|].<br/>
+<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">F_field@</span>{} : <span class="id" title="var">IsDecField</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>;<span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+- <span class="id" title="tactic">red</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">class_neq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> 2!<span class="id" title="var">mult_1_r</span>. <span class="id" title="var">solve_propholds</span>.<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_0</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">dec_recip_nonzero</span> <span class="id" title="var">_</span> <span class="id" title="var">E</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>;<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>,<span class="id" title="var">mult_1_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">mult_comm</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_class@</span>{} : <span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">class</span> <span class="id" title="var">q</span> = <span class="id" title="var">class</span> <span class="id" title="var">r</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">equiv</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">E</span>|<span class="id" title="var">E</span>].<br/>
+- <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>,<span class="id" title="var">E</span>.<br/>
+- <span class="id" title="tactic">right</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">E'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">classes_eq_related</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">E'</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">F_dec@</span>{} : <span class="id" title="var">DecidablePaths</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind2</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">dec_class</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">mult_num_den@</span>{} <span class="id" title="var">q</span> :<br/>
+&nbsp;&nbsp;' <span class="id" title="var">q</span> = (' <span class="id" title="var">num</span> <span class="id" title="var">q</span>) / ' <span class="id" title="var">den</span> <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">red</span>. <span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_l</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">Frac.dec_rec</span>.<br/>
+<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">destruct</span> (<span class="id" title="var">decide_rel</span> <span class="id" title="var">paths</span> (<span class="id" title="var">den</span> <span class="id" title="var">q</span>) 0) <span class="id" title="keyword">as</span> [<span class="id" title="var">E</span>|<span class="id" title="var">E</span>];<span class="id" title="tactic">simpl</span>.<br/>
+- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">den_ne_0</span> <span class="id" title="var">q</span> <span class="id" title="var">E</span>).<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">recip_den_num@</span>{} <span class="id" title="var">q</span> :<br/>
+&nbsp;&nbsp;/ ' <span class="id" title="var">q</span> = (' <span class="id" title="var">den</span> <span class="id" title="var">q</span>) / '<span class="id" title="var">num</span> <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>;<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">Frac.dec_rec</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">decide_rel</span> <span class="id" title="var">paths</span> (<span class="id" title="var">num</span> <span class="id" title="var">q</span>) 0) <span class="id" title="keyword">as</span> [<span class="id" title="var">E</span>|<span class="id" title="var">E</span>];<span class="id" title="tactic">simpl</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_0_r</span> (<span class="id" title="var">Azero</span>:=<span class="id" title="var">Azero</span>)), 2!<span class="id" title="var">mult_0_l</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_l</span>,<span class="id" title="var">mult_1_r</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;final&nbsp;word&nbsp;about&nbsp;inject&nbsp;*)</span><br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">inject_sr_morphism@</span>{} : <span class="id" title="var">IsSemiRingPreserving</span> (<span class="id" title="var">cast</span> <span class="id" title="var">R</span> <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>).<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">change</span> ((<span class="id" title="var">x</span> + <span class="id" title="var">y</span>) * (1 * 1) = (<span class="id" title="var">x</span> * 1 + <span class="id" title="var">y</span> * 1) * 1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">mult_1_r</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">change</span> ((<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) * (1 * 1) = <span class="id" title="var">x</span> * <span class="id" title="var">y</span> * 1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">mult_1_r</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">inject_injective@</span>{} : <span class="id" title="var">IsInjective</span> (<span class="id" title="var">cast</span> <span class="id" title="var">R</span> <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">classes_eq_related</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">red</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">rewrite</span> 2!<span class="id" title="var">mult_1_r</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">contents</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">F</span> <span class="id" title="var">R</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="var">Lift</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">morphisms</span>.<br/>
+<span class="id" title="keyword">Universe</span> <span class="id" title="var">UR1</span> <span class="id" title="var">UR2</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>} `{<span class="id" title="var">Univalence</span>}.<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">R1</span>:<span class="id" title="var">Type@</span>{<span class="id" title="var">UR1</span>} } `{<span class="id" title="var">IsIntegralDomain</span> <span class="id" title="var">R1</span>} `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">R1</span>}.<br/>
+<span class="id" title="keyword">Context</span> {<span class="id" title="var">R2</span>:<span class="id" title="var">Type@</span>{<span class="id" title="var">UR2</span>} } `{<span class="id" title="var">IsIntegralDomain</span> <span class="id" title="var">R2</span>} `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">R2</span>}.<br/>
+<span class="id" title="keyword">Context</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">R1</span> -&gt; <span class="id" title="var">R2</span>) `{!<span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">f</span>} `{!<span class="id" title="var">IsInjective</span> <span class="id" title="var">f</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lift@</span>{} : <span class="id" title="var">F</span> <span class="id" title="var">R1</span> -&gt; <span class="id" title="var">F</span> <span class="id" title="var">R2</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">F_rec</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">class</span> (<span class="id" title="var">Frac.lift</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>))).<br/>
+<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>,<span class="id" title="var">Frac.lift_respects</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">lift_sr_morphism@</span>{<span class="id" title="var">i</span>} : <span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">lift</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="comment">(*&nbsp;This&nbsp;takes&nbsp;a&nbsp;few&nbsp;seconds.&nbsp;*)</span><br/>
+<span class="id" title="tactic">split</span>;<span class="id" title="tactic">split</span>;<span class="id" title="tactic">red</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind2@</span>{<span class="id" title="var">UR1</span> <span class="id" title="var">UR2</span> <span class="id" title="var">i</span>} <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> @<span class="id" title="var">path</span>. <span class="comment">(*&nbsp;very&nbsp;slow&nbsp;or&nbsp;doesn't&nbsp;terminate&nbsp;without&nbsp;the&nbsp;@&nbsp;but&nbsp;fast&nbsp;with&nbsp;it&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">preserves_mult</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>)) || <span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">preserves_plus</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">preserves_0</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>)). <span class="id" title="tactic">rewrite</span> 2!<span class="id" title="var">mult_0_l</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind2@</span>{<span class="id" title="var">UR1</span> <span class="id" title="var">UR2</span> <span class="id" title="var">i</span>} <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> @<span class="id" title="var">path</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-!(<span class="id" title="var">preserves_mult</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>)). <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">red</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">lift_injective@</span>{<span class="id" title="var">i</span>} : <span class="id" title="var">IsInjective</span> <span class="id" title="var">lift</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">red</span>.<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">F_ind2@</span>{<span class="id" title="var">UR1</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span>} (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span>)).<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">classes_eq_related</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">red</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">path</span>. <span class="id" title="tactic">red</span>.<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">injective</span> <span class="id" title="var">f</span>). <span class="id" title="tactic">rewrite</span> 2!(<span class="id" title="var">preserves_mult</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>)).<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">morphisms</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Lift</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">FracField</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

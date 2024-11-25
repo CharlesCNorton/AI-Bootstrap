@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>pMap</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library pMap</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pointed.Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">pointed_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1302"></a><h2 class="section">Trivially pointed maps</h2>
+
+<div class="paragraph"> </div>
+
+ Not infrequently we have a map between two unpointed types and want to consider it as a pointed map that trivially respects some given point in the domain. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_from_point</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: [<span class="id" title="var">A</span>, <span class="id" title="var">a</span>] -&gt;* [<span class="id" title="var">B</span>, <span class="id" title="var">f</span> <span class="id" title="var">a</span>]<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_pMap</span> [<span class="id" title="var">A</span>, <span class="id" title="var">a</span>] [<span class="id" title="var">B</span>, <span class="id" title="var">f</span> <span class="id" title="var">a</span>] <span class="id" title="var">f</span> 1%<span class="id" title="var">path</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A variant of <span class="inlinecode"><span class="id" title="var">pmap_from_point</span></span> where the domain is pointed, but the codomain is not. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_from_pointed</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> -&gt;* [<span class="id" title="var">B</span>, <span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>)]<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_pMap</span> <span class="id" title="var">A</span> [<span class="id" title="var">B</span>, <span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>)] <span class="id" title="var">f</span> 1%<span class="id" title="var">path</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The same, for a dependent pointed map. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pforall_from_pointed</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pForall</span> <span class="id" title="var">A</span> (<span class="id" title="var">Build_pFam</span> <span class="id" title="var">B</span> (<span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>)))<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_pForall</span> <span class="id" title="var">A</span> (<span class="id" title="var">Build_pFam</span> <span class="id" title="var">B</span> (<span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>))) <span class="id" title="var">f</span> 1%<span class="id" title="var">path</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;precomposing&nbsp;the&nbsp;zero&nbsp;map&nbsp;is&nbsp;the&nbsp;zero&nbsp;map&nbsp;*)</span><br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">precompose_pconst</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">B</span> -&gt;* <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> <span class="id" title="var">o</span>* @<span class="id" title="var">pconst</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> ==* <span class="id" title="var">pconst</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">intro</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">point_eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>)^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;postcomposing&nbsp;the&nbsp;zero&nbsp;map&nbsp;is&nbsp;the&nbsp;zero&nbsp;map&nbsp;*)</span><br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">postcompose_pconst</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pconst</span> <span class="id" title="var">o</span>* <span class="id" title="var">f</span> ==* @<span class="id" title="var">pconst</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">ap_const</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pconst_factor</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">pUnit</span> -&gt;* <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">pUnit</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> <span class="id" title="var">o</span>* <span class="id" title="var">g</span> ==* <span class="id" title="var">pconst</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @* <span class="id" title="var">precompose_pconst</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">pmap_postwhisker</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">pmap_punit_pconst</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;We&nbsp;note&nbsp;that&nbsp;the&nbsp;inverse&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">path_pmap</span></span>&nbsp;computes&nbsp;definitionally&nbsp;on&nbsp;reflexivity,&nbsp;and&nbsp;hence&nbsp;<span class="inlinecode"><span class="id" title="var">path_pmap</span></span>&nbsp;itself&nbsp;computes&nbsp;typally&nbsp;so.&nbsp;&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_inverse_path_pmap_1</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">equiv_path_pforall</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span>)^-1%<span class="id" title="var">equiv</span> 1%<span class="id" title="var">path</span> = <span class="id" title="tactic">reflexivity</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If we have a fiberwise pointed map, with a variable as codomain, this is an
+  induction principle that allows us to assume it respects all basepoints by
+  reflexivity
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fiberwise_pointed_map_rec</span> `{<span class="id" title="var">H0</span> : <span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>) (<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">C</span> <span class="id" title="var">a</span>), <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">C</span> <span class="id" title="var">a</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">P</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">pmap_from_pointed</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>)))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">C</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>) (<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">C</span> <span class="id" title="var">a</span>), <span class="id" title="var">P</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">equiv_intros</span> (<span class="id" title="var">equiv_functor_arrow'</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">A</span>) <span class="id" title="var">issig_ptype</span> <span class="id" title="var">oE</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_sig_coind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">C</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">C</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">C</span> <span class="id" title="var">c0</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="var">equiv_intros</span> (@<span class="id" title="var">equiv_functor_forall_id</span> <span class="id" title="var">_</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">issig_pmap</span> (<span class="id" title="var">B</span> <span class="id" title="var">a</span>) [<span class="id" title="var">C</span> <span class="id" title="var">a</span>, <span class="id" title="var">c0</span> <span class="id" title="var">a</span>]) <span class="id" title="var">oE</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_sig_coind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">destruct</span> <span class="id" title="var">g</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">g</span> <span class="id" title="var">g0</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">point</span> <span class="id" title="tactic">in</span> <span class="id" title="var">g0</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">functor_forall</span>, <span class="id" title="var">sig_coind_uncurried</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;now&nbsp;we&nbsp;need&nbsp;to&nbsp;apply&nbsp;path&nbsp;induction&nbsp;on&nbsp;the&nbsp;homotopy&nbsp;g0&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">c0</span> <span class="id" title="var">g0</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">p</span> = <span class="id" title="var">path_forall</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span> =&gt; <span class="id" title="var">g</span> <span class="id" title="var">x</span> (<span class="id" title="var">ispointed_type</span> (<span class="id" title="var">B</span> <span class="id" title="var">x</span>))) <span class="id" title="var">c0</span> <span class="id" title="var">g0</span>).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_V</span> <span class="id" title="tactic">in</span> <span class="id" title="var">X</span>. <span class="id" title="tactic">induction</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A alternative constructor to build a pHomotopy between maps into pForall 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_pHomotopy_pForall</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">C</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">ppforall</span> <span class="id" title="var">b</span>, <span class="id" title="var">C</span> <span class="id" title="var">b</span>} (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">f</span> <span class="id" title="var">a</span> ==* <span class="id" title="var">g</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">q</span> : <span class="id" title="var">p</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>) ==* <span class="id" title="var">phomotopy_path</span> (<span class="id" title="var">point_eq</span> <span class="id" title="var">f</span>) @* (<span class="id" title="var">phomotopy_path</span> (<span class="id" title="var">point_eq</span> <span class="id" title="var">g</span>))^*)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> ==* <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">path_pforall</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">moveR_equiv_M'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span>^ @ <span class="id" title="var">ap10</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">exact</span> <span class="id" title="var">path_equiv_path_pforall_phomotopy_path</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_pforall</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">phomotopy_path_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @* <span class="id" title="var">_</span> @* <span class="id" title="var">q</span>^*).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">phomotopy_prewhisker</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">phomotopy_path_V</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Operations on dependent pointed maps 
+</div>
+<div class="code">
+
+<br/>
+<span class="comment">(*&nbsp;functorial&nbsp;action&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">pForall</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span>&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">B</span></span>&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_pforall_right</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">B</span> <span class="id" title="var">B'</span> : <span class="id" title="var">pFam</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">B'</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>) (<span class="id" title="var">dpoint</span> <span class="id" title="var">B</span>) = <span class="id" title="var">dpoint</span> <span class="id" title="var">B'</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">pForall</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">pForall</span> <span class="id" title="var">A</span> <span class="id" title="var">B'</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">Build_pForall</span> <span class="id" title="var">A</span> <span class="id" title="var">B'</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">a</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>)) (<span class="id" title="var">ap</span> (<span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>)) (<span class="id" title="var">dpoint_eq</span> <span class="id" title="var">g</span>) @ <span class="id" title="var">p</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_functor_pforall_id</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">B</span> <span class="id" title="var">B'</span> : <span class="id" title="var">pFam</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> &lt;~&gt; <span class="id" title="var">B'</span> <span class="id" title="var">a</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>) (<span class="id" title="var">dpoint</span> <span class="id" title="var">B</span>) = <span class="id" title="var">dpoint</span> <span class="id" title="var">B'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pForall</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">pForall</span> <span class="id" title="var">A</span> <span class="id" title="var">B'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">issig_pforall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">issig_pforall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_sigma'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_functor_forall_id</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_concat_r</span> <span class="id" title="var">p</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_ap'</span> (<span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor2_pforall_right</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">pFam</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">g</span> <span class="id" title="var">g'</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">C</span> <span class="id" title="var">a</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">g₀</span> : <span class="id" title="var">g</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>) (<span class="id" title="var">dpoint</span> <span class="id" title="var">B</span>) = <span class="id" title="var">dpoint</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">g₀'</span> : <span class="id" title="var">g'</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>) (<span class="id" title="var">dpoint</span> <span class="id" title="var">B</span>) = <span class="id" title="var">dpoint</span> <span class="id" title="var">C</span>} {<span class="id" title="var">f</span> <span class="id" title="var">f'</span> : <span class="id" title="var">pForall</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">g</span> <span class="id" title="var">a</span> == <span class="id" title="var">g'</span> <span class="id" title="var">a</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">f</span> ==* <span class="id" title="var">f'</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">p</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>) (<span class="id" title="var">dpoint</span> <span class="id" title="var">B</span>) @ <span class="id" title="var">g₀'</span> = <span class="id" title="var">g₀</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor_pforall_right</span> <span class="id" title="var">g</span> <span class="id" title="var">g₀</span> <span class="id" title="var">f</span> ==* <span class="id" title="var">functor_pforall_right</span> <span class="id" title="var">g'</span> <span class="id" title="var">g₀'</span> <span class="id" title="var">f'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;1: { <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">ap</span> (<span class="id" title="var">g'</span> <span class="id" title="var">a</span>) (<span class="id" title="var">q</span> <span class="id" title="var">a</span>)). }<br/>
+&nbsp;&nbsp;<span class="id" title="var">pointed_reduce_rewrite</span>. <span class="id" title="tactic">symmetry</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_Ap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor2_pforall_right_refl</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">pFam</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">C</span> <span class="id" title="var">a</span>) (<span class="id" title="var">g₀</span> : <span class="id" title="var">g</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>) (<span class="id" title="var">dpoint</span> <span class="id" title="var">B</span>) = <span class="id" title="var">dpoint</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">pForall</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor2_pforall_right</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="tactic">reflexivity</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>)) (<span class="id" title="var">phomotopy_reflexive</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;==* <span class="id" title="var">phomotopy_reflexive</span> (<span class="id" title="var">functor_pforall_right</span> <span class="id" title="var">g</span> <span class="id" title="var">g₀</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">pointed_reduce</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;functorial&nbsp;action&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">pForall</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">(<span class="id" title="var">pointed_fam</span></span> <span class="inlinecode"><span class="id" title="var">B</span>)</span>&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">B</span></span>.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">B</span> <span class="id" title="var">B'</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">B'</span> <span class="id" title="var">a</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">ppforall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span>) : <span class="id" title="var">ppforall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B'</span> <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">functor_pforall_right</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">point_eq</span> (<span class="id" title="var">g</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall_point</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">B</span> <span class="id" title="var">B'</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">B'</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g</span> (<span class="id" title="var">point_pforall</span> <span class="id" title="var">B</span>) ==* <span class="id" title="var">point_pforall</span> <span class="id" title="var">B'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">point_eq</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>)^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall_compose</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> <span class="id" title="var">R</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">Q</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">R</span> <span class="id" title="var">a</span>) (<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">Q</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">ppforall</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pmap_compose_ppforall</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">h</span> <span class="id" title="var">a</span> <span class="id" title="var">o</span>* <span class="id" title="var">g</span> <span class="id" title="var">a</span>) <span class="id" title="var">f</span> ==* <span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">h</span> (<span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">refine</span> ((<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">inverse2</span> <span class="id" title="var">_</span>)) @ <span class="id" title="var">concat_pV</span> <span class="id" title="var">_</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">whiskerR</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_pp_p</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">whiskerR</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall2</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>} {<span class="id" title="var">g</span> <span class="id" title="var">g'</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">Q</span> <span class="id" title="var">a</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">f</span> <span class="id" title="var">f'</span> : <span class="id" title="var">ppforall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span>} (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">g</span> <span class="id" title="var">a</span> ==* <span class="id" title="var">g'</span> <span class="id" title="var">a</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">f</span> ==* <span class="id" title="var">f'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> ==* <span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g'</span> <span class="id" title="var">f'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">functor2_pforall_right</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">point_htpy</span> (<span class="id" title="var">p</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall2_left</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>} {<span class="id" title="var">g</span> <span class="id" title="var">g'</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">Q</span> <span class="id" title="var">a</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">ppforall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">g</span> <span class="id" title="var">a</span> ==* <span class="id" title="var">g'</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> ==* <span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g'</span> <span class="id" title="var">f</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">pmap_compose_ppforall2</span> <span class="id" title="var">p</span> (<span class="id" title="var">phomotopy_reflexive</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall2_right</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>} (<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">Q</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">f</span> <span class="id" title="var">f'</span> : <span class="id" title="var">ppforall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span>} (<span class="id" title="var">q</span> : <span class="id" title="var">f</span> ==* <span class="id" title="var">f'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> ==* <span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g</span> <span class="id" title="var">f'</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">pmap_compose_ppforall2</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">phomotopy_reflexive</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>)) <span class="id" title="var">q</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall2_refl</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">Q</span> <span class="id" title="var">a</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">ppforall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pmap_compose_ppforall2</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">phomotopy_reflexive</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>)) (<span class="id" title="var">phomotopy_reflexive</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;==* <span class="id" title="var">phomotopy_reflexive</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">pmap_compose_ppforall2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">Q</span> <span class="id" title="var">g</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">fiberwise_pointed_map_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>). <span class="id" title="tactic">intros</span> <span class="id" title="var">Q</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">functor2_pforall_right_refl</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall_pid_left</span> {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">ppforall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">P</span> <span class="id" title="var">a</span>) : <span class="id" title="var">pmap_compose_ppforall</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">pmap_idmap</span>) <span class="id" title="var">f</span> ==* <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">symmetry</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">ap_idmap</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> @ <span class="id" title="var">concat_pV</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_compose_ppforall_path_pforall</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> <span class="id" title="var">a</span> -&gt;* <span class="id" title="var">Q</span> <span class="id" title="var">a</span>) {<span class="id" title="var">f</span> <span class="id" title="var">f'</span> : <span class="id" title="var">ppforall</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> <span class="id" title="var">a</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> ==* <span class="id" title="var">f'</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">ap</span> (<span class="id" title="var">pmap_compose_ppforall</span> <span class="id" title="var">g</span>) (<span class="id" title="var">path_pforall</span> <span class="id" title="var">p</span>) =<br/>
+&nbsp;&nbsp;<span class="id" title="var">path_pforall</span> (<span class="id" title="var">pmap_compose_ppforall2_right</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">f'</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">phomotopy_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">path_pforall_1</span> @ <span class="id" title="var">path_pforall_1</span>^ @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">path_pforall</span> (<span class="id" title="var">pmap_compose_ppforall2_refl</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

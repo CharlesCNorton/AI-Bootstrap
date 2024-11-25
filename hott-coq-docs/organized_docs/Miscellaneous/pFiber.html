@@ -1,0 +1,190 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>pFiber</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library pFiber</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">WildCat</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HFiber</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pointed.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pointed.pEquiv</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pointed.Loops</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">pointed_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1301"></a><h2 class="section">Pointed fibers</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispointed_fiber</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>) : <span class="id" title="var">IsPointed</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">B</span>))<br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">point</span> <span class="id" title="var">A</span>; <span class="id" title="var">point_eq</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pfiber</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>) : <span class="id" title="var">pType</span> := [<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> (<span class="id" title="var">point</span> <span class="id" title="var">B</span>), <span class="id" title="var">_</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pfib</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>) : <span class="id" title="var">pfiber</span> <span class="id" title="var">f</span> -&gt;* <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_pMap</span> (<span class="id" title="var">pfiber</span> <span class="id" title="var">f</span>) <span class="id" title="var">A</span> <span class="id" title="var">pr1</span> 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The double fiber object is equivalent to loops on the base. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pfiber2_loops</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pfiber</span> (<span class="id" title="var">pfib</span> <span class="id" title="var">f</span>) &lt;~&gt;* <span class="id" title="var">loops</span> <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">pointed_reduce_pmap</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pEquiv'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">make_equiv_contr_basedpaths</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pfiber_fmap_loops</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pfiber</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">loops</span> <span class="id" title="var">f</span>) &lt;~&gt;* <span class="id" title="var">loops</span> (<span class="id" title="var">pfiber</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pEquiv'</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">srapply</span> <span class="id" title="var">equiv_path_sigma</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">hfiber</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_moveL_Mp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_concat_r</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_moveL_Vp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_path_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_concat_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_paths_Fl</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">pointed_reduce</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr1_pfiber_fmap_loops</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">loops</span> (<span class="id" title="var">pfib</span> <span class="id" title="var">f</span>) <span class="id" title="var">o</span>* <span class="id" title="var">pfiber_fmap_loops</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;==* <span class="id" title="var">pfib</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">loops</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">u</span> <span class="id" title="var">v</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (@<span class="id" title="var">ap_pr1_path_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">point</span> <span class="id" title="var">A</span>; <span class="id" title="var">point_eq</span> <span class="id" title="var">f</span>) (<span class="id" title="var">point</span> <span class="id" title="var">A</span>;<span class="id" title="var">point_eq</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">abstract</span> (<span class="id" title="var">pointed_reduce_rewrite</span>; <span class="id" title="tactic">reflexivity</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pfiber_fmap_iterated_loops</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pfiber</span> (<span class="id" title="var">fmap</span> (<span class="id" title="var">iterated_loops</span> <span class="id" title="var">n</span>) <span class="id" title="var">f</span>) &lt;~&gt;* <span class="id" title="var">iterated_loops</span> <span class="id" title="var">n</span> (<span class="id" title="var">pfiber</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span>*<span class="id" title="var">E</span> <span class="id" title="var">pfiber_fmap_loops</span> <span class="id" title="var">_</span> ).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">emap</span> <span class="id" title="var">loops</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">IHn</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_pfiber</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">C</span> -&gt;* <span class="id" title="var">D</span>} {<span class="id" title="var">h</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">C</span>} {<span class="id" title="var">k</span> : <span class="id" title="var">B</span> -&gt;* <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span>* <span class="id" title="var">f</span> ==* <span class="id" title="var">g</span> <span class="id" title="var">o</span>* <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pfiber</span> <span class="id" title="var">f</span> -&gt;* <span class="id" title="var">pfiber</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pMap</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">cbn</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">functor_hfiber2</span> <span class="id" title="var">p</span> (<span class="id" title="var">point_eq</span> <span class="id" title="var">k</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">path_hfiber</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">point_eq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_pp_p</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>). <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">point_htpy</span> <span class="id" title="var">p</span>)^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pequiv_pfiber</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">C</span> -&gt;* <span class="id" title="var">D</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">A</span> &lt;~&gt;* <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">B</span> &lt;~&gt;* <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span>* <span class="id" title="var">f</span> ==* <span class="id" title="var">g</span> <span class="id" title="var">o</span>* <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pfiber</span> <span class="id" title="var">f</span> $&lt;~&gt; <span class="id" title="var">pfiber</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_pEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">functor_pfiber</span> <span class="id" title="var">p</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">square_functor_pfiber</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">C</span> -&gt;* <span class="id" title="var">D</span>} {<span class="id" title="var">h</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">C</span>} {<span class="id" title="var">k</span> : <span class="id" title="var">B</span> -&gt;* <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span>* <span class="id" title="var">f</span> ==* <span class="id" title="var">g</span> <span class="id" title="var">o</span>* <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">h</span> <span class="id" title="var">o</span>* <span class="id" title="var">pfib</span> <span class="id" title="var">f</span> ==* <span class="id" title="var">pfib</span> <span class="id" title="var">g</span> <span class="id" title="var">o</span>* <span class="id" title="var">functor_pfiber</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_pV</span>. <span class="id" title="var">cbn</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">functor_sigma</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">abstract</span> (<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pr1_path_sigma</span>, <span class="id" title="var">concat_p1</span>; <span class="id" title="tactic">reflexivity</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">square_pequiv_pfiber</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">C</span> -&gt;* <span class="id" title="var">D</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">A</span> &lt;~&gt;* <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">B</span> &lt;~&gt;* <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span>* <span class="id" title="var">f</span> ==* <span class="id" title="var">g</span> <span class="id" title="var">o</span>* <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">h</span> <span class="id" title="var">o</span>* <span class="id" title="var">pfib</span> <span class="id" title="var">f</span> ==* <span class="id" title="var">pfib</span> <span class="id" title="var">g</span> <span class="id" title="var">o</span>* <span class="id" title="var">pequiv_pfiber</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">square_functor_pfiber</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The triple-fiber functor is equal to the negative of the loopspace functor. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pfiber2_fmap_loops</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt;* <span class="id" title="var">B</span>)<br/>
+: <span class="id" title="var">pfiber2_loops</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span>* <span class="id" title="var">pfib</span> (<span class="id" title="var">pfib</span> (<span class="id" title="var">pfib</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;==* <span class="id" title="var">fmap</span> <span class="id" title="var">loops</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span>* (<span class="id" title="var">loops_inv</span> <span class="id" title="var">_</span> <span class="id" title="var">o</span>* <span class="id" title="var">pfiber2_loops</span> (<span class="id" title="var">pfib</span> <span class="id" title="var">f</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">pointed_reduce</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_pHomotopy</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [[[<span class="id" title="var">x</span> <span class="id" title="var">p</span>] <span class="id" title="var">q</span>] <span class="id" title="var">r</span>]. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+</div>
+
+<div class="doc">
+Apparently <span class="inlinecode"><span class="id" title="tactic">destruct</span></span> <span class="inlinecode"><span class="id" title="var">q</span></span> isn't smart enough to generalize over <span class="inlinecode"><span class="id" title="var">p</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">move</span> <span class="id" title="var">q</span> <span class="id" title="keyword">before</span> <span class="id" title="var">x</span>; <span class="id" title="var">revert</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">paths_ind_r</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">r</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_1p</span>, <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">paths_ind_r_transport</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_arrow_toconst</span>, <span class="id" title="var">transport_paths_Fl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p1</span>, <span class="id" title="var">inv_V</span>, <span class="id" title="var">ap_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (((<span class="id" title="var">r</span>^)..2)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_paths_Fl</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">pr1_path_V</span>, !<span class="id" title="var">ap_V</span>, !<span class="id" title="var">inv_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>EquivGpd</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library EquivGpd</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span> <span class="id" title="var">Basics.Iff</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.NatTrans</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Sigma</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1857"></a><h1 class="section">Equivalences of 0-groupoids, and split essentially surjective functors</h1>
+
+<div class="paragraph"> </div>
+
+ For a logically equivalent definition of equivalences of 0-groupoids, see ZeroGroupoid.v. 
+<div class="paragraph"> </div>
+
+ We could define these similarly for more general categories too, but we'd need to use <span class="inlinecode"><span class="id" title="var">HasEquivs</span></span> and <span class="inlinecode">$&lt;~&gt;</span> instead of <span class="inlinecode">$==</span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">SplEssSurj</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is0Gpd</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} <br/>
+&nbsp;&nbsp;:= <span class="id" title="var">esssurj</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>:<span class="id" title="var">B</span>, { <span class="id" title="var">a</span>:<span class="id" title="var">A</span> &amp; <span class="id" title="var">F</span> <span class="id" title="var">a</span> $== <span class="id" title="var">b</span> }.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">esssurj</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">F</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">b</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A 0-functor between 0-groupoids is an "equivalence" if it is essentially surjective and reflects the existence of morphisms.  This is "surjective and injective" in setoid-language, so we use the name <span class="inlinecode"><span class="id" title="var">IsSurjInj</span></span>.  (To define essential surjectivity for non-groupoids, we would need <span class="inlinecode"><span class="id" title="var">HasEquivs</span></span> from <span class="inlinecode"><span class="id" title="var">WildCat.Equiv</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsSurjInj</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is0Gpd</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} :=<br/>
+{<br/>
+&nbsp;&nbsp;<span class="id" title="var">esssurj_issurjinj</span> : <span class="id" title="var">SplEssSurj</span> <span class="id" title="var">F</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">essinj</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span>:<span class="id" title="var">A</span>), (<span class="id" title="var">F</span> <span class="id" title="var">x</span> $== <span class="id" title="var">F</span> <span class="id" title="var">y</span>) -&gt; (<span class="id" title="var">x</span> $== <span class="id" title="var">y</span>) ;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">esssurj_issurjinj</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">essinj</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">F</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>} <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">surjinj_inv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; (<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> <span class="id" title="var">b</span>).1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Some of the results below also follow from the logical equivalence with <span class="inlinecode"><span class="id" title="var">IsEquiv_0Gpd</span></span> and the fact that <span class="inlinecode"><span class="id" title="var">ZeroGpd</span></span> satisfies <span class="inlinecode"><span class="id" title="var">HasEquivs</span></span>.  But it is sometimes awkward to deduce the results this way, mostly because <span class="inlinecode"><span class="id" title="var">ZeroGpd</span></span> requires bundled objects rather than typeclass instances. 
+<div class="paragraph"> </div>
+
+ Equivalences have inverses 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_surjinj_inv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">surjinj_inv</span> <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">p</span> := (<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>).2).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">q</span> := (<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> <span class="id" title="var">y</span>).2).<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">f'</span> := <span class="id" title="var">p</span> $@ <span class="id" title="var">f</span> $@ <span class="id" title="var">q</span>^$).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">essinj</span> <span class="id" title="var">F</span> <span class="id" title="var">f'</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The inverse is an inverse, up to unnatural transformations 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">eisretr0gpd_inv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> <span class="id" title="var">o</span> <span class="id" title="var">surjinj_inv</span> <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> <span class="id" title="var">b</span>).2).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">eissect0gpd_inv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">surjinj_inv</span> <span class="id" title="var">F</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">essinj</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr0gpd_inv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Essentially surjective functors and equivalences are preserved by transformations. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isesssurj_transf</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">SplEssSurj</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>} (<span class="id" title="var">alpha</span> : <span class="id" title="var">G</span> $=&gt; <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">SplEssSurj</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> ((<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> <span class="id" title="var">b</span>).1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> <span class="id" title="var">b</span>).2).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">alpha</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issurjinj_transf</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>} (<span class="id" title="var">alpha</span> : <span class="id" title="var">G</span> $=&gt; <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">isesssurj_transf</span> <span class="id" title="var">alpha</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">essinj</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">f</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">alpha</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">alpha</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Equivalences compose and cancel with each other and with essentially surjective functors. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">ComposeAndCancel</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is0Gpd</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is0Gpd</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">G</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isesssurj_compose</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">SplEssSurj</span> <span class="id" title="var">G</span>, !<span class="id" title="var">SplEssSurj</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">SplEssSurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> ((<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> (<span class="id" title="var">esssurj</span> <span class="id" title="var">G</span> <span class="id" title="var">c</span>).1).1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">esssurj</span> <span class="id" title="var">G</span> <span class="id" title="var">c</span>).2).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">G</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">issurjinj_compose</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>, !<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">essinj</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">essinj</span> <span class="id" title="var">G</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelL_isesssurj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>, !<span class="id" title="var">SplEssSurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">SplEssSurj</span> <span class="id" title="var">F</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> ((<span class="id" title="var">esssurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) (<span class="id" title="var">G</span> <span class="id" title="var">b</span>)).1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">essinj</span> <span class="id" title="var">G</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">esssurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) (<span class="id" title="var">G</span> <span class="id" title="var">b</span>)).2).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iffL_isesssurj</span> `{!<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">SplEssSurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) &lt;-&gt; <span class="id" title="var">SplEssSurj</span> <span class="id" title="var">F</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; [ <span class="id" title="tactic">apply</span> @<span class="id" title="var">cancelL_isesssurj</span> | <span class="id" title="tactic">apply</span> @<span class="id" title="var">isesssurj_compose</span> ]; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelL_issurjinj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>, !<span class="id" title="var">IsSurjInj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">F</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">cancelL_isesssurj</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">essinj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) (<span class="id" title="var">fmap</span> <span class="id" title="var">G</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iffL_issurjinj</span> `{!<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) &lt;-&gt; <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">F</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; [ <span class="id" title="tactic">apply</span> @<span class="id" title="var">cancelL_issurjinj</span> | <span class="id" title="tactic">apply</span> @<span class="id" title="var">issurjinj_compose</span> ]; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelR_isesssurj</span> `{!<span class="id" title="var">SplEssSurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">SplEssSurj</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">F</span> (<span class="id" title="var">esssurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) <span class="id" title="var">c</span>).1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">esssurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) <span class="id" title="var">c</span>).2).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iffR_isesssurj</span> `{!<span class="id" title="var">SplEssSurj</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">SplEssSurj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) &lt;-&gt; <span class="id" title="var">SplEssSurj</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; [ <span class="id" title="tactic">apply</span> @<span class="id" title="var">cancelR_isesssurj</span> | <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> @<span class="id" title="var">isesssurj_compose</span> ]; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelR_issurjinj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">F</span>, !<span class="id" title="var">IsSurjInj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">cancelR_isesssurj</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">p</span> := (<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>).2).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">q</span> := (<span class="id" title="var">esssurj</span> <span class="id" title="var">F</span> <span class="id" title="var">y</span>).2).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">p</span>^$ $@ <span class="id" title="var">_</span> $@ <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">essinj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">f</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">G</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">G</span> <span class="id" title="var">q</span>^$).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iffR_issurjinj</span> `{!<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) &lt;-&gt; <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; [ <span class="id" title="tactic">apply</span> @<span class="id" title="var">cancelR_issurjinj</span> | <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> @<span class="id" title="var">issurjinj_compose</span> ]; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">ComposeAndCancel</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In particular, essential surjectivity and being an equivalence transfer across commutative squares of functors. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isesssurj_iff_commsq</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>} {<span class="id" title="var">H</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>} {<span class="id" title="var">K</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> <span class="id" title="var">H</span>} `{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">B</span> <span class="id" title="var">D</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">SplEssSurj</span> <span class="id" title="var">F</span> &lt;-&gt; <span class="id" title="var">SplEssSurj</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> ?.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> (<span class="id" title="var">cancelR_isesssurj</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span>); <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">isesssurj_transf</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">p</span> <span class="id" title="var">a</span>)^$)).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> (<span class="id" title="var">cancelL_isesssurj</span> <span class="id" title="var">K</span> <span class="id" title="var">F</span>); <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">isesssurj_transf</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issurjinj_iff_commsq</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>} {<span class="id" title="var">H</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>} {<span class="id" title="var">K</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> <span class="id" title="var">H</span>} `{<span class="id" title="var">IsSurjInj</span> <span class="id" title="var">B</span> <span class="id" title="var">D</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">F</span> &lt;-&gt; <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> ?.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> (<span class="id" title="var">cancelR_issurjinj</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span>); <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">issurjinj_transf</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">p</span> <span class="id" title="var">a</span>)^$)).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> (<span class="id" title="var">cancelL_issurjinj</span> <span class="id" title="var">K</span> <span class="id" title="var">F</span>); <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">issurjinj_transf</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Equivalences and essential surjectivity are preserved by sigmas (for now, just over constant bases), and essential surjectivity at least is also reflected. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isesssurj_iff_sigma</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">IsGraph</span> (<span class="id" title="var">B</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">B</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">B</span> <span class="id" title="var">a</span>)}<br/>
+&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">IsGraph</span> (<span class="id" title="var">C</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">C</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">C</span> <span class="id" title="var">a</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">C</span> <span class="id" title="var">a</span>) {<span class="id" title="var">ff</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">SplEssSurj</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">x</span>:<span class="id" title="var">sig</span> <span class="id" title="var">B</span>) =&gt; (<span class="id" title="var">x</span>.1 ; <span class="id" title="var">F</span> <span class="id" title="var">x</span>.1 <span class="id" title="var">x</span>.2))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">SplEssSurj</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">fs</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">s</span> := <span class="id" title="var">fs</span> (<span class="id" title="var">a</span>;<span class="id" title="var">c</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">s</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">a'</span> <span class="id" title="var">b</span>] [<span class="id" title="var">p</span> <span class="id" title="var">q</span>]]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">fs</span> [<span class="id" title="var">a</span> <span class="id" title="var">c</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">a</span> ; (<span class="id" title="var">esssurj</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>) <span class="id" title="var">c</span>).1); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">idpath</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">esssurj</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>) <span class="id" title="var">c</span>).2).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issurjinj_sigma</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">IsGraph</span> (<span class="id" title="var">B</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">B</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">B</span> <span class="id" title="var">a</span>)}<br/>
+&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">IsGraph</span> (<span class="id" title="var">C</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">C</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">C</span> <span class="id" title="var">a</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> <span class="id" title="var">a</span> -&gt; <span class="id" title="var">C</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">IsSurjInj</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">x</span>:<span class="id" title="var">sig</span> <span class="id" title="var">B</span>) =&gt; (<span class="id" title="var">x</span>.1 ; <span class="id" title="var">F</span> <span class="id" title="var">x</span>.1 <span class="id" title="var">x</span>.2)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">isesssurj_iff_sigma</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">b1</span>] [<span class="id" title="var">a2</span> <span class="id" title="var">b2</span>] [<span class="id" title="var">p</span> <span class="id" title="var">f</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">idpath</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">essinj</span> (<span class="id" title="var">F</span> <span class="id" title="var">a1</span>) <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

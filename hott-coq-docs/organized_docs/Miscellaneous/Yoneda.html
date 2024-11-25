@@ -1,0 +1,798 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Yoneda</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Yoneda</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Equiv</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Universe</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Opposite</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.FunctorCat</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.NatTrans</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Prod</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Bifunctor</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.ZeroGroupoid</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1926"></a><h2 class="section">Two-variable hom-functors</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_hom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: @<span class="id" title="var">Is0Functor</span> (<span class="id" title="var">A</span>^<span class="id" title="var">op</span> * <span class="id" title="var">A</span>) <span class="id" title="keyword">Type</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">uncurry</span> (@<span class="id" title="var">Hom</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">a2</span>] [<span class="id" title="var">b1</span> <span class="id" title="var">b2</span>] [<span class="id" title="var">f1</span> <span class="id" title="var">f2</span>] <span class="id" title="var">g</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">f2</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f1</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This requires morphism extensionality! 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_hom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: @<span class="id" title="var">Is1Functor</span> (<span class="id" title="var">A</span>^<span class="id" title="var">op</span> * <span class="id" title="var">A</span>) <span class="id" title="keyword">Type</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">uncurry</span> (@<span class="id" title="var">Hom</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span>)) <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">a2</span>] [<span class="id" title="var">b1</span> <span class="id" title="var">b2</span>] [<span class="id" title="var">f1</span> <span class="id" title="var">f2</span>] [<span class="id" title="var">g1</span> <span class="id" title="var">g2</span>] [<span class="id" title="var">p1</span> <span class="id" title="var">p2</span>] <span class="id" title="var">q</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">fst</span>, <span class="id" title="var">snd</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (((<span class="id" title="var">p2</span> $@<span class="id" title="var">R</span> <span class="id" title="var">q</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ ((<span class="id" title="var">g2</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span>) $@<span class="id" title="var">L</span> <span class="id" title="var">p1</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">a2</span>] <span class="id" title="var">f</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_idr</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">cat_idl</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">a2</span>] [<span class="id" title="var">b1</span> <span class="id" title="var">b2</span>] [<span class="id" title="var">c1</span> <span class="id" title="var">c2</span>] [<span class="id" title="var">f1</span> <span class="id" title="var">f2</span>] [<span class="id" title="var">g1</span> <span class="id" title="var">g2</span>] <span class="id" title="var">h</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">g2</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0bifunctor_hom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Bifunctor</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">B</span>:=<span class="id" title="var">A</span>) (<span class="id" title="var">C</span>:=<span class="id" title="keyword">Type</span>) (@<span class="id" title="var">Hom</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_Is0Bifunctor'</span>.<br/>
+&nbsp;&nbsp;1-2: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">is0functor_hom</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+While it is possible to prove the bifunctor coherence condition from <span class="inlinecode"><span class="id" title="var">Is1Cat_Strong</span></span>, 1-functoriality requires morphism extensionality.
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1bifunctor_hom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Bifunctor</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">B</span>:=<span class="id" title="var">A</span>) (<span class="id" title="var">C</span>:=<span class="id" title="keyword">Type</span>) (@<span class="id" title="var">Hom</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_Is1Bifunctor'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">is1functor_hom</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fun01_hom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Fun01</span> (<span class="id" title="var">A</span>^<span class="id" title="var">op</span> * <span class="id" title="var">A</span>) <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">Build_Fun01</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">is0functor_hom</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1927"></a><h2 class="section">The covariant Yoneda lemma</h2>
+
+<div class="paragraph"> </div>
+
+ This is easier than the contravariant version because it doesn't involve any "op"s. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We prove this explicitly instead of using the bifunctor instance above so that we can apply <span class="inlinecode"><span class="id" title="var">fmap</span></span> in each argument independently without mapping an identity in the other. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_opyon</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">opyon</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_opyon</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">cat_prewhisker</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_idl</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_assoc</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We record these corollaries here, since we use some of them below. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_postcompose_cat_equiv</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">y</span> $&lt;~&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>) &lt;~&gt; (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">emap</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">x</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_precompose_cat_equiv</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $&lt;~&gt; <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>) &lt;~&gt; (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">equiv_postcompose_cat_equiv</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">z</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;The&nbsp;following&nbsp;implicitly&nbsp;use&nbsp;<span class="inlinecode"><span class="id" title="var">hasequivs_core</span></span>.&nbsp;&nbsp;Note&nbsp;that&nbsp;when&nbsp;<span class="inlinecode"><span class="id" title="var">A</span></span>&nbsp;has&nbsp;morphism&nbsp;extensionality,&nbsp;it&nbsp;doesn't&nbsp;follow&nbsp;that&nbsp;<span class="inlinecode"><span class="id" title="var">core</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span>&nbsp;does.&nbsp;&nbsp;We'd&nbsp;need&nbsp;to&nbsp;know&nbsp;that&nbsp;being&nbsp;an&nbsp;equivalence&nbsp;is&nbsp;a&nbsp;proposition,&nbsp;and&nbsp;we&nbsp;don't&nbsp;assume&nbsp;that&nbsp;(since&nbsp;even&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="keyword">Type</span></span>&nbsp;it&nbsp;requires&nbsp;<span class="inlinecode"><span class="id" title="var">Funext</span></span>,&nbsp;see&nbsp;<span class="inlinecode"><span class="id" title="var">hasmorext_core_type</span></span>).&nbsp;So&nbsp;we&nbsp;need&nbsp;to&nbsp;assume&nbsp;this&nbsp;in&nbsp;the&nbsp;following&nbsp;results.&nbsp;*)</span><br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Postcomposition with a cat_equiv is an equivalence between the types of equivalences. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_postcompose_core_cat_equiv</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasMorExt</span> (<span class="id" title="var">core</span> <span class="id" title="var">A</span>)}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">y</span> $&lt;~&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">x</span> $&lt;~&gt; <span class="id" title="var">y</span>) &lt;~&gt; (<span class="id" title="var">x</span> $&lt;~&gt; <span class="id" title="var">z</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">change</span> ((<span class="id" title="var">Build_core</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">Build_core</span> <span class="id" title="var">y</span>) &lt;~&gt; (<span class="id" title="var">Build_core</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">Build_core</span> <span class="id" title="var">z</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_postcompose_cat_equiv</span> (<span class="id" title="var">A</span> := <span class="id" title="var">core</span> <span class="id" title="var">A</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>. <span class="comment">(*&nbsp;It&nbsp;doesn't&nbsp;work&nbsp;to&nbsp;insert&nbsp;<span class="inlinecode"><span class="id" title="var">f</span></span>&nbsp;on&nbsp;the&nbsp;previous&nbsp;line.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_precompose_core_cat_equiv</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasMorExt</span> (<span class="id" title="var">core</span> <span class="id" title="var">A</span>)}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $&lt;~&gt; <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">y</span> $&lt;~&gt; <span class="id" title="var">z</span>) &lt;~&gt; (<span class="id" title="var">x</span> $&lt;~&gt; <span class="id" title="var">z</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">change</span> ((<span class="id" title="var">Build_core</span> <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">Build_core</span> <span class="id" title="var">z</span>) &lt;~&gt; (<span class="id" title="var">Build_core</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">Build_core</span> <span class="id" title="var">z</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_precompose_cat_equiv</span> (<span class="id" title="var">A</span> := <span class="id" title="var">core</span> <span class="id" title="var">A</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>. <span class="comment">(*&nbsp;It&nbsp;doesn't&nbsp;work&nbsp;to&nbsp;insert&nbsp;<span class="inlinecode"><span class="id" title="var">f</span></span>&nbsp;on&nbsp;the&nbsp;previous&nbsp;line.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyoneda</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) {<span class="id" title="var">ff</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> <span class="id" title="var">a</span> -&gt; (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">un_opyoneda</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) {<span class="id" title="var">ff</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>) -&gt; <span class="id" title="var">F</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">alpha</span> =&gt; <span class="id" title="var">alpha</span> <span class="id" title="var">a</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_opyoneda</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span>) <span class="id" title="var">F</span> (<span class="id" title="var">opyoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">opyon</span>, <span class="id" title="var">opyoneda</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap_comp</span> <span class="id" title="var">F</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is form of injectivity of <span class="inlinecode"><span class="id" title="var">opyoneda</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyoneda_isinj</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <span class="id" title="var">x'</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">opyoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span> == <span class="id" title="var">opyoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x'</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">x</span> = <span class="id" title="var">x'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span> <span class="id" title="var">a</span> <span class="id" title="var">x</span>)^ @ <span class="id" title="var">_</span> @ <span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span> <span class="id" title="var">a</span> <span class="id" title="var">x'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This says that <span class="inlinecode"><span class="id" title="var">opyon</span></span> is faithful, although we haven't yet defined a graph structure on natural transformations to express this in that way.  This follows from the previous result, but then would need <span class="inlinecode"><span class="id" title="var">HasMorExt</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span>, since the previous result assumes that <span class="inlinecode"><span class="id" title="var">F</span></span> is a 1-functor, which is stronger than what is needed.  The direct proof below only needs the weaker assumption <span class="inlinecode"><span class="id" title="var">Is1Cat_Strong</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon_faithful</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">c</span>), <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> = <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> = <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">cat_idl_strong</span> <span class="id" title="var">f</span>)^ @ <span class="id" title="var">p</span> <span class="id" title="var">a</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">cat_idl_strong</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The composite in one direction is the identity map. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyoneda_issect</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">un_opyoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> (<span class="id" title="var">opyoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>) = <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span> <span class="id" title="var">a</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We assume for the converse that the coherences in <span class="inlinecode"><span class="id" title="var">A</span></span> are equalities (this is a weak funext-type assumption).  Note that we do not in general recover the witness of 1-naturality.  Indeed, if <span class="inlinecode"><span class="id" title="var">A</span></span> is fully coherent, then a transformation of the form <span class="inlinecode"><span class="id" title="var">opyoneda</span></span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> is always also fully coherently natural, so an incoherent witness of 1-naturality could not be recovered in this way.  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyoneda_isretr</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">opyon</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>) {<span class="id" title="var">alnat</span> : <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span>) <span class="id" title="var">F</span> <span class="id" title="var">alpha</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">opyoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> (<span class="id" title="var">un_opyoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">b</span> $== <span class="id" title="var">alpha</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">opyoneda</span>, <span class="id" title="var">un_opyoneda</span>, <span class="id" title="var">opyon</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">isnat</span> <span class="id" title="var">alpha</span> <span class="id" title="var">f</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>))^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_idr_strong</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A natural transformation between representable functors induces a map between the representing objects. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon_cancel</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">opyon</span> <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">un_opyoneda</span> <span class="id" title="var">a</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon1</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">Fun01</span> <span class="id" title="var">A</span> <span class="id" title="keyword">Type</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">Build_Fun01</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon11</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">Fun11</span> <span class="id" title="var">A</span> <span class="id" title="keyword">Type</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">Build_Fun11</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An equivalence between representable functors induces an equivalence between the representing objects. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon_equiv</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">opyon1</span> <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">opyon1</span> <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">b</span> $&lt;~&gt; <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cate_adjointify</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)) (<span class="id" title="var">f</span>^-1$ <span class="id" title="var">b</span> (<span class="id" title="var">Id</span> <span class="id" title="var">b</span>)) <span class="id" title="var">_</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">GpdHom_path</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> ((<span class="id" title="var">isnat_natequiv</span> (<span class="id" title="var">natequiv_inverse</span> <span class="id" title="var">f</span>) (<span class="id" title="var">f</span> <span class="id" title="var">a</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)) (<span class="id" title="var">Id</span> <span class="id" title="var">b</span>))^ @ <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">cate_issect</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">cat_idr_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> ((<span class="id" title="var">isnat_natequiv</span> <span class="id" title="var">f</span> (<span class="id" title="var">f</span>^-1$ <span class="id" title="var">b</span> (<span class="id" title="var">Id</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>))^ @ <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">cate_isretr</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Id</span> <span class="id" title="var">b</span>)); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">cat_idr_strong</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_opyon_equiv</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">b</span> $&lt;~&gt; <span class="id" title="var">a</span>) -&gt; (<span class="id" title="var">opyon1</span> <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">opyon1</span> <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_precompose_cat_equiv</span> <span class="id" title="var">e</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">rapply</span> <span class="id" title="var">is1natural_opyoneda</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1928"></a><h2 class="section">The covariant Yoneda lemma using 0-groupoids</h2>
+
+<div class="paragraph"> </div>
+
+ We repeat the above, regarding <span class="inlinecode"><span class="id" title="var">opyon</span></span> as landing in 0-groupoids, using the 1-category structure on <span class="inlinecode"><span class="id" title="var">ZeroGpd</span></span> in <span class="inlinecode"><span class="id" title="var">ZeroGroupoid.v</span></span>.  This has many advantages.  It avoids <span class="inlinecode"><span class="id" title="var">HasMorExt</span></span>, which means that we don't need <span class="inlinecode"><span class="id" title="var">Funext</span></span> in many examples.  It also avoids <span class="inlinecode"><span class="id" title="var">Is1Cat_Strong</span></span>, which means the results all have the same hypotheses, namely that <span class="inlinecode"><span class="id" title="var">A</span></span> is a 1-category.  This allows us to simplify the proof of <span class="inlinecode"><span class="id" title="var">opyon_equiv_0gpd</span></span>, making use of <span class="inlinecode"><span class="id" title="var">opyoneda_isretr_0gpd</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">ZeroGpd</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">Build_ZeroGpd</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_hom_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>*<span class="id" title="var">A</span>) (<span class="id" title="var">B</span>:=<span class="id" title="var">ZeroGpd</span>) (<span class="id" title="var">uncurry</span> (<span class="id" title="var">opyon_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">a2</span>] [<span class="id" title="var">b1</span> <span class="id" title="var">b2</span>] [<span class="id" title="var">f1</span> <span class="id" title="var">f2</span>]; <span class="id" title="tactic">unfold</span> <span class="id" title="var">op</span> <span class="id" title="tactic">in</span> *; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">Build_Morphism_0Gpd</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a1</span> <span class="id" title="var">a2</span>) (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">b1</span> <span class="id" title="var">b2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cat_postcomp</span> <span class="id" title="var">b1</span> <span class="id" title="var">f2</span> <span class="id" title="var">o</span> <span class="id" title="var">cat_precomp</span> <span class="id" title="var">a2</span> <span class="id" title="var">f1</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_hom_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>*<span class="id" title="var">A</span>) (<span class="id" title="var">B</span>:=<span class="id" title="var">ZeroGpd</span>) (<span class="id" title="var">uncurry</span> (<span class="id" title="var">opyon_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">a2</span>] [<span class="id" title="var">b1</span> <span class="id" title="var">b2</span>] [<span class="id" title="var">f1</span> <span class="id" title="var">f2</span>] [<span class="id" title="var">g1</span> <span class="id" title="var">g2</span>] [<span class="id" title="var">p</span> <span class="id" title="var">q</span>] <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">h</span> $@<span class="id" title="var">L</span> <span class="id" title="var">p</span> $@@ <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">a2</span>] <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_idl</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">cat_idr</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a1</span> <span class="id" title="var">a2</span>] [<span class="id" title="var">b1</span> <span class="id" title="var">b2</span>] [<span class="id" title="var">c1</span> <span class="id" title="var">c2</span>] [<span class="id" title="var">f1</span> <span class="id" title="var">f2</span>] [<span class="id" title="var">g1</span> <span class="id" title="var">g2</span>] <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">g2</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0bifunctor_hom_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Bifunctor</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">B</span>:=<span class="id" title="var">A</span>) (<span class="id" title="var">C</span>:=<span class="id" title="var">ZeroGpd</span>) (<span class="id" title="var">opyon_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is0Bifunctor'</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">is0functor_hom_0gpd</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1bifunctor_hom_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Bifunctor</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">B</span>:=<span class="id" title="var">A</span>) (<span class="id" title="var">C</span>:=<span class="id" title="var">ZeroGpd</span>) (<span class="id" title="var">opyon_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Bifunctor'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">is1functor_hom_0gpd</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_opyon_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Build_Morphism_0Gpd</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>) (<span class="id" title="var">cat_postcomp</span> <span class="id" title="var">a</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_opyon_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">cat_prewhisker</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_idl</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_assoc</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyoneda_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> <span class="id" title="var">a</span> -&gt; (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Morphism_0Gpd</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">F</span> <span class="id" title="var">b</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f1</span> <span class="id" title="var">f2</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap2</span> <span class="id" title="var">F</span> <span class="id" title="var">h</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">un_opyoneda_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">ZeroGpd</span>) {<span class="id" title="var">ff</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>) -&gt; <span class="id" title="var">F</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">alpha</span> =&gt; <span class="id" title="var">alpha</span> <span class="id" title="var">a</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_opyoneda_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span>) <span class="id" title="var">F</span> (<span class="id" title="var">opyoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">opyon_0gpd</span>, <span class="id" title="var">opyoneda_0gpd</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap_comp</span> <span class="id" title="var">F</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is form of injectivity of <span class="inlinecode"><span class="id" title="var">opyoneda_0gpd</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyoneda_isinj_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <span class="id" title="var">x'</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>, <span class="id" title="var">opyoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span> $== <span class="id" title="var">opyoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x'</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">x</span> $== <span class="id" title="var">x'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span> <span class="id" title="var">a</span> <span class="id" title="var">x</span>)^$ $@ <span class="id" title="var">_</span> $@ <span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span> <span class="id" title="var">a</span> <span class="id" title="var">x'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This says that <span class="inlinecode"><span class="id" title="var">opyon_0gpd</span></span> is faithful, although we haven't yet defined a graph structure on natural transformations to express this in that way. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon_faithful_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">c</span>), <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> $== <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyoneda_isinj_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The composite in one direction is the identity map. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyoneda_issect_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">un_opyoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> (<span class="id" title="var">opyoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>) $== <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span> <span class="id" title="var">a</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For the other composite, note that we do not in general recover the witness of 1-naturality.  Indeed, if <span class="inlinecode"><span class="id" title="var">A</span></span> is fully coherent, then a transformation of the form <span class="inlinecode"><span class="id" title="var">opyoneda</span></span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> is always also fully coherently natural, so an incoherent witness of 1-naturality could not be recovered in this way.  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyoneda_isretr_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>) {<span class="id" title="var">alnat</span> : <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span>) <span class="id" title="var">F</span> <span class="id" title="var">alpha</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">opyoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> (<span class="id" title="var">un_opyoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">b</span> $== <span class="id" title="var">alpha</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">opyoneda</span>, <span class="id" title="var">un_opyoneda</span>, <span class="id" title="var">opyon</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">isnat</span> <span class="id" title="var">alpha</span> <span class="id" title="var">f</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>))^$ $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">fmap</span> (<span class="id" title="var">alpha</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_idr</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A natural transformation between representable functors induces a map between the representing objects. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon_cancel_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">un_opyoneda_0gpd</span> <span class="id" title="var">a</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Since no extra hypotheses are needed, we use the name with "1" for the <span class="inlinecode"><span class="id" title="var">Fun11</span></span> version. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon1_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">Fun11</span> <span class="id" title="var">A</span> <span class="id" title="var">ZeroGpd</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Fun11</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An equivalence between representable functors induces an equivalence between the representing objects.  We explain how this compares to <span class="inlinecode"><span class="id" title="var">opyon_equiv</span></span> above.  Instead of assuming that each <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">:</span> <span class="inlinecode">(<span class="id" title="var">a</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">c</span>)</span> <span class="inlinecode">-&gt;</span> <span class="inlinecode">(<span class="id" title="var">b</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">c</span>)</span> is an equivalence of types, it only needs to be an equivalence of 0-groupoids.  For example, this means that we have a map <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">:</span> <span class="inlinecode">(<span class="id" title="var">b</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">c</span>)</span> <span class="inlinecode">-&gt;</span> <span class="inlinecode">(<span class="id" title="var">a</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">c</span>)</span> such that for each <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">c</span></span>, <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">(<span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode"><span class="id" title="var">k</span>)</span> <span class="inlinecode">$==</span> <span class="inlinecode"><span class="id" title="var">k</span></span>, rather than <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">(<span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode"><span class="id" title="var">k</span>)</span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">k</span></span> as the version with types requires.  Similarly, the naturality is up to 2-cells, instead of up to paths.  This allows us to avoid <span class="inlinecode"><span class="id" title="var">Funext</span></span> and <span class="inlinecode"><span class="id" title="var">HasMorExt</span></span> when using this result.  As a side benefit, we also don't require that <span class="inlinecode"><span class="id" title="var">A</span></span> is strong. The proof is also simpler, since we can re-use the work done in <span class="inlinecode"><span class="id" title="var">opyoneda_isretr_0gpd</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">opyon_equiv_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">opyon1_0gpd</span> <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">opyon1_0gpd</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">b</span> $&lt;~&gt; <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;These&nbsp;are&nbsp;the&nbsp;maps&nbsp;that&nbsp;will&nbsp;define&nbsp;the&nbsp;desired&nbsp;equivalence:&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">fa</span> := (<span class="id" title="var">cate_fun</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)). <span class="comment">(*&nbsp;Equivalently,&nbsp;<span class="inlinecode"><span class="id" title="var">un_opyoneda_0gpd</span></span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode"><span class="id" title="var">_</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">gb</span> := (<span class="id" title="var">cate_fun</span> <span class="id" title="var">f</span>^-1$ <span class="id" title="var">b</span>) (<span class="id" title="var">Id</span> <span class="id" title="var">b</span>)). <span class="comment">(*&nbsp;Equivalently,&nbsp;<span class="inlinecode"><span class="id" title="var">un_opyoneda_0gpd</span></span> <span class="inlinecode"><span class="id" title="var">b</span></span> <span class="inlinecode"><span class="id" title="var">_</span></span> <span class="inlinecode"><span class="id" title="var">f</span>^-1$</span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">cate_adjointify</span> <span class="id" title="var">fa</span> <span class="id" title="var">gb</span>).<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">opyoneda_0gpd</span></span>&nbsp;is&nbsp;defined&nbsp;by&nbsp;postcomposition,&nbsp;so&nbsp;<span class="inlinecode"><span class="id" title="var">opyoneda_isretr_0gpd</span></span>&nbsp;simplifies&nbsp;both&nbsp;LHSs.*)</span><br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">opyoneda_isretr_0gpd</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>^-1$ <span class="id" title="var">a</span> <span class="id" title="var">fa</span> $@ <span class="id" title="var">cat_eissect</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">opyoneda_isretr_0gpd</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>     <span class="id" title="var">b</span> <span class="id" title="var">gb</span> $@ <span class="id" title="var">cat_eisretr</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Id</span> <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Since <span class="inlinecode"><span class="id" title="var">opyon_0gpd</span></span> is a 1-functor, postcomposition with a <span class="inlinecode"><span class="id" title="var">cat_equiv</span></span> is an equivalence between the hom 0-groupoids. Note that we do not require <span class="inlinecode"><span class="id" title="var">HasMorExt</span></span>, as <span class="inlinecode"><span class="id" title="var">equiv_postcompose_cat_equiv</span></span> does. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_postcompose_cat_equiv_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">y</span> $&lt;~&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $&lt;~&gt; <span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">emap</span> (<span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">x</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The dual result, which is used in the next result. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_precompose_cat_equiv_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $&lt;~&gt; <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> $&lt;~&gt; <span class="id" title="var">opyon_0gpd</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">equiv_postcompose_cat_equiv_0gpd</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">z</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A converse to <span class="inlinecode"><span class="id" title="var">opyon_equiv_0gpd</span></span>.  Together, we get a logical equivalence between <span class="inlinecode"><span class="id" title="var">b</span></span> <span class="inlinecode">$&lt;~&gt;</span> <span class="inlinecode"><span class="id" title="var">a</span></span> and <span class="inlinecode"><span class="id" title="var">opyon_0gpd</span></span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">$&lt;~&gt;</span> <span class="inlinecode"><span class="id" title="var">opyon_0gpd</span></span> <span class="inlinecode"><span class="id" title="var">b</span></span>, without <span class="inlinecode"><span class="id" title="var">HasMorExt</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_opyon_equiv_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">b</span> $&lt;~&gt; <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">opyon1_0gpd</span> <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">opyon1_0gpd</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">c</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_precompose_cat_equiv_0gpd</span> <span class="id" title="var">e</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">rapply</span> <span class="id" title="var">is1natural_opyoneda_0gpd</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1929"></a><h2 class="section">The contravariant Yoneda lemma</h2>
+
+<div class="paragraph"> </div>
+
+ We can deduce this from the covariant version with some boilerplate. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_yon</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">H</span> : <span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">yon</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is0functor_opyon</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_yon</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">H</span> : <span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="var">yon</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is1functor_opyon</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yoneda</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> <span class="id" title="var">a</span> -&gt; (<span class="id" title="var">yon</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">opyoneda</span> (<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">un_yoneda</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">yon</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>) -&gt; <span class="id" title="var">F</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">un_opyoneda</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_yoneda</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">yon</span> <span class="id" title="var">a</span>) <span class="id" title="var">F</span> (<span class="id" title="var">yoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is1natural_opyoneda</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yoneda_isinj</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <span class="id" title="var">x'</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">yoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span> == <span class="id" title="var">yoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x'</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">x</span> = <span class="id" title="var">x'</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyoneda_isinj</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon_faithful</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">h</span> = <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> = <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon_faithful</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">b</span> <span class="id" title="var">a</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yoneda_issect</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">un_yoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> (<span class="id" title="var">yoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>) = <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyoneda_issect</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yoneda_isretr</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Without&nbsp;the&nbsp;hint&nbsp;here,&nbsp;Coq&nbsp;guesses&nbsp;to&nbsp;first&nbsp;project&nbsp;from&nbsp;<span class="inlinecode"><span class="id" title="var">Is1Cat_Strong</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span>&nbsp;and&nbsp;then&nbsp;pass&nbsp;to&nbsp;opposites,&nbsp;whereas&nbsp;what&nbsp;we&nbsp;need&nbsp;is&nbsp;to&nbsp;first&nbsp;pass&nbsp;to&nbsp;opposites&nbsp;and&nbsp;then&nbsp;project.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{@<span class="id" title="var">Is1Functor</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">is1cat_is1cat_strong</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">F</span> <span class="id" title="var">_</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">yon</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>) {<span class="id" title="var">alnat</span> : <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">yon</span> <span class="id" title="var">a</span>) <span class="id" title="var">F</span> <span class="id" title="var">alpha</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">yoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> (<span class="id" title="var">un_yoneda</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">b</span> $== <span class="id" title="var">alpha</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyoneda_isretr</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">alpha</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon_cancel</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">yon</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">yon</span> <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">un_yoneda</span> <span class="id" title="var">a</span> (<span class="id" title="var">yon</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon1</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">Fun01</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon1</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon11</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">Fun11</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon11</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon_equiv</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">yon1</span> <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">yon1</span> <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon_equiv</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_yon_equiv</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">yon1</span> <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">yon1</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">natequiv_opyon_equiv</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1930"></a><h2 class="section">The contravariant Yoneda lemma using 0-groupoids</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">ZeroGpd</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_yon_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">yon_0gpd</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is0functor_opyon_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_yon_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="var">yon_0gpd</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is1functor_opyon_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yoneda_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> <span class="id" title="var">a</span> -&gt; (<span class="id" title="var">yon_0gpd</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyoneda_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">un_yoneda_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">ZeroGpd</span>) {<span class="id" title="var">ff</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">yon_0gpd</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>) -&gt; <span class="id" title="var">F</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">un_opyoneda_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_yoneda_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">yon_0gpd</span> <span class="id" title="var">a</span>) <span class="id" title="var">F</span> (<span class="id" title="var">yoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is1natural_opyoneda_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yoneda_isinj_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <span class="id" title="var">x'</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>, <span class="id" title="var">yoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span> $== <span class="id" title="var">yoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x'</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">x</span> $== <span class="id" title="var">x'</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyoneda_isinj_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon_faithful_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">h</span> $== <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> $== <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon_faithful_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">b</span> <span class="id" title="var">a</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yoneda_issect_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">un_yoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> (<span class="id" title="var">yoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>) $== <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyoneda_issect_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yoneda_isretr_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">ZeroGpd</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">F</span>) {<span class="id" title="var">alnat</span> : <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">yon_0gpd</span> <span class="id" title="var">a</span>) <span class="id" title="var">F</span> <span class="id" title="var">alpha</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">yoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> (<span class="id" title="var">un_yoneda_0gpd</span> <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">b</span> $== <span class="id" title="var">alpha</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyoneda_isretr_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">F</span> <span class="id" title="var">alpha</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon_cancel_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">yon_0gpd</span> <span class="id" title="var">a</span> $=&gt; <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon_cancel_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon1_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">Fun11</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">ZeroGpd</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon1_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">yon_equiv_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">yon1_0gpd</span> <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">yon1_0gpd</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">opyon_equiv_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_yon_equiv_0gpd</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">yon1_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>) <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">yon1_0gpd</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">natequiv_opyon_equiv_0gpd</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">e</span> : <span class="id" title="var">CatEquiv</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">b</span> <span class="id" title="var">a</span>).<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

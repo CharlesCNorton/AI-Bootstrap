@@ -1,0 +1,327 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Operation</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Operation</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+This file continues the development of algebra <span class="inlinecode"><span class="id" title="var">Operation</span></span>. It
+    gives a way to construct operations using (conventional) curried
+    functions, and shows that such curried operations are equivalent
+    to the uncurried operations <span class="inlinecode"><span class="id" title="var">Operation</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">HoTT.Algebra.Universal.Algebra</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Types</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Spaces.Finite</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Spaces.Nat.Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Algebra_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Functions <span class="inlinecode"><span class="id" title="var">head_dom'</span></span> and <span class="inlinecode"><span class="id" title="var">head_dom</span></span> are used to get the first
+    element of a nonempty operation domain <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">i</span>,</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">(<span class="id" title="var">ss</span></span> <span class="inlinecode"><span class="id" title="var">i</span>)</span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Monomorphic Definition</span> <span class="id" title="var">head_dom'</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">N</span> : <span class="id" title="var">n</span> &gt; 0) (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">A</span> (<span class="id" title="var">fshead'</span> <span class="id" title="var">n</span> <span class="id" title="var">N</span> <span class="id" title="var">ss</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 0 =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">N</span> <span class="id" title="var">ss</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">Empty_rec</span> (<span class="id" title="var">lt_irrefl</span> <span class="id" title="var">_</span> <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">n'</span>.+1 =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">N</span> <span class="id" title="var">ss</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span> <span class="id" title="var">fin_zero</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Monomorphic Definition</span> <span class="id" title="var">head_dom</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> (<span class="id" title="var">fshead</span> <span class="id" title="var">ss</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">head_dom'</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">_</span> <span class="id" title="var">ss</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Functions <span class="inlinecode"><span class="id" title="var">tail_dom'</span></span> and <span class="inlinecode"><span class="id" title="var">tail_dom</span></span> are used to obtain the tail
+    of an operation domain <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">i</span>,</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">(<span class="id" title="var">ss</span></span> <span class="inlinecode"><span class="id" title="var">i</span>)</span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Monomorphic Definition</span> <span class="id" title="var">tail_dom'</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>)) (<span class="id" title="var">i</span> : <span class="id" title="var">Fin</span> (<span class="id" title="var">nat_pred</span> <span class="id" title="var">n</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">A</span> (<span class="id" title="var">fstail'</span> <span class="id" title="var">n</span> <span class="id" title="var">ss</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 0 =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">ss</span> <span class="id" title="var">_</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="var">Empty_rec</span> <span class="id" title="var">i</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">n'</span>.+1 =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">ss</span> <span class="id" title="var">a</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="var">a</span> (<span class="id" title="var">fsucc</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Monomorphic Definition</span> <span class="id" title="var">tail_dom</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">fstail</span> <span class="id" title="var">ss</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">tail_dom'</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">ss</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Functions <span class="inlinecode"><span class="id" title="var">cons_dom'</span></span> and <span class="inlinecode"><span class="id" title="var">cons_dom</span></span> to add an element to
+    the front of a given domain <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">i</span>,</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">(<span class="id" title="var">ss</span></span> <span class="inlinecode"><span class="id" title="var">i</span>)</span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Monomorphic Definition</span> <span class="id" title="var">cons_dom'</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">i</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>) (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">N</span> : <span class="id" title="var">n</span> &gt; 0),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">A</span> (<span class="id" title="var">fshead'</span> <span class="id" title="var">n</span> <span class="id" title="var">N</span> <span class="id" title="var">ss</span>) -&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">fstail'</span> <span class="id" title="var">n</span> <span class="id" title="var">ss</span> <span class="id" title="var">i</span>)) -&gt; <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fin_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">i</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">ss</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="keyword">Sort</span> σ) (<span class="id" title="var">N</span> : <span class="id" title="var">n</span> &gt; 0),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">A</span> (<span class="id" title="var">fshead'</span> <span class="id" title="var">n</span> <span class="id" title="var">N</span> <span class="id" title="var">ss</span>) -&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">fstail'</span> <span class="id" title="var">n</span> <span class="id" title="var">ss</span> <span class="id" title="var">i</span>)) -&gt; <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">n'</span> <span class="id" title="var">_</span> <span class="id" title="var">z</span> <span class="id" title="var">x</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">n'</span> <span class="id" title="var">i'</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">xs</span> =&gt; <span class="id" title="var">xs</span> <span class="id" title="var">i'</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cons_dom</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="keyword">Sort</span> σ))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">A</span> (<span class="id" title="var">fshead</span> <span class="id" title="var">ss</span>)) (<span class="id" title="var">xs</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">fstail</span> <span class="id" title="var">ss</span> <span class="id" title="var">i</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>.+1, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="var">cons_dom'</span> <span class="id" title="var">A</span> <span class="id" title="var">i</span> <span class="id" title="var">ss</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">xs</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The empty domain: 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">nil_dom</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> 0 (<span class="id" title="keyword">Sort</span> σ))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> : <span class="id" title="var">Fin</span> 0, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Empty_ind</span> (<span class="id" title="var">A</span> <span class="id" title="var">o</span> <span class="id" title="var">ss</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A specialization of <span class="inlinecode"><span class="id" title="var">Operation</span></span> to finite <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> arity. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">FiniteOperation</span> {σ : <span class="id" title="var">Signature</span>} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ) : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Operation</span> <span class="id" title="var">A</span> {| <span class="id" title="var">Arity</span> := <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>; <span class="id" title="var">sorts_dom</span> := <span class="id" title="var">ss</span>; <span class="id" title="var">sort_cod</span> := <span class="id" title="var">t</span> |}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A type of curried operations
+<pre>
+CurriedOperation A [s1, ..., sn] t := A s1 -&gt; ... -&gt; A sn -&gt; A t.
+</pre>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">CurriedOperation</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) -&gt; <span class="id" title="keyword">Sort</span> σ -&gt; <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 0 =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> =&gt; <span class="id" title="var">A</span> <span class="id" title="var">t</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">n'</span>.+1 =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> =&gt; <span class="id" title="var">A</span> (<span class="id" title="var">fshead</span> <span class="id" title="var">ss</span>) -&gt; <span class="id" title="var">CurriedOperation</span> <span class="id" title="var">A</span> (<span class="id" title="var">fstail</span> <span class="id" title="var">ss</span>) <span class="id" title="var">t</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Function <span class="inlinecode"><span class="id" title="var">operation_uncurry</span></span> is used to uncurry an operation
+<pre>
+operation_uncurry A [s1, ..., sn] t (op : CurriedOperation A [s1, ..., sn] t)
+  : FiniteOperation A [s1, ..., sn] t
+  := fun (x1 : A s1, ..., xn : A xn) =&gt; op x1 ... xn
+</pre>
+See <span class="inlinecode"><span class="id" title="var">equiv_operation_curry</span></span> below. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">operation_uncurry</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">CurriedOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> -&gt; <span class="id" title="var">FiniteOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 0 =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> <span class="id" title="var">op</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">op</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">n'</span>.+1 =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> <span class="id" title="var">op</span> <span class="id" title="var">a</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">operation_uncurry</span> <span class="id" title="var">A</span> (<span class="id" title="var">fstail</span> <span class="id" title="var">ss</span>) <span class="id" title="var">t</span> (<span class="id" title="var">op</span> (<span class="id" title="var">a</span> <span class="id" title="var">fin_zero</span>)) (<span class="id" title="var">a</span> <span class="id" title="var">o</span> <span class="id" title="var">fsucc</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Example</span> <span class="id" title="var">computation_example_operation_uncurry</span><br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(σ : <span class="id" title="var">Signature</span>) (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">s1</span> <span class="id" title="var">s2</span> <span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ss</span> := (<span class="id" title="var">fscons</span> <span class="id" title="var">s1</span> (<span class="id" title="var">fscons</span> <span class="id" title="var">s2</span> <span class="id" title="var">fsnil</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">op</span> : <span class="id" title="var">CurriedOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span>) (<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">operation_uncurry</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> <span class="id" title="var">op</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">op</span> (<span class="id" title="var">a</span> <span class="id" title="var">fin_zero</span>) (<span class="id" title="var">a</span> (<span class="id" title="var">fsucc</span> <span class="id" title="var">fin_zero</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Function <span class="inlinecode"><span class="id" title="var">operation_curry</span></span> is used to curry an operation
+<pre>
+operation_curry A [s1, ..., sn] t (op : FiniteOperation A [s1, ..., sn] t)
+  : CurriedOperation A [s1, ..., sn] t
+  := fun (x1 : A s1) ... (xn : A xn) =&gt; op (x1, ..., xn)
+</pre>
+See <span class="inlinecode"><span class="id" title="var">equiv_operation_curry</span></span> below. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">operation_curry</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} <br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">FiniteOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> -&gt; <span class="id" title="var">CurriedOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 0 =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> <span class="id" title="var">op</span> =&gt; <span class="id" title="var">op</span> (<span class="id" title="var">Empty_ind</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">n'</span>.+1 =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> <span class="id" title="var">op</span> <span class="id" title="var">x</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">operation_curry</span> <span class="id" title="var">A</span> (<span class="id" title="var">fstail</span> <span class="id" title="var">ss</span>) <span class="id" title="var">t</span> (<span class="id" title="var">op</span> <span class="id" title="var">o</span> <span class="id" title="var">cons_dom</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Example</span> <span class="id" title="var">computation_example_operation_curry</span><br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(σ : <span class="id" title="var">Signature</span>) (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">s1</span> <span class="id" title="var">s2</span> <span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ss</span> := (<span class="id" title="var">fscons</span> <span class="id" title="var">s1</span> (<span class="id" title="var">fscons</span> <span class="id" title="var">s2</span> <span class="id" title="var">fsnil</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">op</span> : <span class="id" title="var">FiniteOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x1</span> : <span class="id" title="var">A</span> <span class="id" title="var">s1</span>) (<span class="id" title="var">x2</span> : <span class="id" title="var">A</span> <span class="id" title="var">s2</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">operation_curry</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> <span class="id" title="var">op</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="keyword">fun</span> <span class="id" title="var">x1</span> <span class="id" title="var">x2</span> =&gt; <span class="id" title="var">op</span> (<span class="id" title="var">cons_dom</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">x1</span> (<span class="id" title="var">cons_dom</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">x2</span> (<span class="id" title="var">nil_dom</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span>))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">expand_cons_dom'</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">i</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>) (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">N</span> : <span class="id" title="var">n</span> &gt; 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cons_dom'</span> <span class="id" title="var">A</span> <span class="id" title="var">i</span> <span class="id" title="var">ss</span> <span class="id" title="var">N</span> (<span class="id" title="var">head_dom'</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">N</span> <span class="id" title="var">ss</span> <span class="id" title="var">a</span>) (<span class="id" title="var">tail_dom'</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">ss</span> <span class="id" title="var">a</span>) = <span class="id" title="var">a</span> <span class="id" title="var">i</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">i</span> <span class="id" title="keyword">using</span> <span class="id" title="var">fin_ind</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">ss</span> <span class="id" title="var">N</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">unfold</span> <span class="id" title="var">cons_dom'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">fin_ind_beta_zero</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">unfold</span> <span class="id" title="var">cons_dom'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">fin_ind_beta_fsucc</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">expand_cons_dom</span> `{<span class="id" title="var">Funext</span>} {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">A</span> (<span class="id" title="var">ss</span> <span class="id" title="var">i</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cons_dom</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> (<span class="id" title="var">head_dom</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">a</span>) (<span class="id" title="var">tail_dom</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">a</span>) = <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">expand_cons_dom'</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_operation_curry_to_cunurry</span> `{<span class="id" title="var">Funext</span>} {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">operation_uncurry</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> <span class="id" title="var">o</span> <span class="id" title="var">operation_curry</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> == <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [| <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="var">funext</span> <span class="id" title="var">d</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">a</span> <span class="id" title="var">_</span>). <span class="id" title="tactic">apply</span> <span class="id" title="var">path_contr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">funext</span> <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> <span class="id" title="var">_</span>) (<span class="id" title="var">IHn</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">a</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">expand_cons_dom</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_operation_uncurry_to_curry</span> `{<span class="id" title="var">Funext</span>} {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">operation_curry</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> <span class="id" title="var">o</span> <span class="id" title="var">operation_uncurry</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> == <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; [<span class="id" title="tactic">reflexivity</span>|].<br/>
+&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">IHn</span> (<span class="id" title="var">fstail</span> <span class="id" title="var">ss</span>) (<span class="id" title="var">a</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">operation_curry</span> <span class="id" title="var">A</span> (<span class="id" title="var">fstail</span> <span class="id" title="var">ss</span>) <span class="id" title="var">t</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">cons_dom</span>, <span class="id" title="var">cons_dom'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">fin_ind_beta_zero</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">operation_uncurry</span> <span class="id" title="var">A</span> (<span class="id" title="var">fstail</span> <span class="id" title="var">ss</span>) <span class="id" title="var">t</span> (<span class="id" title="var">a</span> <span class="id" title="var">x</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">i'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">fin_ind_beta_fsucc</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_operation_curry</span> `{<span class="id" title="var">Funext</span>} {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">operation_curry</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">operation_uncurry</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_operation_uncurry_to_curry</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_operation_curry_to_cunurry</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_operation_curry</span> `{<span class="id" title="var">Funext</span>} {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">ss</span> : <span class="id" title="var">FinSeq</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">Sort</span> σ)) (<span class="id" title="var">t</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">FiniteOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span> &lt;~&gt; <span class="id" title="var">CurriedOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">operation_curry</span> <span class="id" title="var">A</span> <span class="id" title="var">ss</span> <span class="id" title="var">t</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

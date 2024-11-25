@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>KroneckerDelta</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library KroneckerDelta</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Decidable</span> <span class="id" title="var">Spaces.Nat</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.Rings.Ring</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Classes.interfaces.abstract_algebra</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Polymorphic</span> <span class="id" title="keyword">Inductive</span> <span class="id" title="var">Cumulativity</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab249"></a><h2 class="section">Kronecker Delta</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">AssumeDecidable</span>.<br/>
+</div>
+
+<div class="doc">
+Throughout this section, we assume that we have a type <span class="inlinecode"><span class="id" title="var">A</span></span> with decidable equality. This will be our indexing type and can be thought of as <span class="inlinecode"><span class="id" title="var">nat</span></span> for reading purposes. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Universes</span> <span class="id" title="var">u</span> <span class="id" title="var">v</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}} `{<span class="id" title="var">DecidablePaths@</span>{<span class="id" title="var">u</span>} <span class="id" title="var">A</span>} {<span class="id" title="var">R</span> : <span class="id" title="var">Ring@</span>{<span class="id" title="var">v</span>}}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The Kronecker delta function is a function of elements of <span class="inlinecode"><span class="id" title="var">A</span></span> that is 1 when the two numbers are equal and 0 otherwise. It is useful for working with finite sums of ring elements. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">kronecker_delta@</span>{} (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">if</span> <span class="id" title="var">dec</span> (<span class="id" title="var">i</span> = <span class="id" title="var">j</span>) <span class="id" title="keyword">then</span> 1 <span class="id" title="keyword">else</span> 0.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Kronecker delta with the same index is 1. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">kronecker_delta_refl@</span>{} (<span class="id" title="var">i</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span> = 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">kronecker_delta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">i</span> = <span class="id" title="var">i</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">rapply</span> <span class="id" title="var">decidable_paths_refl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Kronecker delta with differing indices is 0. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">kronecker_delta_neq@</span>{} {<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">i</span> &lt;&gt; <span class="id" title="var">j</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> = 0.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">kronecker_delta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">decidable_false</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">i</span> = <span class="id" title="var">j</span>)) <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Kronecker delta is symmetric in its arguments. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">kronecker_delta_symm@</span>{} (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> = <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">j</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">kronecker_delta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">i</span> = <span class="id" title="var">j</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">p</span>|<span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="var">decidable_true</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">j</span> = <span class="id" title="var">i</span>)) <span class="id" title="var">p</span>^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="var">decidable_false</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">j</span> = <span class="id" title="var">i</span>)) (<span class="id" title="var">symmetric_neq</span> <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An injective endofunction on <span class="inlinecode"><span class="id" title="var">A</span></span> preserves the Kronecker delta. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">kronecker_delta_map_inj@</span>{} (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsInjective</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">kronecker_delta</span> (<span class="id" title="var">f</span> <span class="id" title="var">i</span>) (<span class="id" title="var">f</span> <span class="id" title="var">j</span>) = <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">kronecker_delta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">i</span> = <span class="id" title="var">j</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">p</span>|<span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="var">decidable_true</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">f</span> <span class="id" title="var">i</span> = <span class="id" title="var">f</span> <span class="id" title="var">j</span>)) (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">f</span> <span class="id" title="var">i</span> = <span class="id" title="var">f</span> <span class="id" title="var">j</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">q</span>|<span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> (<span class="id" title="var">injective</span> <span class="id" title="var">f</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contradiction</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Kronecker delta commutes with any ring element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">kronecker_delta_comm@</span>{} (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">r</span> : <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">r</span> * <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> = <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> * <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">kronecker_delta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">i</span> = <span class="id" title="var">j</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">rng_mult_one_r</span> <span class="id" title="var">_</span> @ (<span class="id" title="var">rng_mult_one_l</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">rng_mult_zero_r</span> <span class="id" title="var">_</span> @ (<span class="id" title="var">rng_mult_zero_l</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">AssumeDecidable</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The following lemmas are specialised to when the indexing type is <span class="inlinecode"><span class="id" title="var">nat</span></span>. 
+<div class="paragraph"> </div>
+
+ Kronecker delta where the first index is strictly less than the second is 0. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">kronecker_delta_lt</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">p</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">j</span>)%<span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">kronecker_delta</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">R</span>) <span class="id" title="var">i</span> <span class="id" title="var">j</span> = 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">kronecker_delta_neq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">lt_irrefl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Kronecker delta where the first index is strictly greater than the second is 0. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">kronecker_delta_gt</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">p</span> : (<span class="id" title="var">j</span> &lt; <span class="id" title="var">i</span>)%<span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">kronecker_delta</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">R</span>) <span class="id" title="var">i</span> <span class="id" title="var">j</span> = 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">kronecker_delta_neq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">lt_irrefl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Kronecker delta can be used to extract a single term from a finite sum. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rng_sum_kronecker_delta_l</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">n</span> <span class="id" title="var">i</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">Hi</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, (<span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">j</span> <span class="id" title="var">Hj</span> =&gt; <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> * <span class="id" title="var">f</span> <span class="id" title="var">j</span> <span class="id" title="var">Hj</span>) = <span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span> <span class="id" title="var">f</span>; <span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">destruct</span> (<span class="id" title="var">not_lt_zero_r</span> <span class="id" title="var">_</span> <span class="id" title="var">Hi</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">i</span> = <span class="id" title="var">n</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">p</span>|<span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">kronecker_delta_refl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">rng_mult_one_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">rng_plus_zero_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap11</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">h</span> =&gt; <span class="id" title="var">plus</span> (<span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">h</span>))), <span class="id" title="var">path_ishprop</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">ab_sum_zero</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">kronecker_delta_gt</span> <span class="id" title="var">Hk</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">rng_mult_zero_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">nrapply</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">neq_iff_lt_or_gt</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; [<span class="id" title="tactic">assumption</span>|].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gt_iff_not_leq</span> <span class="id" title="tactic">in</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">contradiction</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">kronecker_delta_neq</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">rng_mult_zero_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">grp_unit_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">path_ishprop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Variant of <span class="inlinecode"><span class="id" title="var">rng_sum_kronecker_delta_l</span></span> where the indexing is swapped. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rng_sum_kronecker_delta_l'</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">n</span> <span class="id" title="var">i</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">Hi</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, (<span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">j</span> <span class="id" title="var">Hj</span> =&gt; <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">j</span> <span class="id" title="var">i</span> * <span class="id" title="var">f</span> <span class="id" title="var">j</span> <span class="id" title="var">Hj</span>) = <span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">path_ab_sum</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">rng_sum_kronecker_delta_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="var">f_ap</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">kronecker_delta_symm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Variant of <span class="inlinecode"><span class="id" title="var">rng_sum_kronecker_delta_l</span></span> where the Kronecker delta appears on the right. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rng_sum_kronecker_delta_r</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">n</span> <span class="id" title="var">i</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">Hi</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, (<span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">j</span> <span class="id" title="var">Hj</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">j</span> <span class="id" title="var">Hj</span> * <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) = <span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">path_ab_sum</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">rng_sum_kronecker_delta_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">kronecker_delta_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Variant of <span class="inlinecode"><span class="id" title="var">rng_sum_kronecker_delta_r</span></span> where the indexing is swapped. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rng_sum_kronecker_delta_r'</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">n</span> <span class="id" title="var">i</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">Hi</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, (<span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">j</span> <span class="id" title="var">Hj</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">j</span> <span class="id" title="var">Hj</span> * <span class="id" title="var">kronecker_delta</span> <span class="id" title="var">j</span> <span class="id" title="var">i</span>) = <span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">path_ab_sum</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">rng_sum_kronecker_delta_l'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">kronecker_delta_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

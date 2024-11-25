@@ -1,0 +1,273 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Algebra</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Algebra</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+This file defines <span class="inlinecode"><span class="id" title="var">Algebra</span></span>, which is a generalization of group,
+    ring, module, etc. An <span class="inlinecode"><span class="id" title="var">Algebra</span></span> moreover generalizes structures
+    with infinitary operations, such as infinite complete lattice. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Unset</span> <span class="id" title="var">Elimination</span> <span class="id" title="var">Schemes</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">HoTT.Basics</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Types</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">Algebra_scope</span>.<br/>
+<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">Algebra_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Algebra</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The below definition <span class="inlinecode"><span class="id" title="var">SymbolTypeOf</span></span> is used to specify algebra
+    operations. See <span class="inlinecode"><span class="id" title="var">SymbolType</span></span> and <span class="inlinecode"><span class="id" title="var">Operation</span></span> below. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">SymbolTypeOf</span> {<span class="id" title="keyword">Sort</span> : <span class="id" title="keyword">Type</span>} := <span class="id" title="var">Build_SymbolTypeOf</span><br/>
+&nbsp;&nbsp;{ <span class="id" title="var">Arity</span> : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;; <span class="id" title="var">sorts_dom</span> : <span class="id" title="var">Arity</span> -&gt; <span class="id" title="keyword">Sort</span><br/>
+&nbsp;&nbsp;; <span class="id" title="var">sort_cod</span> : <span class="id" title="keyword">Sort</span> }.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">SymbolTypeOf</span> : <span class="id" title="tactic">clear</span> <span class="id" title="var">implicits</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Build_SymbolTypeOf</span> {<span class="id" title="keyword">Sort</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A <span class="inlinecode"><span class="id" title="var">Signature</span></span> is used to specify <span class="inlinecode"><span class="id" title="var">Algebra</span></span>s. A signature describes
+    which operations (functions) an algebra for the signature is
+    expected to provide. A signature consists of
+<ul class="doclist">
+<li> A type of <span class="inlinecode"><span class="id" title="keyword">Sort</span></span>s. An algebra for the signature provides
+      a type for each <span class="inlinecode"><span class="id" title="keyword">Sort</span></span> element.
+
+</li>
+<li> A type of function symbols <span class="inlinecode"><span class="id" title="var">Symbol</span></span>. For each function symbol
+      <span class="inlinecode"><span class="id" title="var">u</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Symbol</span></span>, an algebra for the signature provides a
+      corresponding operation.
+
+</li>
+<li> The field <span class="inlinecode"><span class="id" title="var">symbol_types</span></span> <span class="inlinecode">σ</span> <span class="inlinecode"><span class="id" title="var">u</span></span> indicates which type the operation
+      corresponding to <span class="inlinecode"><span class="id" title="var">u</span></span> is expected to have. 
+
+</li>
+</ul>
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">Signature</span> := <span class="id" title="var">Build_Signature</span><br/>
+&nbsp;&nbsp;{ <span class="id" title="keyword">Sort</span> : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;; <span class="id" title="var">Symbol</span> : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;; <span class="id" title="var">symbol_types</span> : <span class="id" title="var">Symbol</span> -&gt; <span class="id" title="var">SymbolTypeOf</span> <span class="id" title="keyword">Sort</span><br/>
+&nbsp;&nbsp;; <span class="id" title="var">hset_sort</span> : <span class="id" title="var">IsHSet</span> <span class="id" title="keyword">Sort</span><br/>
+&nbsp;&nbsp;; <span class="id" title="var">hset_symbol</span> : <span class="id" title="var">IsHSet</span> <span class="id" title="var">Symbol</span> }.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">SymbolType</span> σ := (<span class="id" title="var">SymbolTypeOf</span> (<span class="id" title="keyword">Sort</span> σ)).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">hset_sort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">hset_symbol</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Coercion</span> <span class="id" title="var">symbol_types</span> : <span class="id" title="var">Signature</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Each <span class="inlinecode"><span class="id" title="var">Algebra</span></span> has a collection of carrier types <span class="inlinecode"><span class="id" title="var">Carriers</span></span> <span class="inlinecode">σ</span>,
+    indexed by the type of sorts <span class="inlinecode"><span class="id" title="keyword">Sort</span></span> <span class="inlinecode">σ</span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">Carriers</span> σ := (<span class="id" title="keyword">Sort</span> σ -&gt; <span class="id" title="keyword">Type</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Carriers</span></span> <span class="inlinecode">σ</span> and <span class="inlinecode"><span class="id" title="var">w</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">SymbolType</span></span> <span class="inlinecode">σ</span>, the domain of an
+    algebra operation <span class="inlinecode"><span class="id" title="var">DomOperation</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">w</span></span> is a product of carrier types
+    from <span class="inlinecode"><span class="id" title="var">A</span></span>, indexed by <span class="inlinecode"><span class="id" title="var">Arity</span></span> <span class="inlinecode"><span class="id" title="var">w</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">DomOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">w</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> : <span class="id" title="var">Arity</span> <span class="id" title="var">w</span>, <span class="id" title="var">A</span> (<span class="id" title="var">sorts_dom</span> <span class="id" title="var">w</span> <span class="id" title="var">i</span>)) (<span class="id" title="var">only</span> <span class="id" title="var">parsing</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given a symbol type <span class="inlinecode"><span class="id" title="var">w</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">SymbolType</span></span> <span class="inlinecode">σ</span>, an algebra with carriers
+    <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Carriers</span></span> <span class="inlinecode">σ</span> provides a corresponding operation of type
+    <span class="inlinecode"><span class="id" title="var">Operation</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">w</span></span>. See below for definition <span class="inlinecode"><span class="id" title="var">Algerba</span></span>.
+
+<div class="paragraph"> </div>
+
+    Algebra operations are developed further in
+    <span class="inlinecode"><span class="id" title="var">HoTT.Algebra.Universal.Operation</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Operation</span> {σ} (<span class="id" title="var">A</span> : <span class="id" title="var">Carriers</span> σ) (<span class="id" title="var">w</span> : <span class="id" title="var">SymbolType</span> σ) : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">DomOperation</span> <span class="id" title="var">A</span> <span class="id" title="var">w</span> -&gt; <span class="id" title="var">A</span> (<span class="id" title="var">sort_cod</span> <span class="id" title="var">w</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An <span class="inlinecode"><span class="id" title="var">Algebra</span></span> <span class="inlinecode">σ</span> for a signature <span class="inlinecode">σ</span> consists of a collection of
+    carriers <span class="inlinecode"><span class="id" title="var">Carriers</span></span> <span class="inlinecode">σ</span>, and for each symbol <span class="inlinecode"><span class="id" title="var">u</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Symbol</span></span> <span class="inlinecode">σ</span>, an
+    operation/function of type <span class="inlinecode"><span class="id" title="var">Operation</span></span> <span class="inlinecode"><span class="id" title="var">carriers</span></span> <span class="inlinecode">(σ</span> <span class="inlinecode"><span class="id" title="var">u</span>)</span>,
+    where <span class="inlinecode">σ</span> <span class="inlinecode"><span class="id" title="var">u</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">SymbolType</span></span> <span class="inlinecode">σ</span> is the symbol type of <span class="inlinecode"><span class="id" title="var">u</span></span>.
+    Notice that <span class="inlinecode"><span class="id" title="var">Algebra</span></span> does not specify equations involving
+    carriers and operations. Equations are defined elsewhere. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">Algebra</span> {σ : <span class="id" title="var">Signature</span>} : <span class="id" title="keyword">Type</span> := <span class="id" title="var">Build_Algebra</span><br/>
+&nbsp;&nbsp;{ <span class="id" title="var">carriers</span> : <span class="id" title="var">Carriers</span> σ<br/>
+&nbsp;&nbsp;; <span class="id" title="var">operations</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">u</span> : <span class="id" title="var">Symbol</span> σ), <span class="id" title="var">Operation</span> <span class="id" title="var">carriers</span> (σ <span class="id" title="var">u</span>)<br/>
+&nbsp;&nbsp;; <span class="id" title="var">hset_algebra</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ), <span class="id" title="var">IsHSet</span> (<span class="id" title="var">carriers</span> <span class="id" title="var">s</span>) }.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Algebra</span> : <span class="id" title="tactic">clear</span> <span class="id" title="var">implicits</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Build_Algebra</span> {σ} <span class="id" title="var">carriers</span> <span class="id" title="var">operations</span> {<span class="id" title="var">hset_algebra</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">hset_algebra</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Coercion</span> <span class="id" title="var">carriers</span> : <span class="id" title="var">Algebra</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Bind Scope</span> <span class="id" title="var">Algebra_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Algebra</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">SigAlgebra</span> (σ : <span class="id" title="var">Signature</span>) : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= {<span class="id" title="var">c</span> : <span class="id" title="var">Carriers</span> σ<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| { <span class="id" title="var">_</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">u</span> : <span class="id" title="var">Symbol</span> σ), <span class="id" title="var">Operation</span> <span class="id" title="var">c</span> (σ <span class="id" title="var">u</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="keyword">forall</span> (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ), <span class="id" title="var">IsHSet</span> (<span class="id" title="var">c</span> <span class="id" title="var">s</span>) } }.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">issig_algebra</span> (σ : <span class="id" title="var">Signature</span>) : <span class="id" title="var">SigAlgebra</span> σ &lt;~&gt; <span class="id" title="var">Algebra</span> σ.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">issig</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_algebra</span> `{<span class="id" title="var">Funext</span>} {σ : <span class="id" title="var">Signature</span>} (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">carriers</span> <span class="id" title="var">A</span> = <span class="id" title="var">carriers</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">q</span> : <span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">u</span>, <span class="id" title="var">Operation</span> <span class="id" title="var">i</span> (σ <span class="id" title="var">u</span>)) <span class="id" title="var">p</span> (<span class="id" title="var">operations</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">operations</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> = <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">issig_algebra</span> σ)^-1)^-1; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">path_sigma'</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_sigma</span> <span class="id" title="var">p</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">path_algebra</span> {<span class="id" title="var">_</span>} {<span class="id" title="var">_</span>} (<span class="id" title="var">A</span> <span class="id" title="var">B</span>)%<span class="id" title="var">_Algebra_scope</span> (<span class="id" title="var">p</span> <span class="id" title="var">q</span>)%<span class="id" title="var">_path_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_ap_carriers_path_algebra</span> `{<span class="id" title="var">Funext</span>} {σ} (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">carriers</span> <span class="id" title="var">A</span> = <span class="id" title="var">carriers</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">q</span> : <span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">u</span>, <span class="id" title="var">Operation</span> <span class="id" title="var">i</span> (σ <span class="id" title="var">u</span>)) <span class="id" title="var">p</span> (<span class="id" title="var">operations</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">operations</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">carriers</span> (<span class="id" title="var">path_algebra</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) = <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">A</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">A</span> <span class="id" title="var">a</span> <span class="id" title="var">ha</span>], <span class="id" title="var">B</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">B</span> <span class="id" title="var">b</span> <span class="id" title="var">hb</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">path_algebra</span>, <span class="id" title="var">path_sigma_hprop</span>, <span class="id" title="var">path_sigma_uncurried</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span> -[<span class="id" title="var">center</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> (<span class="id" title="var">center</span> (<span class="id" title="var">ha</span> = <span class="id" title="var">hb</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">path_ap_carriers_path_algebra</span> {<span class="id" title="var">_</span>} {<span class="id" title="var">_</span>} (<span class="id" title="var">A</span> <span class="id" title="var">B</span>)%<span class="id" title="var">_Algebra_scope</span> (<span class="id" title="var">p</span> <span class="id" title="var">q</span>)%<span class="id" title="var">_path_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_path_algebra_issig</span> {σ : <span class="id" title="var">Signature</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ} (<span class="id" title="var">p</span> <span class="id" title="var">q</span> : <span class="id" title="var">A</span> = <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">ap</span> (<span class="id" title="var">issig_algebra</span> σ)^-1 <span class="id" title="var">p</span> = <span class="id" title="var">ap</span> (<span class="id" title="var">issig_algebra</span> σ)^-1 <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">p</span> = <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">e</span> := (<span class="id" title="var">equiv_ap</span> (<span class="id" title="var">issig_algebra</span> σ)^-1 <span class="id" title="var">A</span> <span class="id" title="var">B</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> (@<span class="id" title="var">equiv_inv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> <span class="id" title="var">e</span>) (<span class="id" title="var">Equivalences.isequiv_ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">path_path_algebra_issig</span> {<span class="id" title="var">_</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span>}%<span class="id" title="var">_Algebra_scope</span> (<span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>)%<span class="id" title="var">_path_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_path_algebra</span> `{<span class="id" title="var">Funext</span>} {σ} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> <span class="id" title="var">q</span> : <span class="id" title="var">A</span> = <span class="id" title="var">B</span>) (<span class="id" title="var">r</span> : <span class="id" title="var">ap</span> <span class="id" title="var">carriers</span> <span class="id" title="var">p</span> = <span class="id" title="var">ap</span> <span class="id" title="var">carriers</span> <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">p</span> = <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_path_algebra_issig</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">unshelve</span> <span class="id" title="tactic">eapply</span> <span class="id" title="var">path_path_sigma</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">transitivity</span> (<span class="id" title="var">ap</span> <span class="id" title="var">carriers</span> <span class="id" title="var">p</span>); [<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span> |].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">ap</span> <span class="id" title="var">carriers</span> <span class="id" title="var">q</span>); [<span class="id" title="tactic">exact</span> <span class="id" title="var">r</span> | <span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">path_path_algebra</span> {<span class="id" title="var">_</span>} {σ} {<span class="id" title="var">A</span> <span class="id" title="var">B</span>}%<span class="id" title="var">_Algebra_scope</span> (<span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">r</span>)%<span class="id" title="var">_path_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Notation</span> &quot;u .# A" := (<span class="id" title="var">operations</span> <span class="id" title="var">A</span> <span class="id" title="var">u</span>) : <span class="id" title="var">Algebra_scope</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

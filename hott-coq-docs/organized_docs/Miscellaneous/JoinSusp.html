@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>JoinSusp</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library JoinSusp</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Join.Core</span> <span class="id" title="var">Join.JoinAssoc</span> <span class="id" title="var">Suspension</span> <span class="id" title="var">Spaces.Spheres</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1173"></a><h1 class="section"><span class="inlinecode"><span class="id" title="var">Join</span></span> <span class="inlinecode"><span class="id" title="var">Bool</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> is equivalent to <span class="inlinecode"><span class="id" title="var">Susp</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span></h1>
+
+
+<div class="paragraph"> </div>
+
+  We give a direct proof of this fact. It is also possible to give a proof using <span class="inlinecode"><span class="id" title="var">opyon_equiv_0gpd</span></span>; see PR1769. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">join_to_susp</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">Join</span> <span class="id" title="var">Bool</span> <span class="id" title="var">A</span> -&gt; <span class="id" title="var">Susp</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Join_rec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="keyword">if</span> <span class="id" title="var">b</span> <span class="id" title="keyword">then</span> <span class="id" title="var">North</span> <span class="id" title="keyword">else</span> <span class="id" title="var">South</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">South</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [|] <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">merid</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">susp_to_join</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">Susp</span> <span class="id" title="var">A</span> -&gt; <span class="id" title="var">Join</span> <span class="id" title="var">Bool</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Susp_rec</span> (<span class="id" title="var">joinl</span> <span class="id" title="var">true</span>) (<span class="id" title="var">joinl</span> <span class="id" title="var">false</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">jglue</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> @ (<span class="id" title="var">jglue</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>)^).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_join_to_susp</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">join_to_susp</span> <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">_</span> (<span class="id" title="var">susp_to_join</span> <span class="id" title="var">A</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Susp_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1,2: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">transport_paths_FFlr'</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">susp_to_join</span> <span class="id" title="var">A</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); [<span class="id" title="var">nrapply</span> <span class="id" title="var">Susp_rec_beta_merid</span> | ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">jglue</span> <span class="id" title="var">false</span> <span class="id" title="var">a</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> @@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_V</span>; <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">inverse</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1,2: <span class="id" title="var">nrapply</span> <span class="id" title="var">Join_rec_beta_jglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> (<span class="id" title="var">Join_ind_FFlr</span> (<span class="id" title="var">join_to_susp</span> <span class="id" title="var">A</span>)); <span class="id" title="var">cbn</span> <span class="id" title="keyword">beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">intros</span> [|]; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">jglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span>; <span class="id" title="var">cbn</span> <span class="id" title="keyword">beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrefine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @@ 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">Join_rec_beta_jglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">lhs</span> <span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> @@ 1); [<span class="id" title="var">nrapply</span> <span class="id" title="var">Susp_rec_beta_merid</span> | ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_pV_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_join_susp</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">Join</span> <span class="id" title="var">Bool</span> <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">Susp</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">join_to_susp</span> <span class="id" title="var">A</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It follows that the join powers of <span class="inlinecode"><span class="id" title="var">Bool</span></span> are spheres.  These are sometimes a convenient alternative to working with spheres, so we give them a name. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">bool_pow</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) := <span class="id" title="var">join_power</span> <span class="id" title="var">Bool</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_bool_pow_sphere</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>): <span class="id" title="var">bool_pow</span> <span class="id" title="var">n</span> &lt;~&gt; <span class="id" title="var">Sphere</span> (<span class="id" title="var">n</span>.-1).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_join_susp</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">emap</span> <span class="id" title="var">Susp</span> <span class="id" title="var">IHn</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It follows that joins of spheres are spheres, starting in dimension -1. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_join_sphere</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Join</span> (<span class="id" title="var">Sphere</span> <span class="id" title="var">n</span>.-1) (<span class="id" title="var">Sphere</span> <span class="id" title="var">m</span>.-1) &lt;~&gt; <span class="id" title="var">Sphere</span> (<span class="id" title="var">n</span> + <span class="id" title="var">m</span>)%<span class="id" title="var">nat</span>.-1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_functor_join</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;2,3: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_bool_pow_sphere</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_bool_pow_sphere</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">join_join_power</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

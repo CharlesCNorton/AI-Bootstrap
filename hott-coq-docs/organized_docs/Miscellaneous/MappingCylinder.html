@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>MappingCylinder</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library MappingCylinder</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab1041"></a><h1 class="section">Mapping Cylinders</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">Cubical.DPath</span> <span class="id" title="var">Cubical.PathSquare</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Pushout</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+As in topology, the mapping cylinder of a function <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">B</span></span> is a way to replace it with an equivalent cofibration (dually to how <span class="inlinecode"><span class="id" title="var">hfiber</span></span> replaces it with an equivalent fibration).  We can't talk *internally* in type theory about cofibrations, but we can say metatheoretically what they are: functions with the isomorphism extension property.  So while we can't literally say "let <span class="inlinecode"><span class="id" title="var">f</span></span> be a cofibration" we can do a mostly equivalent thing and say "let <span class="inlinecode"><span class="id" title="var">f</span></span> be a map and consider its mapping cylinder".  Replacing a map by a cofibration can be useful because it allows us to make more equalities true definitionally. 
+<div class="paragraph"> </div>
+
+<a id="lab1042"></a><h2 class="section">Definitions</h2>
+
+<div class="paragraph"> </div>
+
+ We define the mapping cylinder as the pushout of <span class="inlinecode"><span class="id" title="var">f</span></span> and an identity map.  Peter Lumsdaine has given a definition of HIT mapping cylinders that are dependent on the codomain, so that the second factor is not just an equivalence but a trivial fibration.  However, at the moment we don't have a need for that.  
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Cyl</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Pushout</span> <span class="id" title="var">idmap</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">MappingCylinder</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cyl</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">pushl</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cyr</span> (<span class="id" title="var">b</span> : <span class="id" title="var">B</span>) : <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">pushr</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cyglue</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cyl</span> <span class="id" title="var">a</span> = <span class="id" title="var">cyr</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">pglue</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">CylInd</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">P</span> : <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cyla</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> (<span class="id" title="var">cyl</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cylb</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> (<span class="id" title="var">cyr</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cylg</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">cyglue</span> <span class="id" title="var">a</span>) (<span class="id" title="var">cyla</span> <span class="id" title="var">a</span>) (<span class="id" title="var">cylb</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>))).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Cyl_ind</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">P</span> <span class="id" title="var">c</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Pushout_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">cyla</span> <span class="id" title="var">cylb</span> <span class="id" title="var">cylg</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Cyl_ind_beta_cyglue</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> <span class="id" title="var">Cyl_ind</span> (<span class="id" title="var">cyglue</span> <span class="id" title="var">a</span>) = <span class="id" title="var">cylg</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Pushout_ind_beta_pglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">CylInd</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">CylRec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">cyla</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span>) (<span class="id" title="var">cylb</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">P</span>) (<span class="id" title="var">cylg</span> : <span class="id" title="var">cyla</span> == <span class="id" title="var">cylb</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Cyl_rec</span> : <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Pushout_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">cyla</span> <span class="id" title="var">cylb</span> <span class="id" title="var">cylg</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Cyl_rec_beta_cyglue</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">Cyl_rec</span> (<span class="id" title="var">cyglue</span> <span class="id" title="var">a</span>) = <span class="id" title="var">cylg</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Pushout_rec_beta_pglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">CylRec</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr_cyl</span> : <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span> &lt;~&gt; <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+Rather than adjointifying, we give all parts of the equivalence explicitly, so we can be sure of retaining the computational behavior of <span class="inlinecode"><span class="id" title="var">eissect</span></span> and <span class="inlinecode"><span class="id" title="var">eisretr</span></span>.  However, it's easier to prove <span class="inlinecode"><span class="id" title="var">eisadj</span></span> on the other side, so we reverse the equivalence first. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1:<span class="id" title="tactic">apply</span> <span class="id" title="var">cyr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_IsEquiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">srapply</span> <span class="id" title="var">Cyl_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">srapply</span> <span class="id" title="var">Cyl_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">cyglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">dp_paths_FFlr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Cyl_rec_beta_cyglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_pV_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_pr_cyl_cyglue</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">pr_cyl</span> (<span class="id" title="var">cyglue</span> <span class="id" title="var">a</span>) = 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Cyl_rec_beta_cyglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The original map <span class="inlinecode"><span class="id" title="var">f</span></span> factors definitionally through <span class="inlinecode"><span class="id" title="var">Cyl</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr_cyl_cyl</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">pr_cyl</span> (<span class="id" title="var">cyl</span> <span class="id" title="var">a</span>) = <span class="id" title="var">f</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">MappingCylinder</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Sometimes we have to specify the map explicitly. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cyl'</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span> := <span class="id" title="var">cyl</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr_cyl'</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) : <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">B</span> := <span class="id" title="var">pr_cyl</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1043"></a><h2 class="section">Functoriality</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">FunctorCyl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">A'</span> <span class="id" title="var">B'</span>: <span class="id" title="keyword">Type</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">f'</span> : <span class="id" title="var">A'</span> -&gt; <span class="id" title="var">B'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">ga</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>} {<span class="id" title="var">gb</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">ga</span> == <span class="id" title="var">gb</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_cyl</span> : <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">Cyl</span> <span class="id" title="var">f'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Cyl_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">cyl</span> <span class="id" title="var">o</span> <span class="id" title="var">ga</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">cyr</span> <span class="id" title="var">o</span> <span class="id" title="var">gb</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">cyr</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cyglue</span> (<span class="id" title="var">ga</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_functor_cyl_cyglue</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">functor_cyl</span> (<span class="id" title="var">cyglue</span> <span class="id" title="var">a</span>) = <span class="id" title="var">cyglue</span> (<span class="id" title="var">ga</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">ap</span> <span class="id" title="var">cyr</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Cyl_rec_beta_cyglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The benefit of passing to the mapping cylinder is that it makes a square commute definitionally. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_cyl_cyl</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">cyl</span> (<span class="id" title="var">ga</span> <span class="id" title="var">a</span>) = <span class="id" title="var">functor_cyl</span> (<span class="id" title="var">cyl</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The other square also commutes, though not definitionally. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr_functor_cyl</span> (<span class="id" title="var">c</span> : <span class="id" title="var">Cyl</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">pr_cyl</span> (<span class="id" title="var">functor_cyl</span> <span class="id" title="var">c</span>) = <span class="id" title="var">gb</span> (<span class="id" title="var">pr_cyl</span> <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">ap</span> (<span class="id" title="var">pr_cyl</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_cyl</span>) (<span class="id" title="var">eissect</span> <span class="id" title="var">pr_cyl</span> <span class="id" title="var">c</span>)^.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr_functor_cyl_cyl</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">pr_functor_cyl</span> (<span class="id" title="var">cyl</span> <span class="id" title="var">a</span>) = <span class="id" title="var">g</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+Here we need <span class="inlinecode"><span class="id" title="var">eissect</span></span> <span class="inlinecode"><span class="id" title="var">pr_cyl</span></span> <span class="inlinecode">(<span class="id" title="var">cyl</span></span> <span class="inlinecode"><span class="id" title="var">a</span>)</span> to compute. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">inv_V</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">functor_cyl</span> <span class="id" title="var">pr_cyl</span> (<span class="id" title="var">cyglue</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap_functor_cyl_cyglue</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">ap_pr_cyl_cyglue</span> (<span class="id" title="var">ga</span> <span class="id" title="var">a</span>)) <span class="id" title="var">_</span> @ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ap_compose</span> <span class="id" title="var">cyr</span> <span class="id" title="var">_</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>))^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap_idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">FunctorCyl</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1044"></a><h2 class="section">Coequalizers</h2>
+
+<div class="paragraph"> </div>
+
+ A particularly useful application is to replace a map of coequalizers with one where both squares commute definitionally. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">CylCoeq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>} {<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">CylCoeq</span> : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Coeq</span> (<span class="id" title="var">functor_cyl</span> <span class="id" title="var">p</span>) (<span class="id" title="var">functor_cyl</span> <span class="id" title="var">q</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cyl_cylcoeq</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">CylCoeq</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">functor_coeq</span> <span class="id" title="var">cyl</span> <span class="id" title="var">cyl</span> (<span class="id" title="var">functor_cyl_cyl</span> <span class="id" title="var">p</span>) (<span class="id" title="var">functor_cyl_cyl</span> <span class="id" title="var">q</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_cyl_cylcoeq_cglue</span> (<span class="id" title="var">b</span> : <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">cyl_cylcoeq</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) = <span class="id" title="var">cglue</span> (<span class="id" title="var">cyl</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1:<span class="id" title="var">rapply</span> <span class="id" title="var">functor_coeq_beta_cglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr_cylcoeq</span> : <span class="id" title="var">CylCoeq</span> &lt;~&gt; <span class="id" title="var">Coeq</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">equiv_functor_coeq</span> <span class="id" title="var">pr_cyl</span> <span class="id" title="var">pr_cyl</span> (<span class="id" title="var">pr_functor_cyl</span> <span class="id" title="var">p</span>) (<span class="id" title="var">pr_functor_cyl</span> <span class="id" title="var">q</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_pr_cylcoeq_cglue</span> (<span class="id" title="var">x</span> : <span class="id" title="var">Cyl</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">PathSquare</span> (<span class="id" title="var">ap</span> <span class="id" title="var">pr_cylcoeq</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">cglue</span> (<span class="id" title="var">pr_cyl</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap</span> <span class="id" title="var">coeq</span> (<span class="id" title="var">pr_functor_cyl</span> <span class="id" title="var">p</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap</span> <span class="id" title="var">coeq</span> (<span class="id" title="var">pr_functor_cyl</span> <span class="id" title="var">q</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sq_path</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_pM</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_V</span> <span class="id" title="var">coeq</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">functor_coeq_beta_cglue</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr_cyl_cylcoeq</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> == <span class="id" title="var">pr_cylcoeq</span> <span class="id" title="var">o</span> <span class="id" title="var">cyl_cylcoeq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">functor_coeq_compose</span> <span class="id" title="var">cyl</span> <span class="id" title="var">cyl</span> (<span class="id" title="var">functor_cyl_cyl</span> <span class="id" title="var">p</span>) (<span class="id" title="var">functor_cyl_cyl</span> <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">pr_cyl</span> <span class="id" title="var">pr_cyl</span> (<span class="id" title="var">pr_functor_cyl</span> <span class="id" title="var">p</span>) (<span class="id" title="var">pr_functor_cyl</span> <span class="id" title="var">q</span>) <span class="id" title="var">c</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">functor_coeq_homotopy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1-2:<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span> @ (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">apply</span> <span class="id" title="var">pr_functor_cyl_cyl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">CylCoeq</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

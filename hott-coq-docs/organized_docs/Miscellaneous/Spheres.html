@@ -1,0 +1,455 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Spheres</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Spheres</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Equiv</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">NullHomotopy</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Homotopy.Suspension</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pointed</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Truncations</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Circle</span> <span class="id" title="var">Spaces.TwoSphere</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1368"></a><h1 class="section">The spheres, in all dimensions.</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">pointed_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">trunc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">X</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1369"></a><h2 class="section">Definition, by iterated suspension.</h2>
+
+<div class="paragraph"> </div>
+
+ To match the usual indexing for spheres, we have to pad the sequence with a dummy term <span class="inlinecode"><span class="id" title="var">Sphere</span></span> <span class="inlinecode">-2</span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">Sphere</span> (<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">return</span> <span class="id" title="keyword">Type</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| -2 =&gt; <span class="id" title="var">Empty</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| -1 =&gt; <span class="id" title="var">Empty</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">n'</span>.+1 =&gt; <span class="id" title="var">Susp</span> (<span class="id" title="var">Sphere</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1370"></a><h2 class="section">Pointed sphere for non-negative dimensions.</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">psphere</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">pType</span> := [<span class="id" title="var">Sphere</span> <span class="id" title="var">n</span>, <span class="id" title="var">_</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Sphere</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">psphere</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1371"></a><h2 class="section">Explicit equivalences in low dimensions</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab1372"></a><h3 class="section"><span class="inlinecode"><span class="id" title="var">Sphere</span></span> <span class="inlinecode">0</span></h3>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">S0_to_Bool</span> : (<span class="id" title="var">Sphere</span> 0) -&gt; <span class="id" title="var">Bool</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">true</span> <span class="id" title="var">false</span>). <span class="id" title="tactic">intros</span> [].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Bool_to_S0</span> : <span class="id" title="var">Bool</span> -&gt; (<span class="id" title="var">Sphere</span> 0).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="keyword">if</span> <span class="id" title="var">b</span> <span class="id" title="keyword">then</span> <span class="id" title="var">North</span> <span class="id" title="keyword">else</span> <span class="id" title="var">South</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_S0_to_Bool</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">S0_to_Bool</span>) | 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_adjointify</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Bool_to_S0</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [ | ]; <span class="id" title="tactic">exact</span> 1.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">Susp_ind</span> <span class="id" title="var">_</span> 1 1 <span class="id" title="var">_</span>). <span class="id" title="tactic">intros</span> [].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_S0_Bool</span> : <span class="id" title="var">Sphere</span> 0 &lt;~&gt; <span class="id" title="var">Bool</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">isequiv_S0_to_Bool</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ispointed_bool</span> : <span class="id" title="var">IsPointed</span> <span class="id" title="var">Bool</span> := <span class="id" title="var">true</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pBool</span> := [<span class="id" title="var">Bool</span>, <span class="id" title="var">true</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pequiv_S0_Bool</span> : <span class="id" title="var">psphere</span> 0 &lt;~&gt;* <span class="id" title="var">pBool</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">Build_pEquiv'</span> (<span class="id" title="var">psphere</span> 0) <span class="id" title="var">pBool</span> <span class="id" title="var">equiv_S0_Bool</span> 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In <span class="inlinecode"><span class="id" title="var">pmap_from_psphere_iterated_loops</span></span> below, we'll use this universal property of <span class="inlinecode"><span class="id" title="var">pBool</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_from_bool</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">pType</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">pBool</span> -&gt;** <span class="id" title="var">X</span>) &lt;~&gt;* <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pEquiv'</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">issig_pmap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_functor_sigma_pb</span> (<span class="id" title="var">equiv_bool_rec_uncurried</span> <span class="id" title="var">X</span>))^-1%<span class="id" title="var">equiv</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">make_equiv_contr_basedpaths</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1373"></a><h3 class="section"><span class="inlinecode"><span class="id" title="var">Sphere</span></span> <span class="inlinecode">1</span></h3>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">S1_to_Circle</span> : (<span class="id" title="var">Sphere</span> 1) -&gt; <span class="id" title="var">Circle</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">Circle.base</span> <span class="id" title="var">Circle.base</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="keyword">if</span> (<span class="id" title="var">S0_to_Bool</span> <span class="id" title="var">x</span>) <span class="id" title="keyword">then</span> <span class="id" title="var">loop</span> <span class="id" title="keyword">else</span> 1).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Circle_to_S1</span> : <span class="id" title="var">Circle</span> -&gt; (<span class="id" title="var">Sphere</span> 1).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Circle_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">North</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_S1_to_Circle</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">S1_to_Circle</span>) | 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_adjointify</span> <span class="id" title="keyword">with</span> <span class="id" title="var">Circle_to_S1</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">Circle_ind</span> <span class="id" title="var">_</span> 1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FFlr'</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">Circle_rec_beta_loop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((1 @@ <span class="id" title="var">ap_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> @@ (<span class="id" title="var">ap</span> <span class="id" title="var">inverse</span> <span class="id" title="var">_</span>)) @ <span class="id" title="var">_</span>). 1, 2: <span class="id" title="var">nrapply</span> <span class="id" title="var">Susp_rec_beta_merid</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">Susp_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">Circle_to_S1</span> (<span class="id" title="var">S1_to_Circle</span> <span class="id" title="var">x</span>) = <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FFlr'</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">S1_to_Circle</span>; <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">change</span> (<span class="id" title="var">Susp</span> <span class="id" title="var">Empty</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">Sphere</span> 0).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_ind</span> (<span class="id" title="var">S0_to_Bool</span> ^-1)); <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">case</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Circle_to_S1</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Circle_rec_beta_loop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_pV_p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_S1_Circle</span> : <span class="id" title="var">Sphere</span> 1 &lt;~&gt; <span class="id" title="var">Circle</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">isequiv_S1_to_Circle</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pequiv_S1_Circle</span> : <span class="id" title="var">psphere</span> 1 &lt;~&gt;* [<span class="id" title="var">Circle</span>, <span class="id" title="var">_</span>].<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pEquiv'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_S1_Circle</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1374"></a><h3 class="section"><span class="inlinecode"><span class="id" title="var">Sphere</span></span> <span class="inlinecode">2</span></h3>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">S2_to_TwoSphere</span> : (<span class="id" title="var">Sphere</span> 2) -&gt; <span class="id" title="var">TwoSphere</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">base</span> <span class="id" title="var">base</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Susp_rec</span> (<span class="id" title="var">idpath</span> <span class="id" title="var">base</span>) (<span class="id" title="var">idpath</span> <span class="id" title="var">base</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">surf</span> (<span class="id" title="var">idpath</span> (<span class="id" title="var">idpath</span> <span class="id" title="var">base</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Empty_rec</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">TwoSphere_to_S2</span> : <span class="id" title="var">TwoSphere</span> -&gt; (<span class="id" title="var">Sphere</span> 2).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">TwoSphere_rec</span> (<span class="id" title="var">Sphere</span> 2) <span class="id" title="var">North</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) (<span class="id" title="var">concat_pV</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (((<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">merid</span> <span class="id" title="var">u</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)^) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">merid</span> <span class="id" title="var">North</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^)))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issect_TwoSphere_to_S2</span> : <span class="id" title="var">S2_to_TwoSphere</span> <span class="id" title="var">o</span> <span class="id" title="var">TwoSphere_to_S2</span> == <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">TwoSphere_ind</span> <span class="id" title="var">_</span> 1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">rapply</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="tactic">refine</span> (@<span class="id" title="var">concat_Ap</span> (<span class="id" title="var">base</span> = <span class="id" title="var">base</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; (<span class="id" title="var">p</span>^ @ <span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span> (<span class="id" title="var">ap</span> <span class="id" title="var">TwoSphere_to_S2</span> <span class="id" title="var">p</span>))^)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">transport_paths_FFlr</span> <span class="id" title="var">x</span> 1) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">u</span> @ <span class="id" title="var">x</span>) (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">w</span> =&gt; <span class="id" title="var">_</span> @ <span class="id" title="var">w</span>) (<span class="id" title="var">inv_V</span> <span class="id" title="var">x</span>)^ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ (<span class="id" title="var">inv_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 1 <span class="id" title="var">surf</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">rapply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">p</span>^ @ <span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span> (<span class="id" title="var">ap</span> <span class="id" title="var">TwoSphere_to_S2</span> <span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">inverse</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">surf</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (@<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> <span class="id" title="var">inverse</span>) 1 <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">rapply</span> <span class="id" title="var">concat2_ap_ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">w</span> =&gt; <span class="id" title="var">inverse2</span> <span class="id" title="var">surf</span> @@ <span class="id" title="var">w</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap_compose</span> (<span class="id" title="var">ap</span> <span class="id" title="var">TwoSphere_to_S2</span>) (<span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span>) <span class="id" title="var">surf</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_Vp_inverse2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">surf</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">rapply</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> : 1 = 1 =&gt; <span class="id" title="var">inverse2</span> <span class="id" title="var">surf</span> @@ <span class="id" title="var">p</span>) <span class="id" title="var">_</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>. <span class="id" title="var">lhs</span> <span class="id" title="tactic">refine</span> ((<span class="id" title="var">ap</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">TwoSphere_rec_beta_surf</span> (<span class="id" title="var">Sphere</span> 2) <span class="id" title="var">North</span> <span class="id" title="var">_</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_transport</span> (<span class="id" title="var">concat_pV</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; @<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">z</span> <span class="id" title="var">z</span>) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">merid</span> <span class="id" title="var">u</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)^)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">merid</span> <span class="id" title="var">North</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^))).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span> <span class="id" title="var">z</span> = <span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span> <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">concat_pV</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap_compose</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">merid</span> <span class="id" title="var">u</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)^) (<span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">merid</span> <span class="id" title="var">North</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_paths_FlFr'</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="tactic">refine</span> (1 @@ <span class="id" title="var">ap_pp_concat_pV</span> <span class="id" title="var">S2_to_TwoSphere</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="tactic">refine</span> (1 @@ (1 @@ (1 @@<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">concat_pV_inverse2</span> (<span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">North</span>))))).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="tactic">refine</span> (@<span class="id" title="var">concat_Ap</span> (<span class="id" title="var">Sphere</span> 1) <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)^))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">Susp_rec</span> 1 1 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Susp_rec</span> <span class="id" title="var">surf</span> 1 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Empty_rec</span>) <span class="id" title="var">x</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap_pp</span> <span class="id" title="var">S2_to_TwoSphere</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)^ <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ ((1 @@ <span class="id" title="var">ap_V</span> <span class="id" title="var">S2_to_TwoSphere</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ ((<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">x</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@@ <span class="id" title="var">inverse2</span> (<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">North</span>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ 1)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">North</span> <span class="id" title="var">North</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^)). <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">rhs_V</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_pp_concat_pV</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (1 @@ (1 @@ (<span class="id" title="var">concat_pV_inverse2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))). }<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">concat2_ap_ap</span> (<span class="id" title="var">Susp_rec</span> 1 1 (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">surf</span> 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Empty_rec</span>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">merid</span> <span class="id" title="var">North</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">w</span> =&gt; <span class="id" title="var">_</span> @@ <span class="id" title="var">w</span>) (<span class="id" title="var">ap_const</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">rapply</span> <span class="id" title="var">whiskerR_p1_1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_pp</span> <span class="id" title="var">_</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">rapply</span> <span class="id" title="var">concat_p1</span>. <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">North</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">lhs</span> <span class="id" title="var">rapply</span> <span class="id" title="var">ap_V</span>. <span class="id" title="tactic">refine</span> (@<span class="id" title="var">inverse2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> 1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">South</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issect_S2_to_TwoSphere</span> : <span class="id" title="var">TwoSphere_to_S2</span> <span class="id" title="var">o</span> <span class="id" title="var">S2_to_TwoSphere</span> == <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">Susp_rec_eta_homotopic</span> (<span class="id" title="var">TwoSphere_to_S2</span> <span class="id" title="var">o</span> <span class="id" title="var">S2_to_TwoSphere</span>) <span class="id" title="var">x</span>) @ <span class="id" title="var">_</span>). <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Susp_ind</span> <span class="id" title="var">_</span> 1 (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">transport_paths_FlFr</span> (<span class="id" title="var">f</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">y</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rewrite_moveR_Vp_p</span>. <span class="id" title="tactic">refine</span> ((<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">w</span> =&gt; <span class="id" title="var">w</span> @ <span class="id" title="var">_</span>) (<span class="id" title="var">ap_idmap</span> <span class="id" title="var">_</span>)^)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">path_via</span> (<span class="id" title="var">ap</span> <span class="id" title="var">TwoSphere_to_S2</span> (<span class="id" title="var">ap</span> <span class="id" title="var">S2_to_TwoSphere</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">S2_to_TwoSphere</span> <span class="id" title="var">TwoSphere_to_S2</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)). }<br/>
+&nbsp;&nbsp;<span class="id" title="var">path_via</span> (<span class="id" title="var">ap</span> <span class="id" title="var">TwoSphere_to_S2</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Susp_rec</span> 1 1 (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">surf</span> 1 <span class="id" title="var">Empty_rec</span>) <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">repeat</span> <span class="id" title="var">f_ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Susp_rec_beta_merid</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>. <span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Susp_ind</span> <span class="id" title="var">_</span> (<span class="id" title="var">concat_pV</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">concat_pV</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">w</span> =&gt; <span class="id" title="var">merid</span> <span class="id" title="var">w</span> @ (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>)^) (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">transport_paths_FlFr</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) (<span class="id" title="var">concat_pV</span> (<span class="id" title="var">merid</span> <span class="id" title="var">North</span>))) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rewrite_moveR_Vp_p</span>. <span class="id" title="tactic">symmetry</span>. <span class="id" title="tactic">refine</span> ((<span class="id" title="var">dpath_path_lr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">ap_pp</span> <span class="id" title="var">_</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>)^)^) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">Susp_rec</span> 1 1 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Susp_rec</span> <span class="id" title="var">surf</span> 1 <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Empty_rec</span>)) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap</span> <span class="id" title="var">TwoSphere_to_S2</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>))^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">ap</span> (<span class="id" title="var">ap02</span> <span class="id" title="var">TwoSphere_to_S2</span>) (<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">_</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>. <span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Susp_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">TwoSphere_rec_beta_surf</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">w</span> =&gt; <span class="id" title="var">transport</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">w</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">concat_pV</span> (<span class="id" title="var">merid</span> <span class="id" title="var">South</span>))^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">transport_paths_lr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">w</span> =&gt; <span class="id" title="var">w</span> @ <span class="id" title="var">_</span>) (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_Vp</span> <span class="id" title="var">_</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">Empty_ind</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_S2_to_TwoSphere</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">S2_to_TwoSphere</span>) | 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_adjointify</span> <span class="id" title="keyword">with</span> <span class="id" title="var">TwoSphere_to_S2</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">issect_TwoSphere_to_S2</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">issect_S2_to_TwoSphere</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_S2_TwoSphere</span> : <span class="id" title="var">Sphere</span> 2 &lt;~&gt; <span class="id" title="var">TwoSphere</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">isequiv_S2_to_TwoSphere</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1375"></a><h2 class="section">Truncation and connectedness of spheres.</h2>
+
+<div class="paragraph"> </div>
+
+ S0 is 0-truncated. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">istrunc_s0</span> : <span class="id" title="var">IsHSet</span> (<span class="id" title="var">Sphere</span> 0).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">istrunc_isequiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">S0_to_Bool</span>^-1).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+S1 is 1-truncated. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">istrunc_s1</span> `{<span class="id" title="var">Univalence</span>} : <span class="id" title="var">IsTrunc</span> 1 (<span class="id" title="var">Sphere</span> 1).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">istrunc_isequiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">S1_to_Circle</span>^-1).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isconnected_sn</span> <span class="id" title="var">n</span> : <span class="id" title="var">IsConnected</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">Sphere</span> <span class="id" title="var">n</span>.+2).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">srapply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>, <span class="id" title="var">North</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isconnected_susp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1376"></a><h2 class="section">Truncatedness via spheres</h2>
+
+<div class="paragraph"> </div>
+
+ We show here that a type is n-truncated if and only if every map from the (n+1)-sphere into it is null-homotopic.  (One direction of this is of course the assertion that the (n+1)-sphere is n-connected.) 
+<div class="paragraph"> </div>
+
+ TODO: re-type these lemmas in terms of truncation. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">allnullhomot_trunc</span> {<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>} {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">Sphere</span> <span class="id" title="var">n</span>.+1 -&gt; <span class="id" title="var">X</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">n</span>}<br/>
+: <span class="id" title="var">NullHomotopy</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">n'</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exists</span> (<span class="id" title="var">center</span> <span class="id" title="var">X</span>). <span class="id" title="tactic">intros</span> [].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">nullhomot_susp_from_paths</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">allnullhomot_trunc</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">istrunc_allnullhomot</span> {<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>} {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">HX</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">f</span> : <span class="id" title="var">Sphere</span> <span class="id" title="var">n</span>.+2 -&gt; <span class="id" title="var">X</span>), <span class="id" title="var">NullHomotopy</span> <span class="id" title="var">f</span>) {<span class="id" title="keyword">struct</span> <span class="id" title="var">n</span>}<br/>
+: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">n'</span>].<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;n&nbsp;=&nbsp;-2&nbsp;*)</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_allpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x0</span> <span class="id" title="var">x1</span>. <span class="id" title="tactic">set</span> (<span class="id" title="var">f</span> := (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="keyword">if</span> (<span class="id" title="var">S0_to_Bool</span> <span class="id" title="var">b</span>) <span class="id" title="keyword">then</span> <span class="id" title="var">x0</span> <span class="id" title="keyword">else</span> <span class="id" title="var">x1</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">n</span> := <span class="id" title="var">HX</span> <span class="id" title="var">f</span>). <span class="id" title="tactic">exact</span> (<span class="id" title="var">n</span>.2 <span class="id" title="var">North</span> @ (<span class="id" title="var">n</span>.2 <span class="id" title="var">South</span>)^).<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;n&nbsp;≥&nbsp;-1&nbsp;*)</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x0</span> <span class="id" title="var">x1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">istrunc_allnullhomot</span> <span class="id" title="var">n'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nullhomot_paths_from_susp</span>, <span class="id" title="var">HX</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Iterated loop spaces can be described using pointed maps from spheres.  The <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0</span> case of this is stated using Bool in <span class="inlinecode"><span class="id" title="var">pmap_from_bool</span></span> above, and the <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">=</span> <span class="inlinecode">1</span> case of this is stated using <span class="inlinecode"><span class="id" title="var">Circle</span></span> in <span class="inlinecode"><span class="id" title="var">pmap_from_circle_loops</span></span> in Circle.v. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pmap_from_psphere_iterated_loops</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">X</span> : <span class="id" title="var">pType</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">psphere</span> <span class="id" title="var">n</span> -&gt;** <span class="id" title="var">X</span>) &lt;~&gt;* <span class="id" title="var">iterated_loops</span> <span class="id" title="var">n</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">pmap_from_bool</span> <span class="id" title="var">X</span> <span class="id" title="var">o</span>*<span class="id" title="var">E</span> <span class="id" title="var">pequiv_pequiv_precompose</span> <span class="id" title="var">pequiv_S0_Bool</span>^-1* ).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">emap</span> <span class="id" title="var">loops</span> <span class="id" title="var">IHn</span> <span class="id" title="var">o</span>*<span class="id" title="var">E</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span>*<span class="id" title="var">E</span> <span class="id" title="var">loop_susp_adjoint</span> (<span class="id" title="var">psphere</span> <span class="id" title="var">n</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_loops_ppforall</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

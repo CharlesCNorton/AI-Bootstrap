@@ -1,0 +1,128 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>PropTrunc</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library PropTrunc</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Sequence</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Homotopy.Join.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Colimit</span> <span class="id" title="var">Colimits.Sequential</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1203"></a><h1 class="section">Propositonal truncation as a colimit.</h1>
+
+<div class="paragraph"> </div>
+
+ In this file we give an alternative construction of the propositional truncation using colimits. This can serve as a metatheoretic justification that propositional truncations exist. 
+<div class="paragraph"> </div>
+
+ The sequence of increasing joins. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Join_seq</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">Sequence</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Sequence</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">iterated_join</span> <span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">joinr</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Propositional truncation can be defined as the colimit of this sequence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">PropTrunc</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span> := <span class="id" title="var">Colimit</span> (<span class="id" title="var">Join_seq</span> <span class="id" title="var">A</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The constructor is given by the colimit constructor. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ptr_in</span> {<span class="id" title="var">A</span>} : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">PropTrunc</span> <span class="id" title="var">A</span> := <span class="id" title="var">colim</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">Join_seq</span> <span class="id" title="var">A</span>) 0.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The sequential colimit of this sequence is the propositional truncation. 
+<div class="paragraph"> </div>
+
+ Universal property of propositional truncation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equiv_PropTrunc_rec</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">A</span> <span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsHProp</span> <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">PropTrunc</span> <span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span>) &lt;~&gt; (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_colim_seq_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">h</span> 0). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Join_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1,2: <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The propositional truncation is a hprop. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_proptrunc</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">PropTrunc</span> <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">hprop_inhabited_contr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">equiv_PropTrunc_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">contr_colim_seq_into_prop</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">joinl</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">jglue</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

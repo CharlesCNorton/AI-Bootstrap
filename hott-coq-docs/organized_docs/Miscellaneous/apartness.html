@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>apartness</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library apartness</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Classes.interfaces.abstract_algebra</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">contents</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">apart_ne</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">PropHolds</span> (<span class="id" title="var">x</span> ≶ <span class="id" title="var">y</span>) -&gt; <span class="id" title="var">PropHolds</span> (<span class="id" title="var">x</span> &lt;&gt; <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">PropHolds</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">ap</span> <span class="id" title="var">e</span>;<span class="id" title="var">revert</span> <span class="id" title="var">ap</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span>. <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span>: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>, <span class="id" title="var">Stable</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">Stable</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">dn</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">dn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">apart_ne</span>. <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">contents</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Due&nbsp;to&nbsp;bug&nbsp;2528 *)</span><br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 3 (<span class="id" title="var">PropHolds</span> (<span class="id" title="var">_</span> &lt;&gt; <span class="id" title="var">_</span>)) =&gt; <span class="id" title="tactic">eapply</span> @<span class="id" title="var">apart_ne</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">projected_strong_setoid</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">Apart</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">is_mere_relation</span> <span class="id" title="var">A</span> <span class="id" title="var">apart</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span>: <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">eq_correct</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">x</span> = <span class="id" title="var">y</span> &lt;-&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">apart_correct</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">x</span> ≶ <span class="id" title="var">y</span> &lt;-&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> ≶ <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>.<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">apart_correct</span>, <span class="id" title="tactic">symmetry</span>, <span class="id" title="var">apart_correct</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">ap</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">apart_correct</span> <span class="id" title="tactic">in</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">merely_destruct</span> (<span class="id" title="var">cotransitive</span> <span class="id" title="var">ap</span> (<span class="id" title="var">f</span> <span class="id" title="var">z</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [?|?];<span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>;[<span class="id" title="tactic">left</span>|<span class="id" title="tactic">right</span>];<span class="id" title="tactic">apply</span> <span class="id" title="var">apart_correct</span>;<span class="id" title="tactic">assumption</span>.<br/>
+- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">nap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">eq_correct</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">apart_correct</span>;<span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">apart_correct</span> <span class="id" title="tactic">in</span> <span class="id" title="var">ap</span>;<span class="id" title="var">revert</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">eq_correct</span>;<span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">sg_apart_mere</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">is_mere_relation</span> (<span class="id" title="var">sig</span> <span class="id" title="var">P</span>) <span class="id" title="var">apart</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">apart</span>,<span class="id" title="var">sig_apart</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">sig_strong_setoid</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>} (<span class="id" title="var">P</span>: <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsApart</span> (<span class="id" title="var">sig</span> <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">projected_strong_setoid</span> (@<span class="id" title="var">proj1</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span>)).<br/>
+- <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">split</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">Sigma.equiv_path_sigma_hprop</span>.<br/>
+- <span class="id" title="tactic">intros</span>;<span class="id" title="tactic">apply</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">morphisms</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">IsApart</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">IsApart</span> <span class="id" title="var">C</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">strong_injective_injective</span> `{!<span class="id" title="var">IsStrongInjective</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsInjective</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">strong_injective_mor</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ? ? <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">e</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">strong_injective</span>;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;If&nbsp;a&nbsp;morphism&nbsp;satisfies&nbsp;the&nbsp;binary&nbsp;strong&nbsp;extensionality&nbsp;property,&nbsp;it&nbsp;is<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;strongly&nbsp;extensional&nbsp;in&nbsp;both&nbsp;coordinates.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">strong_setoid_morphism_1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">StrongBinaryExtensionality</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>)} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">z</span>, <span class="id" title="var">StrongExtensionality</span> (<span class="id" title="var">f</span> <span class="id" title="var">z</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">z</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">merely_destruct</span> (<span class="id" title="var">strong_binary_extensionality</span> <span class="id" title="var">f</span> <span class="id" title="var">z</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [?|?];<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">irreflexivity</span> (≶) <span class="id" title="var">z</span>). <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">strong_setoid_morphism_unary_2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">StrongBinaryExtensionality</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>)} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">z</span>, <span class="id" title="var">StrongExtensionality</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">z</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">merely_destruct</span> (<span class="id" title="var">strong_binary_extensionality</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">E</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [?|?];<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">irreflexivity</span> (≶) <span class="id" title="var">z</span>);<span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Conversely,&nbsp;if&nbsp;a&nbsp;morphism&nbsp;is&nbsp;strongly&nbsp;extensional&nbsp;in&nbsp;both&nbsp;coordinates,&nbsp;it<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;satisfies&nbsp;the&nbsp;binary&nbsp;strong&nbsp;extensionality&nbsp;property.&nbsp;We&nbsp;don't&nbsp;make&nbsp;this&nbsp;an<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;instance&nbsp;in&nbsp;order&nbsp;to&nbsp;avoid&nbsp;loops.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strong_binary_setoid_morphism_both_coordinates</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">IsApart</span> <span class="id" title="var">B</span>} `{!<span class="id" title="var">IsApart</span> <span class="id" title="var">C</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">z</span>, <span class="id" title="var">StrongExtensionality</span> (<span class="id" title="var">f</span> <span class="id" title="var">z</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">z</span>, <span class="id" title="var">StrongExtensionality</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">StrongBinaryExtensionality</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x₁</span> <span class="id" title="var">y₁</span> <span class="id" title="var">x₂</span> <span class="id" title="var">y₂</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">merely_destruct</span> (<span class="id" title="var">cotransitive</span> <span class="id" title="var">E</span> (<span class="id" title="var">f</span> <span class="id" title="var">x₂</span> <span class="id" title="var">y₁</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [?|?];<span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">strong_extensionality</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y₁</span>));<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">strong_extensionality</span> (<span class="id" title="var">f</span> <span class="id" title="var">x₂</span>));<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">morphisms</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">more_morphisms</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">IsApart</span> <span class="id" title="var">B</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">strong_binary_setoid_morphism_commutative</span> {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Commutative</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">z</span>, <span class="id" title="var">StrongExtensionality</span> (<span class="id" title="var">f</span> <span class="id" title="var">z</span>)} : <span class="id" title="var">StrongBinaryExtensionality</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> @<span class="id" title="var">strong_binary_setoid_morphism_both_coordinates</span>;<span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">z</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !(<span class="id" title="var">commutativity</span> <span class="id" title="var">_</span> <span class="id" title="var">z</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">strong_extensionality</span> (<span class="id" title="var">f</span> <span class="id" title="var">z</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">more_morphisms</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">default_apart</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">A</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">default_apart</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">A</span> | 20<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">dec</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">inl</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">false</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">inr</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">true</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> = <span class="id" title="var">true</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Typeclasses Opaque</span> <span class="id" title="var">default_apart</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">default_apart_trivial</span> : <span class="id" title="var">TrivialApart</span> <span class="id" title="var">A</span> (<span class="id" title="var">Aap</span>:=<span class="id" title="var">default_apart</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">unfold</span> <span class="id" title="var">apart</span>,<span class="id" title="var">default_apart</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>;<span class="id" title="tactic">unfold</span> <span class="id" title="var">apart</span>,<span class="id" title="var">default_apart</span>;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span>=<span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">destruct</span> (<span class="id" title="var">false_ne_true</span> <span class="id" title="var">E</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span>=<span class="id" title="var">y</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">e</span>|<span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">destruct</span> (<span class="id" title="var">E</span> <span class="id" title="var">e</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">default_apart</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;In&nbsp;case&nbsp;we&nbsp;have&nbsp;a&nbsp;decidable&nbsp;setoid,&nbsp;we&nbsp;can&nbsp;construct&nbsp;a&nbsp;strong&nbsp;setoid.&nbsp;Again<br/>
+&nbsp;&nbsp;we&nbsp;do&nbsp;not&nbsp;make&nbsp;this&nbsp;an&nbsp;instance&nbsp;as&nbsp;it&nbsp;will&nbsp;cause&nbsp;loops&nbsp;*)</span><br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">dec_setoid</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">TrivialApart</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">A</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Not&nbsp;Global&nbsp;in&nbsp;order&nbsp;to&nbsp;avoid&nbsp;loops&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">ne_apart</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">PropHolds</span> (<span class="id" title="var">x</span> &lt;&gt; <span class="id" title="var">y</span>) -&gt; <span class="id" title="var">PropHolds</span> (<span class="id" title="var">x</span> ≶ <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">dec_strong_setoid</span>: <span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">ne</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">ne</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">ne</span>,<span class="id" title="tactic">symmetry</span>,<span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">ne</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">ne</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span>=<span class="id" title="var">z</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">e</span>|<span class="id" title="var">ne'</span>];[<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">z</span>=<span class="id" title="var">y</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">e'</span>|<span class="id" title="var">ne'</span>]|].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">destruct</span> <span class="id" title="var">ne</span>. <span class="id" title="var">path_via</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>;<span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>;<span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">nap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span>=<span class="id" title="var">y</span>));<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">nap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>;<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">nap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">nap</span>. <span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">dec_setoid</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;And&nbsp;a&nbsp;similar&nbsp;result&nbsp;for&nbsp;morphisms&nbsp;*)</span><br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">dec_setoid_morphisms</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">TrivialApart</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">IsApart</span> <span class="id" title="var">B</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">dec_strong_morphism</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">StrongExtensionality</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">TrivialApart</span> <span class="id" title="var">B</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">dec_strong_injective</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">IsInjective</span> <span class="id" title="var">f</span>} :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsStrongInjective</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">injective</span> <span class="id" title="var">f</span>). <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">C</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">dec_strong_binary_morphism</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">StrongBinaryExtensionality</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x1</span> <span class="id" title="var">y1</span> <span class="id" title="var">x2</span> <span class="id" title="var">y2</span> <span class="id" title="var">hap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">merely_destruct</span> (<span class="id" title="var">cotransitive</span> <span class="id" title="var">hap</span> (<span class="id" title="var">f</span> <span class="id" title="var">x2</span> <span class="id" title="var">y1</span>)));<span class="id" title="tactic">intros</span> [<span class="id" title="var">h</span>|<span class="id" title="var">h</span>];<span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y1</span>) <span class="id" title="var">e</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">right</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">dec_setoid_morphisms</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

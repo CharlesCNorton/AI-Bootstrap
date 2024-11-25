@@ -1,0 +1,367 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>SuccessorStructure</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library SuccessorStructure</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Nat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Int</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Finite.Fin</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1133"></a><h1 class="section">Successor Structures.</h1>
+
+<div class="paragraph"> </div>
+
+ A successor structure is just a type with a endofunctor on it, called 'successor'. Typical examples include either the integers or natural numbers with the successor (or predecessor) operation. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">SuccStr</span> : <span class="id" title="keyword">Type</span> := {<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="var">ss_carrier</span> :&gt; <span class="id" title="keyword">Type</span> ;<br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="var">ss_succ</span> : <span class="id" title="var">ss_carrier</span> -&gt; <span class="id" title="var">ss_carrier</span> ;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">succ_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">type_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">succ_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">succ_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">succ</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">ss_succ</span> {<span class="id" title="var">_</span>} <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;x .+1" := (<span class="id" title="var">ss_succ</span> <span class="id" title="var">x</span>) : <span class="id" title="var">succ_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Successor structure of naturals 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">NatSucc</span> : <span class="id" title="var">SuccStr</span> := <span class="id" title="var">Build_SuccStr</span> <span class="id" title="var">nat</span> <span class="id" title="var">nat_succ</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Successor structure of integers 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">BinIntSucc</span> : <span class="id" title="var">SuccStr</span> := <span class="id" title="var">Build_SuccStr</span> <span class="id" title="var">Int</span> <span class="id" title="var">int_succ</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;'+N'" := <span class="id" title="var">NatSucc</span> : <span class="id" title="var">succ_scope</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;'+Z'" := <span class="id" title="var">BinIntSucc</span> : <span class="id" title="var">succ_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Stratified successor structures 
+<div class="paragraph"> </div>
+
+ If <span class="inlinecode"><span class="id" title="var">N</span></span> has a successor structure, then so does the product <span class="inlinecode"><span class="id" title="var">N</span></span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span>.  The successor operation increases the second factor, and if it wraps around, it also increases the first factor. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">StratifiedType</span> (<span class="id" title="var">N</span> : <span class="id" title="var">SuccStr</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) := <span class="id" title="var">N</span> * <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">stratified_succ</span> (<span class="id" title="var">N</span> : <span class="id" title="var">SuccStr</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">StratifiedType</span> <span class="id" title="var">N</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">StratifiedType</span> <span class="id" title="var">N</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">Empty_rec</span> <span class="id" title="var">_</span> (<span class="id" title="var">snd</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">snd</span> <span class="id" title="var">x</span> = <span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="var">ss_succ</span> (<span class="id" title="var">fst</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="var">fst</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">fsucc_mod</span> (<span class="id" title="var">snd</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Stratified</span> (<span class="id" title="var">N</span> : <span class="id" title="var">SuccStr</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">SuccStr</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_SuccStr</span> (<span class="id" title="var">StratifiedType</span> <span class="id" title="var">N</span> <span class="id" title="var">n</span>) (<span class="id" title="var">stratified_succ</span> <span class="id" title="var">N</span> <span class="id" title="var">n</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Addition in successor structures 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ss_add</span> {<span class="id" title="var">N</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">N</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">N</span> := <span class="id" title="var">nat_iter</span> <span class="id" title="var">k</span> <span class="id" title="var">ss_succ</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span> &quot;+" := <span class="id" title="var">ss_add</span> : <span class="id" title="var">succ_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ss_add_succ</span> {<span class="id" title="var">N</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">N</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">n</span> + <span class="id" title="var">k</span>.+1 = <span class="id" title="var">n</span>.+1 + <span class="id" title="var">k</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">nat_iter_succ_r</span> <span class="id" title="var">k</span> <span class="id" title="var">ss_succ</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ss_add_sum</span> {<span class="id" title="var">N</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">N</span>) (<span class="id" title="var">k</span> <span class="id" title="var">l</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">n</span> + (<span class="id" title="var">k</span> + <span class="id" title="var">l</span>) = (<span class="id" title="var">n</span> + <span class="id" title="var">l</span>) + <span class="id" title="var">k</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">nat_iter_add</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">ss_succ</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Nat and Int segmented by triples 
+</div>
+<div class="code">
+<span class="id" title="keyword">Notation</span> &quot;'N3'" := (<span class="id" title="var">Stratified</span> (+<span class="id" title="var">N</span>) 3) : <span class="id" title="var">succ_scope</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;'Z3'" := (<span class="id" title="var">Stratified</span> (+<span class="id" title="var">Z</span>) 3) : <span class="id" title="var">succ_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1134"></a><h2 class="section">Category of successor structures</h2>
+
+<div class="paragraph"> </div>
+
+ Inspired by the construction of the wildcat structure on pType, we can give SuccStr a wildcat structure in a similar manner (all the way up). 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">ssFam</span> (<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">ss_fam</span> :&gt; <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">dss_succ</span> {<span class="id" title="var">x</span>} : <span class="id" title="var">ss_fam</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">ss_fam</span> (<span class="id" title="var">x</span>.+1);<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">ss_fam</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">dss_succ</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">ssForall</span> {<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">ss_fun</span> :&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">ss_fun_succ</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">ss_fun</span> <span class="id" title="var">x</span>.+1 = <span class="id" title="var">dss_succ</span> (<span class="id" title="var">ss_fun</span> <span class="id" title="var">x</span>); <br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">ss_fun</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">ss_fun_succ</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ssfam_const</span> {<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">SuccStr</span>) : <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_ssFam</span> <span class="id" title="var">A</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">B</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">ss_succ</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ssfam_sshomotopy</span> {<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>} {<span class="id" title="var">P</span> : <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">ssForall</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_ssFam</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">g</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ss_fun_succ</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">dss_succ</span> <span class="id" title="var">p</span> @ (<span class="id" title="var">ss_fun_succ</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)^).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ssHomotopy</span> {<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>} {<span class="id" title="var">P</span> : <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">ssForall</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">ssForall</span> (<span class="id" title="var">ssfam_sshomotopy</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isgraph_ss</span> : <span class="id" title="var">IsGraph</span> <span class="id" title="var">SuccStr</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsGraph</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (@<span class="id" title="var">ssForall</span> <span class="id" title="var">X</span> (<span class="id" title="var">ssfam_const</span> <span class="id" title="var">Y</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isgraph_ssforall</span> {<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsGraph</span> (<span class="id" title="var">ssForall</span> <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsGraph</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">ssHomotopy</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is2graph_ssforall</span> {<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is2Graph</span> (<span class="id" title="var">ssForall</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;:= {}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is2graph_ss</span> : <span class="id" title="var">Is2Graph</span> <span class="id" title="var">SuccStr</span> := {}.<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is3graph_ss</span> : <span class="id" title="var">Is3Graph</span> <span class="id" title="var">SuccStr</span> := {}.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">sselim_elim</span> <span class="id" title="var">eq</span> <span class="id" title="var">x</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> (<span class="id" title="var">eq</span> <span class="id" title="var">x</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| ?<span class="id" title="var">lhs</span> = <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> (<span class="id" title="var">eq</span> <span class="id" title="var">x</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">lhs</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">fail</span> "sselim: no lhs found"<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">sselim</span> <span class="id" title="var">f</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">eq</span> := <span class="id" title="tactic">fresh</span> "eq" <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">f</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">f</span> <span class="id" title="var">eq</span>];<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *;<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">eq</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : ?<span class="id" title="var">X</span>, <span class="id" title="var">_</span> = <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">multimatch</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">x</span> : <span class="id" title="var">X</span> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="var">sselim_elim</span> <span class="id" title="var">eq</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">f</span> : ?<span class="id" title="var">Y</span> -&gt; <span class="id" title="var">X</span> |- <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">y</span> : <span class="id" title="var">Y</span> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="var">sselim_elim</span> <span class="id" title="var">eq</span> (<span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">g</span> : ?<span class="id" title="var">Z</span> -&gt; <span class="id" title="var">Y</span> |- <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">z</span> : <span class="id" title="var">Z</span> |- <span class="id" title="var">_</span> =&gt; <span class="id" title="var">sselim_elim</span> <span class="id" title="var">eq</span> (<span class="id" title="var">f</span> (<span class="id" title="var">g</span> <span class="id" title="var">z</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">fail</span> "sselim: no hyp found"<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">fail</span> "sselim: no eq found"<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>;  <br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">paths_ind_r</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="tactic">clear</span> <span class="id" title="var">eq</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="tactic">clear</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "sselim" <span class="id" title="keyword">constr</span>(<span class="id" title="var">x0</span>) := <span class="id" title="var">sselim</span> <span class="id" title="var">x0</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "sselim" <span class="id" title="keyword">constr</span>(<span class="id" title="var">x0</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x1</span>) := <span class="id" title="var">sselim</span> <span class="id" title="var">x0</span>; <span class="id" title="var">sselim</span> <span class="id" title="var">x1</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "sselim" <span class="id" title="keyword">constr</span>(<span class="id" title="var">x0</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x1</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x2</span>) := <span class="id" title="var">sselim</span> <span class="id" title="var">x0</span>; <span class="id" title="var">sselim</span> <span class="id" title="var">x1</span> <span class="id" title="var">x2</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "sselim" <span class="id" title="keyword">constr</span>(<span class="id" title="var">x0</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x1</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x2</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x3</span>) := <span class="id" title="var">sselim</span> <span class="id" title="var">x0</span>; <span class="id" title="var">sselim</span> <span class="id" title="var">x1</span> <span class="id" title="var">x2</span> <span class="id" title="var">x3</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "sselim" <span class="id" title="keyword">constr</span>(<span class="id" title="var">x0</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x1</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x2</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x3</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x4</span>) := <span class="id" title="var">sselim</span> <span class="id" title="var">x0</span>; <span class="id" title="var">sselim</span> <span class="id" title="var">x1</span> <span class="id" title="var">x2</span> <span class="id" title="var">x3</span> <span class="id" title="var">x4</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "sselim" <span class="id" title="keyword">constr</span>(<span class="id" title="var">x0</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x1</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x2</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x3</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x4</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x5</span>) := <span class="id" title="var">sselim</span> <span class="id" title="var">x0</span>; <span class="id" title="var">sselim</span> <span class="id" title="var">x1</span> <span class="id" title="var">x2</span> <span class="id" title="var">x3</span> <span class="id" title="var">x4</span> <span class="id" title="var">x5</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "sselim" <span class="id" title="keyword">constr</span>(<span class="id" title="var">x0</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x1</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x2</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x3</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x4</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x5</span>) <span class="id" title="keyword">constr</span>(<span class="id" title="var">x6</span>) := <span class="id" title="var">sselim</span> <span class="id" title="var">x0</span>; <span class="id" title="var">sselim</span> <span class="id" title="var">x1</span> <span class="id" title="var">x2</span> <span class="id" title="var">x3</span> <span class="id" title="var">x4</span> <span class="id" title="var">x5</span> <span class="id" title="var">x6</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_ss</span> : <span class="id" title="var">Is01Cat</span> <span class="id" title="var">SuccStr</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is01Cat</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">f</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">ss_fun_succ</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) @ <span class="id" title="var">ss_fun_succ</span> <span class="id" title="var">f</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_ssforall</span> {<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">ssForall</span> <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is01Cat</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> (<span class="id" title="var">ss_fun_succ</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">q</span> <span class="id" title="var">x</span> @ <span class="id" title="var">p</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sselim</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>), (<span class="id" title="var">q</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0gpd_ssforall</span> {<span class="id" title="var">A</span> : <span class="id" title="var">SuccStr</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">ssFam</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">ssForall</span> <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is0Gpd</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)^.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sselim</span> <span class="id" title="var">p</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_ss</span> : <span class="id" title="var">Is1Cat</span> <span class="id" title="var">SuccStr</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Cat'</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">h</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sselim</span> <span class="id" title="var">p</span> <span class="id" title="var">f</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>); <span class="id" title="tactic">clear</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sselim</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> (<span class="id" title="var">eq</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">h</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">sselim</span> <span class="id" title="var">g</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> <span class="id" title="var">W</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">sselim</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">sselim</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_ssForall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">sselim</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

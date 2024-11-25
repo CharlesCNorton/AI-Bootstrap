@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Colimit_Flattening</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Colimit_Flattening</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Diagram</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Graph</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Cocone</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.DDiagram</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Colimit</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1025"></a><h1 class="section">Flattening lemma</h1>
+
+<div class="paragraph"> </div>
+
+ This file provides a proof of the flattening lemma for colimits. This lemma describes the type <span class="inlinecode"><span class="id" title="var">sig</span></span> <span class="inlinecode"><span class="id" title="var">E'</span></span> when <span class="inlinecode"><span class="id" title="var">E'</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">colimit</span></span> <span class="inlinecode"><span class="id" title="var">D</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">Type</span></span> is a type family defined by recursion on a colimit. The flattening lemma in the case of coequalizers is presented in section 6.12 of the HoTT book and is in Colimits/Coeq.v.  TODO: See whether there's a straightforward way to deduce the flattening lemma for general colimits from the version for coequalizers. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Flattening</span>.<br/>
+</div>
+
+<div class="doc">
+<a id="lab1026"></a><h2 class="section">Equifibered diagrams</h2>
+
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} (<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">E</span> : <span class="id" title="var">DDiagram</span> <span class="id" title="var">D</span>) `(<span class="id" title="var">Equifibered</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">E</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">E_f</span> {<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">G</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">D</span> <span class="id" title="var">i</span>) : <span class="id" title="var">E</span> (<span class="id" title="var">i</span>; <span class="id" title="var">x</span>) -&gt; <span class="id" title="var">E</span> (<span class="id" title="var">j</span>; (<span class="id" title="var">D</span> <span class="id" title="var">_f</span> <span class="id" title="var">g</span>) <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">arr</span> <span class="id" title="var">_</span> <span class="id" title="var">E</span> (<span class="id" title="var">i</span>; <span class="id" title="var">x</span>) (<span class="id" title="var">j</span>; <span class="id" title="var">D</span> <span class="id" title="var">_f</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) (<span class="id" title="var">g</span>; 1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now, given an equifibered diagram and using univalence, one can define a type family <span class="inlinecode"><span class="id" title="var">E'</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">colimit</span></span> <span class="inlinecode"><span class="id" title="var">D</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">Type</span></span> by recursion on the colimit. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">E'</span> : <span class="id" title="var">Colimit</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Colimit_rec</span>. <span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Cocone</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">E</span> (<span class="id" title="var">i</span>; <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">path_universe</span> (<span class="id" title="var">E_f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1027"></a><h2 class="section">Helper lemmas</h2>
+
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">transport_E'</span> {<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">G</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>)  (<span class="id" title="var">x</span> : <span class="id" title="var">D</span> <span class="id" title="var">i</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">E</span> (<span class="id" title="var">i</span>; <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) (<span class="id" title="var">E_f</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) = <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_idmap_ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">transport2</span> <span class="id" title="var">idmap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">apply</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">moveR_transport_V</span> <span class="id" title="var">idmap</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">transport_path_universe</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">transport_E'_V</span> {<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">G</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>)  (<span class="id" title="var">x</span> : <span class="id" title="var">D</span> <span class="id" title="var">i</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">E</span> (<span class="id" title="var">i</span>; <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)^ <span class="id" title="var">y</span> = <span class="id" title="var">E_f</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_transport_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_E'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">transport_E'_V_E'</span> {<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">G</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>)  (<span class="id" title="var">x</span> : <span class="id" title="var">D</span> <span class="id" title="var">i</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">E</span> (<span class="id" title="var">i</span>; <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">transport_E'</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">transport_E'_V</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">transport_pV</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">moveR_transport_V_V</span>, <span class="id" title="var">inv_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap_transport_transport_pV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1028"></a><h2 class="section">Main result</h2>
+
+<div class="paragraph"> </div>
+
+ We define the cocone over the sigma diagram to <span class="inlinecode"><span class="id" title="var">sig</span></span> <span class="inlinecode"><span class="id" title="var">E'</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cocone_E'</span> : <span class="id" title="var">Cocone</span> (<span class="id" title="var">diagram_sigma</span> <span class="id" title="var">E</span>) (<span class="id" title="var">sig</span> <span class="id" title="var">E'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Cocone</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">w</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">colim</span> <span class="id" title="var">i</span> <span class="id" title="var">w</span>.1); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">w</span>.2.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_sigma'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">colimp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">transport_E'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And we directly prove that it is universal.  We break the proof into parts to slightly speed it up. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Opaque</span> <span class="id" title="var">path_sigma</span> <span class="id" title="var">ap11</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">cocone_extends</span> <span class="id" title="var">Z</span>: <span class="id" title="var">Cocone</span> (<span class="id" title="var">diagram_sigma</span> <span class="id" title="var">E</span>) <span class="id" title="var">Z</span> -&gt; ((<span class="id" title="var">sig</span> <span class="id" title="var">E'</span>) -&gt; <span class="id" title="var">Z</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">q</span> <span class="id" title="var">qq</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">y</span>]; <span class="id" title="var">revert</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">q</span> <span class="id" title="var">i</span> (<span class="id" title="var">x</span>; <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_arrow_toconst</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">qq</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> (<span class="id" title="var">x</span>; <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">path_sigma'</span> <span class="id" title="var">_</span> 1 <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_E'_V</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">cocone_isretr</span> <span class="id" title="var">Z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cocone_postcompose</span> <span class="id" title="var">cocone_E'</span> <span class="id" title="var">o</span> <span class="id" title="var">cocone_extends</span> <span class="id" title="var">Z</span> == <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">q</span> <span class="id" title="var">qq</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_cocone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> [<span class="id" title="var">x</span> <span class="id" title="var">y</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_1p</span>, <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_path_sigma</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Colimit_ind_beta_colimp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap10_path_forall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>, <span class="id" title="var">concat_V_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_p_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @@ 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span> |- <span class="id" title="var">ap</span> <span class="id" title="var">_</span> ?<span class="id" title="var">X</span> @ <span class="id" title="var">_</span> = <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">set</span> (<span class="id" title="var">p</span> := <span class="id" title="var">X</span>) <span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">r</span> : <span class="id" title="var">transport_E'_V</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> = <span class="id" title="var">p</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">subst</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">moveL_transport_V_V</span> <span class="id" title="var">E'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">r</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>. <span class="comment">(*&nbsp;0.1s&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">cocone_issect</span> <span class="id" title="var">Z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cocone_extends</span> <span class="id" title="var">Z</span> <span class="id" title="var">o</span> <span class="id" title="var">cocone_postcompose</span> <span class="id" title="var">cocone_E'</span> == <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">funext</span> [<span class="id" title="var">x</span> <span class="id" title="var">y</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">cbn</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_paths_FlFr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((1 @@ <span class="id" title="var">_</span> @@ 1) @ (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @@ 1) @ <span class="id" title="var">concat_Vp</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span> |- <span class="id" title="var">transportD</span> <span class="id" title="var">E'</span> ?<span class="id" title="var">C</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> = <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">transportD_is_transport</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">w</span> =&gt; <span class="id" title="var">C</span> <span class="id" title="var">w</span>.1 <span class="id" title="var">w</span>.2)) <span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_paths_FlFr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">rapply</span> <span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_1p_q1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_path_sigma</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Colimit_ind_beta_colimp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap10_path_forall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>, <span class="id" title="var">concat_V_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap11_is_ap10_ap01</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; (<span class="id" title="var">colim</span> <span class="id" title="var">j</span> ((<span class="id" title="var">D</span> <span class="id" title="var">_f</span> <span class="id" title="var">g</span>) <span class="id" title="var">x</span>); <span class="id" title="var">y</span>)) <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x0</span> : <span class="id" title="tactic">exists</span> <span class="id" title="var">x0</span> : <span class="id" title="var">D</span> <span class="id" title="var">j</span>, <span class="id" title="var">E</span> (<span class="id" title="var">j</span>; <span class="id" title="var">x0</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; (<span class="id" title="var">colim</span> <span class="id" title="var">j</span> (<span class="id" title="var">pr1</span> <span class="id" title="var">x0</span>); <span class="id" title="var">pr2</span> <span class="id" title="var">x0</span>)) <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- ! (<span class="id" title="var">ap_pp</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">concat_pp_p</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span> |- <span class="id" title="var">_</span> = (<span class="id" title="var">ap</span> ?<span class="id" title="var">ff</span> ?<span class="id" title="var">pp1</span> @ ?<span class="id" title="var">pp2</span>) @ ?<span class="id" title="var">pp3</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="tactic">set</span> (<span class="id" title="var">p1</span> := <span class="id" title="var">pp1</span>) <span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">p1eq</span> : <span class="id" title="var">p1</span> = <span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)^)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">transport_pV</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) <span class="id" title="var">y</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">subst</span> <span class="id" title="var">p1</span>; <span class="id" title="tactic">clear</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">srapply</span> <span class="id" title="var">moveL_transport_V_1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">inverse2</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">transport_VpV</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap_V</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">p1eq</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">p1eq</span> <span class="id" title="var">p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_path_sigma</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">E</span> (<span class="id" title="var">j</span>; <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; (<span class="id" title="var">colim</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>; <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p1</span>, <span class="id" title="var">concat_pp_p</span>, <span class="id" title="var">ap_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_Vp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span> |- ?<span class="id" title="var">pp1</span> @ <span class="id" title="var">_</span> = ?<span class="id" title="var">pp2</span> @ <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="tactic">set</span> (<span class="id" title="var">p1</span> := <span class="id" title="var">pp1</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">pp2</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">path_sigma'</span> <span class="id" title="var">E'</span> 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">transport_E'_V</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) (<span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)^ <span class="id" title="var">y</span>)))) <span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">p1eq</span> : <span class="id" title="var">p1</span> = <span class="id" title="var">path_sigma'</span> <span class="id" title="var">E'</span> 1 (<span class="id" title="var">transport_Vp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">subst</span> <span class="id" title="var">p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_exist</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)^)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">v</span> =&gt; (<span class="id" title="var">colim</span> <span class="id" title="var">j</span> ((<span class="id" title="var">D</span> <span class="id" title="var">_f</span> <span class="id" title="var">g</span>) <span class="id" title="var">x</span>); <span class="id" title="var">v</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>; <span class="id" title="tactic">set</span> (<span class="id" title="var">p</span> := <span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">clear</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_VpV</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">p1eq</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">p1eq</span> <span class="id" title="var">p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">path_sigma_pp_pp'</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p1</span>, <span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (1 @@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_Mp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_V</span>, &lt;- <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">transport_E'_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">transport_pV</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (1 @@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_VpV</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">set</span> (<span class="id" title="var">e</span> := <span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">transport</span> <span class="id" title="var">E'</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)^ <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pp</span>, &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">transport_E'_V_E'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (1 @@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">transport_pVp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_VpV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>. <span class="comment">(*&nbsp;TODO:&nbsp;a&nbsp;little&nbsp;slow,&nbsp;0.40s&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">unicocone_cocone_E'</span> : <span class="id" title="var">UniversalCocone</span> <span class="id" title="var">cocone_E'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_UniversalCocone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">Z</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">cocone_extends</span> <span class="id" title="var">Z</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">cocone_isretr</span> <span class="id" title="var">Z</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">cocone_issect</span> <span class="id" title="var">Z</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The flattening lemma follows by colimit unicity. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">flattening_lemma</span> : <span class="id" title="var">Colimit</span> (<span class="id" title="var">diagram_sigma</span> <span class="id" title="var">E</span>) &lt;~&gt; <span class="id" title="var">sig</span> <span class="id" title="var">E'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">colimit_unicity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;3: <span class="id" title="tactic">apply</span> <span class="id" title="var">iscolimit_colimit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Build_IsColimit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">unicocone_cocone_E'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Flattening</span>.<br/>
+<span class="comment">(*&nbsp;TODO:&nbsp;ending&nbsp;the&nbsp;section&nbsp;is&nbsp;a&nbsp;bit&nbsp;slow&nbsp;(0.2s).&nbsp;&nbsp;But&nbsp;simply&nbsp;removing&nbsp;the&nbsp;Section&nbsp;(and&nbsp;changing&nbsp;"Let"&nbsp;to&nbsp;"Local&nbsp;Definition")&nbsp;causes&nbsp;the&nbsp;whole&nbsp;file&nbsp;to&nbsp;be&nbsp;much&nbsp;slower.&nbsp;&nbsp;It&nbsp;should&nbsp;be&nbsp;possible&nbsp;to&nbsp;remove&nbsp;the&nbsp;section&nbsp;without&nbsp;making&nbsp;the&nbsp;whole&nbsp;file&nbsp;slower.&nbsp;*)</span><br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

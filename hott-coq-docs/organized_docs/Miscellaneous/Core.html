@@ -1,0 +1,912 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Core</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Core</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1844"></a><h1 class="section">Wild categories, functors, and transformations</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab1845"></a><h2 class="section">Directed graphs</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsGraph</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) :=<br/>
+{<br/>
+&nbsp;&nbsp;<span class="id" title="var">Hom</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span><br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;a $-&gt; b" := (<span class="id" title="var">Hom</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">graph_hfiber</span> {<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">C</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">c</span> : <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= {<span class="id" title="var">b</span> : <span class="id" title="var">B</span> &amp; <span class="id" title="var">F</span> <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1846"></a><h2 class="section">0-categorical structures</h2>
+
+<div class="paragraph"> </div>
+
+ A wild (0,1)-category has 1-morphisms and operations on them, but no coherence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} :=<br/>
+{<br/>
+&nbsp;&nbsp;<span class="id" title="var">Id</span>  : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">a</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_comp</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>), (<span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) -&gt; (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">c</span>);<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_comp</span> {<span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;g $o f" := (<span class="id" title="var">cat_comp</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_postcomp</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) {<span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_comp</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_precomp</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) -&gt; (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A wild 0-groupoid is a wild (0,1)-category whose morphisms can be reversed.  This is also known as a setoid. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">gpd_rev</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>}, (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>) }.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">GpdHom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) := <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;a $== b" := (<span class="id" title="var">GpdHom</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">reflexive_GpdHom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Reflexive</span> <span class="id" title="var">GpdHom</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">Id</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">reflexive_Hom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Reflexive</span> <span class="id" title="var">Hom</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">Id</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_comp</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">a</span> $== <span class="id" title="var">b</span>) -&gt; (<span class="id" title="var">b</span> $== <span class="id" title="var">c</span>) -&gt; (<span class="id" title="var">a</span> $== <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> =&gt; <span class="id" title="var">q</span> $<span class="id" title="var">o</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Infix</span> &quot;$@" := <span class="id" title="var">gpd_comp</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">transitive_GpdHom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Transitive</span> <span class="id" title="var">GpdHom</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">f</span> $@ <span class="id" title="var">g</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">transitive_Hom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Transitive</span> <span class="id" title="var">Hom</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;p ^$" := (<span class="id" title="var">gpd_rev</span> <span class="id" title="var">p</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">symmetric_GpdHom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Symmetric</span> <span class="id" title="var">GpdHom</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">f</span>^$.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">symmetric_GpdHom'</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Symmetric</span> <span class="id" title="var">Hom</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">f</span>^$.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Hom_path</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">a</span> = <span class="id" title="var">b</span>) : (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Id</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">GpdHom_path</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">a</span> = <span class="id" title="var">b</span>) : <span class="id" title="var">a</span> $== <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Hom_path</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A 0-functor acts on morphisms, but satisfies no axioms. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is0Functor</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">B</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;:= { <span class="id" title="var">fmap</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">F</span> <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">F</span> <span class="id" title="var">b</span> }.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">fmap</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">isgraph_A</span> <span class="id" title="var">isgraph_B</span>} <span class="id" title="var">F</span> {<span class="id" title="var">is0functor_F</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>} <span class="id" title="var">f</span> : <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is2Graph</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isgraph_hom</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>), <span class="id" title="var">IsGraph</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">isgraph_hom</span> | 20.<br/>
+#[<span class="id" title="var">global</span>] <span class="id" title="keyword">Typeclasses</span> <span class="id" title="keyword">Transparent</span> <span class="id" title="var">Is2Graph</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1847"></a><h2 class="section">Wild 1-categorical structures</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is1Cat</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is2Graph</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} :=<br/>
+{<br/>
+&nbsp;&nbsp;<span class="id" title="var">is01cat_hom</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>), <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is0gpd_hom</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>), <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is0functor_postcomp</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>), <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">cat_postcomp</span> <span class="id" title="var">a</span> <span class="id" title="var">g</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is0functor_precomp</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">cat_precomp</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_assoc</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">d</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">h</span> $<span class="id" title="var">o</span> (<span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>);<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_assoc_opp</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">d</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">h</span> $<span class="id" title="var">o</span> (<span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>) $== (<span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $<span class="id" title="var">o</span> <span class="id" title="var">f</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_idl</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">Id</span> <span class="id" title="var">b</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">f</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_idr</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">Id</span> <span class="id" title="var">a</span> $== <span class="id" title="var">f</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">is01cat_hom</span>.<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">is0gpd_hom</span>.<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">is0functor_postcomp</span>.<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">is0functor_precomp</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_assoc</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_assoc_opp</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_idl</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_idr</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An alternate constructor that doesn't require the proof of <span class="inlinecode"><span class="id" title="var">cat_assoc_opp</span></span>.  This can be used for defining examples of wild categories, but shouldn't be used for the general theory of wild categories. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_Is1Cat'</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{!<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is2Graph</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">is01cat_hom</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>, <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">is0gpd_hom</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>, <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">is0functor_postcomp</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>), <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">cat_postcomp</span> <span class="id" title="var">a</span> <span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">is0functor_precomp</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">cat_precomp</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_assoc</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">d</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">h</span> $<span class="id" title="var">o</span> (<span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_idl</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">Id</span> <span class="id" title="var">b</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_idr</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">Id</span> <span class="id" title="var">a</span> $== <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Is1Cat</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">is01cat_hom</span> <span class="id" title="var">is0gpd_hom</span> <span class="id" title="var">is0functor_postcomp</span> <span class="id" title="var">is0functor_precomp</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_assoc</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> =&gt; (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>)^$) <span class="id" title="var">cat_idl</span> <span class="id" title="var">cat_idr</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Whiskering and horizontal composition of 2-cells. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_postwhisker</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fmap</span> (<span class="id" title="var">cat_postcomp</span> <span class="id" title="var">a</span> <span class="id" title="var">h</span>) <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;h $@L p" := (<span class="id" title="var">cat_postwhisker</span> <span class="id" title="var">h</span> <span class="id" title="var">p</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_prewhisker</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">h</span> $== <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">h</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fmap</span> (<span class="id" title="var">cat_precomp</span> <span class="id" title="var">c</span> <span class="id" title="var">h</span>) <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;p $@R h" := (<span class="id" title="var">cat_prewhisker</span> <span class="id" title="var">p</span> <span class="id" title="var">h</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_comp2</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>} {<span class="id" title="var">h</span> <span class="id" title="var">k</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">h</span> $== <span class="id" title="var">k</span> )<br/>
+&nbsp;&nbsp;: <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">k</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">q</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">p</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;q $@@ p" := (<span class="id" title="var">cat_comp2</span> <span class="id" title="var">q</span> <span class="id" title="var">p</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Monomorphisms and epimorphisms. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Monic</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">b</span> <span class="id" title="var">c</span>: <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> (<span class="id" title="var">g</span> <span class="id" title="var">h</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span> $== <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">h</span> -&gt; <span class="id" title="var">g</span> $== <span class="id" title="var">h</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Epic</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> <span class="id" title="var">c</span> (<span class="id" title="var">g</span> <span class="id" title="var">h</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>), <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">g</span> $== <span class="id" title="var">h</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Section might be a clearer name but it's better to avoid confusion with Coq keywords. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">SectionOf</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) :=<br/>
+&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">comp_right_inverse</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">is_section</span> : <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">comp_right_inverse</span> $== <span class="id" title="var">Id</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">RetractionOf</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) :=<br/>
+&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">comp_left_inverse</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">is_retraction</span> : <span class="id" title="var">comp_left_inverse</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">Id</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Often, the coherences are actually equalities rather than homotopies. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is1Cat_Strong</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>)`{!<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is2Graph</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} :=<br/>
+{<br/>
+&nbsp;&nbsp;<span class="id" title="var">is01cat_hom_strong</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>), <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is0gpd_hom_strong</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>), <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is0functor_postcomp_strong</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Is0Functor</span> (<span class="id" title="var">cat_postcomp</span> <span class="id" title="var">a</span> <span class="id" title="var">g</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is0functor_precomp_strong</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Is0Functor</span> (<span class="id" title="var">cat_precomp</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_assoc_strong</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">d</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $<span class="id" title="var">o</span> <span class="id" title="var">f</span> = <span class="id" title="var">h</span> $<span class="id" title="var">o</span> (<span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_assoc_opp_strong</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">d</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">h</span> $<span class="id" title="var">o</span> (<span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>) = (<span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $<span class="id" title="var">o</span> <span class="id" title="var">f</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_idl_strong</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">Id</span> <span class="id" title="var">b</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> = <span class="id" title="var">f</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_idr_strong</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">Id</span> <span class="id" title="var">a</span> = <span class="id" title="var">f</span> ;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_assoc_strong</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_assoc_opp_strong</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_idl_strong</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cat_idr_strong</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_is1cat_strong</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span> | 1000.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is1Cat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">is01cat_hom_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">is0gpd_hom_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">is0functor_postcomp_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">is0functor_precomp_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">GpdHom_path</span>, <span class="id" title="var">cat_assoc_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">GpdHom_path</span>, <span class="id" title="var">cat_assoc_opp_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">GpdHom_path</span>, <span class="id" title="var">cat_idl_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">GpdHom_path</span>, <span class="id" title="var">cat_idr_strong</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Initial objects 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IsInitial</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> (<span class="id" title="var">y</span> : <span class="id" title="var">A</span>), {<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span> &amp; <span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>, <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>}.<br/>
+<span class="id" title="keyword">Existing Class</span> <span class="id" title="var">IsInitial</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mor_initial</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) {<span class="id" title="var">h</span> : <span class="id" title="var">IsInitial</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">h</span> <span class="id" title="var">y</span>).1.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mor_initial_unique</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) {<span class="id" title="var">h</span> : <span class="id" title="var">IsInitial</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">mor_initial</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $== <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">h</span> <span class="id" title="var">y</span>).2 <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Terminal objects 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IsTerminal</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">y</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>), {<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span> &amp; <span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>, <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>}.<br/>
+<span class="id" title="keyword">Existing Class</span> <span class="id" title="var">IsTerminal</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mor_terminal</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) {<span class="id" title="var">h</span> : <span class="id" title="var">IsTerminal</span> <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">h</span> <span class="id" title="var">x</span>).1.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mor_terminal_unique</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) {<span class="id" title="var">h</span> : <span class="id" title="var">IsTerminal</span> <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">mor_terminal</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $== <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">h</span> <span class="id" title="var">x</span>).2 <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Generalizing function extensionality, "Morphism extensionality" states that homwise <span class="inlinecode"><span class="id" title="var">GpdHom_path</span></span> is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">HasMorExt</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">isequiv_Htpy_path</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>, <span class="id" title="var">IsEquiv</span> (@<span class="id" title="var">GpdHom_path</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>)<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">isequiv_Htpy_path</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_hom</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> = <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">GpdHom_path</span>^-1 <span class="id" title="var">p</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A 1-category with morphism extensionality induces a strong 1-category 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_strong_hasmorext</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Build_Is1Cat_Strong</span>; <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">cat_assoc</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">cat_assoc_opp</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">cat_idl</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">cat_idr</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A 1-functor acts on 2-cells (satisfying no axioms) and also preserves composition and identities up to a 2-cell. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="comment">(*&nbsp;The&nbsp;<span class="inlinecode">!</span>&nbsp;tells&nbsp;Coq&nbsp;to&nbsp;use&nbsp;typeclass&nbsp;search&nbsp;to&nbsp;find&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="var">IsGraph</span></span>&nbsp;parameters&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">Is0Functor</span></span>&nbsp;instead&nbsp;of&nbsp;assuming&nbsp;additional&nbsp;copies&nbsp;of&nbsp;them.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is1Functor</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} :=<br/>
+{<br/>
+&nbsp;&nbsp;<span class="id" title="var">fmap2</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), (<span class="id" title="var">f</span> $== <span class="id" title="var">g</span>) -&gt; (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> $== <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">g</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">fmap_id</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>) $== <span class="id" title="var">Id</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>);<br/>
+&nbsp;&nbsp;<span class="id" title="var">fmap_comp</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> (<span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>) $== <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">fmap2</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">isgraph_A</span> <span class="id" title="var">is2graph_A</span> <span class="id" title="var">is01cat_A</span> <span class="id" title="var">is1cat_A</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">isgraph_B</span> <span class="id" title="var">is2graph_B</span> <span class="id" title="var">is01cat_B</span> <span class="id" title="var">is1cat_B</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> {<span class="id" title="var">is0functor_F</span> <span class="id" title="var">is1functor_F</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} <span class="id" title="var">p</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">fmap_id</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">isgraph_A</span> <span class="id" title="var">is2graph_A</span> <span class="id" title="var">is01cat_A</span> <span class="id" title="var">is1cat_A</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">isgraph_B</span> <span class="id" title="var">is2graph_B</span> <span class="id" title="var">is01cat_B</span> <span class="id" title="var">is1cat_B</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> {<span class="id" title="var">is0functor_F</span> <span class="id" title="var">is1functor_F</span>} <span class="id" title="var">a</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">fmap_comp</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">isgraph_A</span> <span class="id" title="var">is2graph_A</span> <span class="id" title="var">is01cat_A</span> <span class="id" title="var">is1cat_A</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">isgraph_B</span> <span class="id" title="var">is2graph_B</span> <span class="id" title="var">is01cat_B</span> <span class="id" title="var">is1cat_B</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> {<span class="id" title="var">is0functor_F</span> <span class="id" title="var">is1functor_F</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>} <span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Faithful</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">Is1Functor</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">faithful</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> $== <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Identity functor 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">IdentityFunctor</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_idmap</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_idmap</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} : <span class="id" title="var">Is1Functor</span> <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="keyword">Instance</span> <span class="id" title="var">isFaithful_idmap</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}: <span class="id" title="var">Faithful</span> <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">unfold</span> <span class="id" title="var">Faithful</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">IdentityFunctor</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Constant functor 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">ConstantFunctor</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01functor_const</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> : <span class="id" title="var">A</span> =&gt; <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Id</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_const</span><br/>
+&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> : <span class="id" title="var">A</span> =&gt; <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Id</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intro</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Id</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>. <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_idl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">ConstantFunctor</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Composite functors 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_compose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">IsGraph</span> <span class="id" title="var">B</span>, <span class="id" title="var">IsGraph</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">G</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">G</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_compose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">G</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap2</span> <span class="id" title="var">G</span> (<span class="id" title="var">fmap2</span> <span class="id" title="var">F</span> <span class="id" title="var">p</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap2</span> <span class="id" title="var">G</span> (<span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span> <span class="id" title="var">a</span>) $@ <span class="id" title="var">fmap_id</span> <span class="id" title="var">G</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fmap2</span> <span class="id" title="var">G</span> (<span class="id" title="var">fmap_comp</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap_comp</span> <span class="id" title="var">G</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>) (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">g</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We give all arguments names in order to refer to them later. This allows us to write things like <span class="inlinecode"><span class="id" title="var">is0functor</span></span> <span class="inlinecode">(<span class="id" title="var">isgraph_A</span></span> <span class="inlinecode">:=</span> <span class="inlinecode"><span class="id" title="var">_</span>)</span> without having to make all the variables explicit. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">is0functor_compose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} {<span class="id" title="var">isgraph_A</span> <span class="id" title="var">isgraph_B</span> <span class="id" title="var">isgraph_C</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> {<span class="id" title="var">is0functor_F</span>} <span class="id" title="var">G</span> {<span class="id" title="var">is0functor_G</span>} : <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">is1functor_compose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">isgraph_A</span> <span class="id" title="var">is2graph_A</span> <span class="id" title="var">is01cat_A</span> <span class="id" title="var">is1cat_A</span><br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="var">isgraph_B</span> <span class="id" title="var">is2graph_B</span> <span class="id" title="var">is01cat_B</span> <span class="id" title="var">is1cat_B</span><br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="var">isgraph_C</span> <span class="id" title="var">is2graph_C</span> <span class="id" title="var">is01cat_C</span> <span class="id" title="var">is1cat_C</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> {<span class="id" title="var">is0functor_F</span>} {<span class="id" title="var">is1functor_F</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">G</span> {<span class="id" title="var">is0functor_G</span>} {<span class="id" title="var">is1functor_G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1848"></a><h2 class="section">Wild 1-groupoids</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is1Gpd</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>} :=<br/>
+{<br/>
+&nbsp;&nbsp;<span class="id" title="var">gpd_issect</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">f</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">f</span> $== <span class="id" title="var">Id</span> <span class="id" title="var">a</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">gpd_isretr</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>), <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>^$ $== <span class="id" title="var">Id</span> <span class="id" title="var">b</span> ;<br/>
+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Some more convenient equalities for morphisms in a 1-groupoid. The naming scheme is similar to <span class="inlinecode"><span class="id" title="var">PathGroupoids.v</span></span>.
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_V_hh</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span>^$ $<span class="id" title="var">o</span> (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $== <span class="id" title="var">g</span> :=<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ (<span class="id" title="var">gpd_issect</span> <span class="id" title="var">f</span> $@<span class="id" title="var">R</span> <span class="id" title="var">g</span>) $@ <span class="id" title="var">cat_idl</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_h_Vh</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> $<span class="id" title="var">o</span> (<span class="id" title="var">f</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $== <span class="id" title="var">g</span> :=<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ (<span class="id" title="var">gpd_isretr</span> <span class="id" title="var">f</span> $@<span class="id" title="var">R</span> <span class="id" title="var">g</span>) $@ <span class="id" title="var">cat_idl</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_hh_V</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $<span class="id" title="var">o</span> <span class="id" title="var">g</span>^$ $== <span class="id" title="var">f</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">f</span> $@<span class="id" title="var">L</span> <span class="id" title="var">gpd_isretr</span> <span class="id" title="var">g</span>) $@ <span class="id" title="var">cat_idr</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_hV_h</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>^$) $<span class="id" title="var">o</span> <span class="id" title="var">g</span> $== <span class="id" title="var">f</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">f</span> $@<span class="id" title="var">L</span> <span class="id" title="var">gpd_issect</span> <span class="id" title="var">g</span>) $@ <span class="id" title="var">cat_idr</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveL_1M</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> <span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span>^$ $== <span class="id" title="var">Id</span> <span class="id" title="var">_</span>) : <span class="id" title="var">p</span> $== <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">cat_idr</span> <span class="id" title="var">p</span>)^$ $@ (<span class="id" title="var">p</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">gpd_issect</span> <span class="id" title="var">q</span>)^$) $@ (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">r</span> $@<span class="id" title="var">R</span> <span class="id" title="var">q</span>) $@ <span class="id" title="var">cat_idl</span> <span class="id" title="var">q</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveR_V1</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">q</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">x</span>} (<span class="id" title="var">r</span> : <span class="id" title="var">Id</span> <span class="id" title="var">_</span> $== <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span>) : <span class="id" title="var">p</span>^$ $== <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">cat_idr</span> <span class="id" title="var">p</span>^$)^$ $@ (<span class="id" title="var">p</span>^$ $@<span class="id" title="var">L</span> <span class="id" title="var">r</span>) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_V_hh</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveR_M1</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> <span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">Id</span> <span class="id" title="var">_</span> $== <span class="id" title="var">p</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">q</span>) : <span class="id" title="var">p</span> $== <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ ((<span class="id" title="var">gpd_isretr</span> <span class="id" title="var">p</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">q</span>) $@ (<span class="id" title="var">cat_idl</span> <span class="id" title="var">q</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">cat_idr</span> <span class="id" title="var">p</span>)^$ $@ (<span class="id" title="var">p</span> $@<span class="id" title="var">L</span> <span class="id" title="var">r</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveR_1M</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> <span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">Id</span> <span class="id" title="var">_</span> $== <span class="id" title="var">q</span> $<span class="id" title="var">o</span> <span class="id" title="var">p</span>^$) : <span class="id" title="var">p</span> $== <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">cat_idl</span> <span class="id" title="var">p</span>)^$ $@ <span class="id" title="var">_</span> $@ <span class="id" title="var">cat_idr</span> <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">q</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">gpd_issect</span> <span class="id" title="var">p</span>)^$)^$).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">r</span> $@<span class="id" title="var">R</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveL_1V</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">q</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">x</span>} (<span class="id" title="var">r</span> : <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span> $== <span class="id" title="var">Id</span> <span class="id" title="var">_</span>) : <span class="id" title="var">p</span> $== <span class="id" title="var">q</span>^$.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">cat_idl</span> <span class="id" title="var">q</span>^$)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">r</span> $@<span class="id" title="var">R</span> <span class="id" title="var">q</span>^$)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">gpd_hh_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveR_hV</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>} {<span class="id" title="var">r</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>} (<span class="id" title="var">s</span> : <span class="id" title="var">r</span> $== <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">r</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span>^$ $== <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">s</span> $@<span class="id" title="var">R</span> <span class="id" title="var">q</span>^$) $@ <span class="id" title="var">gpd_hh_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveR_Vh</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>} {<span class="id" title="var">r</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>} (<span class="id" title="var">s</span> : <span class="id" title="var">r</span> $== <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">p</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">r</span> $== <span class="id" title="var">q</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">p</span>^$ $@<span class="id" title="var">L</span> <span class="id" title="var">s</span>) $@ <span class="id" title="var">gpd_V_hh</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveL_hM</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>} {<span class="id" title="var">r</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>} (<span class="id" title="var">s</span> : <span class="id" title="var">r</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span>^$ $== <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">r</span> $== <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span> := ((<span class="id" title="var">gpd_hV_h</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ (<span class="id" title="var">s</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveL_hV</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>} {<span class="id" title="var">r</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>} (<span class="id" title="var">s</span> : <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span> $== <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">p</span> $== <span class="id" title="var">r</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span>^$<br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">gpd_moveR_hV</span> <span class="id" title="var">s</span>^$)^$.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveL_Mh</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>} {<span class="id" title="var">r</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>} (<span class="id" title="var">s</span> : <span class="id" title="var">p</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">r</span> $== <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">r</span> $== <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span> := ((<span class="id" title="var">gpd_h_Vh</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ (<span class="id" title="var">p</span> $@<span class="id" title="var">L</span> <span class="id" title="var">s</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_moveL_Vh</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>} {<span class="id" title="var">r</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>} (<span class="id" title="var">s</span> : <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">q</span> $== <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">q</span> $== <span class="id" title="var">p</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">r</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">gpd_moveR_Vh</span> <span class="id" title="var">s</span>^$)^$.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_rev2</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">p</span> <span class="id" title="var">q</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">p</span> $== <span class="id" title="var">q</span>) : <span class="id" title="var">p</span>^$ $== <span class="id" title="var">q</span>^$.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_moveR_V1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_moveL_hV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_idl</span> <span class="id" title="var">q</span> $@ <span class="id" title="var">r</span>^$).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_rev_pp</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>)^$ $== <span class="id" title="var">g</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">f</span>^$.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_moveR_V1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_moveL_hV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_idl</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">gpd_hh_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_rev_1</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> : <span class="id" title="var">A</span>} : (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)^$ $== <span class="id" title="var">Id</span> <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">gpd_rev2</span> (<span class="id" title="var">gpd_issect</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)))^$ $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">gpd_rev_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_isretr</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_rev_rev</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a0</span> <span class="id" title="var">a1</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">a0</span> $== <span class="id" title="var">a1</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">g</span>^$)^$ $== <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_moveR_V1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">gpd_issect</span> <span class="id" title="var">_</span>)^$.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+1-functors between 1-groupoids preserve identities 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_1functor_V</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Gpd</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">a0</span> <span class="id" title="var">a1</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a0</span> $== <span class="id" title="var">a1</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>^$ $== (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>)^$.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_moveL_1V</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">fmap_comp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ <span class="id" title="var">_</span> $@ <span class="id" title="var">fmap_id</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">fmap2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_issect</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Movement lemmas with extensionality 
+<div class="paragraph"> </div>
+
+ For more complex movements you probably want to apply <span class="inlinecode"><span class="id" title="var">path_hom</span></span> and use the lemmas above. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_strong_V_hh</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span>^$ $<span class="id" title="var">o</span> (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) = <span class="id" title="var">g</span> := <span class="id" title="var">path_hom</span> (<span class="id" title="var">gpd_V_hh</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_strong_h_Vh</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">c</span> $-&gt; <span class="id" title="var">b</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> $<span class="id" title="var">o</span> (<span class="id" title="var">f</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) = <span class="id" title="var">g</span> := <span class="id" title="var">path_hom</span> (<span class="id" title="var">gpd_h_Vh</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_strong_hh_V</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $<span class="id" title="var">o</span> <span class="id" title="var">g</span>^$ = <span class="id" title="var">f</span> := <span class="id" title="var">path_hom</span> (<span class="id" title="var">gpd_hh_V</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_strong_hV_h</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>^$) $<span class="id" title="var">o</span> <span class="id" title="var">g</span> = <span class="id" title="var">f</span> := <span class="id" title="var">path_hom</span> (<span class="id" title="var">gpd_hV_h</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_strong_rev_pp</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>)^$ = <span class="id" title="var">g</span>^$ $<span class="id" title="var">o</span> <span class="id" title="var">f</span>^$<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">path_hom</span> (<span class="id" title="var">gpd_rev_pp</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_strong_rev_1</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>)^$ = <span class="id" title="var">Id</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">path_hom</span> <span class="id" title="var">gpd_rev_1</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_strong_rev_rev</span> {<span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a0</span> <span class="id" title="var">a1</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">a0</span> $== <span class="id" title="var">a1</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">g</span>^$)^$ = <span class="id" title="var">g</span> := <span class="id" title="var">path_hom</span> (<span class="id" title="var">gpd_rev_rev</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fmap_id_strong</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> (<span class="id" title="var">Id</span> <span class="id" title="var">a</span>) = <span class="id" title="var">Id</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">path_hom</span> (<span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">gpd_strong_1functor_V</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">Is1Gpd</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Gpd</span> <span class="id" title="var">B</span>, !<span class="id" title="var">HasMorExt</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">a0</span> <span class="id" title="var">a1</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a0</span> $== <span class="id" title="var">a1</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>^$ = (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>)^$<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">path_hom</span> (<span class="id" title="var">gpd_1functor_V</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is3Graph</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is2Graph</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isgraph_hom_hom</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>), <span class="id" title="var">Is2Graph</span> (<span class="id" title="var">a</span> $-&gt; <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">isgraph_hom_hom</span> | 30.<br/>
+#[<span class="id" title="var">global</span>] <span class="id" title="keyword">Typeclasses</span> <span class="id" title="keyword">Transparent</span> <span class="id" title="var">Is3Graph</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1849"></a><h3 class="section">Preservation of initial and terminal objects</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">PreservesInitial</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Functor</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isinitial_preservesinitial</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>), <span class="id" title="var">IsInitial</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">IsInitial</span> (<span class="id" title="var">F</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">isinitial_preservesinitial</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The initial morphism is preserved by such a functor. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fmap_initial</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">PreservesInitial</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">IsInitial</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> (<span class="id" title="var">mor_initial</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) $== <span class="id" title="var">mor_initial</span> (<span class="id" title="var">F</span> <span class="id" title="var">x</span>) (<span class="id" title="var">F</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">mor_initial_unique</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">PreservesTerminal</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Functor</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isterminal_preservesterminal</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>), <span class="id" title="var">IsTerminal</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">IsTerminal</span> (<span class="id" title="var">F</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">isterminal_preservesterminal</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The terminal morphism is preserved by such a functor. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fmap_terminal</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">PreservesTerminal</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">F</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">IsTerminal</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> (<span class="id" title="var">mor_terminal</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) $== <span class="id" title="var">mor_terminal</span> (<span class="id" title="var">F</span> <span class="id" title="var">x</span>) (<span class="id" title="var">F</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">mor_terminal_unique</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1850"></a><h3 class="section">Functors preserving distinguished objects</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">BasepointPreservingFunctor</span> (<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is01Cat</span> <span class="id" title="var">C</span>} `{<span class="id" title="var">IsPointed</span> <span class="id" title="var">B</span>, <span class="id" title="var">IsPointed</span> <span class="id" title="var">C</span>} := {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bp_map</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bp_is0functor</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">bp_map</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bp_pointed</span> : <span class="id" title="var">bp_map</span> (<span class="id" title="var">point</span> <span class="id" title="var">B</span>) $-&gt; <span class="id" title="var">point</span> <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">bp_pointed</span> {<span class="id" title="var">B</span> <span class="id" title="var">C</span>}%<span class="id" title="var">_type_scope</span> {<span class="id" title="var">H</span> <span class="id" title="var">H0</span> <span class="id" title="var">H1</span> <span class="id" title="var">H2</span> <span class="id" title="var">H3</span> <span class="id" title="var">H4</span>} <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Build_BasepointPreservingFunctor</span> {<span class="id" title="var">B</span> <span class="id" title="var">C</span>}%<span class="id" title="var">_type_scope</span> {<span class="id" title="var">H</span> <span class="id" title="var">H0</span> <span class="id" title="var">H1</span> <span class="id" title="var">H2</span> <span class="id" title="var">H3</span> <span class="id" title="var">H4</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">bp_map</span>%<span class="id" title="var">_function_scope</span> {<span class="id" title="var">bp_is0functor</span>} <span class="id" title="var">bp_pointed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">bp_map</span> : <span class="id" title="var">BasepointPreservingFunctor</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">bp_is0functor</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;B --&gt;* C" := (<span class="id" title="var">BasepointPreservingFunctor</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">basepointpreservingfunctor_compose</span> {<span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is01Cat</span> <span class="id" title="var">C</span>, <span class="id" title="var">Is01Cat</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsPointed</span> <span class="id" title="var">B</span>, <span class="id" title="var">IsPointed</span> <span class="id" title="var">C</span>, <span class="id" title="var">IsPointed</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">B</span> --&gt;* <span class="id" title="var">C</span>) (<span class="id" title="var">G</span> : <span class="id" title="var">C</span> --&gt;* <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">B</span> --&gt;* <span class="id" title="var">D</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_BasepointPreservingFunctor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">bp_pointed</span> <span class="id" title="var">G</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap</span> <span class="id" title="var">G</span> (<span class="id" title="var">bp_pointed</span> <span class="id" title="var">F</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;G $o* F" := (<span class="id" title="var">basepointpreservingfunctor_compose</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40).<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

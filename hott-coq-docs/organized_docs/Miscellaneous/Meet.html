@@ -1,0 +1,538 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Meet</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Meet</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Extensions</span> <span class="id" title="var">HFiber</span> <span class="id" title="var">Truncations</span> <span class="id" title="var">NullHomotopy</span> <span class="id" title="var">Limits.Pullback</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Descent</span> <span class="id" title="var">Lex</span> <span class="id" title="var">Separated</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We construct "canonical" binary meets of reflective subuniverses (that is, whose underlying subuniverse is an intersection), without assuming accessibility.  In particular, we will show:
+
+<div class="paragraph"> </div>
+
+1. Given two reflective subuniverses L and O, if <span class="inlinecode"><span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">O</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is <span class="inlinecode"><span class="id" title="var">O</span></span>-modal, then it is a reflection into the canonical meet.  In particular, this is always the case if <span class="inlinecode"><span class="id" title="var">L</span></span> preserves <span class="inlinecode"><span class="id" title="var">O</span></span>-modal types; this is Theorem 3.30 of RSS.
+
+<div class="paragraph"> </div>
+
+1. If L and O are lex modalities satisfying an additional "composability" condition, then the composite functor <span class="inlinecode"><span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">O</span></span> converges to a reflection into the canonical meet after n+2 applications when applied to an n-type for some finite n.
+
+<div class="paragraph"> </div>
+
+The latter gives in particular a synthetic approach to higher sheafification (stack completion).  As described at https://ncatlab.org/nlab/show/plus+construction+on+presheaves, for any site C the topos of presheaves on its Grothendieck topology is cohesive and even totally connected, so that its shape and sharp modalities are both lex.  Their canonical meet is the topos of sheaves for the given topology, and the composite functor <span class="inlinecode"><span class="id" title="var">shape</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">sharp</span></span> is the usual "plus construction" on (higher) presheaves.  Thus, we recover synthetically the result that an n-truncated type can be stackified by (n+2) applications of the plus construction.  We also refer to <span class="inlinecode"><span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">O</span></span> as a "plus construction" in the general case of reflective subuniverses.  
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">RSUMeet</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">L</span> <span class="id" title="var">O</span> : <span class="id" title="var">ReflectiveSubuniverse</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The canonical meet of two subuniverses is their intersection. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Meet</span> : <span class="id" title="var">Subuniverse</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">unshelve</span> <span class="id" title="tactic">econstructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">In</span> <span class="id" title="var">L</span> <span class="id" title="var">X</span> * <span class="id" title="var">In</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> ? <span class="id" title="var">X</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">T</span> <span class="id" title="var">U</span> [? ?] <span class="id" title="var">f</span> <span class="id" title="var">feq</span>; <span class="id" title="tactic">split</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">inO_equiv_inO</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">inO_inmeet_l</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">im</span> : <span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">X</span>} : <span class="id" title="var">In</span> <span class="id" title="var">L</span> <span class="id" title="var">X</span> := <span class="id" title="var">fst</span> <span class="id" title="var">im</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">inO_inmeet_r</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">im</span> : <span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">X</span>} : <span class="id" title="var">In</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span> := <span class="id" title="var">snd</span> <span class="id" title="var">im</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The basic tool in studying its reflectivity is the "plus construction" that applies the two reflectors in sequence. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Plus</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) := <span class="id" title="var">L</span> (<span class="id" title="var">O</span> <span class="id" title="var">X</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">inO_plus_l</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">In</span> <span class="id" title="var">L</span> (<span class="id" title="var">Plus</span> <span class="id" title="var">X</span>) := <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is not necessarily a reflector, but it is a well-pointed endofunctor. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">to_plus</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Plus</span> <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">to</span> <span class="id" title="var">L</span> (<span class="id" title="var">O</span> <span class="id" title="var">X</span>) <span class="id" title="var">o</span> <span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_functor</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) : <span class="id" title="var">Plus</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Plus</span> <span class="id" title="var">Y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">O_functor</span> <span class="id" title="var">L</span> (<span class="id" title="var">O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">to_plus_natural</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">plus_functor</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">to_plus</span> <span class="id" title="var">X</span> == <span class="id" title="var">to_plus</span> <span class="id" title="var">Y</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">plus_functor</span>, <span class="id" title="var">to_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">to_O_natural</span> <span class="id" title="var">L</span> (<span class="id" title="var">O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) (<span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span> <span class="id" title="var">x</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">to_O_natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">wellpointed_plus</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">to_plus</span> (<span class="id" title="var">Plus</span> <span class="id" title="var">X</span>) == <span class="id" title="var">plus_functor</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (@<span class="id" title="var">O_indpaths</span> <span class="id" title="var">L</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ox</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">to_plus</span>, <span class="id" title="var">plus_functor</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">to_O_natural</span> <span class="id" title="var">L</span> <span class="id" title="var">_</span> <span class="id" title="var">ox</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">ox</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">O_indpaths</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">to_O_natural</span> <span class="id" title="var">O</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Moreover, it has the desired factorization property of a reflector (though it may not belong to the meet subuniverse itself). 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ooextendable_plus</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ooExtendableAlong</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">X</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span>  =&gt; <span class="id" title="var">Y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ooextendable_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) (<span class="id" title="var">to</span> <span class="id" title="var">L</span> (<span class="id" title="var">O</span> <span class="id" title="var">X</span>)));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">extendable_to_O</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_rec</span> {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">Q</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Plus</span> <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Q</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">fst</span> (<span class="id" title="var">ooextendable_plus</span> 1%<span class="id" title="var">nat</span>) <span class="id" title="var">f</span>).1.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_rec_beta</span> {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">Q</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">plus_rec</span> <span class="id" title="var">f</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">P</span> <span class="id" title="var">x</span>) = <span class="id" title="var">f</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">fst</span> (<span class="id" title="var">ooextendable_plus</span> 1%<span class="id" title="var">nat</span>) <span class="id" title="var">f</span>).2 <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_indpaths</span> {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">Q</span>} (<span class="id" title="var">g</span> <span class="id" title="var">h</span> : <span class="id" title="var">Plus</span> <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">to_plus</span> <span class="id" title="var">P</span> == <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">to_plus</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">g</span> == <span class="id" title="var">h</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">fst</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">ooextendable_plus</span> 2%<span class="id" title="var">nat</span>) <span class="id" title="var">g</span> <span class="id" title="var">h</span>) <span class="id" title="var">p</span>).1.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_indpaths_beta</span> {<span class="id" title="var">P</span> <span class="id" title="var">Q</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">Q</span>} (<span class="id" title="var">g</span> <span class="id" title="var">h</span> : <span class="id" title="var">Plus</span> <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">g</span> <span class="id" title="var">o</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">P</span>) == <span class="id" title="var">h</span> <span class="id" title="var">o</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">P</span>)) (<span class="id" title="var">x</span> : <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">plus_indpaths</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">p</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">P</span> <span class="id" title="var">x</span>) = <span class="id" title="var">p</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">fst</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">ooextendable_plus</span> 2%<span class="id" title="var">nat</span>) <span class="id" title="var">g</span> <span class="id" title="var">h</span>) <span class="id" title="var">p</span>).2 <span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Moreover, its fixed points, as a pointed endofunctor, are the types in the meet. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_plus_inmeet</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">X</span>} : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (@<span class="id" title="var">isequiv_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">to</span> <span class="id" title="var">L</span> (<span class="id" title="var">O</span> <span class="id" title="var">X</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_to_O_inO</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">inO_equiv_inO</span> <span class="id" title="var">X</span> (<span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">inmeet_isequiv_plus</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">X</span>)} : <span class="id" title="var">In</span> <span class="id" title="var">Meet</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">inO_equiv_inO</span> (<span class="id" title="var">Plus</span> <span class="id" title="var">X</span>) (<span class="id" title="var">to_plus</span> <span class="id" title="var">X</span>)^-1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">srapply</span> <span class="id" title="var">inO_to_O_retract</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> ((<span class="id" title="var">to_plus</span> <span class="id" title="var">X</span>)^-1 <span class="id" title="var">o</span> (<span class="id" title="var">to</span> <span class="id" title="var">L</span> (<span class="id" title="var">O</span> <span class="id" title="var">X</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">eissect</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It follows that if <span class="inlinecode"><span class="id" title="var">Plus</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> ever *does* lie in the meet, then it is a reflection. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">prereflects_plus_inO</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">In</span> <span class="id" title="var">O</span> (<span class="id" title="var">Plus</span> <span class="id" title="var">X</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">PreReflects</span> <span class="id" title="var">Meet</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">unshelve</span> <span class="id" title="tactic">econstructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">Plus</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">split</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">to_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">reflects_plus_inO</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">In</span> <span class="id" title="var">O</span> (<span class="id" title="var">Plus</span> <span class="id" title="var">X</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Reflects</span> <span class="id" title="var">Meet</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ooextendable_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Recalling that a type is connected for a reflective subuniverse if and only if its reflector is nullhomotopic, we define a type to be "plus-connected" if its map to plus is nullhomotopic.  If the meet is reflective, this coincides with connectedness for that reflective subuniverse. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">PlusConnected</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) := <span class="id" title="var">NullHomotopy</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">X</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plusconnected_equiv</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">PlusConnected</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">PlusConnected</span> <span class="id" title="var">Y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">px</span> <span class="id" title="var">e</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">plus_functor</span> <span class="id" title="var">f</span> <span class="id" title="var">px</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> (<span class="id" title="var">plus_functor</span> <span class="id" title="var">f</span>) (<span class="id" title="var">e</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">to_plus_natural</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Similarly, we say a map is plus-connected if all of its fibers are. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">PlusConnMap</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) := <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">PlusConnected</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">RSUMeet</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Let's now assume we are trying to intersect two lex modalities. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">LexMeet</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">L</span> <span class="id" title="var">O</span> : <span class="id" title="var">Modality</span>) `{<span class="id" title="var">Lex</span> <span class="id" title="var">L</span>} `{<span class="id" title="var">Lex</span> <span class="id" title="var">O</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The plus construction, being a composite of two lex functors, is also lex.  Thus, it preserves path-types. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_path</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>) &lt;~&gt; (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span> <span class="id" title="var">x</span> = <span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_path_O</span> <span class="id" title="var">L</span> (<span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span> <span class="id" title="var">x</span>) (<span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span> <span class="id" title="var">y</span>) <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_O_functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_path_O</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_path_to_plus</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">plus_path</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">o</span> <span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>) == @<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">plus_path</span>, <span class="id" title="var">to_plus</span>, <span class="id" title="var">equiv_path_O</span>, <span class="id" title="var">equiv_path_OO</span>, <span class="id" title="var">path_OO</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">to_O_natural</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">O_rec_beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) (<span class="id" title="var">to</span> <span class="id" title="var">L</span> (<span class="id" title="var">O</span> <span class="id" title="var">X</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">O_rec_beta</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This implies that plus-connected types are closed under path-spaces. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plusconnected_path</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pc</span> : <span class="id" title="var">PlusConnected</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) : <span class="id" title="var">PlusConnected</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">PlusConnected</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">cancelL_nullhomotopy_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">plus_path</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">nullhomotopy_homotopic</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; (<span class="id" title="var">plus_path_to_plus</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">u</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">nullhomotopy_ap</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And hence plus-connected maps are closed under diagonals. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plusconnmap_diagonal</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">PlusConnMap</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">PlusConnMap</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">diagonal</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">pc</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">plusconnected_equiv</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">hfiber_diagonal</span> <span class="id" title="var">f</span> <span class="id" title="var">p</span>)^-1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">plusconnected_path</span>, <span class="id" title="var">pc</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The plus-construction also preserves fibers. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_hfiber</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>) &lt;~&gt; <span class="id" title="var">hfiber</span> (<span class="id" title="var">plus_functor</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">Y</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_O_functor_hfiber</span> <span class="id" title="var">L</span> (<span class="id" title="var">O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) (<span class="id" title="var">to</span> <span class="id" title="var">O</span> <span class="id" title="var">Y</span> <span class="id" title="var">y</span>) <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_O_functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_O_functor_hfiber</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plus_hfiber_to_plus</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">plus_hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span> <span class="id" title="var">o</span> <span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;== <span class="id" title="var">functor_hfiber</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; (<span class="id" title="var">to_plus_natural</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span>)^) <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">q</span>]; <span class="id" title="tactic">unfold</span> <span class="id" title="var">plus_hfiber</span>, <span class="id" title="var">to_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">to_O_natural</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">O_functor_hfiber_natural</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">O_functor_hfiber</span>, <span class="id" title="var">functor_hfiber</span>, <span class="id" title="var">functor_sigma</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">O_rec_beta</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">to_plus_natural</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">inv_V</span>, <span class="id" title="var">ap_pp</span>, <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And pullbacks. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_plus_pullback</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">Pullback</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>) &lt;~&gt; <span class="id" title="var">Pullback</span> (<span class="id" title="var">plus_functor</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) (<span class="id" title="var">plus_functor</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_O_pullback</span> <span class="id" title="var">L</span> (<span class="id" title="var">O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) (<span class="id" title="var">O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">g</span>) <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_O_functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_O_pullback</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And diagonals. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">diagonal_plus_functor</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">diagonal</span> (<span class="id" title="var">plus_functor</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) == <span class="id" title="var">equiv_plus_pullback</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">plus_functor</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">diagonal</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">diagonal_O_functor</span> <span class="id" title="var">L</span> (<span class="id" title="var">O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) <span class="id" title="var">x</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">equiv_O_pullback</span> <span class="id" title="var">L</span> (<span class="id" title="var">O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) (<span class="id" title="var">O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">O_functor_homotopy</span> <span class="id" title="var">L</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">diagonal_O_functor</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>) <span class="id" title="var">x</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">plus_functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">O_functor_compose</span> <span class="id" title="var">L</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Recall that a modality is characterized by connectedness of the units.  Analogously, we can now prove that the plus-units are all plus-connected.  This is equivalently a sort of coherence axiom for the homotopy <span class="inlinecode"><span class="id" title="var">wellpointed_plus</span></span>, that when precomposed with <span class="inlinecode"><span class="id" title="var">to_plus</span></span> it becomes <span class="inlinecode"><span class="id" title="var">to_plus_natural</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">plusconnmap_to_plus</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">PlusConnMap</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">PlusConnected</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">cancelL_nullhomotopy_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">plus_hfiber</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">nullhomotopy_homotopic</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; (<span class="id" title="var">plus_hfiber_to_plus</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) <span class="id" title="var">y</span> <span class="id" title="var">u</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">NullHomotopy</span>, <span class="id" title="var">hfiber</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">unshelve</span> <span class="id" title="tactic">refine</span> ((<span class="id" title="var">y</span> ; <span class="id" title="var">_</span>) ; <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">wellpointed_plus</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">p</span>]; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">functor_hfiber</span>, <span class="id" title="var">functor_sigma</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">inv_V</span>, <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">wellpointed_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">O_indpaths_beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">inv_pp</span>, <span class="id" title="var">ap_V</span>, !<span class="id" title="var">inv_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Recall also (from <span class="inlinecode"><span class="id" title="var">nsep_iff_trunc_to_O</span></span>) that a type is n-separated for a lex modality <span class="inlinecode"><span class="id" title="var">O</span></span> if and only if its <span class="inlinecode"><span class="id" title="var">O</span></span>-unit is an n-truncated map.  We can now prove the analogous fact for the plus-construction.  We state this using <span class="inlinecode"><span class="id" title="var">MapIn</span></span> <span class="inlinecode">(<span class="id" title="var">Tr</span></span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> instead of <span class="inlinecode"><span class="id" title="var">IsTrunc</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> because we have more useful lemmas for <span class="inlinecode"><span class="id" title="var">MapIn</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">nsep_iff_trunc_plus</span> (<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>) (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">In</span> (<span class="id" title="var">nSep</span> <span class="id" title="var">n</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>)) <span class="id" title="var">X</span> &lt;-&gt; <span class="id" title="var">MapIn</span> (<span class="id" title="var">Tr</span> <span class="id" title="var">n</span>) (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">X</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span>; <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">contr_map_isequiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isequiv_plus_inmeet</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">inmeet_isequiv_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isequiv_contr_map</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">istruncmap_from_ap</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istruncmap_mapinO_tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">i</span> := <span class="id" title="var">fst</span> (<span class="id" title="var">IHn</span> <span class="id" title="var">_</span>) (<span class="id" title="var">H</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">mapinO_homotopic</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">plus_path_to_plus</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">IHn</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">i</span> := <span class="id" title="var">istruncmap_ap</span> <span class="id" title="var">n</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">mapinO_tr_istruncmap</span> <span class="id" title="tactic">in</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">mapinO_homotopic</span> <span class="id" title="var">_</span> ((<span class="id" title="var">plus_path</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)^-1 <span class="id" title="var">o</span> (@<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) <span class="id" title="var">x</span> <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_V</span>; <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">plus_path_to_plus</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">mapinO_compose</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We now make one more assumption, that the plus-construction inverts plus-connected embeddings.  In the case of the plus-construction for stacks, this corresponds roughly to the "local character" condition on a Grothendieck topology. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">composing</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fe</span> : <span class="id" title="var">IsEmbedding</span> <span class="id" title="var">f</span>) (<span class="id" title="var">fc</span> : <span class="id" title="var">PlusConnMap</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsEquiv</span> (<span class="id" title="var">plus_functor</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This implies, by induction, that the plus-construction decreases the truncation-level of any finitely truncated plus-connected map. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">istruncmap_plus_functor</span> {<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>} {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">MapIn</span> (<span class="id" title="var">Tr</span> <span class="id" title="var">n</span>.+1) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} (<span class="id" title="var">pc</span> : <span class="id" title="var">PlusConnMap</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">MapIn</span> (<span class="id" title="var">Tr</span> <span class="id" title="var">n</span>) (<span class="id" title="var">plus_functor</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">f</span>; <span class="id" title="var">revert</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span> ? <span class="id" title="var">pc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> <span class="id" title="var">mapinO_tr_istruncmap</span>, <span class="id" title="var">contr_map_isequiv</span>, <span class="id" title="var">composing</span>; <span class="id" title="tactic">assumption</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">O_eq_Tr</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">mapinO_O_leq</span> (<span class="id" title="var">Sep</span> (<span class="id" title="var">Tr</span> <span class="id" title="var">n</span>)) <span class="id" title="var">_</span>), <span class="id" title="var">mapinO_from_diagonal</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">mapinO_homotopic</span> (<span class="id" title="var">Tr</span> <span class="id" title="var">n</span>) <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; (<span class="id" title="var">diagonal_plus_functor</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">mapinO_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2:<span class="id" title="var">rapply</span> <span class="id" title="var">mapinO_isequiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">rapply</span> <span class="id" title="var">mapinO_diagonal</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">O_eq_Tr</span> <span class="id" title="var">n</span>.+1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">mapinO_O_leq</span> <span class="id" title="var">_</span> (<span class="id" title="var">Sep</span> (<span class="id" title="var">Tr</span> <span class="id" title="var">n</span>.+1))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">plusconnmap_diagonal</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It follows, by applying this to the plus-unit and using well-pointedness, that the plus-construction on *types* decreases their plus-separatedness. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">nsep_plus</span> (<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>) (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">In</span> (<span class="id" title="var">nSep</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>)) <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">In</span> (<span class="id" title="var">nSep</span> <span class="id" title="var">n</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>)) (<span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">nsep_iff_trunc_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">mapinO_homotopic</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; (<span class="id" title="var">wellpointed_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span> <span class="id" title="var">u</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">mapinO_tr_istruncmap</span>, <span class="id" title="var">istruncmap_plus_functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">istruncmap_mapinO_tr</span>, <span class="id" title="var">nsep_iff_trunc_plus</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">plusconnmap_to_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Therefore, if a type starts out as n-plus-separated, then n+2 applications of the plus-construction suffice to make it (-2)-plus-separated, i.e. in the meet subuniverse.  Hence it has a reflection. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">prereflects_plus_nsep</span> (<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>) (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">In</span> (<span class="id" title="var">nSep</span> <span class="id" title="var">n</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>)) <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">PreReflects</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>) <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">X</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> ?.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">rapply</span> <span class="id" title="var">prereflects_in</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">IHn</span> (<span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) (<span class="id" title="var">nsep_plus</span> <span class="id" title="var">n</span> <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">unshelve</span> <span class="id" title="tactic">econstructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">O_reflector</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>) (<span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">to</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>) (<span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) <span class="id" title="var">o</span> <span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">reflects_plus_nsep</span> (<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>) (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">In</span> (<span class="id" title="var">nSep</span> <span class="id" title="var">n</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>)) <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Reflects</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>) <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">X</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> ?.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">rapply</span> <span class="id" title="var">reflects_in</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">IHn</span> (<span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) (<span class="id" title="var">nsep_plus</span> <span class="id" title="var">n</span> <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ooextendable_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">to_plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>) (<span class="id" title="var">to</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>) (<span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (@<span class="id" title="var">extendable_to_O</span> (<span class="id" title="var">Meet</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span>) (<span class="id" title="var">Plus</span> <span class="id" title="var">L</span> <span class="id" title="var">O</span> <span class="id" title="var">X</span>)); <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">rapply</span> <span class="id" title="var">ooextendable_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">LexMeet</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

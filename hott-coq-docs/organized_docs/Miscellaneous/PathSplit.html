@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>PathSplit</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library PathSplit</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">AssumeFunext</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1079"></a><h1 class="section">n-Path-split maps.</h1>
+
+
+<div class="paragraph"> </div>
+
+A map is n-path-split if its induced maps on the first n iterated path-spaces are split surjections.  Thus every map is 0-path-split, the 1-path-split maps are the split surjections, and so on.  It turns out that for n&gt;1, being n-path-split is the same as being an equivalence. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">PathSplit</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 0 =&gt; <span class="id" title="var">Unit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">n</span> =&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>) *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>), <span class="id" title="var">PathSplit</span> <span class="id" title="var">n</span> (@<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_pathsplit</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+: <span class="id" title="var">PathSplit</span> <span class="id" title="var">n</span>.+2 <span class="id" title="var">f</span> -&gt; <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">g</span> <span class="id" title="var">k</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">h</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span> =&gt; (<span class="id" title="var">fst</span> (<span class="id" title="var">k</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">p</span>).1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">hs</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; (<span class="id" title="var">fst</span> (<span class="id" title="var">k</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">p</span>).2)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>) <span class="id" title="var">o</span> (<span class="id" title="var">h</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) == <span class="id" title="var">idmap</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">hs</span>; <span class="id" title="var">clearbody</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_contr_map</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;2:<span class="id" title="tactic">exact</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_allpath</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">p</span>] [<span class="id" title="var">a'</span> <span class="id" title="var">p'</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">path_sigma'</span> <span class="id" title="var">_</span> (<span class="id" title="var">h</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span> (<span class="id" title="var">p</span> @ <span class="id" title="var">p'</span>^)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_paths_Fl</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">inverse2</span> (<span class="id" title="var">hs</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span> (<span class="id" title="var">p</span> @ <span class="id" title="var">p'</span>^)) @@ 1) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">inv_pp</span> <span class="id" title="var">p</span> <span class="id" title="var">p'</span>^ @@ 1) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_pp_p</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((1 @@ <span class="id" title="var">concat_Vp</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">inv_V</span> <span class="id" title="var">p'</span> @@ 1) @ <span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">contr_pathsplit_isequiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}<br/>
+: <span class="id" title="var">Contr</span> (<span class="id" title="var">PathSplit</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">B</span>; <span class="id" title="var">revert</span> <span class="id" title="var">A</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> ?.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">contr_prod</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_pathsplit</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">PathSplit</span> <span class="id" title="var">n</span>.+2 <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_inhabited_contr</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">ps</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">isequiv_pathsplit</span> <span class="id" title="var">n</span> <span class="id" title="var">ps</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_pathsplit_isequiv</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+: <span class="id" title="var">PathSplit</span> <span class="id" title="var">n</span>.+2 <span class="id" title="var">f</span> &lt;~&gt; <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_iff_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_pathsplit</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> ?; <span class="id" title="tactic">refine</span> (<span class="id" title="var">center</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Path-splitness transfers across commutative squares of equivalences. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equiv_functor_pathsplit</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span> == <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+: <span class="id" title="var">PathSplit</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> &lt;~&gt; <span class="id" title="var">PathSplit</span> <span class="id" title="var">n</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span>].<br/>
+&nbsp;&nbsp;1:<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> *<span class="id" title="var">E</span> <span class="id" title="var">equiv_contr_contr</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_forall'</span> <span class="id" title="var">k</span>^-1 <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">d</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">hfiber</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_sigma'</span> <span class="id" title="var">h</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_concat_l</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span>) <span class="id" title="var">d</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_moveR_equiv_M</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_pathsplit_isequiv</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">equiv_pathsplit_isequiv</span> <span class="id" title="var">n</span> <span class="id" title="var">g</span>)^-1 <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_iff_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_commsq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">p</span> <span class="id" title="var">a</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_commsq'</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A map is oo-path-split if it is n-path-split for all n.  This is also equivalent to being an equivalence. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ooPathSplit</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">PathSplit</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_oopathsplit</span> `{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+: <span class="id" title="var">ooPathSplit</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">ps</span> =&gt; <span class="id" title="var">isequiv_pathsplit</span> 0 (<span class="id" title="var">ps</span> 2).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">contr_oopathsplit_isequiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}<br/>
+: <span class="id" title="var">Contr</span> (<span class="id" title="var">ooPathSplit</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">contr_forall</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_oopathsplit</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">ooPathSplit</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_inhabited_contr</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">ps</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">isequiv_oopathsplit</span> <span class="id" title="var">ps</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_oopathsplit_isequiv</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+: <span class="id" title="var">ooPathSplit</span> <span class="id" title="var">f</span> &lt;~&gt; <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_iff_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_oopathsplit</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> ?; <span class="id" title="tactic">refine</span> (<span class="id" title="var">center</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">AssumeFunext</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,598 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>NatTrans</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library NatTrans</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Equiv</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Square</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Opposite</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1892"></a><h1 class="section">Wild Natural Transformations</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab1893"></a><h2 class="section">Transformations</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab1894"></a><h3 class="section">Definition</h3>
+
+<div class="paragraph"> </div>
+
+ A transformation is simply a family of 1-cells over some base type <span class="inlinecode"><span class="id" title="var">A</span></span> between the sections of two dependent functions <span class="inlinecode"><span class="id" title="var">F</span></span> and <span class="inlinecode"><span class="id" title="var">G</span></span>. In most cases <span class="inlinecode"><span class="id" title="var">F</span></span> and <span class="inlinecode"><span class="id" title="var">G</span></span> will be non-dependent functors. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Transformation</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsGraph</span> (<span class="id" title="var">B</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>), <span class="id" title="var">B</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>), <span class="id" title="var">F</span> <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">G</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This lets us apply transformations to things. Identity Coercion tells coq that this coercion is in fact definitionally the identity map so it doesn't need to insert it, but merely rewrite definitionally when typechecking. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Identity</span> <span class="id" title="keyword">Coercion</span> <span class="id" title="var">fun_trans</span> : <span class="id" title="var">Transformation</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;F $=&gt; G" := (<span class="id" title="var">Transformation</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The identity transformation between a functor and itself is the identity function at the section. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">trans_id</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">Id</span> (<span class="id" title="var">F</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Transformations can be composed pointwise. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">trans_comp</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">K</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} (<span class="id" title="var">gamma</span> : <span class="id" title="var">G</span> $=&gt; <span class="id" title="var">K</span>) (<span class="id" title="var">alpha</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">K</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">gamma</span> <span class="id" title="var">a</span> $<span class="id" title="var">o</span> <span class="id" title="var">alpha</span> <span class="id" title="var">a</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Transformations can be prewhiskered by a function. This means we precompose both sides of the transformation with a function. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">trans_prewhisker</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">C</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">C</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>} `{!<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsGraph</span> (<span class="id" title="var">C</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">C</span> <span class="id" title="var">x</span>)} (<span class="id" title="var">gamma</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>) (<span class="id" title="var">K</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) <br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> <span class="id" title="var">o</span> <span class="id" title="var">K</span> $=&gt; <span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">K</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">gamma</span> <span class="id" title="var">o</span> <span class="id" title="var">K</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Transformations can be postwhiskered by a function. This means we postcompose both sides of the transformation with a function. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">trans_postwhisker</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">K</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is01Cat</span> <span class="id" title="var">C</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>} (<span class="id" title="var">gamma</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">fmap</span> <span class="id" title="var">K</span> (<span class="id" title="var">gamma</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A transformation in the opposite category is simply a transformation in the original category with the direction swapped. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">trans_op</span> {<span class="id" title="var">A</span>} {<span class="id" title="var">B</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">alpha</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Transformation</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">B</span>:=<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>) <span class="id" title="var">G</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">alpha</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1895"></a><h2 class="section">Naturality</h2>
+
+<div class="paragraph"> </div>
+
+ A transformation is 1-natural if there exists a 2-cell witnessing the naturality square. The codomain of the transformation must be a wild 1-category. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Is1Natural</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>) := <span class="id" title="var">Build_Is1Natural'</span> {<br/>
+&nbsp;&nbsp;<span class="id" title="var">isnat</span> {<span class="id" title="var">a</span> <span class="id" title="var">a'</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">a'</span>) : <span class="id" title="var">alpha</span> <span class="id" title="var">a'</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> $== <span class="id" title="var">fmap</span> <span class="id" title="var">G</span> <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">alpha</span> <span class="id" title="var">a</span>;<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+We also include the transposed naturality square in the definition so that opposite natural transformations are definitionally involutive. In most cases, this will be constructed to be the inverse of the <span class="inlinecode"><span class="id" title="var">isnat</span></span> field. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">isnat_tr</span> {<span class="id" title="var">a</span> <span class="id" title="var">a'</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">a'</span>) : <span class="id" title="var">fmap</span> <span class="id" title="var">G</span> <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">alpha</span> <span class="id" title="var">a</span> $== <span class="id" title="var">alpha</span> <span class="id" title="var">a'</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Is1Natural</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} {<span class="id" title="var">isgraph_A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">isgraph_B</span>} {<span class="id" title="var">is2graph_B</span>} {<span class="id" title="var">is01cat_B</span>} {<span class="id" title="var">is1cat_B</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> {<span class="id" title="var">is0functor_F</span>} <span class="id" title="var">G</span> {<span class="id" title="var">is0functor_G</span>} <span class="id" title="var">alpha</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">isnat</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">alpha</span> {<span class="id" title="var">alnat</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">isnat_tr</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">alpha</span> {<span class="id" title="var">alnat</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">f</span> : <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We coerce naturality proofs to their naturality square as the <span class="inlinecode"><span class="id" title="var">isnat</span></span> projection can be unwieldy in certain situations where the transformation is difficult to write down. This allows for the naturality proof to be used directly. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">isnat</span> : <span class="id" title="var">Is1Natural</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_Is1Natural</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>} (<span class="id" title="var">alpha</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">isnat</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span> (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">a'</span>), <span class="id" title="var">alpha</span> <span class="id" title="var">a'</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> $== <span class="id" title="var">fmap</span> <span class="id" title="var">G</span> <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">alpha</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">alpha</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural'</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">isnat</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isnat</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">f</span>)^$.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The identity transformation is 1-natural. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_id</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">F</span> (<span class="id" title="var">trans_id</span> <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_idl</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">cat_idr</span> <span class="id" title="var">_</span>)^$).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The composite of 1-natural transformations is 1-natural. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_comp</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">K</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">gamma</span> : <span class="id" title="var">G</span> $=&gt; <span class="id" title="var">K</span>) `{!<span class="id" title="var">Is1Natural</span> <span class="id" title="var">G</span> <span class="id" title="var">K</span> <span class="id" title="var">gamma</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>) `{!<span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">alpha</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">K</span> (<span class="id" title="var">trans_comp</span> <span class="id" title="var">gamma</span> <span class="id" title="var">alpha</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">trans_comp</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">isnat</span> <span class="id" title="var">alpha</span> <span class="id" title="var">f</span>) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">isnat</span> <span class="id" title="var">gamma</span> <span class="id" title="var">f</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_assoc</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Prewhiskering a transformation preserves naturality. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_prewhisker</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>} (<span class="id" title="var">K</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is01Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">C</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">gamma</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>) `{<span class="id" title="var">L</span> : !<span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">gamma</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">F</span> <span class="id" title="var">o</span> <span class="id" title="var">K</span>) (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">K</span>) (<span class="id" title="var">trans_prewhisker</span> <span class="id" title="var">gamma</span> <span class="id" title="var">K</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">trans_prewhisker</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isnat</span> <span class="id" title="var">gamma</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Postwhiskering a transformation preserves naturality. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_postwhisker</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} (<span class="id" title="var">K</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">C</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">gamma</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>) `{<span class="id" title="var">L</span> : !<span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">gamma</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) (<span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">G</span>) (<span class="id" title="var">trans_postwhisker</span> <span class="id" title="var">K</span> <span class="id" title="var">gamma</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">trans_postwhisker</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span>^$ $@ <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;1,3: <span class="id" title="var">rapply</span> <span class="id" title="var">fmap_comp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">fmap2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isnat</span> <span class="id" title="var">gamma</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Modifying a transformation to something pointwise equal preserves naturality. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">is1natural_homotopic</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">alpha</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>} (<span class="id" title="var">gamma</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>) `{!<span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">gamma</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">alpha</span> <span class="id" title="var">a</span> $== <span class="id" title="var">gamma</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">alpha</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">p</span> <span class="id" title="var">b</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">isnat</span> <span class="id" title="var">gamma</span> <span class="id" title="var">f</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span>)^$)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The opposite of a natural transformation is natural. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_op</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} (<span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>) `{!<span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">alpha</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">G</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">trans_op</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">alpha</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">op</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural'</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isnat_tr</span> <span class="id" title="var">alpha</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isnat</span> <span class="id" title="var">alpha</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1896"></a><h2 class="section">Natural transformations</h2>
+
+<div class="paragraph"> </div>
+
+ Here we give the bundled definition of a natural transformation which can be more convenient to work with in certain situations. It forms the Hom type of the functor category. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">NatTrans</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">ff</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} {<span class="id" title="var">fg</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>} := {<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">reversible</span>=<span class="id" title="keyword">no</span>]<br/>
+&nbsp;&nbsp;<span class="id" title="var">trans_nattrans</span> :&gt; <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is1natural_nattrans</span> : <span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">trans_nattrans</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">NatTrans</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} {<span class="id" title="var">isgraph_A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">isgraph_B</span>} {<span class="id" title="var">is2graph_B</span>} {<span class="id" title="var">is01cat_B</span>} {<span class="id" title="var">is1cat_B</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> <span class="id" title="var">G</span> {<span class="id" title="var">is0functor_F</span>} {<span class="id" title="var">is0functor_G</span>} : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Build_NatTrans</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">isgraph_A</span> <span class="id" title="var">isgraph_B</span> <span class="id" title="var">is2graph_B</span> <span class="id" title="var">is01cat_B</span> <span class="id" title="var">is1cat_B</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">is0functor_F</span> <span class="id" title="var">is0functor_G</span>} <span class="id" title="var">alpha</span> <span class="id" title="var">isnat_alpha</span> : <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">is1natural_nattrans</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_NatTrans</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>} (<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">ff</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>} {<span class="id" title="var">fg</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> := <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">nattrans_id</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_NatTrans</span> (<span class="id" title="var">trans_id</span> <span class="id" title="var">F</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">nattrans_comp</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">K</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatTrans</span> <span class="id" title="var">G</span> <span class="id" title="var">K</span> -&gt; <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">K</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">alpha</span> <span class="id" title="keyword">beta</span> =&gt; <span class="id" title="var">Build_NatTrans</span> (<span class="id" title="var">trans_comp</span> <span class="id" title="var">alpha</span> <span class="id" title="keyword">beta</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">nattrans_prewhisker</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">C</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>) (<span class="id" title="var">K</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>} <br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatTrans</span> (<span class="id" title="var">F</span> <span class="id" title="var">o</span> <span class="id" title="var">K</span>) (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">K</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_NatTrans</span> (<span class="id" title="var">trans_prewhisker</span> <span class="id" title="var">alpha</span> <span class="id" title="var">K</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">nattrans_postwhisker</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} (<span class="id" title="var">K</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">C</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">K</span>} <br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">NatTrans</span> (<span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) (<span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">alpha</span> =&gt; <span class="id" title="var">Build_NatTrans</span> (<span class="id" title="var">trans_postwhisker</span> <span class="id" title="var">K</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">nattrans_op</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">NatTrans</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">B</span>:=<span class="id" title="var">B</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">G</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">alpha</span> =&gt; <span class="id" title="var">Build_NatTrans</span> (<span class="id" title="var">trans_op</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1897"></a><h2 class="section">Natural equivalences</h2>
+
+<div class="paragraph"> </div>
+
+ Natural equivalences are families of equivalences that are natural. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Record</span> <span class="id" title="var">NatEquiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>} := {<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">reversible</span>=<span class="id" title="keyword">no</span>]<br/>
+&nbsp;&nbsp;<span class="id" title="var">cat_equiv_natequiv</span> :&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">F</span> <span class="id" title="var">a</span> $&lt;~&gt; <span class="id" title="var">G</span> <span class="id" title="var">a</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is1natural_natequiv</span> :: <span class="id" title="var">Is1Natural</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">cat_equiv_natequiv</span> <span class="id" title="var">a</span>) ;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">NatEquiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} {<span class="id" title="var">isgraph_A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">isgraph_B</span>} {<span class="id" title="var">is2graph_B</span>} {<span class="id" title="var">is01cat_B</span>} {<span class="id" title="var">is1cat_B</span>} {<span class="id" title="var">hasequivs_B</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> <span class="id" title="var">G</span> {<span class="id" title="var">is0functor_F</span>} {<span class="id" title="var">is0functor_G</span>} : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Build_NatEquiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} {<span class="id" title="var">isgraph_A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">isgraph_B</span>} {<span class="id" title="var">is2graph_B</span>} {<span class="id" title="var">is01cat_B</span>} {<span class="id" title="var">is1cat_B</span>} {<span class="id" title="var">hasequivs_B</span>}<br/>
+&nbsp;&nbsp;<span class="id" title="var">F</span> <span class="id" title="var">G</span> {<span class="id" title="var">is0functor_F</span>} {<span class="id" title="var">is0functor_G</span>} <span class="id" title="var">e</span> <span class="id" title="var">isnat_e</span>: <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_NatEquiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> := <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+From a given natural equivalence, we can get the underlying natural transformation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">nattrans_natequiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">alpha</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_NatTrans</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">is1natural_natequiv</span> <span class="id" title="var">alpha</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Throws a warning, but can probably be ignored. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Warnings</span> "-ambiguous-paths".<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">nattrans_natequiv</span> : <span class="id" title="var">NatEquiv</span> &gt;-&gt; <span class="id" title="var">NatTrans</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The above coercion sometimes doesn't trigger when it should, so we add the following. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isnat_natequiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>} (<span class="id" title="var">alpha</span> : <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">a</span> <span class="id" title="var">a'</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">a'</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isnat</span> (<span class="id" title="var">nattrans_natequiv</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Often we wish to build a natural equivalence from a natural transformation and a pointwise proof that it is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_NatEquiv'</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">NatTrans</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">CatIsEquiv</span> (<span class="id" title="var">alpha</span> <span class="id" title="var">a</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_CatEquiv</span> (<span class="id" title="var">alpha</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">cate_buildequiv_fun</span> <span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">cate_buildequiv_fun</span> <span class="id" title="var">_</span>)^$).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">isnat</span> <span class="id" title="var">alpha</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">cate_buildequiv_fun</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span> $@ (<span class="id" title="var">cate_buildequiv_fun</span> <span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)^$).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">isnat_tr</span> <span class="id" title="var">alpha</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_id</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_NatEquiv'</span> (<span class="id" title="var">nattrans_id</span> <span class="id" title="var">F</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_compose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">H</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">NatEquiv</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span>) (<span class="id" title="keyword">beta</span> : <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_NatEquiv'</span> (<span class="id" title="var">nattrans_comp</span> <span class="id" title="var">alpha</span> <span class="id" title="keyword">beta</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_prewhisker</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} {<span class="id" title="var">H</span> <span class="id" title="var">K</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>, <span class="id" title="var">HasEquivs</span> <span class="id" title="var">C</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">H</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">NatEquiv</span> <span class="id" title="var">H</span> <span class="id" title="var">K</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> (<span class="id" title="var">H</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) (<span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_NatEquiv'</span> (<span class="id" title="var">nattrans_prewhisker</span> <span class="id" title="var">alpha</span> <span class="id" title="var">F</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_postwhisker</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>, <span class="id" title="var">HasEquivs</span> <span class="id" title="var">C</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;&nbsp;(<span class="id" title="var">K</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">alpha</span> : <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>) `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> (<span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>) (<span class="id" title="var">K</span> <span class="id" title="var">o</span> <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">Build_NatEquiv'</span> (<span class="id" title="var">nattrans_postwhisker</span> <span class="id" title="var">K</span> <span class="id" title="var">alpha</span>)).<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">unfold</span> <span class="id" title="var">nattrans_postwhisker</span>, <span class="id" title="var">trans_postwhisker</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">natequiv_op</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">NatEquiv</span> (<span class="id" title="var">G</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>) <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">n</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">rapply</span> <span class="id" title="var">is1natural_op</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can form the inverse natural equivalence by inverting each map in the family. The naturality proof follows from standard lemmas about inverses. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_inverse</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">NatEquiv</span> <span class="id" title="var">G</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">alpha</span> <span class="id" title="var">I</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; (<span class="id" title="var">alpha</span> <span class="id" title="var">a</span>)^-1$).<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural'</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">vinverse</span>, <span class="id" title="var">I</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hinverse</span>, <span class="id" title="var">I</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This lemma might seem unnecessery since as functions ((F o G) o K) and (F o (G o K)) are definitionally equal. But the functor instances of both sides are different. This can be a nasty trap since you cannot see this difference clearly. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_functor_assoc_ff_f</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">HasEquivs</span> <span class="id" title="var">B</span>, <span class="id" title="var">HasEquivs</span> <span class="id" title="var">C</span>, <span class="id" title="var">HasEquivs</span> <span class="id" title="var">D</span>} <br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) (<span class="id" title="var">G</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">K</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">G</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">K</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> ((<span class="id" title="var">F</span> <span class="id" title="var">o</span> <span class="id" title="var">G</span>) <span class="id" title="var">o</span> <span class="id" title="var">K</span>) (<span class="id" title="var">F</span> <span class="id" title="var">o</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">K</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">intro</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_prewhisker</span> (<span class="id" title="var">id_cate_fun</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> $@ <span class="id" title="var">cat_idl</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>^$).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_postwhisker</span> <span class="id" title="var">_</span> (<span class="id" title="var">id_cate_fun</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">cat_idr</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1898"></a><h2 class="section">Pointed natural transformations</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">PointedTransformation</span> {<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is1Gpd</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsPointed</span> <span class="id" title="var">B</span>, <span class="id" title="var">IsPointed</span> <span class="id" title="var">C</span>} (<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">B</span> --&gt;* <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= {<span class="id" title="var">eta</span> : <span class="id" title="var">F</span> $=&gt; <span class="id" title="var">G</span> &amp; <span class="id" title="var">eta</span> (<span class="id" title="var">point</span> <span class="id" title="var">_</span>) $== <span class="id" title="var">bp_pointed</span> <span class="id" title="var">F</span> $@ (<span class="id" title="var">bp_pointed</span> <span class="id" title="var">G</span>)^$}.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;F $=&gt;* G" := (<span class="id" title="var">PointedTransformation</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 70).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ptransformation_inverse</span> {<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is1Gpd</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsPointed</span> <span class="id" title="var">B</span>, <span class="id" title="var">IsPointed</span> <span class="id" title="var">C</span>} (<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">B</span> --&gt;* <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">F</span> $=&gt;* <span class="id" title="var">G</span>) -&gt; (<span class="id" title="var">G</span> $=&gt;* <span class="id" title="var">F</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> [<span class="id" title="var">h</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">h</span> <span class="id" title="var">x</span>)^$).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">gpd_rev2</span> <span class="id" title="var">p</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">gpd_rev_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_rev_rev</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;h ^*$" := (<span class="id" title="var">ptransformation_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 5).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ptransformation_compose</span> {<span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, <span class="id" title="var">Is1Gpd</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsPointed</span> <span class="id" title="var">B</span>, <span class="id" title="var">IsPointed</span> <span class="id" title="var">C</span>} {<span class="id" title="var">F0</span> <span class="id" title="var">F1</span> <span class="id" title="var">F2</span> : <span class="id" title="var">B</span> --&gt;* <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">F0</span> $=&gt;* <span class="id" title="var">F1</span>) -&gt; (<span class="id" title="var">F1</span> $=&gt;* <span class="id" title="var">F2</span>) -&gt; (<span class="id" title="var">F0</span> $=&gt;* <span class="id" title="var">F2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">h0</span> <span class="id" title="var">p0</span>] [<span class="id" title="var">h1</span> <span class="id" title="var">p1</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">trans_comp</span> <span class="id" title="var">h1</span> <span class="id" title="var">h0</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">p1</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">p0</span>) $@ <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">gpd_comp</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_h_Vh</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;h $@* k" := (<span class="id" title="var">ptransformation_compose</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>) (<span class="id" title="tactic">at</span> <span class="id" title="keyword">level</span> 40).<br/>
+
+<br/>
+<span class="comment">(*&nbsp;TODO:&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;Morphisms&nbsp;of&nbsp;natural&nbsp;transformations&nbsp;-&nbsp;Modifications&nbsp;*)</span><br/>
+<span class="comment">(*&nbsp;Since&nbsp;<span class="inlinecode"><span class="id" title="var">Transformation</span></span>&nbsp;is&nbsp;dependent,&nbsp;we&nbsp;can&nbsp;define&nbsp;a&nbsp;modification&nbsp;to&nbsp;be&nbsp;a&nbsp;transformation&nbsp;together&nbsp;with&nbsp;a&nbsp;cylinder&nbsp;condition.&nbsp;This&nbsp;doesn't&nbsp;seem&nbsp;to&nbsp;be&nbsp;too&nbsp;useful&nbsp;as&nbsp;of&nbsp;yet&nbsp;however.&nbsp;We&nbsp;would&nbsp;also&nbsp;need&nbsp;better&nbsp;ways&nbsp;to&nbsp;write&nbsp;down&nbsp;cylinders.&nbsp;*)</span><br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

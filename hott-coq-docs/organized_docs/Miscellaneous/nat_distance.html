@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>nat_distance</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library nat_distance</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.orders.naturals</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.implementations.peano_naturals</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.abstract_algebra</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.orders</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.naturals</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">N</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">contents</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>} `{<span class="id" title="var">Univalence</span>}.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Naturals</span> <span class="id" title="var">N</span>}.<br/>
+<span class="comment">(*&nbsp;Add&nbsp;Ring&nbsp;N&nbsp;:&nbsp;(rings.stdlib_semiring_theory&nbsp;N).&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;NatDistance&nbsp;instances&nbsp;are&nbsp;all&nbsp;equivalent,&nbsp;because&nbsp;their&nbsp;behavior&nbsp;is&nbsp;fully<br/>
+&nbsp;determined&nbsp;by&nbsp;the&nbsp;specification.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">nat_distance_unique</span> {<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">NatDistance</span> <span class="id" title="var">N</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, @<span class="id" title="var">nat_distance</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> = @<span class="id" title="var">nat_distance</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">nat_distance</span>.<br/>
+<span class="id" title="tactic">destruct</span> (@<span class="id" title="var">nat_distance_sig</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="keyword">as</span> [[<span class="id" title="var">z1</span> <span class="id" title="var">E1</span>]|[<span class="id" title="var">z1</span> <span class="id" title="var">E1</span>]],<br/>
+(@<span class="id" title="var">nat_distance_sig</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="keyword">as</span> [[<span class="id" title="var">z2</span> <span class="id" title="var">E2</span>]|[<span class="id" title="var">z2</span> <span class="id" title="var">E2</span>]];<span class="id" title="tactic">simpl</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation</span> <span class="id" title="var">plus</span> <span class="id" title="var">x</span>). <span class="id" title="var">path_via</span> <span class="id" title="var">y</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">rings.plus_0_r</span> <span class="id" title="var">y</span>),&lt;-<span class="id" title="var">E2</span>,&lt;-<span class="id" title="var">rings.plus_assoc</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation</span> <span class="id" title="var">plus</span> <span class="id" title="var">y</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">E1</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">naturals.zero_sum</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E1</span>;<span class="id" title="var">path_via</span> 0.<br/>
+- <span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">rings.plus_0_r</span> <span class="id" title="var">x</span>),&lt;-<span class="id" title="var">E2</span>,&lt;-<span class="id" title="var">rings.plus_assoc</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation</span> <span class="id" title="var">plus</span> <span class="id" title="var">x</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">E1</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">naturals.zero_sum</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">E1</span>;<span class="id" title="var">path_via</span> 0.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation</span> <span class="id" title="var">plus</span> <span class="id" title="var">y</span>);<span class="id" title="var">path_via</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">contents</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;An&nbsp;existing&nbsp;instance&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">CutMinus</span></span><br/>
+&nbsp;&nbsp;&nbsp;allows&nbsp;to&nbsp;create&nbsp;an&nbsp;instance&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">NatDistance</span></span>&nbsp;*)</span><br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">natdistance_cut_minus</span> `{<span class="id" title="var">Naturals</span> <span class="id" title="var">N</span>} `{!<span class="id" title="var">TrivialApart</span> <span class="id" title="var">N</span>}<br/>
+&nbsp;&nbsp;&nbsp;{<span class="id" title="var">cm</span>} `{!<span class="id" title="var">CutMinusSpec</span> <span class="id" title="var">N</span> <span class="id" title="var">cm</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">x</span> ≤ <span class="id" title="var">y</span>)} : <span class="id" title="var">NatDistance</span> <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">red</span>. <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">destruct</span> (<span class="id" title="var">decide_rel</span> (&lt;=) <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">E</span>|<span class="id" title="var">E</span>].<br/>
+- <span class="id" title="tactic">left</span>. <span class="id" title="tactic">exists</span> (<span class="id" title="var">y</span> ∸ <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">rings.plus_comm</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">cut_minus_le</span>;<span class="id" title="tactic">trivial</span>.<br/>
+- <span class="id" title="tactic">right</span>. <span class="id" title="tactic">exists</span> (<span class="id" title="var">x</span> ∸ <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">rings.plus_comm</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">cut_minus_le</span>, <span class="id" title="var">orders.le_flip</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Using&nbsp;the&nbsp;preceding&nbsp;instance&nbsp;we&nbsp;can&nbsp;make&nbsp;an&nbsp;instance<br/>
+&nbsp;&nbsp;&nbsp;for&nbsp;arbitrary&nbsp;models&nbsp;of&nbsp;the&nbsp;naturals<br/>
+&nbsp;&nbsp;&nbsp;by&nbsp;translation&nbsp;into&nbsp;<span class="inlinecode"><span class="id" title="var">nat</span></span>&nbsp;on&nbsp;which&nbsp;we&nbsp;already&nbsp;have&nbsp;a&nbsp;<span class="inlinecode"><span class="id" title="var">CutMinus</span></span>&nbsp;instance.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">natdistance_default</span> `{<span class="id" title="var">Naturals</span> <span class="id" title="var">N</span>} : <span class="id" title="var">NatDistance</span> <span class="id" title="var">N</span> | 10.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">nat_distance_sig</span> (<span class="id" title="var">naturals_to_semiring</span> <span class="id" title="var">N</span> <span class="id" title="var">nat</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">naturals_to_semiring</span> <span class="id" title="var">N</span> <span class="id" title="var">nat</span> <span class="id" title="var">y</span>)) <span class="id" title="keyword">as</span> [[<span class="id" title="var">n</span> <span class="id" title="var">E</span>]|[<span class="id" title="var">n</span> <span class="id" title="var">E</span>]].<br/>
+- <span class="id" title="tactic">left</span>. <span class="id" title="tactic">exists</span> (<span class="id" title="var">naturals_to_semiring</span> <span class="id" title="var">nat</span> <span class="id" title="var">N</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">naturals.to_semiring_involutive</span> <span class="id" title="var">N</span> <span class="id" title="var">nat</span> <span class="id" title="var">y</span>), &lt;-<span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">rings.preserves_plus</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">nat</span>)), (<span class="id" title="var">naturals.to_semiring_involutive</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+- <span class="id" title="tactic">right</span>. <span class="id" title="tactic">exists</span> (<span class="id" title="var">naturals_to_semiring</span> <span class="id" title="var">nat</span> <span class="id" title="var">N</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">naturals.to_semiring_involutive</span> <span class="id" title="var">N</span> <span class="id" title="var">nat</span> <span class="id" title="var">x</span>), &lt;-<span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">rings.preserves_plus</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">nat</span>)), (<span class="id" title="var">naturals.to_semiring_involutive</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

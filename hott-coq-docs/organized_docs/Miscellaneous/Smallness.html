@@ -1,0 +1,339 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Smallness</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Smallness</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Equivalences</span> <span class="id" title="var">Basics.Trunc</span> <span class="id" title="var">Basics.Tactics</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Basics.Nat</span> <span class="id" title="var">Types.Unit</span> <span class="id" title="var">Types.Sigma</span> <span class="id" title="var">Types.Universe</span> <span class="id" title="var">Types.Equiv</span> <span class="id" title="var">HFiber</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1800"></a><h1 class="section">Facts about "small" types</h1>
+
+<div class="paragraph"> </div>
+
+ This closely follows Section 2 of the paper "Non-accessible localizations", by Dan Christensen, https://arxiv.org/abs/2109.06670 
+<div class="paragraph"> </div>
+
+ Universe variables:  we most often use a subset of <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode"><span class="id" title="var">j</span></span> <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode"><span class="id" title="var">u</span></span>.  We think of <span class="inlinecode"><span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}</span> as containing the "small" types and <span class="inlinecode"><span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}</span> the "large" types.  In some early results, there are no constraints between <span class="inlinecode"><span class="id" title="var">i</span></span> and <span class="inlinecode"><span class="id" title="var">j</span></span>, and in others we require that <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">&lt;=</span> <span class="inlinecode"><span class="id" title="var">j</span></span>, as expected.  While the case <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">j</span></span> isn't particularly interesting, we put some effort into ensuring that it is permitted as well, as there is no semantic reason to exclude it.  The universe variable <span class="inlinecode"><span class="id" title="var">k</span></span> should be thought of as max(i+1,j), and it is generally required to satisfy <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">&lt;</span> <span class="inlinecode"><span class="id" title="var">k</span></span> and <span class="inlinecode"><span class="id" title="var">j</span></span> <span class="inlinecode">&lt;=</span> <span class="inlinecode"><span class="id" title="var">k</span></span>.  If we assume that <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">&lt;</span> <span class="inlinecode"><span class="id" title="var">j</span></span>, then we can take <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">j</span></span>, but we include <span class="inlinecode"><span class="id" title="var">k</span></span> so that we also allow the case <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">j</span></span>.  The universe variable <span class="inlinecode"><span class="id" title="var">u</span></span> is only present because we occasionally use Univalence in <span class="inlinecode"><span class="id" title="var">Type@</span>{<span class="id" title="var">k</span>}</span>, so the equality types need a larger universe to live in.  Because of this, most results require <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode">&lt;</span> <span class="inlinecode"><span class="id" title="var">u</span></span>.
+
+<div class="paragraph"> </div>
+
+Summary of the most common situation:  <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">&lt;</span> <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode">&lt;</span> <span class="inlinecode"><span class="id" title="var">u</span>,</span> <span class="inlinecode"><span class="id" title="var">j</span></span> <span class="inlinecode">&lt;=</span> <span class="inlinecode"><span class="id" title="var">k</span></span>, where <span class="inlinecode"><span class="id" title="var">i</span></span> is for the small types, <span class="inlinecode"><span class="id" title="var">j</span></span> is for the large types, <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">max</span>(<span class="id" title="var">i</span>+1,<span class="id" title="var">j</span>)</span> and <span class="inlinecode"><span class="id" title="var">u</span></span> is an ambient universe for Univalence.
+
+<div class="paragraph"> </div>
+
+We include universe annotations when they clarify the meaning (e.g. in <span class="inlinecode"><span class="id" title="var">IsSmall</span></span> and when using <span class="inlinecode"><span class="id" title="var">PropResizing</span></span>), and also when it is required in order to keep control of the universe variables.
+
+<div class="paragraph"> </div>
+
+Note that <span class="inlinecode"><span class="id" title="var">IsSmall</span></span> is defined in Overture.v. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_issmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>})<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_inhabited_contr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">Z</span> <span class="id" title="var">e</span>].<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">IsSmall</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>&nbsp;is&nbsp;equivalent&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">IsSmall</span></span> <span class="inlinecode"><span class="id" title="var">Z</span></span>,&nbsp;which&nbsp;is&nbsp;contractible&nbsp;since&nbsp;it&nbsp;is&nbsp;a&nbsp;based&nbsp;path&nbsp;space.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> { <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>} &amp; <span class="id" title="var">Y</span> &lt;~&gt; <span class="id" title="var">Z</span> } <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">equiv_via</span> (<span class="id" title="var">sig@</span>{<span class="id" title="var">k</span> <span class="id" title="var">k</span>} (<span class="id" title="keyword">fun</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>} =&gt; <span class="id" title="var">Y</span> &lt;~&gt; <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;2: <span class="id" title="var">issig</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_sigma_id</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">Y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_functor_postcompose_equiv</span> <span class="id" title="var">Y</span> <span class="id" title="var">e</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A type in <span class="inlinecode"><span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}</span> is clearly small. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">issmall_in@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> | <span class="id" title="var">i</span> &lt;= <span class="id" title="var">j</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) : <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span> | 10<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_IsSmall</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span> <span class="id" title="var">equiv_idmap</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The small types are closed under equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issmall_equiv_issmall@</span>{<span class="id" title="var">i1</span> <span class="id" title="var">j1</span> <span class="id" title="var">i2</span> <span class="id" title="var">j2</span> | <span class="id" title="var">i1</span> &lt;= <span class="id" title="var">i2</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j1</span>}} {<span class="id" title="var">B</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j2</span>}}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">e</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">sA</span> : <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i1</span> <span class="id" title="var">j1</span>} <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i2</span> <span class="id" title="var">j2</span>} <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">smalltype</span> <span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_smalltype</span> <span class="id" title="var">A</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The small types are closed under dependent sums. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sigma_closed_issmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> | } {<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}) (<span class="id" title="var">sA</span> : <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">sB</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">B</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} { <span class="id" title="var">a</span> : <span class="id" title="var">A</span> &amp; <span class="id" title="var">B</span> <span class="id" title="var">a</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> { <span class="id" title="var">a</span> : (<span class="id" title="var">smalltype</span> <span class="id" title="var">A</span>) &amp; (<span class="id" title="var">smalltype</span> (<span class="id" title="var">B</span> (<span class="id" title="var">equiv_smalltype</span> <span class="id" title="var">A</span> <span class="id" title="var">a</span>))) }.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">equiv_functor_sigma'</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_smalltype</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If a map has small codomain and fibers, then the domain is small. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issmall_issmall_codomain_fibers@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> | } {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">sY</span> : <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">sF</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span> : <span class="id" title="var">Y</span>, <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">issmall_equiv_issmall</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_fibration_replacement</span> <span class="id" title="var">f</span>)^-1%<span class="id" title="var">equiv</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">sigma_closed_issmall</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Every contractible type is small. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issmall_contr@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>| } (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}) (<span class="id" title="var">T</span> : <span class="id" title="var">Contr</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">issmall_equiv_issmall</span> (<span class="id" title="var">equiv_contr_unit</span>)^-1 <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If we can show that <span class="inlinecode"><span class="id" title="var">X</span></span> is small when it is inhabited, then it is in fact small. This is Remark 2.9 in the paper. It lets us simplify the statement of Proposition 2.8. Note that this implies propositional resizing, so the <span class="inlinecode"><span class="id" title="var">PropResizing</span></span> assumption is necessary. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issmall_inhabited_issmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>} `{<span class="id" title="var">PropResizing</span>} `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>})<br/>
+&nbsp;&nbsp;(<span class="id" title="var">isX</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Since&nbsp;<span class="inlinecode"><span class="id" title="var">IsSmall</span></span>&nbsp;is&nbsp;cumulative&nbsp;in&nbsp;the&nbsp;universe&nbsp;<span class="inlinecode"><span class="id" title="var">j</span></span>,&nbsp;it&nbsp;suffices&nbsp;to&nbsp;prove&nbsp;<span class="inlinecode"><span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span></span> <span class="inlinecode"><span class="id" title="var">k</span>}</span> <span class="inlinecode"><span class="id" title="var">X</span></span>&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">k</span></span>&nbsp;the&nbsp;universe&nbsp;that&nbsp;<span class="inlinecode"><span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span></span> <span class="inlinecode"><span class="id" title="var">j</span>}</span>&nbsp;lives&nbsp;in.&nbsp;&nbsp;We&nbsp;think&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">k</span></span>&nbsp;as&nbsp;max(i+1,j).&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">issmall_issmall_codomain_fibers@</span>{<span class="id" title="var">i</span> <span class="id" title="var">k</span>} <span class="id" title="var">isX</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">sX</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">sigma_closed_issmall</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If a type <span class="inlinecode"><span class="id" title="var">X</span></span> is truncated, then so is <span class="inlinecode"><span class="id" title="var">smalltype</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">istrunc_smalltype@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> | } (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}) (<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span>, <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> (<span class="id" title="var">smalltype</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">X</span> (<span class="id" title="var">equiv_smalltype@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span>)^-1%<span class="id" title="var">equiv</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1801"></a><h1 class="section">Locally small types</h1>
+
+<div class="paragraph"> </div>
+
+ We say that a type <span class="inlinecode"><span class="id" title="var">X</span></span> is 0-locally small if it is small, and (n+1)-locally small if its identity types are n-locally small. 
+</div>
+<div class="code">
+<span class="comment">(*&nbsp;TODO:&nbsp;Can&nbsp;we&nbsp;make&nbsp;this&nbsp;an&nbsp;inductive&nbsp;type&nbsp;and&nbsp;avoid&nbsp;the&nbsp;extra&nbsp;universe&nbsp;variable&nbsp;<span class="inlinecode"><span class="id" title="var">k</span></span>?&nbsp;*)</span><br/>
+<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}) : <span class="id" title="var">Type@</span>{<span class="id" title="var">k</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| 0%<span class="id" title="var">nat</span> =&gt; <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">m</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">X</span>, <span class="id" title="var">IsLocallySmall</span> <span class="id" title="var">m</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+<span class="id" title="keyword">Existing Class</span> <span class="id" title="var">IsLocallySmall</span>.<br/>
+<span class="id" title="keyword">Hint Unfold</span> <span class="id" title="var">IsLocallySmall</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_islocallysmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>} `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>})<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp@</span>{<span class="id" title="var">k</span>} (<span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Here&nbsp;and&nbsp;later&nbsp;we&nbsp;use&nbsp;<span class="inlinecode"><span class="id" title="var">simple_induction</span></span>&nbsp;to&nbsp;control&nbsp;the&nbsp;universe&nbsp;variable.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">X</span>; <span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A small type is n-locally small for all <span class="inlinecode"><span class="id" title="var">n</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">islocallysmall_in@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt;= <span class="id" title="var">j</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>, <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>})<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">issmall_in</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">IHn</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The n-locally small types are closed under equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">islocallysmall_equiv_islocallysmall</span><br/>
+&nbsp;&nbsp;@{<span class="id" title="var">i</span> <span class="id" title="var">j1</span> <span class="id" title="var">j2</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j1</span> &lt;= <span class="id" title="var">k</span>, <span class="id" title="var">j2</span> &lt;= <span class="id" title="var">k</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) {<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j1</span>}} {<span class="id" title="var">B</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j2</span>}}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">e</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">lsA</span> : <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j1</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j2</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">e</span> <span class="id" title="var">lsA</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> @<span class="id" title="var">issmall_equiv_issmall</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">e</span> <span class="id" title="var">lsA</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_ap'</span> (<span class="id" title="var">e</span>^-1%<span class="id" title="var">equiv</span>) <span class="id" title="var">b</span> <span class="id" title="var">b'</span>)^-1%<span class="id" title="var">equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">lsA</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A small type is n-locally small for all n. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">islocallysmall_issmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}) (<span class="id" title="var">sX</span> : <span class="id" title="var">IsSmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">islocallysmall_equiv_islocallysmall</span> <span class="id" title="var">n</span> (<span class="id" title="var">equiv_smalltype</span> <span class="id" title="var">X</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If a type is n-locally small, then it is (n+1)-locally small. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">islocallysmall_succ@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}) (<span class="id" title="var">lsX</span> : <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span>.+1 <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">X</span> <span class="id" title="var">lsX</span>; <span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">islocallysmall_issmall</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">lsX</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>, <span class="id" title="var">lsX</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The n-locally small types are closed under dependent sums. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">sigma_closed_islocallysmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) {<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}} (<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>})<br/>
+&nbsp;&nbsp;(<span class="id" title="var">lsA</span> : <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">lsB</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> (<span class="id" title="var">B</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> { <span class="id" title="var">a</span> : <span class="id" title="var">A</span> &amp; <span class="id" title="var">B</span> <span class="id" title="var">a</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">lsA</span> <span class="id" title="var">lsB</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> @<span class="id" title="var">sigma_closed_issmall</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">lsA</span> <span class="id" title="var">lsB</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">islocallysmall_equiv_islocallysmall</span> <span class="id" title="var">n</span> (<span class="id" title="var">equiv_path_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">lsA</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lsB</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If a map has n-locally small codomain and fibers, then the domain is n-locally small. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">islocallysmall_islocallysmall_codomain_fibers@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">sY</span> : <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">sF</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span> : <span class="id" title="var">Y</span>, <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} <span class="id" title="var">n</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">islocallysmall_equiv_islocallysmall</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_fibration_replacement</span> <span class="id" title="var">f</span>)^-1%<span class="id" title="var">equiv</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">sigma_closed_islocallysmall</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Under propositional resizing, every (n+1)-truncated type is (n+2)-locally small. This is Lemma 2.3 in the paper. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">islocallysmall_trunc@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> | <span class="id" title="var">i</span> &lt; <span class="id" title="var">k</span>, <span class="id" title="var">j</span> &lt;= <span class="id" title="var">k</span>} `{<span class="id" title="var">PropResizing</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>) (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}) (<span class="id" title="var">T</span> : <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLocallySmall@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>} (<span class="id" title="var">trunc_index_to_nat</span> <span class="id" title="var">n</span>) <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">n</span> <span class="id" title="var">X</span> <span class="id" title="var">T</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">nrapply</span> <span class="id" title="var">issmall_hprop@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>}.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">T</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">IHn</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

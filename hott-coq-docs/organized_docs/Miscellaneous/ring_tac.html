@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>ring_tac</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library ring_tac</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.abstract_algebra</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.tactics.ring_quote</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.tactics.ring_pol</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.rings</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.orders.sum</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.naturals</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.integers</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">R</span> <span class="id" title="var">V</span> <span class="id" title="var">f</span> <span class="id" title="var">l</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">Vlt</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Quoting.Instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">content</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">C</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Context</span> `(<span class="id" title="var">phi</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">R</span>) `{<span class="id" title="var">AlmostRingPreserving</span> <span class="id" title="var">C</span> <span class="id" title="var">R</span> <span class="id" title="var">phi</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">AlmostRing</span> <span class="id" title="var">C</span>} `{!<span class="id" title="var">AlmostRing</span> <span class="id" title="var">R</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">normalize_eq</span> `{<span class="id" title="var">Q</span> : @<span class="id" title="var">Quoting.EqQuote</span> <span class="id" title="var">R</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">V</span> <span class="id" title="var">l</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">V'</span> <span class="id" title="var">l'</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Trichotomy</span> <span class="id" title="var">V</span> <span class="id" title="var">Vlt</span>} `{<span class="id" title="var">Trichotomy</span> <span class="id" title="var">V'</span> <span class="id" title="var">Vlt'</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="tactic">eval</span> <span class="id" title="var">phi</span> (<span class="id" title="var">Quoting.merge</span> <span class="id" title="var">R</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">toPol</span> (<span class="id" title="var">Quoting.expr_map</span> <span class="id" title="var">inl</span> (<span class="id" title="var">Quoting.eqquote_l</span> <span class="id" title="var">R</span>)))<br/>
+&nbsp;&nbsp;= <span class="id" title="tactic">eval</span> <span class="id" title="var">phi</span> (<span class="id" title="var">Quoting.merge</span> <span class="id" title="var">R</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span>) (<span class="id" title="var">toPol</span> (<span class="id" title="var">Quoting.eqquote_r</span> <span class="id" title="var">R</span>))<br/>
+&nbsp;&nbsp;-&gt; <span class="id" title="var">n</span> = <span class="id" title="var">m</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">eapply</span> <span class="id" title="var">Quoting.eval_eqquote</span>.<br/>
+<span class="id" title="var">etransitivity</span>;[<span class="id" title="tactic">symmetry</span>;<span class="id" title="tactic">apply</span> (<span class="id" title="var">eval_toPol</span> <span class="id" title="var">_</span>)|].<br/>
+<span class="id" title="var">etransitivity</span>;[|<span class="id" title="tactic">apply</span> (<span class="id" title="var">eval_toPol</span> <span class="id" title="var">_</span>)].<br/>
+<span class="id" title="tactic">exact</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">by_quoting</span> `{<span class="id" title="var">Q</span> : @<span class="id" title="var">Quoting.EqQuote</span> <span class="id" title="var">R</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">V</span> <span class="id" title="var">l</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">V'</span> <span class="id" title="var">l'</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Trichotomy</span> <span class="id" title="var">V</span> <span class="id" title="var">Vlt</span>} `{<span class="id" title="var">Trichotomy</span> <span class="id" title="var">V'</span> <span class="id" title="var">Vlt'</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">toPol</span> (<span class="id" title="var">Quoting.expr_map</span> <span class="id" title="var">inl</span> (@<span class="id" title="var">Quoting.eqquote_l</span> <span class="id" title="var">R</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">Q</span>))<br/>
+&nbsp;&nbsp;=? <span class="id" title="var">toPol</span> (@<span class="id" title="var">Quoting.eqquote_r</span> <span class="id" title="var">R</span>  <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">Q</span>) = <span class="id" title="var">true</span><br/>
+&nbsp;&nbsp;-&gt; <span class="id" title="var">n</span> = <span class="id" title="var">m</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">normalize_eq</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">eval_eqb</span>,<span class="id" title="var">E</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">normalize_prequoted</span> `{<span class="id" title="var">Trichotomy</span> <span class="id" title="var">V</span> <span class="id" title="var">Vlt</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">Quoting.Expr</span> <span class="id" title="var">V</span>) <span class="id" title="var">vs</span><br/>
+&nbsp;&nbsp;: <span class="id" title="tactic">eval</span> <span class="id" title="var">phi</span> <span class="id" title="var">vs</span> (<span class="id" title="var">toPol</span> <span class="id" title="var">a</span>) = <span class="id" title="tactic">eval</span> <span class="id" title="var">phi</span> <span class="id" title="var">vs</span> (<span class="id" title="var">toPol</span> <span class="id" title="var">b</span>) -&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">Quoting.eval</span> <span class="id" title="var">_</span> <span class="id" title="var">vs</span> <span class="id" title="var">a</span> = <span class="id" title="var">Quoting.eval</span> <span class="id" title="var">_</span> <span class="id" title="var">vs</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">rewrite</span> !(<span class="id" title="var">eval_toPol</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">prove_prequoted</span> `{<span class="id" title="var">Trichotomy</span> <span class="id" title="var">V</span> <span class="id" title="var">Vlt</span>} (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">Quoting.Expr</span> <span class="id" title="var">V</span>) <span class="id" title="var">vs</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">toPol</span> <span class="id" title="var">a</span> =? <span class="id" title="var">toPol</span> <span class="id" title="var">b</span> = <span class="id" title="var">true</span> -&gt; <span class="id" title="var">Quoting.eval</span> <span class="id" title="var">_</span> <span class="id" title="var">vs</span> <span class="id" title="var">a</span> = <span class="id" title="var">Quoting.eval</span> <span class="id" title="var">_</span> <span class="id" title="var">vs</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">normalize_prequoted</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">eval_eqb</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">content</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">default_almostneg</span> `{<span class="id" title="var">Zero</span> <span class="id" title="var">A</span>} : <span class="id" title="var">AlmostNegate</span> <span class="id" title="var">A</span> | 20<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 0.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">default_almostneg</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> /.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">negate_almostneg</span> `{<span class="id" title="var">Aneg</span> : <span class="id" title="var">Negate</span> <span class="id" title="var">A</span>} : <span class="id" title="var">AlmostNegate</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= (-).<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">negate_almostneg</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> /.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">semiring_almostring</span> `{<span class="id" title="var">IsSemiCRing</span> <span class="id" title="var">A</span>} : <span class="id" title="var">AlmostRing</span> <span class="id" title="var">A</span> | 10.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>;<span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">almost_negate</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">symmetry</span>;<span class="id" title="tactic">apply</span> <span class="id" title="var">mult_0_l</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ring_almostring</span> `{<span class="id" title="var">IsCRing</span> <span class="id" title="var">A</span>} : <span class="id" title="var">AlmostRing</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>;<span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">almost_negate</span>;<span class="id" title="tactic">simpl</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">negate_mult_l</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">sr_mor_almostring_mor</span> `{<span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AlmostRingPreserving</span> <span class="id" title="var">f</span> | 10.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>;<span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">almost_negate</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">_</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">preserves_0</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">VarSec</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsCRing</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">IsCRing</span> <span class="id" title="var">B</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} `{!<span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">f</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ring_mor_almostring_mor</span> : <span class="id" title="var">AlmostRingPreserving</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>;<span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="tactic">unfold</span> <span class="id" title="var">almost_negate</span>;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">preserves_negate</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">VarSec</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">normalize_eq</span> {<span class="id" title="var">C</span> <span class="id" title="var">_</span> <span class="id" title="var">R</span>} <span class="id" title="var">phi</span><br/>
+&nbsp;&nbsp;{<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">by_quoting</span> {<span class="id" title="var">C</span> <span class="id" title="var">_</span> <span class="id" title="var">R</span>} <span class="id" title="var">phi</span><br/>
+&nbsp;&nbsp;{<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ring_with_nat</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;|- @<span class="id" title="var">paths</span> ?<span class="id" title="var">R</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">_</span> : <span class="id" title="var">IsSemiCRing</span> <span class="id" title="var">R</span>)) || <span class="id" title="tactic">fail</span> "target equality not on a semiring");<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">by_quoting</span> (<span class="id" title="var">naturals_to_semiring</span> <span class="id" title="var">nat</span> <span class="id" title="var">R</span>));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ring_with_integers</span> <span class="id" title="var">Z</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;|- @<span class="id" title="var">paths</span> ?<span class="id" title="var">R</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">_</span> : <span class="id" title="var">IsCRing</span> <span class="id" title="var">R</span>)) || <span class="id" title="tactic">fail</span> "target equality not on a ring");<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">by_quoting</span> (<span class="id" title="var">integers_to_ring</span> <span class="id" title="var">Z</span> <span class="id" title="var">R</span>));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ring_with_self</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;|- @<span class="id" title="var">paths</span> ?<span class="id" title="var">R</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">_</span> : <span class="id" title="var">IsSemiCRing</span> <span class="id" title="var">R</span>)) || <span class="id" title="tactic">fail</span> "target equality not on a ring");<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">by_quoting</span> (@<span class="id" title="var">id</span> <span class="id" title="var">R</span>));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ring_repl</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">Hrw</span> := <span class="id" title="tactic">fresh</span> "Hrw" <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Hrw</span> : <span class="id" title="var">a</span> = <span class="id" title="var">b</span>);[<span class="id" title="var">ring_with_nat</span>|<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Hrw</span>;<span class="id" title="tactic">clear</span> <span class="id" title="var">Hrw</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "ring_replace" <span class="id" title="keyword">constr</span>(<span class="id" title="var">x</span>) "with" <span class="id" title="keyword">constr</span>(<span class="id" title="var">y</span>) := <span class="id" title="var">ring_repl</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

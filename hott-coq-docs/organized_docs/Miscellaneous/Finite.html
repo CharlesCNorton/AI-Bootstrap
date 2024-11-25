@@ -1,0 +1,1113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Finite</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Finite</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HSet</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span> <span class="id" title="var">Spaces.Nat.Factorial</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HFiber</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Factorization</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Truncations</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Quotient</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Projective</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Fin</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1435"></a><h2 class="section">Definition of general finite sets</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Finite</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) :=<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">fcard</span> : <span class="id" title="var">nat</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">merely_equiv_fin</span> : <span class="id" title="var">merely</span> (<span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Fin</span> <span class="id" title="var">fcard</span>) }.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> {<span class="id" title="var">_</span>}.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span> {<span class="id" title="var">_</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_finite</span> <span class="id" title="var">X</span><br/>
+: { <span class="id" title="var">n</span> : <span class="id" title="var">nat</span> &amp; <span class="id" title="var">merely</span> (<span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>) } &lt;~&gt; <span class="id" title="var">Finite</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">issig</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Note that the sigma over cardinalities is not truncated.  Nevertheless, because canonical finite sets of different cardinalities are not isomorphic, being finite is still an hprop.  (Thus, we could have truncated the sigma and gotten an equivalent definition, but it would be less convenient to reason about.) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_finite</span> <span class="id" title="var">X</span><br/>
+: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">issig_finite</span> <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ishprop_sigma_disjoint</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">Hn</span> <span class="id" title="var">Hm</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">nat_eq_fin_equiv</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> (<span class="id" title="var">Hm</span> <span class="id" title="var">oE</span> <span class="id" title="var">Hn</span>^-1)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1436"></a><h2 class="section">Preservation of finiteness by equivalences</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finite_equiv</span> <span class="id" title="var">X</span> {<span class="id" title="var">Y</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">e</span>}<br/>
+: <span class="id" title="var">Finite</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ?.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Finite</span> <span class="id" title="var">Y</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">f</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>); <span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_compose</span> <span class="id" title="var">f</span> <span class="id" title="var">e</span>^-1).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finite_equiv'</span> <span class="id" title="var">X</span> {<span class="id" title="var">Y</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Y</span>)<br/>
+: <span class="id" title="var">Finite</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Finite</span> <span class="id" title="var">Y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">finite_equiv</span> <span class="id" title="var">X</span> <span class="id" title="var">e</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Corollary</span> <span class="id" title="var">finite_equiv_equiv</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span><br/>
+: (<span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Y</span>) -&gt; (<span class="id" title="var">Finite</span> <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ?; <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_iff_hprop</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">finite_equiv'</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">assumption</span> | <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">assumption</span> ].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_equiv</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">e</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> = <span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (@<span class="id" title="var">fcard</span> <span class="id" title="var">Y</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">X</span> <span class="id" title="var">e</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (@<span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">path_ishprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_equiv'</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> = <span class="id" title="var">fcard</span> <span class="id" title="var">Y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fcard_equiv</span> <span class="id" title="var">e</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1437"></a><h2 class="section">Simple examples of finite sets</h2>
+
+<div class="paragraph"> </div>
+
+ Canonical finite sets are finite 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_fin</span> <span class="id" title="var">n</span> : <span class="id" title="var">Finite</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Finite</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">_</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This includes the empty set. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_empty</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">Empty</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">finite_fin</span> 0.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The unit type is finite, since it's equivalent to <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode">1</span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_unit</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">Unit</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv'</span> (<span class="id" title="var">Fin</span> 1) <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sum_empty_l</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Thus, any contractible type is finite. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_contr</span> <span class="id" title="var">X</span> `{<span class="id" title="var">Contr</span> <span class="id" title="var">X</span>} : <span class="id" title="var">Finite</span> <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">finite_equiv</span> <span class="id" title="var">Unit</span> <span class="id" title="var">equiv_contr_unit</span>^-1 <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Any decidable hprop is finite, since it must be equivalent to <span class="inlinecode"><span class="id" title="var">Empty</span></span> or <span class="inlinecode"><span class="id" title="var">Unit</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finite_decidable_hprop</span> <span class="id" title="var">X</span> `{<span class="id" title="var">IsHProp</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Decidable</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">Finite</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> <span class="id" title="var">X</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span>|<span class="id" title="var">nx</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">assert</span> (<span class="id" title="var">Contr</span> <span class="id" title="var">X</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> (<span class="id" title="var">contr_inhabited_hprop</span> <span class="id" title="var">X</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">Empty</span> <span class="id" title="var">nx</span>^-1 <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Immediate</span> <span class="id" title="var">finite_decidable_hprop</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It follows that the propositional truncation of any finite set is finite. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_merely</span> <span class="id" title="var">X</span> {<span class="id" title="var">fX</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">Finite</span> (<span class="id" title="var">merely</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+As in decidable_finite_hprop, we case on cardinality first to avoid needing funext. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">fX</span> <span class="id" title="keyword">as</span> [[|<span class="id" title="var">n</span>] <span class="id" title="var">e</span>]; <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_decidable_hprop</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">right</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">left</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">e</span>^-1 (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Finite sets are closed under path-spaces. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_paths</span> {<span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">Finite</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+If we assume <span class="inlinecode"><span class="id" title="var">Funext</span></span>, then typeclass inference produces this automatically, since <span class="inlinecode"><span class="id" title="var">X</span></span> has decidable equality and (hence) is a set, so <span class="inlinecode"><span class="id" title="var">x</span>=<span class="id" title="var">y</span></span> is a decidable hprop.  But we can also deduce it without funext, since <span class="inlinecode"><span class="id" title="var">Finite</span></span> is an hprop even without funext. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> <span class="id" title="var">e</span>)^-1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">finite_decidable_hprop</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Finite sets are also closed under successors. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_succ</span> <span class="id" title="var">X</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} : <span class="id" title="var">Finite</span> (<span class="id" title="var">X</span> + <span class="id" title="var">Unit</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Finite</span> <span class="id" title="var">_</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>).+1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> +<span class="id" title="var">E</span> 1); <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_succ</span> <span class="id" title="var">X</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">fcard</span> (<span class="id" title="var">X</span> + <span class="id" title="var">Unit</span>) = (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>).+1<br/>
+&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1438"></a><h2 class="section">Decidability</h2>
+
+<div class="paragraph"> </div>
+
+ Like canonical finite sets, finite sets have decidable equality. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">decidablepaths_finite</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">X</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">DecidablePaths</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">decidablepaths_equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">e</span>^-1 <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+However, contrary to what you might expect, we cannot assert that "every finite set is decidable"!  That would be claiming a *uniform* way to select an element from every nonempty finite set, which contradicts univalence. 
+<div class="paragraph"> </div>
+
+ One thing we can prove is that any finite hprop is decidable. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">decidable_finite_hprop</span> <span class="id" title="var">X</span> `{<span class="id" title="var">IsHProp</span> <span class="id" title="var">X</span>} {<span class="id" title="var">fX</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">Decidable</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+To avoid having to use <span class="inlinecode"><span class="id" title="var">Funext</span></span>, we case on the cardinality of <span class="inlinecode"><span class="id" title="var">X</span></span> before stripping the truncation from its equivalence to <span class="inlinecode"><span class="id" title="var">Fin</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span>; if we did things in the other order then we'd have to know that <span class="inlinecode"><span class="id" title="var">Decidable</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is an hprop, which requires funext. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">fX</span> <span class="id" title="keyword">as</span> [[|<span class="id" title="var">n</span>] <span class="id" title="var">e</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">right</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">left</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span>^-1 (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It follows that if <span class="inlinecode"><span class="id" title="var">X</span></span> is finite, then its propositional truncation is decidable. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">decidable_merely_finite</span> <span class="id" title="var">X</span> {<span class="id" title="var">fX</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">Decidable</span> (<span class="id" title="var">merely</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+From this, it follows that any finite set is *merely* decidable. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">merely_decidable_finite</span> <span class="id" title="var">X</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">merely</span> (<span class="id" title="var">Decidable</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">O_decidable</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1439"></a><h2 class="section">Induction over finite sets</h2>
+
+<div class="paragraph"> </div>
+
+ Most concrete applications of this don't actually require univalence, but the general version does.  For this reason the general statement is less useful (and less used in the sequel) than it might be. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finite_ind_hprop</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">X</span>, <span class="id" title="var">Finite</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">X</span> (<span class="id" title="var">fX</span>:<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>), <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">X</span> <span class="id" title="var">_</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f0</span> : <span class="id" title="var">P</span> <span class="id" title="var">Empty</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fs</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">X</span> (<span class="id" title="var">fX</span>:<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>), <span class="id" title="var">P</span> <span class="id" title="var">X</span> <span class="id" title="var">_</span> -&gt; <span class="id" title="var">P</span> (<span class="id" title="var">X</span> + <span class="id" title="var">Unit</span>)%<span class="id" title="keyword">type</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">P</span> <span class="id" title="var">X</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">p</span> := <span class="id" title="var">transportD</span> <span class="id" title="var">Finite</span> <span class="id" title="var">P</span> (<span class="id" title="var">path_universe</span> <span class="id" title="var">e</span>^-1) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">P</span> <span class="id" title="var">X</span>) (<span class="id" title="var">path_ishprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">p</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">f0</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">P</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>.+1)) (<span class="id" title="var">path_ishprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">fs</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">IH</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1440"></a><h2 class="section">The finite axiom of choice, and projectivity</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finite_choice</span> {<span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} : <span class="id" title="var">HasChoice</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">P</span> <span class="id" title="var">oP</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">oP</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">P'</span> := <span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">e</span>^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">f'</span> := (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">f</span> (<span class="id" title="var">e</span>^-1 <span class="id" title="var">x</span>)) : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">merely</span> (<span class="id" title="var">P'</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Trunc_functor</span> (<span class="id" title="var">X</span> := <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">Fin</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>), <span class="id" title="var">P'</span> <span class="id" title="var">x</span>) (-1) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">e</span> <span class="id" title="var">x</span> # <span class="id" title="var">g</span> (<span class="id" title="var">e</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">clearbody</span> <span class="id" title="var">P'</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">P</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">Empty_ind</span> <span class="id" title="var">P</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">specialize</span> (<span class="id" title="var">IH</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">inl</span>) (<span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">inl</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">f</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">sum_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">IH</span> (<span class="id" title="var">Unit_ind</span> <span class="id" title="var">e</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Corollary</span> <span class="id" title="var">isprojective_fin_n</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">IsProjective</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">iff_isoprojective_hasochoice</span> <span class="id" title="var">_</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">finite_choice</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1441"></a><h2 class="section">Constructions on finite sets</h2>
+
+<div class="paragraph"> </div>
+
+ Finite sets are closed under sums, products, function spaces, and equivalence spaces.  There are multiple choices we could make regarding how to prove these facts.  Since we know what the cardinalities ought to be in all cases (since we know how to add, multiply, exponentiate, and take factorials of natural numbers), we could specify those off the bat, and then reduce to the case of canonical finite sets.  However, it's more amusing to instead prove finiteness of these constructions by "finite-set induction", and then *deduce* that their cardinalities are given by the corresponding operations on natural numbers (because they satisfy the same recurrences). 
+<div class="paragraph"> </div>
+
+<a id="lab1442"></a><h3 class="section">Binary sums</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_sum</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">Finite</span> (<span class="id" title="var">X</span> + <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">Y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">functor_sum</span> <span class="id" title="var">idmap</span> <span class="id" title="var">e</span>^-1) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">sum_empty_r</span> <span class="id" title="var">X</span>)^-1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_sum_assoc</span> <span class="id" title="var">X</span> <span class="id" title="var">_</span> <span class="id" title="var">Unit</span>) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Note that the cardinality function <span class="inlinecode"><span class="id" title="var">fcard</span></span> actually computes.  The same will be true of all the other proofs in this section, though we don't always verify it. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Goal</span> <span class="id" title="var">fcard</span> (<span class="id" title="var">Fin</span> 3 + <span class="id" title="var">Fin</span> 4) = 7.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_sum</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">fcard</span> (<span class="id" title="var">X</span> + <span class="id" title="var">Y</span>) = (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span> + <span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">nat_add_comm</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">Y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv'</span> (1 +<span class="id" title="var">E</span> <span class="id" title="var">e</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; (<span class="id" title="var">y</span> + <span class="id" title="var">fcard</span> <span class="id" title="var">X</span>)) (<span class="id" title="var">fcard_equiv</span> <span class="id" title="var">e</span>^-1)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span> (<span class="id" title="var">sum_empty_r</span> <span class="id" title="var">X</span>)^-1).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span> (<span class="id" title="var">equiv_sum_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">S</span> <span class="id" title="var">IH</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1443"></a><h3 class="section">Binary products</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_prod</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">Finite</span> (<span class="id" title="var">X</span> * <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">Y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">functor_prod</span> <span class="id" title="var">idmap</span> <span class="id" title="var">e</span>^-1) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">prod_empty_r</span> <span class="id" title="var">X</span>)^-1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">sum_distrib_l</span> <span class="id" title="var">X</span> <span class="id" title="var">_</span> <span class="id" title="var">Unit</span>)^-1 (<span class="id" title="var">finite_sum</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">prod_unit_r</span> <span class="id" title="var">X</span>)^-1 <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_prod</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">fcard</span> (<span class="id" title="var">X</span> * <span class="id" title="var">Y</span>) = <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> * <span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv'</span> (<span class="id" title="var">e</span> *<span class="id" title="var">E</span> 1) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> * <span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">fcard_equiv</span> <span class="id" title="var">e</span>^-1)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span> (<span class="id" title="var">prod_empty_l</span> <span class="id" title="var">Y</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span> (<span class="id" title="var">sum_distrib_r</span> <span class="id" title="var">Y</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>) <span class="id" title="var">Unit</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_sum</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">nat_add_comm</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap011</span> <span class="id" title="var">nat_add</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">fcard_equiv'</span>, <span class="id" title="var">prod_unit_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1444"></a><h3 class="section">Function types</h3>
+
+<div class="paragraph"> </div>
+
+ Finite sets are closed under function types, and even dependent function types. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_forall</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span>} (<span class="id" title="var">Y</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Finite</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>)}<br/>
+: <span class="id" title="var">Finite</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, <span class="id" title="var">Y</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv'</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_functor_forall'</span> (<span class="id" title="var">P</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">Y</span> (<span class="id" title="var">e</span>^-1 <span class="id" title="var">x</span>)) <span class="id" title="var">e</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_transport</span> <span class="id" title="var">_</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">e</span> <span class="id" title="var">x</span>)). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">Y'</span> := <span class="id" title="var">Y</span> <span class="id" title="var">o</span> <span class="id" title="var">e</span>^-1); <span class="id" title="tactic">change</span> (<span class="id" title="var">Finite</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Y'</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Finite</span> (<span class="id" title="var">Y'</span> <span class="id" title="var">x</span>)) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>; <span class="id" title="var">clearbody</span> <span class="id" title="var">Y'</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">Y'</span> ?.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_sum_ind</span> <span class="id" title="var">Y'</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">finite_prod</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (@<span class="id" title="var">Unit_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">Y'</span> (<span class="id" title="var">inr</span> <span class="id" title="var">u</span>))) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_unit_ind</span> (<span class="id" title="var">Y'</span> <span class="id" title="var">o</span> <span class="id" title="var">inr</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">local</span>] <span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 =&gt; <span class="id" title="tactic">progress</span> (<span class="id" title="tactic">cbv</span> <span class="id" title="keyword">beta</span> <span class="id" title="keyword">iota</span>) : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_arrow</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">X</span> <span class="id" title="var">Y</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">fcard</span> (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) = <span class="id" title="var">nat_pow</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span> (<span class="id" title="var">functor_arrow</span> <span class="id" title="var">e</span> <span class="id" title="var">idmap</span>)^-1 @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">nat_pow</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>) <span class="id" title="var">x</span>) (<span class="id" title="var">fcard_equiv</span> <span class="id" title="var">e</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span> (<span class="id" title="var">equiv_sum_ind</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">_</span>:<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>.+1) =&gt; <span class="id" title="var">Y</span>))^-1 @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">nat_mul_comm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap011</span> <span class="id" title="var">nat_mul</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span> (@<span class="id" title="var">Unit_ind</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">_</span>:<span class="id" title="var">Unit</span>) =&gt; <span class="id" title="var">Y</span>))^-1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">fcard</span></span> still computes, despite the funext: 
+</div>
+<div class="code">
+<span class="id" title="keyword">Goal</span> <span class="id" title="keyword">forall</span> <span class="id" title="var">fs</span>:<span class="id" title="var">Funext</span>, <span class="id" title="var">fcard</span> (<span class="id" title="var">Fin</span> 3 -&gt; <span class="id" title="var">Fin</span> 4) = 64.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1445"></a><h3 class="section">Automorphism types (i.e. symmetric groups)</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_aut</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">X</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">Finite</span> (<span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_functor_equiv</span> <span class="id" title="var">e</span>^-1 <span class="id" title="var">e</span>^-1) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_fin_equiv</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span>) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_aut</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">X</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">fcard</span> (<span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">X</span>) = <span class="id" title="var">factorial</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_functor_equiv</span> <span class="id" title="var">e</span>^-1 <span class="id" title="var">e</span>^-1)^-1 @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv</span> (<span class="id" title="var">equiv_fin_equiv</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span>)^-1 @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap011</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">fcard</span></span> still computes: 
+</div>
+<div class="code">
+<span class="id" title="keyword">Goal</span> <span class="id" title="keyword">forall</span> <span class="id" title="var">fs</span>:<span class="id" title="var">Funext</span>, <span class="id" title="var">fcard</span> (<span class="id" title="var">Fin</span> 4 &lt;~&gt; <span class="id" title="var">Fin</span> 4) = 24.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1446"></a><h2 class="section">Finite sums of natural numbers</h2>
+
+<div class="paragraph"> </div>
+
+ Perhaps slightly less obviously, finite sets are also closed under sigmas. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_sigma</span> {<span class="id" title="var">X</span>} (<span class="id" title="var">Y</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Finite</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>)}<br/>
+: <span class="id" title="var">Finite</span> { <span class="id" title="var">x</span>:<span class="id" title="var">X</span> &amp; <span class="id" title="var">Y</span> <span class="id" title="var">x</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv'</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_functor_sigma</span> (<span class="id" title="var">equiv_inverse</span> <span class="id" title="var">e</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> (<span class="id" title="var">y</span>:<span class="id" title="var">Y</span> (<span class="id" title="var">e</span>^-1 <span class="id" title="var">x</span>)) =&gt; <span class="id" title="var">y</span>)) <span class="id" title="var">_</span>).<br/>
+</div>
+
+<div class="doc">
+Unfortunately, because <span class="inlinecode"><span class="id" title="var">compose</span></span> is currently beta-expanded, <span class="inlinecode"><span class="id" title="tactic">set</span></span> <span class="inlinecode">(<span class="id" title="var">Y'</span></span> <span class="inlinecode">:=</span> <span class="inlinecode"><span class="id" title="var">Y</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">e</span>^-1)</span> doesn't change the goal. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">Y'</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">Y</span> (<span class="id" title="var">e</span>^-1 <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Finite</span> (<span class="id" title="var">Y'</span> <span class="id" title="var">x</span>)) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>; <span class="id" title="var">clearbody</span> <span class="id" title="var">Y'</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">Y'</span> ?.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">Empty</span> <span class="id" title="var">pr1</span>^-1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_sigma_sum</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>) <span class="id" title="var">Unit</span> <span class="id" title="var">Y'</span>)^-1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">finite_sum</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_contr_sigma</span> <span class="id" title="var">_</span>)^-1 <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Amusingly, this automatically gives us a way to add up a family of natural numbers indexed by any finite set.  (We could of course also define such an operation directly, probably using <span class="inlinecode"><span class="id" title="var">merely_ind_hset</span></span>.) 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finadd</span> {<span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fcard</span> { <span class="id" title="var">x</span>:<span class="id" title="var">X</span> &amp; <span class="id" title="var">Fin</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>) }.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_sigma</span> {<span class="id" title="var">X</span>} (<span class="id" title="var">Y</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Finite</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>)}<br/>
+: <span class="id" title="var">fcard</span> { <span class="id" title="var">x</span>:<span class="id" title="var">X</span> &amp; <span class="id" title="var">Y</span> <span class="id" title="var">x</span> } = <span class="id" title="var">finadd</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">fcard</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">f</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">fcard</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">g</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">merely_equiv_fin</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>) : <span class="id" title="var">merely</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span> &lt;~&gt; <span class="id" title="var">Fin</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">finite_choice</span> <span class="id" title="tactic">in</span> <span class="id" title="var">g</span>; [| <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">finadd</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv'</span> (<span class="id" title="var">equiv_functor_sigma_id</span> <span class="id" title="var">g</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The sum of a finite constant family is the product by its cardinality. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finadd_const</span> <span class="id" title="var">X</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} <span class="id" title="var">n</span><br/>
+: <span class="id" title="var">finadd</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span> =&gt; <span class="id" title="var">n</span>) = <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> * <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">fcard</span> (<span class="id" title="var">X</span> * <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">fcard_equiv'</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">X</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>))).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">fcard_prod</span> <span class="id" title="var">X</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Closure under sigmas and paths also implies closure under hfibers. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finite_hfiber</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">Finite</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Therefore, the cardinality of the domain of a map between finite sets is the sum of the cardinalities of its hfibers. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_domain</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+: <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> = <span class="id" title="var">finadd</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">fcard</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">fcard_sigma</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv'</span> (<span class="id" title="var">equiv_fibration_replacement</span> <span class="id" title="var">f</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In particular, the image of a map between finite sets is finite. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finite_image</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+: <span class="id" title="var">Finite</span> (<span class="id" title="var">himage</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1447"></a><h2 class="section">Finite products of natural numbers</h2>
+
+<div class="paragraph"> </div>
+
+ Similarly, closure of finite sets under <span class="inlinecode"><span class="id" title="keyword">forall</span></span> automatically gives us a way to multiply a family of natural numbers indexed by any finite set.  Of course, if we defined this explicitly, it wouldn't need funext. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finmult</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fcard</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, <span class="id" title="var">Fin</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_forall</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span>} (<span class="id" title="var">Y</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Finite</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>)}<br/>
+: <span class="id" title="var">fcard</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, <span class="id" title="var">Y</span> <span class="id" title="var">x</span>) = <span class="id" title="var">finmult</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">fcard</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">f</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">fcard</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">g</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">merely_equiv_fin</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span>) : <span class="id" title="var">merely</span> (<span class="id" title="var">Y</span> <span class="id" title="var">x</span> &lt;~&gt; <span class="id" title="var">Fin</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">finite_choice</span> <span class="id" title="tactic">in</span> <span class="id" title="var">g</span>; [| <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">finmult</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_equiv'</span> (<span class="id" title="var">equiv_functor_forall'</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">X</span>) <span class="id" title="var">g</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The product of a finite constant family is the exponential by its cardinality. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">finmult_const</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">X</span> `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} <span class="id" title="var">n</span><br/>
+: <span class="id" title="var">finmult</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span> =&gt; <span class="id" title="var">n</span>) = <span class="id" title="var">nat_pow</span> <span class="id" title="var">n</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_arrow</span> <span class="id" title="var">X</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1448"></a><h2 class="section">Finite subsets</h2>
+
+<div class="paragraph"> </div>
+
+ Closure under sigmas implies that a detachable subset of a finite set is finite. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_detachable_subset</span> {<span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+: <span class="id" title="var">Finite</span> { <span class="id" title="var">x</span>:<span class="id" title="var">X</span> &amp; <span class="id" title="var">P</span> <span class="id" title="var">x</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Conversely, if a subset of a finite set is finite, then it is detachable.  We show first that an embedding between finite subsets has detachable image. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">detachable_image_finite</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) `{<span class="id" title="var">IsEmbedding</span> <span class="id" title="var">f</span>}<br/>
+: <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">ff</span> : <span class="id" title="var">Finite</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>)) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">ff</span> <span class="id" title="keyword">as</span> [[|<span class="id" title="var">n</span>] <span class="id" title="var">e</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">right</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">u</span>; <span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span> <span class="id" title="var">u</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">left</span>; <span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span>^-1 (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">detachable_finite_subset</span> {<span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Pf</span> : <span class="id" title="var">Finite</span> ({ <span class="id" title="var">x</span>:<span class="id" title="var">X</span> &amp; <span class="id" title="var">P</span> <span class="id" title="var">x</span> })}<br/>
+: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">decidable_equiv'</span> <span class="id" title="var">_</span> (<span class="id" title="var">hfiber_fibration</span> <span class="id" title="var">x</span> <span class="id" title="var">P</span>)^-1%<span class="id" title="var">equiv</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">detachable_image_finite</span> <span class="id" title="var">pr1</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">mapinO_pr1</span> (<span class="id" title="var">Tr</span> (-1))). </div>
+
+<div class="doc">
+Why doesn't Coq find this? 
+</div>
+<div class="code">
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1449"></a><h2 class="section">Quotients</h2>
+
+<div class="paragraph"> </div>
+
+ The quotient of a finite set by a detachable equivalence relation is finite. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">DecidableQuotients</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">X</span>} `{<span class="id" title="var">Finite</span> <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">R</span> : <span class="id" title="var">Relation</span> <span class="id" title="var">X</span>) `{<span class="id" title="var">is_mere_relation</span> <span class="id" title="var">X</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Reflexive</span> <span class="id" title="var">_</span> <span class="id" title="var">R</span>} `{<span class="id" title="var">Transitive</span> <span class="id" title="var">_</span> <span class="id" title="var">R</span>} `{<span class="id" title="var">Symmetric</span> <span class="id" title="var">_</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Rd</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">R</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">finite_quotient</span> : <span class="id" title="var">Finite</span> (<span class="id" title="var">Quotient</span> <span class="id" title="var">R</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">e</span> := <span class="id" title="var">merely_equiv_fin</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">R'</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> := <span class="id" title="var">R</span> (<span class="id" title="var">e</span>^-1 <span class="id" title="var">x</span>) (<span class="id" title="var">e</span>^-1 <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">is_mere_relation</span> <span class="id" title="var">_</span> <span class="id" title="var">R'</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Reflexive</span> <span class="id" title="var">R'</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">intros</span> ?; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R'</span>; <span class="id" title="tactic">apply</span> <span class="id" title="tactic">reflexivity</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Symmetric</span> <span class="id" title="var">R'</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">intros</span> ? ?; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R'</span>; <span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Transitive</span> <span class="id" title="var">R'</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">intros</span> ? ? ?; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R'</span>; <span class="id" title="tactic">apply</span> <span class="id" title="tactic">transitivity</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">R'd</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">R'</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> (<span class="id" title="tactic">intros</span> ? ?; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R'</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Rd</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">finite_equiv'</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_quotient_functor</span> <span class="id" title="var">R'</span> <span class="id" title="var">R</span> <span class="id" title="var">e</span>^-1 <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">by</span> <span class="id" title="tactic">try</span> (<span class="id" title="tactic">intros</span>; <span class="id" title="tactic">split</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">R'</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">R'</span> ? ? ? ? ?.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv</span> <span class="id" title="var">Empty</span> <span class="id" title="var">_</span>^-1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_rec</span> <span class="id" title="var">R'</span> <span class="id" title="var">_</span> <span class="id" title="var">Empty_rec</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="keyword">match</span> <span class="id" title="var">x</span> <span class="id" title="keyword">with</span> <span class="id" title="keyword">end</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">pose</span> (<span class="id" title="var">R''</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> := <span class="id" title="var">R'</span> (<span class="id" title="var">inl</span> <span class="id" title="var">x</span>) (<span class="id" title="var">inl</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">is_mere_relation</span> <span class="id" title="var">_</span> <span class="id" title="var">R''</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Reflexive</span> <span class="id" title="var">R''</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">intros</span> ?; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R''</span>; <span class="id" title="tactic">apply</span> <span class="id" title="tactic">reflexivity</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Symmetric</span> <span class="id" title="var">R''</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">intros</span> ? ?; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R''</span>; <span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Transitive</span> <span class="id" title="var">R''</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">intros</span> ? ? ?; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R''</span>; <span class="id" title="tactic">apply</span> <span class="id" title="tactic">transitivity</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">R''</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">intros</span> ? ?; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R''</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">R'd</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">inlresp</span> := (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">idmap</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">R''</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">R'</span> (<span class="id" title="var">inl</span> <span class="id" title="var">x</span>) (<span class="id" title="var">inl</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">merely</span> {<span class="id" title="var">x</span>:<span class="id" title="var">Fin</span> <span class="id" title="var">n</span> &amp; <span class="id" title="var">R'</span> (<span class="id" title="var">inl</span> <span class="id" title="var">x</span>) (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)})) <span class="id" title="keyword">as</span> [<span class="id" title="var">p</span>|<span class="id" title="var">np</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> <span class="id" title="var">r</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv'</span> (<span class="id" title="var">Quotient</span> <span class="id" title="var">R''</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Quotient_functor</span> <span class="id" title="var">R''</span> <span class="id" title="var">R'</span> <span class="id" title="var">inl</span> <span class="id" title="var">inlresp</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_surj_emb</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">BuildIsSurjection</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">R'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">y</span>|[]]; <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exists</span> (<span class="id" title="var">class_of</span> <span class="id" title="var">R''</span> <span class="id" title="var">y</span>); <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exists</span> (<span class="id" title="var">class_of</span> <span class="id" title="var">R''</span> <span class="id" title="var">x</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">qglue</span>, <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">isembedding_isinj_hset</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">u</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">R''</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">v</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">u</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">R''</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">u</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">qglue</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R''</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">related_quotient_paths</span> <span class="id" title="var">R'</span> (<span class="id" title="var">inl</span> <span class="id" title="var">u</span>) (<span class="id" title="var">inl</span> <span class="id" title="var">v</span>) <span class="id" title="var">q</span>). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">finite_equiv'</span> (<span class="id" title="var">Quotient</span> <span class="id" title="var">R''</span> + <span class="id" title="var">Unit</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">sum_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">Quotient</span> <span class="id" title="var">R'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Quotient_functor</span> <span class="id" title="var">R''</span> <span class="id" title="var">R'</span> <span class="id" title="var">inl</span> <span class="id" title="var">inlresp</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">class_of</span> <span class="id" title="var">R'</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>))) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_surj_emb</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">BuildIsSurjection</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">R'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">y</span>|[]]; <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exists</span> (<span class="id" title="var">inl</span> (<span class="id" title="var">class_of</span> <span class="id" title="var">R''</span> <span class="id" title="var">y</span>)); <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exists</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>); <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">isembedding_isinj_hset</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">u</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">sum_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">R''</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">v</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">u</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">sum_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">R''</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">u</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">qglue</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">R''</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">related_quotient_paths</span> <span class="id" title="var">R'</span> (<span class="id" title="var">inl</span> <span class="id" title="var">u</span>) (<span class="id" title="var">inl</span> <span class="id" title="var">v</span>) <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> []; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">related_quotient_paths</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> (<span class="id" title="var">np</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">v</span> ; <span class="id" title="var">q</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> []; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">u</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">u</span>|[]]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="var">revert</span> <span class="id" title="var">u</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">R''</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">u</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">related_quotient_paths</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> (<span class="id" title="var">np</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">u</span>;<span class="id" title="var">q</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">reflexivity</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Therefore, the cardinality of <span class="inlinecode"><span class="id" title="var">X</span></span> is the sum of the cardinalities of its equivalence classes. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">fcard_quotient</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> = <span class="id" title="var">finadd</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span>:<span class="id" title="var">Quotient</span> <span class="id" title="var">R</span> =&gt; <span class="id" title="var">fcard</span> {<span class="id" title="var">x</span>:<span class="id" title="var">X</span> &amp; <span class="id" title="var">in_class</span> <span class="id" title="var">R</span> <span class="id" title="var">z</span> <span class="id" title="var">x</span>}).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fcard_domain</span> (<span class="id" title="var">class_of</span> <span class="id" title="var">R</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">path_arrow</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">z</span>; <span class="id" title="var">revert</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fcard_equiv'</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">hfiber</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_sigma_id</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">path_quotient</span> <span class="id" title="var">R</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_iff_hprop</span>; <span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">DecidableQuotients</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1450"></a><h2 class="section">Injections</h2>
+
+<div class="paragraph"> </div>
+
+ An injection between finite sets induces an inequality between their cardinalities. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">leq_inj_finite</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">fX</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} {<span class="id" title="var">fY</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">i</span> : <span class="id" title="var">IsEmbedding</span> <span class="id" title="var">f</span>)<br/>
+: <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> &lt;= <span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">MapIn</span> (<span class="id" title="var">Tr</span> (-1)) <span class="id" title="var">f</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>. <span class="id" title="tactic">clear</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">fX</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">n</span> <span class="id" title="var">e</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">fY</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">m</span> <span class="id" title="var">e'</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">g</span> := <span class="id" title="var">e'</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">e</span>^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">MapIn</span> (<span class="id" title="var">Tr</span> (-1)) <span class="id" title="var">g</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">unfold</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">g</span>. <span class="id" title="tactic">clear</span> <span class="id" title="var">e</span> <span class="id" title="var">e'</span>. <span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">g</span> ?.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">i</span> : <span class="id" title="var">IsInjective</span> <span class="id" title="var">g</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">apply</span> <span class="id" title="var">isinj_embedding</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">m</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">m</span>].<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">elim</span> (<span class="id" title="var">g</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">h</span> := (<span class="id" title="var">fin_transpose_last_with</span> <span class="id" title="var">m</span> (<span class="id" title="var">g</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)))^-1 <span class="id" title="var">o</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">MapIn</span> (<span class="id" title="var">Tr</span> (-1)) <span class="id" title="var">h</span>) <span class="id" title="tactic">by</span> (<span class="id" title="tactic">unfold</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Ha</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>:<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>, <span class="id" title="var">is_inl</span> (<span class="id" title="var">h</span> (<span class="id" title="var">inl</span> <span class="id" title="var">a</span>))).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">remember</span> (<span class="id" title="var">g</span> (<span class="id" title="var">inl</span> <span class="id" title="var">a</span>)) <span class="id" title="keyword">as</span> <span class="id" title="var">b</span> <span class="id" title="var">eqn</span>:<span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">b</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">b</span>|[]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">assert</span> (<span class="id" title="var">q</span> : <span class="id" title="var">g</span> (<span class="id" title="var">inl</span> <span class="id" title="var">a</span>) &lt;&gt; (<span class="id" title="var">g</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">inl_ne_inr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">i</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">r</span>)). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">p</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">symmetric_neq</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">r</span> : <span class="id" title="var">h</span> (<span class="id" title="var">inl</span> <span class="id" title="var">a</span>) = <span class="id" title="var">inl</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">unfold</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_V</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">fin_transpose_last_with_rest</span> <span class="id" title="var">m</span> (<span class="id" title="var">g</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)) <span class="id" title="var">b</span> <span class="id" title="var">q</span> @ <span class="id" title="var">p</span>^). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">r</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">tt</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">assert</span> (<span class="id" title="var">q</span> : <span class="id" title="var">h</span> (<span class="id" title="var">inl</span> <span class="id" title="var">a</span>) = <span class="id" title="var">g</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">unfold</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_V</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">p</span>^); <span class="id" title="tactic">apply</span> <span class="id" title="var">fin_transpose_last_with_with</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">is_inl_or_is_inr</span> (<span class="id" title="var">g</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>))) <span class="id" title="keyword">as</span> [<span class="id" title="var">l</span>|<span class="id" title="var">r</span>]; <span class="id" title="tactic">try</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">s</span> := <span class="id" title="var">inr_un_inr</span> <span class="id" title="var">_</span> <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">s</span>; <span class="id" title="tactic">generalize</span> (<span class="id" title="var">un_inr</span> (<span class="id" title="var">g</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)) <span class="id" title="var">r</span>); <span class="id" title="tactic">intros</span> [] <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> (<span class="id" title="var">inl_ne_inr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">i</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">p</span> @ <span class="id" title="var">s</span>))). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Hb</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>:<span class="id" title="var">Unit</span>, <span class="id" title="var">is_inr</span> (<span class="id" title="var">h</span> (<span class="id" title="var">inr</span> <span class="id" title="var">b</span>))).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> [].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">q</span> : <span class="id" title="var">h</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>) = <span class="id" title="var">inr</span> <span class="id" title="var">tt</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">unfold</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_V</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fin_transpose_last_with_last</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">tt</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">leq_succ</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">IHn</span> <span class="id" title="var">m</span> (<span class="id" title="var">unfunctor_sum_l</span> <span class="id" title="var">h</span> <span class="id" title="var">Ha</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">mapinO_unfunctor_sum_l</span> (<span class="id" title="var">Tr</span> (-1)) <span class="id" title="var">h</span> <span class="id" title="var">Ha</span> <span class="id" title="var">Hb</span>)).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1451"></a><h2 class="section">Surjections</h2>
+ A surjection between finite sets induces an inequality between their cardinalities. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">geq_surj_finite</span>  {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">fX</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">X</span>} {<span class="id" title="var">fY</span> : <span class="id" title="var">Finite</span> <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">i</span> : <span class="id" title="var">IsSurjection</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fcard</span> <span class="id" title="var">X</span> &gt;= <span class="id" title="var">fcard</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">fX</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">n</span> <span class="id" title="var">e</span>], <span class="id" title="var">fY</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">m</span> <span class="id" title="var">e'</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">k</span> := <span class="id" title="var">isprojective_fin_n</span> <span class="id" title="var">m</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">g</span> := <span class="id" title="var">e'</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">e</span>^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">k'</span> : <span class="id" title="var">IsSurjection</span> <span class="id" title="var">g</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span> .<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">i</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">j</span> := <span class="id" title="var">k</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>) <span class="id" title="var">_</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">m</span>) <span class="id" title="var">_</span> <span class="id" title="var">idmap</span> <span class="id" title="var">g</span> <span class="id" title="var">k'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">j</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">s</span> <span class="id" title="var">is_section</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">fcard</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">m</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">fcard</span> (<span class="id" title="var">Fin</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">leq_inj_finite</span> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isembedding_isinj_hset</span>, (<span class="id" title="var">isinj_section</span> <span class="id" title="var">is_section</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1452"></a><h2 class="section">Enumerations</h2>
+
+<div class="paragraph"> </div>
+
+ A function from <span class="inlinecode"><span class="id" title="var">nat</span></span> to a finite set must repeat itself eventually. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Enumeration</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span>} `{<span class="id" title="var">Finite@</span>{<span class="id" title="var">_</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">_</span>} <span class="id" title="var">X</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">nat</span> -&gt; <span class="id" title="var">X</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">er</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">e</span> (<span class="id" title="var">nat_fin</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">finite_enumeration_stage</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">er</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ { <span class="id" title="var">n</span> : <span class="id" title="var">nat</span> &amp; { <span class="id" title="var">k</span> : <span class="id" title="var">nat</span> &amp; <span class="id" title="var">e</span> <span class="id" title="var">n</span> = <span class="id" title="var">e</span> (<span class="id" title="var">n</span> + <span class="id" title="var">k</span>).+1 }}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> [<span class="id" title="var">IH</span>|<span class="id" title="var">IH</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">left</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_inhabited_contr</span>; <span class="id" title="tactic">intros</span> [[] <span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">detachable_image_finite</span> (<span class="id" title="var">er</span> <span class="id" title="var">n</span>) (<span class="id" title="var">er</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> [[<span class="id" title="var">k</span> <span class="id" title="var">p</span>]|<span class="id" title="var">ne</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">right</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">nat_fin</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">nat_fin_compl</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">nat_fin_compl_compl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">left</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_allpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">k</span>|[]] <span class="id" title="var">p</span>], <span class="id" title="var">l</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">l</span>|[]] <span class="id" title="var">q</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">isinj_embedding</span> <span class="id" title="tactic">in</span> <span class="id" title="var">IH</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">er</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> @ <span class="id" title="var">q</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">refine</span> (<span class="id" title="var">Empty_rec</span> (<span class="id" title="var">ne</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> @ <span class="id" title="var">q</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">refine</span> (<span class="id" title="var">Empty_rec</span> (<span class="id" title="var">ne</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">q</span> @ <span class="id" title="var">p</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">right</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">IH</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">finite_enumeration_repeats</span><br/>
+&nbsp;&nbsp;: { <span class="id" title="var">n</span> : <span class="id" title="var">nat</span> &amp; { <span class="id" title="var">k</span> : <span class="id" title="var">nat</span> &amp; <span class="id" title="var">e</span> <span class="id" title="var">n</span> = <span class="id" title="var">e</span> (<span class="id" title="var">n</span> + <span class="id" title="var">k</span>).+1 }}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">finite_enumeration_stage</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>).+1) <span class="id" title="keyword">as</span> [<span class="id" title="var">p</span>|?].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">assert</span> (<span class="id" title="var">q</span> := <span class="id" title="var">leq_inj_finite</span> (<span class="id" title="var">er</span> (<span class="id" title="var">fcard</span> <span class="id" title="var">X</span>).+1) <span class="id" title="var">p</span>); <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> (<span class="id" title="var">lt_irrefl</span> <span class="id" title="var">_</span> <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Enumeration</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

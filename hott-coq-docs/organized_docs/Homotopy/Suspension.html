@@ -1,0 +1,806 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Suspension</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Suspension</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Cubical.DPath</span> <span class="id" title="var">Cubical.DPathSquare</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Pushout</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">NullHomotopy</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Truncations.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Modalities.Modality</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Extensions</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1135"></a><h1 class="section">The suspension of a type</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">X</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;**&nbsp;Definition&nbsp;of&nbsp;suspension&nbsp;*)</span><br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We define the suspension of a type X as the pushout of 1 &lt;- X -&gt; 1 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) := <span class="id" title="var">Pushout@</span>{<span class="id" title="var">_</span> <span class="id" title="keyword">Set</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">_</span>} (<span class="id" title="var">const_tt</span> <span class="id" title="var">X</span>) (<span class="id" title="var">const_tt</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">North</span> {<span class="id" title="var">X</span>} : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> := <span class="id" title="var">pushl</span> <span class="id" title="var">tt</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">South</span> {<span class="id" title="var">X</span>} : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> := <span class="id" title="var">pushr</span> <span class="id" title="var">tt</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">merid</span> {<span class="id" title="var">X</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>) : <span class="id" title="var">North</span> = <span class="id" title="var">South</span> := <span class="id" title="var">pglue</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We think of this as the HIT with two points <span class="inlinecode"><span class="id" title="var">North</span></span> and <span class="inlinecode"><span class="id" title="var">South</span></span> and a path <span class="inlinecode"><span class="id" title="var">merid</span></span> between them 
+<div class="paragraph"> </div>
+
+ We can derive an induction principle for the suspension 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H_N</span> : <span class="id" title="var">P</span> <span class="id" title="var">North</span>) (<span class="id" title="var">H_S</span> : <span class="id" title="var">P</span> <span class="id" title="var">South</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H_merid</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) # <span class="id" title="var">H_N</span> = <span class="id" title="var">H_S</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">y</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span>), <span class="id" title="var">P</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Pushout_ind</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">Unit_ind</span> <span class="id" title="var">H_N</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">Unit_ind</span> <span class="id" title="var">H_S</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">H_merid</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can also derive the computation rule 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_beta_merid</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">H_N</span> : <span class="id" title="var">P</span> <span class="id" title="var">North</span>) (<span class="id" title="var">H_S</span> : <span class="id" title="var">P</span> <span class="id" title="var">South</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H_merid</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) # <span class="id" title="var">H_N</span> = <span class="id" title="var">H_S</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">Susp_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">H_N</span> <span class="id" title="var">H_S</span> <span class="id" title="var">H_merid</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) = <span class="id" title="var">H_merid</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Pushout_ind_beta_pglue</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We want to allow the user to forget that we've defined suspension as a pushout and make it look like it was defined directly as a HIT. This has the advantage of not having to assume any new HITs but allowing us to have conceptual clarity. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Susp</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">North</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">South</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">merid</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Susp_ind_beta_merid</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A version of <span class="inlinecode"><span class="id" title="var">Susp_ind</span></span> specifically for proving that two functions defined on a suspension are homotopic. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_FlFr</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">HN</span> : <span class="id" title="var">f</span> <span class="id" title="var">North</span> = <span class="id" title="var">g</span> <span class="id" title="var">North</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">HS</span> : <span class="id" title="var">f</span> <span class="id" title="var">South</span> = <span class="id" title="var">g</span> <span class="id" title="var">South</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hmerid</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) @ <span class="id" title="var">HS</span> = <span class="id" title="var">HN</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> == <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Susp_ind</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">HN</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">HS</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FlFr'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Hmerid</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;**&nbsp;Non-dependent&nbsp;eliminator.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_rec</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H_N</span> <span class="id" title="var">H_S</span> : <span class="id" title="var">Y</span>) (<span class="id" title="var">H_merid</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">H_N</span> = <span class="id" title="var">H_S</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Pushout_rec</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">const_tt</span> <span class="id" title="var">X</span>) (<span class="id" title="var">g</span>:=<span class="id" title="var">const_tt</span> <span class="id" title="var">X</span>) <span class="id" title="var">Y</span> (<span class="id" title="var">Unit_ind</span> <span class="id" title="var">H_N</span>) (<span class="id" title="var">Unit_ind</span> <span class="id" title="var">H_S</span>) <span class="id" title="var">H_merid</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Arguments</span> <span class="id" title="var">Susp_rec</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>}%<span class="id" title="var">_type_scope</span> <span class="id" title="var">H_N</span> <span class="id" title="var">H_S</span> <span class="id" title="var">H_merid</span>%<span class="id" title="var">_function_scope</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_rec_beta_merid</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">H_N</span> <span class="id" title="var">H_S</span> : <span class="id" title="var">Y</span>} {<span class="id" title="var">H_merid</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">H_N</span> = <span class="id" title="var">H_S</span>} (<span class="id" title="var">x</span>:<span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">H_N</span> <span class="id" title="var">H_S</span> <span class="id" title="var">H_merid</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) = <span class="id" title="var">H_merid</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Pushout_rec_beta_pglue</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1136"></a><h2 class="section">Eta-rule.</h2>
+
+<div class="paragraph"> </div>
+
+ The eta-rule for suspension states that any function out of a suspension is equal to one defined by <span class="inlinecode"><span class="id" title="var">Susp_ind</span></span> in the obvious way. We give it first in a weak form, producing just a pointwise equality, and then turn this into an actual equality using <span class="inlinecode"><span class="id" title="var">Funext</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_eta_homotopic</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">P</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">P</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> == <span class="id" title="var">Susp_ind</span> <span class="id" title="var">P</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>) (<span class="id" title="var">f</span> <span class="id" title="var">South</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">apD</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">pointwise_paths</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">Susp_ind</span> <span class="id" title="var">_</span> 1 1 <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_paths_FlFr_D</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">g</span> := <span class="id" title="var">Susp_ind</span> <span class="id" title="var">P</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>) (<span class="id" title="var">f</span> <span class="id" title="var">South</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">X</span> =&gt; <span class="id" title="var">apD</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_pM</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">inverse</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">Susp_ind_beta_merid</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_rec_eta_homotopic</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> == <span class="id" title="var">Susp_rec</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>) (<span class="id" title="var">f</span> <span class="id" title="var">South</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Susp_ind_FlFr</span>.<br/>
+&nbsp;&nbsp;1, 2: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Susp_rec_beta_merid</span> <span class="id" title="var">_</span>)^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_eta</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">P</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">P</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> = <span class="id" title="var">Susp_ind</span> <span class="id" title="var">P</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>) (<span class="id" title="var">f</span> <span class="id" title="var">South</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">apD</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Susp_ind_eta_homotopic</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_rec_eta</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> = <span class="id" title="var">Susp_rec</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>) (<span class="id" title="var">f</span> <span class="id" title="var">South</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Susp_rec_eta_homotopic</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1137"></a><h2 class="section">Functoriality</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_susp</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Susp</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Susp_rec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">North</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">South</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">merid</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_susp_beta_merid</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) = <span class="id" title="var">merid</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Susp_rec_beta_merid</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_susp_compose</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor_susp</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) == <span class="id" title="var">functor_susp</span> <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Susp_ind_FlFr</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">functor_susp_beta_merid</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrefine</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrefine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">functor_susp_beta_merid</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">functor_susp_beta_merid</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_susp_idmap</span> {<span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor_susp</span> <span class="id" title="var">idmap</span> == (<span class="id" title="var">idmap</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Susp</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Susp_ind_FlFr</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">functor_susp_beta_merid</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap_idmap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor2_susp</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">f</span> == <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span> == <span class="id" title="var">functor_susp</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Susp_ind_FlFr</span>.<br/>
+&nbsp;&nbsp;1, 2: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">functor_susp_beta_merid</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">functor_susp_beta_merid</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">h</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_susp</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">Susp</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Is0Functor</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">Susp</span> (@<span class="id" title="var">functor_susp</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_susp</span> : <span class="id" title="var">Is1Functor</span> <span class="id" title="var">Susp</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Is1Functor</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">Susp</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(@<span class="id" title="var">functor2_susp</span>) (@<span class="id" title="var">functor_susp_idmap</span>) (@<span class="id" title="var">functor_susp_compose</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1138"></a><h2 class="section">Universal property</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_Susp_rec</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) &lt;~&gt; { <span class="id" title="var">NS</span> : <span class="id" title="var">Y</span> * <span class="id" title="var">Y</span> &amp; <span class="id" title="var">X</span> -&gt; <span class="id" title="var">fst</span> <span class="id" title="var">NS</span> = <span class="id" title="var">snd</span> <span class="id" title="var">NS</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">equiv_adjointify</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>, <span class="id" title="var">f</span> <span class="id" title="var">South</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [[<span class="id" title="var">N</span> <span class="id" title="var">S</span>] <span class="id" title="var">m</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">N</span> <span class="id" title="var">S</span> <span class="id" title="var">m</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [[<span class="id" title="var">N</span> <span class="id" title="var">S</span>] <span class="id" title="var">m</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">path_arrow</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Susp_rec_beta_merid</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Susp_rec_eta</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Using wild 0-groupoids, the universal property can be proven without funext.  A simple equivalence of 0-groupoids between <span class="inlinecode"><span class="id" title="var">Susp</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Y</span></span> and <span class="inlinecode">{</span> <span class="inlinecode"><span class="id" title="var">NS</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Y</span></span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">Y</span></span> <span class="inlinecode">&amp;</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">fst</span></span> <span class="inlinecode"><span class="id" title="var">NS</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">snd</span></span> <span class="inlinecode"><span class="id" title="var">NS</span></span> <span class="inlinecode">}</span> would not carry all the higher-dimensional information, but if we generalize it to dependent functions, then it does suffice. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">UnivProp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here is the domain of the equivalence: sections of <span class="inlinecode"><span class="id" title="var">P</span></span> over <span class="inlinecode"><span class="id" title="var">Susp</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_type</span> := <span class="id" title="keyword">forall</span> <span class="id" title="var">z</span>:<span class="id" title="var">Susp</span> <span class="id" title="var">X</span>, <span class="id" title="var">P</span> <span class="id" title="var">z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">isgraph_paths</span></span> is not a global instance, so we define this by hand.  The fact that this is a 01cat and a 0gpd is obtained using global instances. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isgraph_Susp_ind_type</span> : <span class="id" title="var">IsGraph</span> <span class="id" title="var">Susp_ind_type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">isgraph_forall</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">isgraph_paths</span>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The codomain is a sigma-groupoid of this family, consisting of input data for <span class="inlinecode"><span class="id" title="var">Susp_ind</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_data'</span> (<span class="id" title="var">NS</span> : <span class="id" title="var">P</span> <span class="id" title="var">North</span> * <span class="id" title="var">P</span> <span class="id" title="var">South</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) (<span class="id" title="var">fst</span> <span class="id" title="var">NS</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">NS</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Again, the rest of the wild category structure is obtained using global instances. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isgraph_Susp_ind_data'</span> <span class="id" title="var">NS</span> : <span class="id" title="var">IsGraph</span> (<span class="id" title="var">Susp_ind_data'</span> <span class="id" title="var">NS</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">isgraph_forall</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">isgraph_paths</span>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here is the codomain itself.  This is a 01cat and a 0gpd via global instances. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_data</span> := <span class="id" title="var">sig</span> <span class="id" title="var">Susp_ind_data'</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here is the functor. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_inv</span> : <span class="id" title="var">Susp_ind_type</span> -&gt; <span class="id" title="var">Susp_ind_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>,<span class="id" title="var">f</span> <span class="id" title="var">South</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">apD</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">is0functor_susp_ind_inv</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">Susp_ind_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">Susp_ind_type</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">unshelve</span> <span class="id" title="tactic">econstructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_path_prod</span>, !<span class="id" title="var">transport_forall_constant</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ds_transport_dpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">dp_apD_nat</span> <span class="id" title="var">p</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And now we can prove that it's an equivalence of 0-groupoids, using the definition from WildCat/EquivGpd. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">issurjinj_Susp_ind_inv</span> : <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">Susp_ind_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [[<span class="id" title="var">n</span> <span class="id" title="var">s</span>] <span class="id" title="var">g</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">Susp_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">s</span> <span class="id" title="var">g</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">idpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Susp_ind_beta_merid</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> [<span class="id" title="var">p</span> <span class="id" title="var">q</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Susp_ind</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">fst</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">snd</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">specialize</span> (<span class="id" title="var">q</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ds_dp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ds_transport_dpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_forall_constant</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eta_path_prod</span> <span class="id" title="var">p</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_path_prod</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">UnivProp</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The full non-funext version of the universal property should be formulated with respect to a notion of "wild hom-oo-groupoid", which we don't currently have.  However, we can deduce statements about full higher universal properties that we do have, for instance the statement that a type is local for <span class="inlinecode"><span class="id" title="var">functor_susp</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> -- expressed in terms of <span class="inlinecode"><span class="id" title="var">ooExtendableAlong</span></span> -- if and only if all its identity types are local for <span class="inlinecode"><span class="id" title="var">f</span></span>.  (We will use this in <span class="inlinecode"><span class="id" title="var">Modalities.Localization</span></span> for separated subuniverses.)  To prove this, we again generalize it to the case of dependent types, starting with naturality of the above 0-dimensional universal property. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">UnivPropNat</span>.<br/>
+</div>
+
+<div class="doc">
+We will show that <span class="inlinecode"><span class="id" title="var">Susp_ind_inv</span></span> for <span class="inlinecode"><span class="id" title="var">X</span></span> and <span class="inlinecode"><span class="id" title="var">Y</span></span> commute with precomposition with <span class="inlinecode"><span class="id" title="var">f</span></span> and <span class="inlinecode"><span class="id" title="var">functor_susp</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We recall these instances from the previous section. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Existing Instances</span> <span class="id" title="var">isgraph_Susp_ind_type</span> <span class="id" title="var">isgraph_Susp_ind_data'</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here is an intermediate family of groupoids that we have to use, since precomposition with <span class="inlinecode"><span class="id" title="var">f</span></span> doesn't land in quite the right place. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_data''</span> (<span class="id" title="var">NS</span> : <span class="id" title="var">P</span> <span class="id" title="var">North</span> * <span class="id" title="var">P</span> <span class="id" title="var">South</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">fst</span> <span class="id" title="var">NS</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">NS</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is a 01cat and a 0gpd via global instances. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isgraph_Susp_ind_data''</span> <span class="id" title="var">NS</span> : <span class="id" title="var">IsGraph</span> (<span class="id" title="var">Susp_ind_data''</span> <span class="id" title="var">NS</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">isgraph_forall</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">isgraph_paths</span>. <span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We decompose "precomposition with <span class="inlinecode"><span class="id" title="var">f</span></span>" into a functor_sigma of two fiberwise functors.  Here is the first. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_Susp_ind_data''</span> (<span class="id" title="var">NS</span> : <span class="id" title="var">P</span> <span class="id" title="var">North</span> * <span class="id" title="var">P</span> <span class="id" title="var">South</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Susp_ind_data'</span> <span class="id" title="var">Y</span> <span class="id" title="var">P</span> <span class="id" title="var">NS</span> -&gt; <span class="id" title="var">Susp_ind_data''</span> <span class="id" title="var">NS</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">is0functor_functor_Susp_ind_data''</span> <span class="id" title="var">NS</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">functor_Susp_ind_data''</span> <span class="id" title="var">NS</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And here is the second.  This one is actually a fiberwise equivalence of types at each <span class="inlinecode"><span class="id" title="var">x</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_Susp_ind_data'</span> (<span class="id" title="var">NS</span> : <span class="id" title="var">P</span> <span class="id" title="var">North</span> * <span class="id" title="var">P</span> <span class="id" title="var">South</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">fst</span> <span class="id" title="var">NS</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">NS</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; <span class="id" title="var">DPath</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) (<span class="id" title="var">fst</span> <span class="id" title="var">NS</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">NS</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">nrapply</span> (<span class="id" title="var">equiv_transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span> (<span class="id" title="var">fst</span> <span class="id" title="var">NS</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">NS</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">functor_susp_beta_merid</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">dp_compose</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_Susp_ind_data'</span> (<span class="id" title="var">NS</span> : <span class="id" title="var">P</span> <span class="id" title="var">North</span> * <span class="id" title="var">P</span> <span class="id" title="var">South</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Susp_ind_data''</span> <span class="id" title="var">NS</span> -&gt; <span class="id" title="var">Susp_ind_data'</span> <span class="id" title="var">X</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) <span class="id" title="var">NS</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">functor_forall</span> <span class="id" title="var">idmap</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_Susp_ind_data'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">is0functor_functor_Susp_ind_data'</span> <span class="id" title="var">NS</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">functor_Susp_ind_data'</span> <span class="id" title="var">NS</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">q</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">q</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And therefore a fiberwise equivalence of 0-groupoids. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">issurjinj_functor_Susp_ind_data'</span> <span class="id" title="var">NS</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSurjInj</span> (<span class="id" title="var">functor_Susp_ind_data'</span> <span class="id" title="var">NS</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">unshelve</span> <span class="id" title="tactic">econstructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> ((<span class="id" title="var">equiv_Susp_ind_data'</span> <span class="id" title="var">NS</span> <span class="id" title="var">x</span>)^-1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">p</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> (<span class="id" title="var">equiv_Susp_ind_data'</span> <span class="id" title="var">NS</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we put them together. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_Susp_ind_data</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Susp_ind_data</span> <span class="id" title="var">Y</span> <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Susp_ind_data</span> <span class="id" title="var">X</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">NSg</span> =&gt; (<span class="id" title="var">NSg</span>.1 ; (<span class="id" title="var">functor_Susp_ind_data'</span> <span class="id" title="var">NSg</span>.1 <span class="id" title="var">o</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">functor_Susp_ind_data''</span> <span class="id" title="var">NSg</span>.1)) <span class="id" title="var">NSg</span>.2).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">is0functor_functor_Susp_ind_data</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> <span class="id" title="var">functor_Susp_ind_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">is0functor_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">NS</span> =&gt; <span class="id" title="var">functor_Susp_ind_data'</span> <span class="id" title="var">NS</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_Susp_ind_data''</span> <span class="id" title="var">NS</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here is the "precomposition with <span class="inlinecode"><span class="id" title="var">functor_susp</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span>" functor. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_Susp_ind_type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Susp_ind_type</span> <span class="id" title="var">Y</span> <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Susp_ind_type</span> <span class="id" title="var">X</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">is0functor_functor_Susp_ind_type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> <span class="id" title="var">functor_Susp_ind_type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And here is the desired naturality square. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Susp_ind_inv_nat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">Susp_ind_inv</span> <span class="id" title="var">X</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>)) <span class="id" title="var">o</span> <span class="id" title="var">functor_Susp_ind_type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$=&gt; <span class="id" title="var">functor_Susp_ind_data</span> <span class="id" title="var">o</span> (<span class="id" title="var">Susp_ind_inv</span> <span class="id" title="var">Y</span> <span class="id" title="var">P</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">exists</span> <span class="id" title="var">idpath</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">apD</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x0</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> =&gt; <span class="id" title="var">g</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span> <span class="id" title="var">x0</span>)) (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">functor_Susp_ind_data</span> (<span class="id" title="var">Susp_ind_inv</span> <span class="id" title="var">Y</span> <span class="id" title="var">P</span> <span class="id" title="var">g</span>)).2 <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">dp_apD_compose</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) <span class="id" title="var">g</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">moveL_transport_V</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span> (<span class="id" title="var">g</span> <span class="id" title="var">North</span>) (<span class="id" title="var">g</span> <span class="id" title="var">South</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">apD</span> (<span class="id" title="var">apD</span> <span class="id" title="var">g</span>) (<span class="id" title="var">functor_susp_beta_merid</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+From this we can deduce a equivalence between extendability, which is definitionally equal to split essential surjectivity of a functor between forall 0-groupoids. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">extension_iff_functor_susp</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>, <span class="id" title="var">ExtensionAlong</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) <span class="id" title="var">P</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">NS</span> <span class="id" title="var">g</span>, <span class="id" title="var">ExtensionAlong</span> <span class="id" title="var">f</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) (<span class="id" title="var">fst</span> <span class="id" title="var">NS</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">NS</span>)) <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+The proof is by chaining logical equivalences. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">SplEssSurj</span> <span class="id" title="var">functor_Susp_ind_type</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">reflexivity</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">isesssurj_iff_commsq</span> <span class="id" title="var">Susp_ind_inv_nat</span>); <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">apply</span> <span class="id" title="var">issurjinj_Susp_ind_inv</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">isesssurj_iff_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">NS</span> =&gt; <span class="id" title="var">functor_Susp_ind_data'</span> <span class="id" title="var">NS</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_Susp_ind_data''</span> <span class="id" title="var">NS</span>)). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">iff_functor_forall</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">N</span> <span class="id" title="var">S</span>]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> <span class="id" title="var">iffL_isesssurj</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We have to close the section now because we have to generalize <span class="inlinecode"><span class="id" title="var">extension_iff_functor_susp</span></span> over <span class="inlinecode"><span class="id" title="var">P</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">UnivPropNat</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we can iterate, deducing <span class="inlinecode"><span class="id" title="var">n</span></span>-extendability. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">extendable_iff_functor_susp</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">ExtendableAlong</span> <span class="id" title="var">n</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">NS</span>, <span class="id" title="var">ExtendableAlong</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) (<span class="id" title="var">fst</span> <span class="id" title="var">NS</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">NS</span>))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">P</span>. <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">P</span>; [ <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">tt</span> | ].<br/>
+</div>
+
+<div class="doc">
+It would be nice to be able to do this proof by chaining logical equivalences too, especially since the two parts seem very similar.  But I haven't managed to make that work. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">e1</span> <span class="id" title="var">en</span>] [<span class="id" title="var">N</span> <span class="id" title="var">S</span>]; <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">extension_iff_functor_susp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">e1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">h'</span> := <span class="id" title="var">Susp_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">N</span> <span class="id" title="var">S</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">k'</span> := <span class="id" title="var">Susp_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">N</span> <span class="id" title="var">S</span> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">en</span> <span class="id" title="var">h'</span> <span class="id" title="var">k'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">IH</span> := <span class="id" title="var">fst</span> (<span class="id" title="var">IHn</span> <span class="id" title="var">_</span>) <span class="id" title="var">en</span> (1,1)); <span class="id" title="tactic">clear</span> <span class="id" title="var">IHn</span> <span class="id" title="var">en</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">IH</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">extendable_postcompose'</span> <span class="id" title="var">n</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">IH</span>); <span class="id" title="tactic">clear</span> <span class="id" title="var">IH</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">ds_dp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">ds_transport_dpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">h'</span> <span class="id" title="var">k'</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_concat_lr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">symmetry</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">Susp_ind_beta_merid</span> <span class="id" title="var">P</span> <span class="id" title="var">N</span> <span class="id" title="var">S</span> <span class="id" title="var">h</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="var">Susp_ind_beta_merid</span> <span class="id" title="var">P</span> <span class="id" title="var">N</span> <span class="id" title="var">S</span> <span class="id" title="var">k</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>; <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">extension_iff_functor_susp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">NS</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">e</span> <span class="id" title="var">NS</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">IHn</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">p</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">e</span> (<span class="id" title="var">h</span> <span class="id" title="var">North</span>, <span class="id" title="var">k</span> <span class="id" title="var">South</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *; <span class="id" title="tactic">apply</span> <span class="id" title="var">snd</span> <span class="id" title="tactic">in</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">extendable_postcompose'</span> <span class="id" title="var">n</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> (<span class="id" title="var">e</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">ds_dp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">ds_transport_dpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_moveR_transport_p</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y0</span> : <span class="id" title="var">P</span> <span class="id" title="var">North</span> =&gt; <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> <span class="id" title="var">y</span>) <span class="id" title="var">y0</span> (<span class="id" title="var">k</span> <span class="id" title="var">South</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+As usual, deducing oo-extendability is trivial. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ooextendable_iff_functor_susp</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">ooExtendableAlong</span> (<span class="id" title="var">functor_susp</span> <span class="id" title="var">f</span>) <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">NS</span>, <span class="id" title="var">ooExtendableAlong</span> <span class="id" title="var">f</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) (<span class="id" title="var">fst</span> <span class="id" title="var">NS</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">NS</span>))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">NS</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">extendable_iff_functor_susp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">extendable_iff_functor_susp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">NS</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span> <span class="id" title="var">NS</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1139"></a><h2 class="section">Nullhomotopies of maps out of suspensions</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">nullhomot_susp_from_paths</span> {<span class="id" title="var">X</span> <span class="id" title="var">Z</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">Susp</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Z</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">NullHomotopy</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>)))<br/>
+: <span class="id" title="var">NullHomotopy</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Susp_ind</span> <span class="id" title="var">_</span> 1 <span class="id" title="var">n</span>.1^ <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_paths_Fl</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">concat</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)), <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">n</span>.2.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">nullhomot_paths_from_susp</span> {<span class="id" title="var">X</span> <span class="id" title="var">Z</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">H_N</span> <span class="id" title="var">H_S</span> : <span class="id" title="var">Z</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">H_N</span> = <span class="id" title="var">H_S</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">NullHomotopy</span> (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">H_N</span> <span class="id" title="var">H_S</span> <span class="id" title="var">f</span>))<br/>
+: <span class="id" title="var">NullHomotopy</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">n</span>.2 <span class="id" title="var">North</span> @ (<span class="id" title="var">n</span>.2 <span class="id" title="var">South</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_pV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">Susp_rec</span> <span class="id" title="var">H_N</span> <span class="id" title="var">H_S</span> <span class="id" title="var">f</span>) (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) @ <span class="id" title="var">n</span>.2 <span class="id" title="var">South</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerR</span>, <span class="id" title="var">inverse</span>, <span class="id" title="var">Susp_rec_beta_merid</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_Ap</span> <span class="id" title="var">n</span>.2 (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">concatR</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)), <span class="id" title="var">whiskerL</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">ap_const</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1140"></a><h2 class="section">Contractibility of the suspension</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">contr_susp</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Contr</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Contr</span> (<span class="id" title="var">Susp</span> <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Susp</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1141"></a><h2 class="section">Connectedness of the suspension</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isconnected_susp</span> {<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>} {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">H</span> : <span class="id" title="var">IsConnected</span> <span class="id" title="var">n</span> <span class="id" title="var">X</span>} : <span class="id" title="var">IsConnected</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">Susp</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isconnected_from_elim</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">C</span> <span class="id" title="var">H'</span> <span class="id" title="var">f</span>. <span class="id" title="tactic">exists</span> (<span class="id" title="var">f</span> <span class="id" title="var">North</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> ({ <span class="id" title="var">p0</span> : <span class="id" title="var">f</span> <span class="id" title="var">North</span> = <span class="id" title="var">f</span> <span class="id" title="var">South</span> &amp; <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">merid</span> <span class="id" title="var">x</span>) = <span class="id" title="var">p0</span> })<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> [<span class="id" title="var">p0</span> <span class="id" title="var">allpath_p0</span>] <span class="id" title="tactic">by</span> (<span class="id" title="tactic">apply</span> (<span class="id" title="var">isconnected_elim</span> <span class="id" title="var">n</span>); <span class="id" title="var">rapply</span> <span class="id" title="var">H'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Susp_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">a</span> = <span class="id" title="var">f</span> <span class="id" title="var">North</span>) 1 <span class="id" title="var">p0</span>^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">concat</span> (<span class="id" title="var">transport_paths_Fl</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">concat</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">allpath_p0</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

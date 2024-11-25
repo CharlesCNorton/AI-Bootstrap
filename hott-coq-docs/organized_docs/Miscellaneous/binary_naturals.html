@@ -1,0 +1,878 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>binary_naturals</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library binary_naturals</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Spaces.Nat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Tactics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.abstract_algebra</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.naturals</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.orders</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.implementations.peano_naturals</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.rings</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.orders.semirings</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.apartness</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">basics</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;This&nbsp;definition&nbsp;of&nbsp;binary&nbsp;naturals&nbsp;is&nbsp;due&nbsp;to&nbsp;Martín&nbsp;Escardó&nbsp;and<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cory&nbsp;Knapp&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Inductive</span> <span class="id" title="var">binnat</span> : <span class="id" title="var">Type0</span> :=<br/>
+&nbsp;&nbsp;| <span class="id" title="var">bzero</span>   :           <span class="id" title="var">binnat</span>  <span class="comment">(*&nbsp;zero&nbsp;*)</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">double1</span> : <span class="id" title="var">binnat</span> -&gt; <span class="id" title="var">binnat</span>  <span class="comment">(*&nbsp;2n+1&nbsp;*)</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">double2</span> : <span class="id" title="var">binnat</span> -&gt; <span class="id" title="var">binnat</span>. <span class="comment">(*&nbsp;2n+2&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">Succ</span> (<span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span>      =&gt; <span class="id" title="var">double1</span> <span class="id" title="var">bzero</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double2</span> <span class="id" title="var">n'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double1</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">double</span> (<span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span>      =&gt; <span class="id" title="var">bzero</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double2</span> (<span class="id" title="var">double</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double2</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">double</span> <span class="id" title="var">n'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">Double</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">O</span>    =&gt; <span class="id" title="var">O</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">S</span> (<span class="id" title="var">S</span> (<span class="id" title="var">Double</span> <span class="id" title="var">n'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Double1</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span> := <span class="id" title="var">S</span> (<span class="id" title="var">Double</span> <span class="id" title="var">n</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Double2</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span> := <span class="id" title="var">S</span> (<span class="id" title="var">S</span> (<span class="id" title="var">Double</span> <span class="id" title="var">n</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">binary</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">O</span>    =&gt; <span class="id" title="var">bzero</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">Succ</span> (<span class="id" title="var">binary</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">basics</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">binary_equiv</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Fixpoint</span> <span class="id" title="var">unary'</span> (<span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">nat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span>      =&gt; <span class="id" title="var">O</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">Double1</span> (<span class="id" title="var">unary'</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">Double2</span> (<span class="id" title="var">unary'</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">succunary</span> (<span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">unary'</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">n</span>) = <span class="id" title="var">S</span> (<span class="id" title="var">unary'</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHn</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">unarybinary</span> : <span class="id" title="var">unary'</span> <span class="id" title="var">o</span> <span class="id" title="var">binary</span> == <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">succunary</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">double1binary</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">binary</span> (<span class="id" title="var">Double1</span> <span class="id" title="var">n</span>) = <span class="id" title="var">double1</span> (<span class="id" title="var">binary</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">binary</span> (<span class="id" title="var">Double1</span> <span class="id" title="var">n</span>.+1)) <span class="id" title="keyword">with</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">binary</span> (<span class="id" title="var">Double</span> <span class="id" title="var">n</span>).+1))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHn</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">double2binary</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">binary</span> (<span class="id" title="var">Double2</span> <span class="id" title="var">n</span>) = <span class="id" title="var">double2</span> (<span class="id" title="var">binary</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">binary</span> (<span class="id" title="var">Double2</span> <span class="id" title="var">n</span>.+1)) <span class="id" title="keyword">with</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">binary</span> (<span class="id" title="var">Double</span> <span class="id" title="var">n</span>).+2))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHn</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">binaryunary</span> : <span class="id" title="var">binary</span> <span class="id" title="var">o</span> <span class="id" title="var">unary'</span> == <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">double1binary</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">double2binary</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_binary</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">binary</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">binary</span> <span class="id" title="var">unary'</span> <span class="id" title="var">binaryunary</span> <span class="id" title="var">unarybinary</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_binary</span> : <span class="id" title="var">nat</span> &lt;~&gt; <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>  <span class="id" title="var">binary</span> <span class="id" title="var">isequiv_binary</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">binary_equiv</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">equiv_unary</span>  := <span class="id" title="var">equiv_binary</span> ^-1.<br/>
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">unary</span> := <span class="id" title="var">equiv_unary</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">semiring_struct</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_0</span> : <span class="id" title="var">Zero</span> <span class="id" title="var">binnat</span> := <span class="id" title="var">bzero</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_1</span> : <span class="id" title="var">One</span> <span class="id" title="var">binnat</span> := <span class="id" title="var">double1</span> <span class="id" title="var">bzero</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Fixpoint</span> <span class="id" title="var">binnat_plus'</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">m</span>, <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span>      , <span class="id" title="var">n'</span>         =&gt; <span class="id" title="var">n'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">m'</span> , <span class="id" title="var">bzero</span>      =&gt; <span class="id" title="var">double1</span> <span class="id" title="var">m'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;m&nbsp;+&nbsp;n&nbsp;as&nbsp;2m'+1&nbsp;+&nbsp;2n'+1&nbsp;=&nbsp;2(m'+n')&nbsp;+&nbsp;2&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">m'</span> , <span class="id" title="var">double1</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double2</span> (<span class="id" title="var">binnat_plus'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;m&nbsp;+&nbsp;n&nbsp;as&nbsp;2m'+1&nbsp;+&nbsp;2n'+2&nbsp;=&nbsp;2(m'+n')+2&nbsp;+&nbsp;1&nbsp;=&nbsp;2(m'&nbsp;+&nbsp;n'&nbsp;+&nbsp;1)&nbsp;+&nbsp;1&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">m'</span> , <span class="id" title="var">double2</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double1</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">binnat_plus'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">m'</span> , <span class="id" title="var">bzero</span>      =&gt; <span class="id" title="var">double2</span> <span class="id" title="var">m'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;m&nbsp;+&nbsp;n&nbsp;as&nbsp;2m'+2&nbsp;+&nbsp;2n'+1&nbsp;=&nbsp;2(m'+n')+2&nbsp;+&nbsp;1&nbsp;=&nbsp;2(m'&nbsp;+&nbsp;n'&nbsp;+&nbsp;1)&nbsp;+&nbsp;1&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">m'</span> , <span class="id" title="var">double1</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double1</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">binnat_plus'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;m&nbsp;+&nbsp;n&nbsp;as&nbsp;2m'+2&nbsp;+&nbsp;2n'+2&nbsp;=&nbsp;2(m'+n')+2&nbsp;+&nbsp;2&nbsp;=&nbsp;2(m'&nbsp;+&nbsp;n'&nbsp;+&nbsp;1)&nbsp;+&nbsp;2*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">m'</span> , <span class="id" title="var">double2</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double2</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">binnat_plus'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_plus</span> : <span class="id" title="var">Plus</span> <span class="id" title="var">binnat</span> := <span class="id" title="var">binnat_plus'</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Fixpoint</span> <span class="id" title="var">binnat_mult'</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">m</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span>      =&gt; <span class="id" title="var">bzero</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;(2m'+1)*n&nbsp;as&nbsp;2m'n+n&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">m'</span> =&gt; (<span class="id" title="var">binnat_mult'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n</span>) + (<span class="id" title="var">binnat_mult'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n</span>) + <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">m'</span> =&gt; (<span class="id" title="var">binnat_mult'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n</span>) + (<span class="id" title="var">binnat_mult'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n</span>) + <span class="id" title="var">n</span> + <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_mult</span> : <span class="id" title="var">Mult</span> <span class="id" title="var">binnat</span> := <span class="id" title="var">binnat_mult'</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">semiring_struct</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">semiring_laws</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">binarysucc</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">binary</span> <span class="id" title="var">n</span>.+1 = <span class="id" title="var">Succ</span> (<span class="id" title="var">binary</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">unarysucc</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">m</span>, <span class="id" title="var">unary</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) = <span class="id" title="var">S</span> (<span class="id" title="var">unary</span> <span class="id" title="var">m</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_intros</span> <span class="id" title="var">binary</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">binarysucc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">eissect</span>, <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">binnatplussucc</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>), (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) + <span class="id" title="var">n</span> = <span class="id" title="var">Succ</span> (<span class="id" title="var">m</span> + <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">IHm</span>; <span class="id" title="var">done</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">binaryplus</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">binary</span> <span class="id" title="var">m</span> + <span class="id" title="var">binary</span> <span class="id" title="var">n</span> = <span class="id" title="var">binary</span> (<span class="id" title="var">m</span> + <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnatplussucc</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>. <span class="id" title="var">done</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">IHm</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnatplussucc</span>. <span class="id" title="var">done</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">unaryplus</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">unary</span> <span class="id" title="var">m</span> + <span class="id" title="var">unary</span> <span class="id" title="var">n</span> = <span class="id" title="var">unary</span> (<span class="id" title="var">m</span> + <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span> (<span class="id" title="var">unary</span> (<span class="id" title="var">binary</span> (<span class="id" title="var">_</span>^-1 <span class="id" title="var">m</span> + <span class="id" title="var">_</span>^-1 <span class="id" title="var">n</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> ((<span class="id" title="var">eissect</span> <span class="id" title="var">binary</span> (<span class="id" title="var">unary</span> <span class="id" title="var">m</span> + <span class="id" title="var">unary</span> <span class="id" title="var">n</span>)) ^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">binaryplus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">binary</span> <span class="id" title="var">m</span>), (<span class="id" title="var">eisretr</span> <span class="id" title="var">binary</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_add_assoc</span> : <span class="id" title="var">Associative</span> <span class="id" title="var">binnat_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="var">equiv_intros</span> <span class="id" title="var">binary</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">binnat_plus</span> <span class="id" title="keyword">with</span> <span class="id" title="var">plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binaryplus</span>, <span class="id" title="var">binaryplus</span>, <span class="id" title="var">binaryplus</span>, <span class="id" title="var">binaryplus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_add_comm</span> : <span class="id" title="var">Commutative</span> <span class="id" title="var">binnat_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="var">equiv_intros</span> <span class="id" title="var">binary</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">binnat_plus</span> <span class="id" title="keyword">with</span> <span class="id" title="var">plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binaryplus</span>, <span class="id" title="var">binaryplus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">plus_comm</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">binnatmultsucc</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>), (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) * <span class="id" title="var">n</span> = <span class="id" title="var">n</span> + (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>. <span class="id" title="tactic">change</span> (<span class="id" title="var">bzero</span> + <span class="id" title="var">n</span> = <span class="id" title="var">n</span> + <span class="id" title="var">bzero</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">double2</span> <span class="id" title="var">m</span> * <span class="id" title="var">n</span>) <span class="id" title="keyword">with</span> ((<span class="id" title="var">m</span> * <span class="id" title="var">n</span>) + (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>) + <span class="id" title="var">n</span> + <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">double1</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) * <span class="id" title="var">n</span>) <span class="id" title="keyword">with</span> ((<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) * <span class="id" title="var">n</span> + (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) * <span class="id" title="var">n</span> + <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">commutativity</span> <span class="id" title="var">n</span> (<span class="id" title="var">double2</span> <span class="id" title="var">m</span> * <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">commutativity</span> <span class="id" title="var">n</span> (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>) <span class="id" title="var">n</span> (<span class="id" title="var">m</span> * <span class="id" title="var">n</span> + <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">commutativity</span> <span class="id" title="var">n</span> (<span class="id" title="var">m</span> * <span class="id" title="var">n</span> + <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="keyword">associativity</span> (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>) (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>) <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">done</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">binarymult</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">binary</span> <span class="id" title="var">m</span> * <span class="id" title="var">binary</span> <span class="id" title="var">n</span> = <span class="id" title="var">binary</span> (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnatmultsucc</span>, <span class="id" title="var">IHm</span>, <span class="id" title="var">binaryplus</span>; <span class="id" title="var">done</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">unarymult</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">unary</span> <span class="id" title="var">m</span> * <span class="id" title="var">unary</span> <span class="id" title="var">n</span> = <span class="id" title="var">unary</span> (<span class="id" title="var">m</span> * <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span> (<span class="id" title="var">unary</span> (<span class="id" title="var">binary</span> (<span class="id" title="var">_</span>^-1 <span class="id" title="var">m</span> * <span class="id" title="var">_</span>^-1 <span class="id" title="var">n</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> ((<span class="id" title="var">eissect</span> <span class="id" title="var">binary</span> (<span class="id" title="var">unary</span> <span class="id" title="var">m</span> * <span class="id" title="var">unary</span> <span class="id" title="var">n</span>)) ^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">binarymult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">binary</span> <span class="id" title="var">m</span>), (<span class="id" title="var">eisretr</span> <span class="id" title="var">binary</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_mult_assoc</span> : <span class="id" title="var">Associative</span> <span class="id" title="var">binnat_mult</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="var">equiv_intros</span> <span class="id" title="var">binary</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">binnat_mult</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binarymult</span>, <span class="id" title="var">binarymult</span>, <span class="id" title="var">binarymult</span>, <span class="id" title="var">binarymult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_mult_comm</span> : <span class="id" title="var">Commutative</span> <span class="id" title="var">binnat_mult</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="var">equiv_intros</span> <span class="id" title="var">binary</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">binnat_mult</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binarymult</span>, <span class="id" title="var">binarymult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_distr_l</span> : <span class="id" title="var">LeftDistribute</span> <span class="id" title="var">binnat_mult</span> <span class="id" title="var">binnat_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="var">equiv_intros</span> <span class="id" title="var">binary</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">binnat_plus</span> <span class="id" title="keyword">with</span> <span class="id" title="var">plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">binnat_mult</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binaryplus</span>, <span class="id" title="var">binarymult</span>, <span class="id" title="var">binarymult</span>, <span class="id" title="var">binarymult</span>, <span class="id" title="var">binaryplus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">plus_mult_distr_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_distr_r</span> : <span class="id" title="var">RightDistribute</span> <span class="id" title="var">binnat_mult</span> <span class="id" title="var">binnat_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="var">equiv_intros</span> <span class="id" title="var">binary</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">binnat_plus</span> <span class="id" title="keyword">with</span> <span class="id" title="var">plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">binnat_mult</span> <span class="id" title="keyword">with</span> <span class="id" title="var">mult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binaryplus</span>, <span class="id" title="var">binarymult</span>, <span class="id" title="var">binarymult</span>, <span class="id" title="var">binarymult</span>, <span class="id" title="var">binaryplus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">plus_mult_distr_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_set</span> : <span class="id" title="var">IsHSet</span> <span class="id" title="var">binnat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">istrunc_isequiv_istrunc</span> <span class="id" title="var">nat</span> <span class="id" title="var">binary</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_semiring</span> : <span class="id" title="var">IsSemiCRing</span> <span class="id" title="var">binnat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">split</span>; <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1, 5: <span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">binnat_set</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1, 2, 3, 7: <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unaryplus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;4, 5, 6, 7: <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unarymult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;4, 5, 7: <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unarymult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;4, 5: <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unarymult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;4: <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unaryplus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;5: <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unarymult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_semiring</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">semiring_laws</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">naturals</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binary_preserving</span> : <span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">binary</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1, 3: <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; [&gt; <span class="id" title="tactic">apply</span> (<span class="id" title="var">binaryplus</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) ^ | <span class="id" title="tactic">apply</span> (<span class="id" title="var">binarymult</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) ^ ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_le</span> : <span class="id" title="var">Le</span> <span class="id" title="var">binnat</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">unary</span> <span class="id" title="var">m</span> &lt;= <span class="id" title="var">unary</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_lt</span> : <span class="id" title="var">Lt</span> <span class="id" title="var">binnat</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">unary</span> <span class="id" title="var">m</span> &lt; <span class="id" title="var">unary</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_apart</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">binnat</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">unary</span> <span class="id" title="var">m</span> ≶ <span class="id" title="var">unary</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnart_apart_symmetric</span> : <span class="id" title="var">IsApart</span> <span class="id" title="var">binnat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">w</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>. <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span>). <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">unary</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_full</span> : <span class="id" title="var">FullPseudoSemiRingOrder</span> <span class="id" title="var">binnat_le</span> <span class="id" title="var">binnat_lt</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_le_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="tactic">apply</span> <span class="id" title="var">cotransitive</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-- <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++ <span class="id" title="tactic">assert</span> (<span class="id" title="var">X</span> : <span class="id" title="var">unary</span> <span class="id" title="var">m</span> = <span class="id" title="var">unary</span> <span class="id" title="var">n</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">tight_apart</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (((<span class="id" title="var">equiv_ap</span> <span class="id" title="var">unary</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>) ^-1) <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;++ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span> <span class="id" title="var">k</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">H</span> : <span class="id" title="tactic">exists</span> <span class="id" title="var">w</span>, (<span class="id" title="var">unary</span> <span class="id" title="var">n</span>) = (<span class="id" title="var">unary</span> <span class="id" title="var">m</span>) + <span class="id" title="var">w</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">w</span> <span class="id" title="var">L</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">binary</span> <span class="id" title="var">w</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eisretr</span> <span class="id" title="var">unary</span> <span class="id" title="var">w</span>), <span class="id" title="var">unaryplus</span> <span class="id" title="tactic">in</span> <span class="id" title="var">L</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span>). <span class="id" title="tactic">exact</span> <span class="id" title="var">L</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span>. <span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">E</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">lt</span>, <span class="id" title="var">binnat_lt</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unaryplus</span>, &lt;- <span class="id" title="var">unaryplus</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unaryplus</span>, &lt;- <span class="id" title="var">unaryplus</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">strictly_order_reflecting</span> (<span class="id" title="var">plus</span> (<span class="id" title="var">unary</span> <span class="id" title="var">m</span>))). <span class="id" title="tactic">exact</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">apart</span>, <span class="id" title="var">binnat_apart</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">unarymult</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>), &lt;- (<span class="id" title="var">unarymult</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">lt</span>, <span class="id" title="var">binnat_lt</span>. <span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">unarymult</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_full</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_naturals_to_semiring</span> : <span class="id" title="var">NaturalsToSemiRing</span> <span class="id" title="var">binnat</span>:=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="keyword">fix</span> <span class="id" title="var">f</span> (<span class="id" title="var">n</span>: <span class="id" title="var">binnat</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span> =&gt; 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">n'</span> =&gt; 2 * (<span class="id" title="var">f</span> <span class="id" title="var">n'</span>) + 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">n'</span> =&gt; 2 * (<span class="id" title="var">f</span> <span class="id" title="var">n'</span>) + 2 <span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">nat_to_semiring_helper</span> : <span class="id" title="var">NaturalsToSemiRing</span> <span class="id" title="var">nat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="keyword">fix</span> <span class="id" title="var">f</span> (<span class="id" title="var">n</span>: <span class="id" title="var">nat</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| 0%<span class="id" title="var">nat</span> =&gt; 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">n'</span> =&gt; 1 + <span class="id" title="var">f</span> <span class="id" title="var">n'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">for_another_semiring</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Universe</span> <span class="id" title="var">U</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">R</span>:<span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsSemiCRing</span> <span class="id" title="var">R</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">toR</span> := (<span class="id" title="var">naturals_to_semiring</span> <span class="id" title="var">binnat</span> <span class="id" title="var">R</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">toR_fromnat</span> := (<span class="id" title="var">naturals_to_semiring</span> <span class="id" title="var">nat</span> <span class="id" title="var">R</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">toR_vianat</span> := (<span class="id" title="var">toR_fromnat</span> ∘ <span class="id" title="var">unary</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">f_suc</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">toR</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) = (<span class="id" title="var">toR</span> <span class="id" title="var">m</span>)+1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (2 * 0 + 1 = 0 + 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_comm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_0_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">done</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (2 * (<span class="id" title="var">toR</span> <span class="id" title="var">m</span>) + 2 = 2 * (<span class="id" title="var">toR</span> <span class="id" title="var">m</span>) + 1 + 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">plus_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">induction</span> <span class="id" title="var">m</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">m</span> <span class="id" title="var">_</span>|<span class="id" title="var">m</span> <span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">change</span> (2 * (2 * 0 + 1) + 1 = 2 * 0 + 2 + 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">plus_mult_distr_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (@<span class="id" title="var">mult_1_r</span> <span class="id" title="var">_</span> <span class="id" title="var">Aplus</span> <span class="id" title="var">Amult</span> <span class="id" title="var">Azero</span> <span class="id" title="var">Aone</span> <span class="id" title="var">H</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_0_r</span>, <span class="id" title="var">mult_0_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">change</span> (2 * (2 * (<span class="id" title="var">toR</span> <span class="id" title="var">m</span>) + 2) + 1 = 2 * (2 * (<span class="id" title="var">toR</span> <span class="id" title="var">m</span>) + 1 ) + 2 + 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; <span class="id" title="var">z</span> + 1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">L</span> : 2 * <span class="id" title="var">toR</span> <span class="id" title="var">m</span> + 2 = 2 * <span class="id" title="var">toR</span> <span class="id" title="var">m</span> + 1 + 1) <span class="id" title="tactic">by</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">plus_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">L</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">L</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">plus_mult_distr_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">IHm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> ((2 * (<span class="id" title="var">toR</span> (<span class="id" title="var">double1</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>))) + 1 = 2 * (<span class="id" title="var">toR</span> (<span class="id" title="var">double2</span> <span class="id" title="var">m</span>)) + 2 + 1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">IHm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">plus_mult_distr_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">f_nat</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>, <span class="id" title="var">toR</span> <span class="id" title="var">m</span> = <span class="id" title="var">toR_vianat</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_intro</span> <span class="id" title="var">binary</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">_</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">change</span> ((1 + 1) * 0 + 1 = 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_0_r</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">plus_0_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">f_suc</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">L</span> : (<span class="id" title="var">toR_fromnat</span> ∘ <span class="id" title="var">binary</span>^-1) (<span class="id" title="var">binary</span> <span class="id" title="var">n</span>.+1) + 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">toR_fromnat</span> ((<span class="id" title="var">binary</span>^-1 (<span class="id" title="var">binary</span> <span class="id" title="var">n</span>.+1)).+1)%<span class="id" title="var">nat</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">plus_comm</span> <span class="id" title="var">_</span> 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">unarysucc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">L</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">L</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unarysucc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">binarysucc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">f_preserves_plus</span> (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">toR</span> (<span class="id" title="var">a</span> + <span class="id" title="var">a'</span>) = <span class="id" title="var">toR</span> <span class="id" title="var">a</span> + <span class="id" title="var">toR</span> <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">f_nat</span>, <span class="id" title="var">f_nat</span>, <span class="id" title="var">f_nat</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">unaryplus</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">nat_to_sr_morphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">f_preserves_mult</span> (<span class="id" title="var">a</span> <span class="id" title="var">a'</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">toR</span> (<span class="id" title="var">a</span> * <span class="id" title="var">a'</span>) = <span class="id" title="var">toR</span> <span class="id" title="var">a</span> * <span class="id" title="var">toR</span> <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">f_nat</span>, <span class="id" title="var">f_nat</span>, <span class="id" title="var">f_nat</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">unarymult</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">nat_to_sr_morphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_to_sr_morphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">toR</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">rapply</span> <span class="id" title="var">f_preserves_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">rapply</span> <span class="id" title="var">f_preserves_mult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">unfold</span> <span class="id" title="var">IsUnitPreserving</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">f_nat</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">binnat_toR_unique</span> (<span class="id" title="var">h</span> : <span class="id" title="var">binnat</span> -&gt; <span class="id" title="var">R</span>) `{!<span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">h</span>} : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">toR</span> <span class="id" title="var">x</span> = <span class="id" title="var">h</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_intro</span> <span class="id" title="var">binary</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">f_nat</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">Compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">toR_unique</span> (<span class="id" title="var">h</span> ∘ <span class="id" title="var">binary</span>) <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">for_another_semiring</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_naturals</span> : <span class="id" title="var">Naturals</span> <span class="id" title="var">binnat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">binnat_semiring</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">binnat_full</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">binnat_to_sr_morphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">binnat_toR_unique</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">naturals</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">decidable</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">ineq_bzero_double1</span> <span class="id" title="var">n</span> : <span class="id" title="var">bzero</span> &lt;&gt; <span class="id" title="var">double1</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> ((<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="keyword">match</span> <span class="id" title="var">x</span> <span class="id" title="keyword">with</span> | <span class="id" title="var">double1</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">Unit</span> | <span class="id" title="var">_</span> =&gt; <span class="id" title="var">Empty</span> <span class="id" title="keyword">end</span>) <span class="id" title="var">bzero</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (@<span class="id" title="var">transport</span> <span class="id" title="var">binnat</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">tt</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">ineq_bzero_double2</span> <span class="id" title="var">n</span> : <span class="id" title="var">bzero</span> &lt;&gt; <span class="id" title="var">double2</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> ((<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="keyword">match</span> <span class="id" title="var">x</span> <span class="id" title="keyword">with</span> | <span class="id" title="var">double2</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">Unit</span> | <span class="id" title="var">_</span> =&gt; <span class="id" title="var">Empty</span> <span class="id" title="keyword">end</span>) <span class="id" title="var">bzero</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (@<span class="id" title="var">transport</span> <span class="id" title="var">binnat</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">tt</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">ineq_double1_double2</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">double1</span> <span class="id" title="var">m</span> &lt;&gt; <span class="id" title="var">double2</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> ((<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="keyword">match</span> <span class="id" title="var">x</span> <span class="id" title="keyword">with</span> | <span class="id" title="var">double2</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">Unit</span> | <span class="id" title="var">_</span> =&gt; <span class="id" title="var">Empty</span> <span class="id" title="keyword">end</span>) (<span class="id" title="var">double1</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (@<span class="id" title="var">transport</span> <span class="id" title="var">binnat</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">tt</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">undouble</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">m</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span> =&gt; <span class="id" title="var">bzero</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">k</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">k</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">double1_inj</span> : <span class="id" title="var">IsInjective</span> <span class="id" title="var">double1</span><br/>
+&nbsp;&nbsp;:= { <span class="id" title="var">injective</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">E</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">undouble</span> <span class="id" title="var">E</span> }.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">double2_inj</span> : <span class="id" title="var">IsInjective</span> <span class="id" title="var">double2</span><br/>
+&nbsp;&nbsp;:= { <span class="id" title="var">injective</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">E</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">undouble</span> <span class="id" title="var">E</span> }.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_dec</span> : <span class="id" title="var">DecidablePaths</span> <span class="id" title="var">binnat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">m</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">m</span> <span class="id" title="var">IHm</span>|<span class="id" title="var">m</span> <span class="id" title="var">IHm</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">first</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">left</span> ; <span class="id" title="tactic">reflexivity</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">right</span> ; (<span class="id" title="tactic">idtac</span> + <span class="id" title="tactic">apply</span> <span class="id" title="var">symmetric_neq</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">first</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">apply</span> <span class="id" title="var">ineq_bzero_double1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">apply</span> <span class="id" title="var">ineq_bzero_double2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">apply</span> <span class="id" title="var">ineq_double1_double2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">destruct</span> (<span class="id" title="var">IHm</span> <span class="id" title="var">n</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">eq</span> | <span class="id" title="var">ineq</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">left</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">eq</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">right</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">first</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">apply</span> (<span class="id" title="var">injective</span> <span class="id" title="var">double1</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">apply</span> (<span class="id" title="var">injective</span> <span class="id" title="var">double2</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]; <span class="id" title="tactic">auto</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;].<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">decidable</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">other_laws</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">binnat_plus_cancel_l</span> (<span class="id" title="var">z</span>:<span class="id" title="var">binnat</span>) : <span class="id" title="var">LeftCancellation</span> <span class="id" title="var">plus</span> <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">unary</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unaryplus</span>, &lt;- <span class="id" title="var">unaryplus</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">left_cancellation</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">binnat_mult_cancel_l</span> (<span class="id" title="var">z</span> : <span class="id" title="var">binnat</span>): <span class="id" title="var">PropHolds</span> (<span class="id" title="var">z</span> &lt;&gt; 0) -&gt; <span class="id" title="var">LeftCancellation</span> (.*.) <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">H</span> : <span class="id" title="var">unary</span> <span class="id" title="var">z</span> &lt;&gt; <span class="id" title="var">unary</span> 0).<br/>
+&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">E</span> <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">unary</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unarymult</span>, &lt;- <span class="id" title="var">unarymult</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span> (<span class="id" title="var">nat_mult_cancel_l</span> (<span class="id" title="var">unary</span> <span class="id" title="var">z</span>) <span class="id" title="var">H</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>)).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_le_total</span> : <span class="id" title="var">TotalRelation</span> (<span class="id" title="var">_</span>:<span class="id" title="var">Le</span> <span class="id" title="var">binnat</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_le_total</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">binnat_lt_irrefl</span> : <span class="id" title="var">Irreflexive</span> (<span class="id" title="var">_</span>:<span class="id" title="var">Lt</span> <span class="id" title="var">binnat</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_lt_irrefl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">other_laws</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">trichotomy</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;TODO&nbsp;this&nbsp;is&nbsp;an&nbsp;inefficient&nbsp;implementation.&nbsp;Instead,&nbsp;write&nbsp;this<br/>
+&nbsp;&nbsp;without&nbsp;going&nbsp;via&nbsp;the&nbsp;unary&nbsp;naturals.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">binnat_trichotomy</span> : <span class="id" title="var">Trichotomy</span> (<span class="id" title="var">lt</span>:<span class="id" title="var">Lt</span> <span class="id" title="var">binnat</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">T</span> := <span class="id" title="var">nat_trichotomy</span> (<span class="id" title="var">unary</span> <span class="id" title="var">x</span>) (<span class="id" title="var">unary</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">T</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">l</span>|[<span class="id" title="var">c</span>|<span class="id" title="var">r</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">left</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">right</span>; <span class="id" title="tactic">left</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span>); <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">right</span>; <span class="id" title="tactic">right</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">trichotomy</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">minus</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Pred</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">m</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span>      =&gt; <span class="id" title="var">bzero</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">m'</span> =&gt; <span class="id" title="var">double</span> <span class="id" title="var">m'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">m'</span> =&gt; <span class="id" title="var">double1</span> <span class="id" title="var">m'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">succ_double</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">Succ</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>) = <span class="id" title="var">double1</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">double1</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>)) = <span class="id" title="var">double1</span> (<span class="id" title="var">double1</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">double1</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>))) = <span class="id" title="var">double1</span> (<span class="id" title="var">double2</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">double_succ</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) = <span class="id" title="var">double2</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">double2</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>)) = <span class="id" title="var">double2</span> (<span class="id" title="var">double1</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">succ_double</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">double2</span> (<span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>)) = <span class="id" title="var">double2</span> (<span class="id" title="var">double2</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">pred_succ</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">Pred</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) = <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">double_succ</span> <span class="id" title="var">m</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">double_pred</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">double</span> (<span class="id" title="var">Pred</span> <span class="id" title="var">m</span>) = <span class="id" title="var">Pred</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">double_succ</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>))^.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">pred_double2</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">Pred</span> (<span class="id" title="var">double2</span> <span class="id" title="var">m</span>) = <span class="id" title="var">double1</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">pred_double1</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">Pred</span> (<span class="id" title="var">double1</span> <span class="id" title="var">m</span>) = <span class="id" title="var">double</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2*(m-1)+1&nbsp;=&nbsp;2*m&nbsp;-&nbsp;1&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Fixpoint</span> <span class="id" title="var">binnat_cut_minus'</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">binnat</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">m</span>, <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bzero</span>      , <span class="id" title="var">n'</span>         =&gt; <span class="id" title="var">bzero</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">m'</span>         , <span class="id" title="var">bzero</span>      =&gt; <span class="id" title="var">m'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;m&nbsp;-&nbsp;n&nbsp;as&nbsp;2m'+1&nbsp;-&nbsp;2n'+1&nbsp;=&nbsp;2(m'-n')&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">m'</span> , <span class="id" title="var">double1</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double</span> (<span class="id" title="var">binnat_cut_minus'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;m&nbsp;-&nbsp;n&nbsp;as&nbsp;2m'+1&nbsp;-&nbsp;2n'+2&nbsp;=&nbsp;2(m'-n')&nbsp;-&nbsp;1&nbsp;=&nbsp;Pred&nbsp;(double&nbsp;(m'&nbsp;-&nbsp;n'))&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double1</span> <span class="id" title="var">m'</span> , <span class="id" title="var">double2</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">binnat_cut_minus'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;m&nbsp;-&nbsp;n&nbsp;as&nbsp;2m'+2&nbsp;-&nbsp;2n'+1&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">m'</span> , <span class="id" title="var">double1</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">binnat_cut_minus'</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m'</span>) <span class="id" title="var">n'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;compute&nbsp;m&nbsp;-&nbsp;n&nbsp;as&nbsp;2m'+2&nbsp;-&nbsp;2n'+2&nbsp;=&nbsp;2(m'-n')&nbsp;=&nbsp;double&nbsp;(m'&nbsp;-&nbsp;n')&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">double2</span> <span class="id" title="var">m'</span> , <span class="id" title="var">double2</span> <span class="id" title="var">n'</span> =&gt; <span class="id" title="var">double</span> (<span class="id" title="var">binnat_cut_minus'</span> <span class="id" title="var">m'</span> <span class="id" title="var">n'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_cut_minus</span>: <span class="id" title="var">CutMinus</span> <span class="id" title="var">binnat</span> := <span class="id" title="var">binnat_cut_minus'</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">binnat_minus_zero</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">m</span> ∸ <span class="id" title="var">bzero</span> = <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">binnat_zero_minus</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">bzero</span> ∸ <span class="id" title="var">m</span> = <span class="id" title="var">bzero</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">pred_succ_minus</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">Pred</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>) = <span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">bzero</span> ∸ <span class="id" title="var">n</span>)) = <span class="id" title="var">bzero</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnat_zero_minus</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">bzero</span> ∸ <span class="id" title="var">n</span>))) = <span class="id" title="var">bzero</span> ∸ <span class="id" title="var">double2</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnat_zero_minus</span>, <span class="id" title="var">binnat_zero_minus</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>))) = <span class="id" title="var">double</span> (<span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">double_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">IHm</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span>) = <span class="id" title="var">double2</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">bzero</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnat_minus_zero</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">double_succ</span> <span class="id" title="var">m</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>))) = <span class="id" title="var">double</span> (<span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">double_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">IHm</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">double_cases</span> (<span class="id" title="var">m</span> : <span class="id" title="var">binnat</span>) : (<span class="id" title="var">bzero</span> = <span class="id" title="var">double</span> <span class="id" title="var">m</span>) + <span class="id" title="var">hfiber</span> <span class="id" title="var">double2</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">left</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">right</span>; <span class="id" title="tactic">exists</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>); <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">right</span>; <span class="id" title="tactic">exists</span> (<span class="id" title="var">Succ</span> (<span class="id" title="var">double</span> <span class="id" title="var">m</span>)); <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">binnat_minus_succ</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">Succ</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">Succ</span> <span class="id" title="var">n</span> = <span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">bzero</span> ∸ <span class="id" title="var">n</span>)) = <span class="id" title="var">bzero</span> ∸ <span class="id" title="var">double1</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnat_zero_minus</span>, <span class="id" title="var">binnat_zero_minus</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">double</span> (<span class="id" title="var">bzero</span> ∸ (<span class="id" title="var">Succ</span> <span class="id" title="var">n</span>)) = <span class="id" title="var">bzero</span> ∸ <span class="id" title="var">double2</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnat_zero_minus</span>, <span class="id" title="var">binnat_zero_minus</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">bzero</span>)) = <span class="id" title="var">double1</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">bzero</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnat_minus_zero</span>, <span class="id" title="var">binnat_minus_zero</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">double_succ</span>, <span class="id" title="var">pred_double2</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">Succ</span> <span class="id" title="var">n</span>)) = <span class="id" title="var">Pred</span> (<span class="id" title="var">double</span> (<span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">bzero</span>) = <span class="id" title="var">double2</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">bzero</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnat_minus_zero</span>, <span class="id" title="var">binnat_minus_zero</span>, <span class="id" title="var">double_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">double</span> (<span class="id" title="var">Succ</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">Succ</span> <span class="id" title="var">n</span>) = <span class="id" title="var">double</span> (<span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">binaryminus</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">binary</span> <span class="id" title="var">x</span> ∸ <span class="id" title="var">binary</span> <span class="id" title="var">y</span> = <span class="id" title="var">binary</span> (<span class="id" title="var">x</span> ∸ <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">binnat_zero_minus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">binnat_minus_zero</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">binnat_minus_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">unaryminus</span> (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">binnat</span>) : <span class="id" title="var">unary</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">unary</span> <span class="id" title="var">n</span> = <span class="id" title="var">unary</span> (<span class="id" title="var">m</span> ∸ <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span> (<span class="id" title="var">unary</span> (<span class="id" title="var">binary</span> (<span class="id" title="var">_</span>^-1 <span class="id" title="var">m</span> ∸ <span class="id" title="var">_</span>^-1 <span class="id" title="var">n</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> ((<span class="id" title="var">eissect</span> <span class="id" title="var">binary</span> (<span class="id" title="var">unary</span> <span class="id" title="var">m</span> ∸ <span class="id" title="var">unary</span> <span class="id" title="var">n</span>)) ^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">binaryminus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">binary</span> <span class="id" title="var">m</span>), (<span class="id" title="var">eisretr</span> <span class="id" title="var">binary</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">binnat_cut_minus_spec</span> : <span class="id" title="var">CutMinusSpec</span> <span class="id" title="var">binnat</span> <span class="id" title="var">binnat_cut_minus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unaryplus</span>, &lt;- <span class="id" title="var">unaryminus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">nat_cut_minus_spec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">unary</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">unaryminus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">nat_cut_minus_spec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">minus</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

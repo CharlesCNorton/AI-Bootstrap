@@ -1,0 +1,834 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>FreeGroup</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library FreeGroup</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">Group</span> <span class="id" title="var">Subgroup</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">WildCat.Core</span> <span class="id" title="var">WildCat.Universe</span> <span class="id" title="var">Colimits.Coeq</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Truncations.Core</span> <span class="id" title="var">Truncations.SeparatedTrunc</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Spaces.List.Core</span> <span class="id" title="var">Spaces.List.Theory</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_mult_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">IsFreeGroup</span></span> is defined in Group.v. In this file we construct free groups and and prove properties about them. 
+<div class="paragraph"> </div>
+
+ We construct the free group on a type <span class="inlinecode"><span class="id" title="var">A</span></span> as a higher inductive type. This construction is due to Kraus-Altenkirch 2018 arXiv:1805.02069. Their construction is actually more general, but we set-truncate it to suit our needs which is the free group as a set. This is a very simple HIT in a similar manner to the abelianization HIT used in Algebra.AbGroup.Abelianization. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Reduction</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Universe</span> <span class="id" title="var">u</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">list_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We define words (with inverses) on A to be lists of marked elements of A 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Words</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>} := <span class="id" title="var">list</span> (<span class="id" title="var">A</span> + <span class="id" title="var">A</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given a marked element of A we can change its mark 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">change_sign</span> : <span class="id" title="var">A</span> + <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span> + <span class="id" title="var">A</span> := <span class="id" title="var">equiv_sum_symm</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We introduce a local notation for <span class="inlinecode"><span class="id" title="var">change_sign</span></span>. It is only defined in this section however. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Notation</span> &quot;a ^" := (<span class="id" title="var">change_sign</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Changing sign is an involution 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">change_sign_inv</span> <span class="id" title="var">a</span> : <span class="id" title="var">a</span>^^ = <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we wish to define the free group on A as the following HIT: 
+
+<div class="paragraph"> </div>
+
+    HIT N(A) : hSet
+     | eta : Words -&gt; N(A)
+     | tau (x : Words) (a : A + A) (y : Words)
+         : eta (x ++ <span class="inlinecode"><span class="id" title="var">a</span></span> ++ <span class="inlinecode"><span class="id" title="var">a</span>^</span> ++ y) = eta (x ++ y).
+
+<div class="paragraph"> </div>
+
+    Since we cannot write our HITs directly like this (without resorting to private inductive types), we will construct this HIT out of HITs we know. In fact, we can define N(A) as a coequalizer. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">map1</span> : <span class="id" title="var">Words</span> * (<span class="id" title="var">A</span> + <span class="id" title="var">A</span>) * <span class="id" title="var">Words</span> -&gt; <span class="id" title="var">Words</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[<span class="id" title="var">x</span> <span class="id" title="var">a</span>] <span class="id" title="var">y</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">x</span> ++ [<span class="id" title="var">a</span>] ++ [<span class="id" title="var">a</span>^] ++ <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Arguments</span> <span class="id" title="var">map1</span> <span class="id" title="var">_</span> /.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">map2</span> : <span class="id" title="var">Words</span> * (<span class="id" title="var">A</span> + <span class="id" title="var">A</span>) * <span class="id" title="var">Words</span> -&gt; <span class="id" title="var">Words</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[<span class="id" title="var">x</span> <span class="id" title="var">a</span>] <span class="id" title="var">y</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Arguments</span> <span class="id" title="var">map2</span> <span class="id" title="var">_</span> /.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we can define the underlying type of the free group as the 0-truncated coequalizer of these two maps 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">freegroup_type</span> : <span class="id" title="keyword">Type</span> := <span class="id" title="var">Tr</span> 0 (<span class="id" title="var">Coeq</span> <span class="id" title="var">map1</span> <span class="id" title="var">map2</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is the point constructor 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">freegroup_eta</span> : <span class="id" title="var">Words</span> -&gt; <span class="id" title="var">freegroup_type</span> := <span class="id" title="var">tr</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is the path constructor 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">freegroup_tau</span> (<span class="id" title="var">x</span> : <span class="id" title="var">Words</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span> + <span class="id" title="var">A</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">Words</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">x</span> ++ [<span class="id" title="var">a</span>] ++ [<span class="id" title="var">a</span>^] ++ <span class="id" title="var">y</span>) = <span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_Tr</span>, <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">cglue</span> (<span class="id" title="var">x</span>, <span class="id" title="var">a</span>, <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The group operation 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">sgop_freegroup</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">freegroup_type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">Coeq_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="var">revert</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Coeq_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">y</span>)). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[<span class="id" title="var">y</span> <span class="id" title="var">a</span>] <span class="id" title="var">z</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">y</span> ++ ([<span class="id" title="var">a</span>] ++ [<span class="id" title="var">a</span>^] ++ <span class="id" title="var">z</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">y</span> ++ <span class="id" title="var">z</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">freegroup_tau</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[<span class="id" title="var">c</span> <span class="id" title="var">b</span>] <span class="id" title="var">d</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">freegroup_eta</span> ((<span class="id" title="var">c</span> ++ [<span class="id" title="var">b</span>] ++ [<span class="id" title="var">b</span>^] ++ <span class="id" title="var">d</span>) ++ <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">freegroup_eta</span> ((<span class="id" title="var">c</span> ++ <span class="id" title="var">d</span>) ++ <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">c</span> ++ <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">c</span> ++ <span class="id" title="var">_</span> ++ <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">freegroup_tau</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The unit of the free group is the empty word 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">monunit_freegroup_type</span> : <span class="id" title="var">MonUnit</span> <span class="id" title="var">freegroup_type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">freegroup_eta</span> <span class="id" title="var">nil</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can change the sign of all the elements in a word and reverse the order. This will be the inversion in the group 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">word_change_sign</span> (<span class="id" title="var">x</span> : <span class="id" title="var">Words</span>) : <span class="id" title="var">Words</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">reverse</span> (<span class="id" title="var">list_map</span> <span class="id" title="var">change_sign</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Changing the sign changes the order of word concatenation 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">word_change_sign_ww</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Words</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">word_change_sign</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">y</span>) = <span class="id" title="var">word_change_sign</span> <span class="id" title="var">y</span> ++ <span class="id" title="var">word_change_sign</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">word_change_sign</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">reverse</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">list_map_app</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">reverse_app</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This is also involutive 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">word_change_sign_inv</span> <span class="id" title="var">x</span> : <span class="id" title="var">word_change_sign</span> (<span class="id" title="var">word_change_sign</span> <span class="id" title="var">x</span>) = <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">word_change_sign</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">list_map_reverse</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">reverse_reverse</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">list_map_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">list_map_id</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> ?.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">change_sign_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Changing the sign gives us left inverses 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">word_concat_Vw</span> <span class="id" title="var">x</span> : <span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">word_change_sign</span> <span class="id" title="var">x</span> ++ <span class="id" title="var">x</span>) = <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">_</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">reverse_cons</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">freegroup_eta</span> ((<span class="id" title="var">word_change_sign</span> <span class="id" title="var">x</span> ++ [<span class="id" title="var">a</span>^]) ++ [<span class="id" title="var">a</span>] ++ <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">mon_unit</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a'</span> := <span class="id" title="var">a</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">change_sign_inv</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">freegroup_tau</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And since changing the sign is involutive we get right inverses from left inverses 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">word_concat_wV</span> <span class="id" title="var">x</span> : <span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">word_change_sign</span> <span class="id" title="var">x</span>) = <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">x'</span> := <span class="id" title="var">word_change_sign</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">word_change_sign_inv</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">freegroup_eta</span> (<span class="id" title="var">word_change_sign</span> <span class="id" title="var">x'</span> ++ <span class="id" title="var">x'</span>) = <span class="id" title="var">mon_unit</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">word_concat_Vw</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Negation is defined by changing the order of a word that appears in eta. Most of the work here is checking that it is agreeable with the path constructor. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">negate_freegroup_type</span> : <span class="id" title="var">Negate</span> <span class="id" title="var">freegroup_type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">freegroup_eta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">word_change_sign</span> <span class="id" title="var">x</span>). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[<span class="id" title="var">b</span> <span class="id" title="var">a</span>] <span class="id" title="var">c</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">map1</span>, <span class="id" title="var">map2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">word_change_sign_ww</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> ++ <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">word_change_sign_ww</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> ++ <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">word_change_sign_ww</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">_</span> ++ <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">word_change_sign_inv</span> [<span class="id" title="var">a</span>]). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">word_change_sign_ww</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">freegroup_tau</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we can start to prove the group laws. Since these are hprops we can ignore what happens with the path constructor. 
+<div class="paragraph"> </div>
+
+ Our operation is associative 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">associative_freegroup_type</span> : <span class="id" title="var">Associative</span> <span class="id" title="var">sg_op</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">y</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">z</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">tr</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">app_assoc</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Left identity 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">leftidentity_freegroup_type</span> : <span class="id" title="var">LeftIdentity</span> <span class="id" title="var">sg_op</span> <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Right identity 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">rightidentity_freegroup_type</span> : <span class="id" title="var">RightIdentity</span> <span class="id" title="var">sg_op</span> <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">tr</span>), <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">app_nil</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Left inverse 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">leftinverse_freegroup_type</span> : <span class="id" title="var">LeftInverse</span> <span class="id" title="var">sg_op</span> <span class="id" title="var">negate</span> <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">word_concat_Vw</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Right inverse 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">rightinverse_freegroup_type</span> : <span class="id" title="var">RightInverse</span> <span class="id" title="var">sg_op</span> <span class="id" title="var">negate</span> <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">word_concat_wV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Finally we have defined the free group on <span class="inlinecode"><span class="id" title="var">A</span></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">FreeGroup</span> : <span class="id" title="var">Group</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">Build_Group</span> <span class="id" title="var">freegroup_type</span>); <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">word_rec</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>) : <span class="id" title="var">A</span> + <span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span>|<span class="id" title="var">x</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">s</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (- <span class="id" title="var">s</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+When we have a list of words we can recursively define a group element. The obvious choice would be to map <span class="inlinecode"><span class="id" title="var">nil</span></span> to the identity and <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">::</span> <span class="inlinecode"><span class="id" title="var">xs</span></span> to <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">words_rec</span></span> <span class="inlinecode"><span class="id" title="var">xs</span></span>. This has the disadvantage that a single generating element gets mapped to <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">*</span> <span class="inlinecode">1</span> instead of <span class="inlinecode"><span class="id" title="var">x</span></span>. To fix this issue, we map <span class="inlinecode"><span class="id" title="var">nil</span></span> to the identity, the singleton to the element we want, and do the rest recursively. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">words_rec</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>) : <span class="id" title="var">Words</span> -&gt; <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">xs</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">xs</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> [|<span class="id" title="var">y</span> <span class="id" title="var">xs</span>] <span class="id" title="var">IHxs</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">word_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">word_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span> * <span class="id" title="var">IHxs</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">words_rec_cons</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">A</span> + <span class="id" title="var">A</span>) (<span class="id" title="var">xs</span> : <span class="id" title="var">Words</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">words_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> (<span class="id" title="var">x</span> :: <span class="id" title="var">xs</span>)%<span class="id" title="var">list</span> = <span class="id" title="var">word_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span> * <span class="id" title="var">words_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> <span class="id" title="var">xs</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">xs</span> <span class="id" title="tactic">in</span> <span class="id" title="var">x</span> |- *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_unit_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">words_rec_pp</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>)  (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Words</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">words_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> (<span class="id" title="var">x</span> ++ <span class="id" title="var">y</span>) = <span class="id" title="var">words_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span> * <span class="id" title="var">words_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">xs</span> <span class="id" title="var">IHxs</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_unit_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">change</span> ((?<span class="id" title="var">x</span> :: ?<span class="id" title="var">xs</span>) ++ <span class="id" title="var">y</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">x</span> :: <span class="id" title="var">xs</span> ++ <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">words_rec_cons</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">IHxs</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (.* <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">words_rec_cons</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">words_rec_coh</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span> + <span class="id" title="var">A</span>) (<span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">Words</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">words_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> (<span class="id" title="var">map1</span> (<span class="id" title="var">b</span>, <span class="id" title="var">a</span>, <span class="id" title="var">c</span>)) = <span class="id" title="var">words_rec</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span> (<span class="id" title="var">map2</span> (<span class="id" title="var">b</span>, <span class="id" title="var">a</span>, <span class="id" title="var">c</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">map1</span>, <span class="id" title="var">map2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">words_rec_pp</span> <span class="id" title="var">G</span> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">words_rec_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">_</span> *.)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">words_rec_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">words_rec_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_unit_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (.* <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_inv_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_inv_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given a group <span class="inlinecode"><span class="id" title="var">G</span></span> we can construct a group homomorphism <span class="inlinecode"><span class="id" title="var">FreeGroup</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">G</span></span> if we have a map <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">G</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">FreeGroup_rec</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">FreeGroup</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupHomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">words_rec</span>, <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[<span class="id" title="var">b</span> <span class="id" title="var">a</span>] <span class="id" title="var">c</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">words_rec_coh</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">y</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">words_rec_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">freegroup_in</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">FreeGroup</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">freegroup_eta</span> <span class="id" title="var">o</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; [ <span class="id" title="var">x</span> ]) <span class="id" title="var">o</span> <span class="id" title="var">inl</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">FreeGroup_rec_beta</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">FreeGroup_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">freegroup_in</span> == <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Coercion</span> <span class="id" title="var">freegroup_in</span> : <span class="id" title="var">A</span> &gt;-&gt; <span class="id" title="var">group_type</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">FreeGroup_ind_hprop'</span> (<span class="id" title="var">P</span> : <span class="id" title="var">FreeGroup</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">H1</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">w</span>, <span class="id" title="var">P</span> (<span class="id" title="var">freegroup_eta</span> <span class="id" title="var">w</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">FreeGroup_ind_hprop</span> (<span class="id" title="var">P</span> : <span class="id" title="var">FreeGroup</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">H1</span> : <span class="id" title="var">P</span> <span class="id" title="var">mon_unit</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hin</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> (<span class="id" title="var">freegroup_in</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hop</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">P</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">P</span> (- <span class="id" title="var">x</span> * <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">FreeGroup_ind_hprop'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">w</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">w</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">a</span> <span class="id" title="var">w</span> <span class="id" title="var">IHw</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span>|<span class="id" title="var">a</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">change</span> (<span class="id" title="var">P</span> ((<span class="id" title="var">freegroup_in</span> <span class="id" title="var">a</span>) * <span class="id" title="var">freegroup_eta</span> <span class="id" title="var">w</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">grp_inv_inv</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Hop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">grp_unit_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Hop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">change</span> (<span class="id" title="var">P</span> (-(<span class="id" title="var">freegroup_in</span> <span class="id" title="var">a</span>) * <span class="id" title="var">freegroup_eta</span> <span class="id" title="var">w</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Hop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">FreeGroup_ind_homotopy</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">f</span> <span class="id" title="var">f'</span> : <span class="id" title="var">FreeGroup</span> $-&gt; <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">f</span> (<span class="id" title="var">freegroup_in</span> <span class="id" title="var">x</span>) = <span class="id" title="var">f'</span> (<span class="id" title="var">freegroup_in</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">f</span> $== <span class="id" title="var">f'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">FreeGroup_ind_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">concat</span> (<span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">f</span>) (<span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">f'</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>. <span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_homo_op_agree</span> <span class="id" title="var">f</span> <span class="id" title="var">f'</span> <span class="id" title="var">_</span> <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_homo_inv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_homo_inv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we need to prove that the free group satisifes the unviersal property of the free group.  TODO: remove funext from here and universal property of free group 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isfreegroupon_freegroup</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">A</span> <span class="id" title="var">FreeGroup</span> <span class="id" title="var">freegroup_in</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">G</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Contr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">srefine</span> (<span class="id" title="var">_</span>;<span class="id" title="var">_</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">FreeGroup_rec</span>, <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">reflexivity</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">g</span> <span class="id" title="var">h</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">path_sigma_hprop</span>; [ <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span> |].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">FreeGroup_ind_homotopy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Typeclass search can already find this but we leave it here as a definition for reference. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isfreegroup_freegroup</span> `{<span class="id" title="var">Funext</span>} : <span class="id" title="var">IsFreeGroup</span> <span class="id" title="var">FreeGroup</span> := <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Reduction</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">freegroup_eta</span> {<span class="id" title="var">A</span>}.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">freegroup_in</span> {<span class="id" title="var">A</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Properties of free groups 
+</div>
+<div class="code">
+
+<br/>
+<span class="comment">(*&nbsp;Given&nbsp;a&nbsp;function&nbsp;on&nbsp;the&nbsp;generators,&nbsp;there&nbsp;is&nbsp;an&nbsp;induced&nbsp;group&nbsp;homomorphism&nbsp;from&nbsp;the&nbsp;free&nbsp;group.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isfreegroupon_rec</span> {<span class="id" title="var">S</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F_S</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">i</span> : <span class="id" title="var">S</span> -&gt; <span class="id" title="var">F_S</span>} `{<span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">S</span> <span class="id" title="var">F_S</span> <span class="id" title="var">i</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">S</span> -&gt; <span class="id" title="var">G</span>) : <span class="id" title="var">F_S</span> $-&gt; <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">center</span> (<span class="id" title="var">FactorsThroughFreeGroup</span> <span class="id" title="var">S</span> <span class="id" title="var">F_S</span> <span class="id" title="var">i</span> <span class="id" title="var">G</span> <span class="id" title="var">f</span>)).1.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;The&nbsp;propositional&nbsp;computation&nbsp;rule&nbsp;for&nbsp;the&nbsp;recursor.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isfreegroupon_rec_beta</span><br/>
+&nbsp;&nbsp;{<span class="id" title="var">S</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F_S</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">i</span> : <span class="id" title="var">S</span> -&gt; <span class="id" title="var">F_S</span>} `{<span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">S</span> <span class="id" title="var">F_S</span> <span class="id" title="var">i</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">S</span> -&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">isfreegroupon_rec</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span> == <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">center</span> (<span class="id" title="var">FactorsThroughFreeGroup</span> <span class="id" title="var">S</span> <span class="id" title="var">F_S</span> <span class="id" title="var">i</span> <span class="id" title="var">G</span> <span class="id" title="var">f</span>)).2.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Two&nbsp;homomorphisms&nbsp;from&nbsp;a&nbsp;free&nbsp;group&nbsp;are&nbsp;equal&nbsp;if&nbsp;they&nbsp;agree&nbsp;on&nbsp;the&nbsp;generators.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_homomorphism_from_free_group</span> {<span class="id" title="var">S</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F_S</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">i</span> : <span class="id" title="var">S</span> -&gt; <span class="id" title="var">F_S</span>} `{<span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">S</span> <span class="id" title="var">F_S</span> <span class="id" title="var">i</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">F_S</span> $-&gt; <span class="id" title="var">G</span>) (<span class="id" title="var">K</span> : <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span> == <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> = <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;By&nbsp;assumption,&nbsp;the&nbsp;type&nbsp;<span class="inlinecode"><span class="id" title="var">FactorsThroughFreeGroup</span></span> <span class="inlinecode"><span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">F_S</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">(<span class="id" title="var">g</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">i</span>)</span>&nbsp;of&nbsp;factorizations&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">i</span></span>&nbsp;through&nbsp;<span class="inlinecode"><span class="id" title="var">i</span></span>&nbsp;is&nbsp;contractible.&nbsp;&nbsp;Therefore&nbsp;the&nbsp;two&nbsp;elements&nbsp;we&nbsp;have&nbsp;are&nbsp;equal.&nbsp;&nbsp;Therefore,&nbsp;their&nbsp;first&nbsp;components&nbsp;are&nbsp;equal.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">path_contr</span> (<span class="id" title="var">f</span>; <span class="id" title="var">K</span>) (<span class="id" title="var">g</span>; <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">idpath</span>))..1.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_isfreegroupon_rec</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">S</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">F_S</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">i</span> : <span class="id" title="var">S</span> -&gt; <span class="id" title="var">F_S</span>} `{<span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">S</span> <span class="id" title="var">F_S</span> <span class="id" title="var">i</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (@<span class="id" title="var">isfreegroupon_rec</span> <span class="id" title="var">S</span> <span class="id" title="var">F_S</span> <span class="id" title="var">i</span> <span class="id" title="var">_</span> <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">isfreegroupon_rec</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_homomorphism_from_free_group</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isfreegroupon_rec_beta</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;here&nbsp;we&nbsp;need&nbsp;<span class="inlinecode"><span class="id" title="var">Funext</span></span>:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_arrow</span>, <span class="id" title="var">isfreegroupon_rec_beta</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The universal property of a free group. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_isfreegroupon_rec</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> <span class="id" title="var">F</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">F</span>} `{<span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">A</span> <span class="id" title="var">F</span> <span class="id" title="var">i</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>) &lt;~&gt; (<span class="id" title="var">F</span> $-&gt; <span class="id" title="var">G</span>) := <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">isfreegroupon_rec</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The above theorem is true regardless of the implementation of free groups. This lets us state the more specific theorem about the canonical free groups. This can be read as <span class="inlinecode"><span class="id" title="var">FreeGroup</span></span> is left adjoint to the forgetful functor <span class="inlinecode"><span class="id" title="var">group_type</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_freegroup_rec</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">G</span>) &lt;~&gt; (<span class="id" title="var">FreeGroup</span> <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_isfreegroupon_rec</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_isfreegroupon</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">F</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">A</span> <span class="id" title="var">F</span> <span class="id" title="var">i</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">IsFreeGroupOn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_forall</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Both ways of stating the universal property are equivalent. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_isfreegroupon_isequiv_precomp</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">A</span> <span class="id" title="var">F</span> <span class="id" title="var">i</span> &lt;~&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">G</span>, <span class="id" title="var">IsEquiv</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> : <span class="id" title="var">F</span> $-&gt; <span class="id" title="var">G</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">i</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">intros</span> ? ?; <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_isequiv</span> (<span class="id" title="var">equiv_isfreegroupon_rec</span>)^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">G</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">k</span> <span class="id" title="var">G</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">contr_equiv'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">hfiber</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">grp_homo_map</span> <span class="id" title="var">f</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>)) <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">rapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_forall</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab169"></a><h2 class="section">Subgroups of free groups</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="comment">(*&nbsp;We&nbsp;say&nbsp;that&nbsp;a&nbsp;group&nbsp;<span class="inlinecode"><span class="id" title="var">G</span></span>&nbsp;is&nbsp;generated&nbsp;by&nbsp;a&nbsp;subtype&nbsp;<span class="inlinecode"><span class="id" title="var">X</span></span>&nbsp;if&nbsp;the&nbsp;natural&nbsp;map&nbsp;from&nbsp;the&nbsp;subgroup&nbsp;generated&nbsp;by&nbsp;<span class="inlinecode"><span class="id" title="var">X</span></span>&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">G</span></span>&nbsp;is&nbsp;a&nbsp;surjection.&nbsp;&nbsp;One&nbsp;could&nbsp;equivalently&nbsp;say&nbsp;<span class="inlinecode"><span class="id" title="var">IsEquiv</span></span> <span class="inlinecode">(<span class="id" title="var">subgroup_incl</span></span> <span class="inlinecode">(<span class="id" title="var">subgroup_generated</span></span> <span class="inlinecode"><span class="id" title="var">X</span>))</span>,&nbsp;<span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">g</span>,</span> <span class="inlinecode"><span class="id" title="var">subgroup_generated</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span>,&nbsp;or&nbsp;<span class="inlinecode"><span class="id" title="var">subgroup_generated</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">maximal_subgroup</span></span>,&nbsp;but&nbsp;the&nbsp;definition&nbsp;using&nbsp;surjectivity&nbsp;is&nbsp;convenient&nbsp;later.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isgeneratedby</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">X</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">IsSurjection</span> (<span class="id" title="var">subgroup_incl</span> (<span class="id" title="var">subgroup_generated</span> <span class="id" title="var">X</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">FreeGroupGenerated</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;In&nbsp;this&nbsp;Section,&nbsp;we&nbsp;prove&nbsp;that&nbsp;the&nbsp;free&nbsp;group&nbsp;<span class="inlinecode"><span class="id" title="var">F_S</span></span>&nbsp;on&nbsp;a&nbsp;type&nbsp;<span class="inlinecode"><span class="id" title="var">S</span></span>&nbsp;is&nbsp;generated&nbsp;in&nbsp;the&nbsp;above&nbsp;sense&nbsp;by&nbsp;the&nbsp;image&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">S</span></span>.&nbsp;&nbsp;We&nbsp;conclude&nbsp;that&nbsp;the&nbsp;inclusion&nbsp;map&nbsp;is&nbsp;an&nbsp;equivalence,&nbsp;and&nbsp;that&nbsp;the&nbsp;free&nbsp;group&nbsp;is&nbsp;isomorphic&nbsp;as&nbsp;a&nbsp;group&nbsp;to&nbsp;the&nbsp;subgroup.&nbsp;We&nbsp;show&nbsp;that&nbsp;the&nbsp;inclusion&nbsp;is&nbsp;a&nbsp;surjection&nbsp;by&nbsp;showing&nbsp;that&nbsp;it&nbsp;is&nbsp;split&nbsp;epi&nbsp;in&nbsp;the&nbsp;category&nbsp;of&nbsp;groups.&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">S</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">F_S</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">i</span> : <span class="id" title="var">S</span> -&gt; <span class="id" title="var">F_S</span>} `{<span class="id" title="var">IsFreeGroupOn</span> <span class="id" title="var">S</span> <span class="id" title="var">F_S</span> <span class="id" title="var">i</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;define&nbsp;a&nbsp;group&nbsp;homomorphism&nbsp;from&nbsp;<span class="inlinecode"><span class="id" title="var">F_S</span></span>&nbsp;to&nbsp;the&nbsp;subgroup&nbsp;<span class="inlinecode"><span class="id" title="var">G</span></span>&nbsp;generated&nbsp;by&nbsp;<span class="inlinecode"><span class="id" title="var">S</span></span>&nbsp;by&nbsp;sending&nbsp;a&nbsp;generator&nbsp;<span class="inlinecode"><span class="id" title="var">s</span></span>&nbsp;to&nbsp;"itself".&nbsp;&nbsp;This&nbsp;map&nbsp;will&nbsp;be&nbsp;a&nbsp;section&nbsp;of&nbsp;the&nbsp;inclusion&nbsp;map.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">to_subgroup_generated</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">F_S</span> $-&gt; <span class="id" title="var">subgroup_generated</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">i</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isfreegroupon_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">subgroup_generated_gen_incl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">i</span> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">s</span>; <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;record&nbsp;the&nbsp;computation&nbsp;rule&nbsp;that&nbsp;<span class="inlinecode"><span class="id" title="var">to_subgroup_generated</span></span>&nbsp;satisfies.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">to_subgroup_generated_beta</span> (<span class="id" title="var">s</span> : <span class="id" title="var">S</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">to_subgroup_generated</span> (<span class="id" title="var">i</span> <span class="id" title="var">s</span>) = <span class="id" title="var">subgroup_generated_gen_incl</span> (<span class="id" title="var">i</span> <span class="id" title="var">s</span>) (<span class="id" title="var">s</span>; <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">isfreegroupon_rec_beta</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;It&nbsp;follows&nbsp;that&nbsp;<span class="inlinecode"><span class="id" title="var">to_subgroup_generated</span></span>&nbsp;is&nbsp;a&nbsp;section&nbsp;of&nbsp;the&nbsp;inclusion&nbsp;map&nbsp;from&nbsp;<span class="inlinecode"><span class="id" title="var">G</span></span>&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">F_S</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">is_retraction</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">subgroup_incl</span> <span class="id" title="var">_</span>) $<span class="id" title="var">o</span> <span class="id" title="var">to_subgroup_generated</span> = <span class="id" title="var">grp_homo_id</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_homomorphism_from_free_group</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">pr1</span> (<span class="id" title="var">to_subgroup_generated_beta</span> <span class="id" title="var">s</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;It&nbsp;follows&nbsp;that&nbsp;the&nbsp;inclusion&nbsp;map&nbsp;is&nbsp;a&nbsp;surjection,&nbsp;i.e.,&nbsp;that&nbsp;<span class="inlinecode"><span class="id" title="var">F_S</span></span>&nbsp;is&nbsp;generated&nbsp;by&nbsp;the&nbsp;image&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">S</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isgenerated_isfreegroupon</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">isgeneratedby</span> <span class="id" title="var">F_S</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">i</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">issurj_retr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">to_subgroup_generated</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">ap10</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">grp_homo_map</span> <span class="id" title="var">is_retraction</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Therefore,&nbsp;the&nbsp;inclusion&nbsp;map&nbsp;is&nbsp;an&nbsp;equivalence,&nbsp;since&nbsp;it&nbsp;is&nbsp;known&nbsp;to&nbsp;be&nbsp;an&nbsp;embedding.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_subgroup_incl_freegroupon</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">subgroup_incl</span> (<span class="id" title="var">subgroup_generated</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">i</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_surj_emb</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">isgenerated_isfreegroupon</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Therefore,&nbsp;the&nbsp;subgroup&nbsp;is&nbsp;isomorphic&nbsp;to&nbsp;the&nbsp;free&nbsp;group.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iso_subgroup_incl_freegroupon</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">GroupIsomorphism</span> (<span class="id" title="var">subgroup_generated</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">i</span>)) <span class="id" title="var">F_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_GroupIsomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_subgroup_incl_freegroupon</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">FreeGroupGenerated</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab170"></a><h2 class="section">Functoriality</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_freegroup</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">FreeGroup</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">FreeGroup_rec</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">freegroup_in</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_freegroup</span> : <span class="id" title="var">Is1Functor</span> <span class="id" title="var">FreeGroup</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">FreeGroup_ind_homotopy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">freegroup_in</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">snrapply</span> <span class="id" title="var">FreeGroup_ind_homotopy</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">snrapply</span> <span class="id" title="var">FreeGroup_ind_homotopy</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

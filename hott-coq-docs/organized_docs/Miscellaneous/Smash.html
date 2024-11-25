@@ -1,0 +1,545 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Smash</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Smash</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.PathGroupoids</span> <span class="id" title="var">Basics.Tactics</span> <span class="id" title="var">Basics.Equivalences</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Sum</span> <span class="id" title="var">Types.Bool</span> <span class="id" title="var">Types.Paths</span> <span class="id" title="var">Types.Forall</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span> <span class="id" title="var">WildCat.Bifunctor</span> <span class="id" title="var">WildCat.Equiv</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Pushout</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Cubical.DPath</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pointed.Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">pointed_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">dpath_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Definition&nbsp;of&nbsp;smash&nbsp;product&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sum_to_prod</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>) : <span class="id" title="var">X</span> + <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">X</span> * <span class="id" title="var">Y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">sum_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">x</span>, <span class="id" title="var">point</span> <span class="id" title="var">Y</span>)) (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; (<span class="id" title="var">point</span> <span class="id" title="var">X</span>, <span class="id" title="var">y</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sum_to_bool</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">X</span> + <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Bool</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">sum_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">false</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">true</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">w</span> | <span class="id" title="var">u</span> &lt;= <span class="id" title="var">w</span>, <span class="id" title="var">v</span> &lt;= <span class="id" title="var">w</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}) (<span class="id" title="var">Y</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">v</span>}) : <span class="id" title="var">pType@</span>{<span class="id" title="var">w</span>}<br/>
+&nbsp;&nbsp;:= [<span class="id" title="var">Pushout@</span>{<span class="id" title="var">w</span> <span class="id" title="var">w</span> <span class="id" title="var">w</span> <span class="id" title="var">w</span>} (<span class="id" title="var">sum_to_prod@</span>{<span class="id" title="var">w</span> <span class="id" title="var">w</span> <span class="id" title="var">w</span>} <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">sum_to_bool@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">w</span>} <span class="id" title="var">X</span> <span class="id" title="var">Y</span>), <span class="id" title="var">pushl</span> (<span class="id" title="var">point</span> <span class="id" title="var">X</span>, <span class="id" title="var">point</span> <span class="id" title="var">Y</span>)].<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Smash</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sm</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">Y</span>) : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> := <span class="id" title="var">pushl</span> (<span class="id" title="var">x</span>, <span class="id" title="var">y</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">auxl</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> := <span class="id" title="var">pushr</span> <span class="id" title="var">false</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">auxr</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> := <span class="id" title="var">pushr</span> <span class="id" title="var">true</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">gluel</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>) : <span class="id" title="var">sm</span> <span class="id" title="var">x</span> <span class="id" title="var">pt</span> = <span class="id" title="var">auxl</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">pglue</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">sum_to_prod</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">g</span>:=<span class="id" title="var">sum_to_bool</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">inl</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">gluer</span> (<span class="id" title="var">y</span> : <span class="id" title="var">Y</span>) : <span class="id" title="var">sm</span> <span class="id" title="var">pt</span> <span class="id" title="var">y</span> = <span class="id" title="var">auxr</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">pglue</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">sum_to_prod</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">g</span>:=<span class="id" title="var">sum_to_bool</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>) (<span class="id" title="var">inr</span> <span class="id" title="var">y</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">gluel'</span> (<span class="id" title="var">x</span> <span class="id" title="var">x'</span> : <span class="id" title="var">X</span>) : <span class="id" title="var">sm</span> <span class="id" title="var">x</span> <span class="id" title="var">pt</span> = <span class="id" title="var">sm</span> <span class="id" title="var">x'</span> <span class="id" title="var">pt</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">gluel</span> <span class="id" title="var">x</span> @ (<span class="id" title="var">gluel</span> <span class="id" title="var">x'</span>)^.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">gluer'</span> (<span class="id" title="var">y</span> <span class="id" title="var">y'</span> : <span class="id" title="var">Y</span>) : <span class="id" title="var">sm</span> <span class="id" title="var">pt</span> <span class="id" title="var">y</span> = <span class="id" title="var">sm</span> <span class="id" title="var">pt</span> <span class="id" title="var">y'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">gluer</span> <span class="id" title="var">y</span> @ (<span class="id" title="var">gluer</span> <span class="id" title="var">y'</span>)^.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">glue</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">Y</span>) : <span class="id" title="var">sm</span> <span class="id" title="var">x</span> <span class="id" title="var">pt</span> = <span class="id" title="var">sm</span> <span class="id" title="var">pt</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">gluel'</span> <span class="id" title="var">x</span> <span class="id" title="var">pt</span> @ <span class="id" title="var">gluer'</span> <span class="id" title="var">pt</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">glue_pt_left</span> (<span class="id" title="var">y</span> : <span class="id" title="var">Y</span>) : <span class="id" title="var">glue</span> <span class="id" title="var">pt</span> <span class="id" title="var">y</span> = <span class="id" title="var">gluer'</span> <span class="id" title="var">pt</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerR</span>, <span class="id" title="var">concat_pV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">glue_pt_right</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>) : <span class="id" title="var">glue</span> <span class="id" title="var">x</span> <span class="id" title="var">pt</span> = <span class="id" title="var">gluel'</span> <span class="id" title="var">x</span> <span class="id" title="var">pt</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>, <span class="id" title="var">concat_pV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_sm_left</span> {<span class="id" title="var">x</span> <span class="id" title="var">x'</span> : <span class="id" title="var">X</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">x'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">t</span> =&gt; <span class="id" title="var">sm</span> <span class="id" title="var">t</span> <span class="id" title="var">pt</span>) <span class="id" title="var">p</span> = <span class="id" title="var">gluel'</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_pV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_sm_right</span> {<span class="id" title="var">y</span> <span class="id" title="var">y'</span> : <span class="id" title="var">Y</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">y</span> = <span class="id" title="var">y'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">sm</span> <span class="id" title="var">pt</span>) <span class="id" title="var">p</span> = <span class="id" title="var">gluer'</span> <span class="id" title="var">y</span> <span class="id" title="var">y'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_pV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_ind</span> {<span class="id" title="var">P</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Psm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">Pl</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxl</span>) (<span class="id" title="var">Pr</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span>) <span class="id" title="var">Pl</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span>) <span class="id" title="var">Pr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Pushout_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Psm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> (<span class="id" title="var">Bool_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pl</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">sum_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">Pgl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">Pgr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_ind_beta_gluel</span> {<span class="id" title="var">P</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Psm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)} {<span class="id" title="var">Pl</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxl</span>} {<span class="id" title="var">Pr</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxr</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span>) <span class="id" title="var">Pl</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span>) <span class="id" title="var">Pr</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">Smash_ind</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) = <span class="id" title="var">Pgl</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Pushout_ind_beta_pglue</span> <span class="id" title="var">P</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">inl</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_ind_beta_gluer</span> {<span class="id" title="var">P</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Psm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)} {<span class="id" title="var">Pl</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxl</span>} {<span class="id" title="var">Pr</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxr</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span>) <span class="id" title="var">Pl</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span>) <span class="id" title="var">Pr</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">Smash_ind</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) = <span class="id" title="var">Pgr</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Pushout_ind_beta_pglue</span> <span class="id" title="var">P</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">inr</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_ind_beta_gluel'</span> {<span class="id" title="var">P</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Psm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)} {<span class="id" title="var">Pl</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxl</span>} {<span class="id" title="var">Pr</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxr</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span>) <span class="id" title="var">Pl</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span>) <span class="id" title="var">Pr</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">Smash_ind</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">gluel'</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= (<span class="id" title="var">Pgl</span> <span class="id" title="var">a</span>) @<span class="id" title="var">Dp</span> ((<span class="id" title="var">Pgl</span> <span class="id" title="var">b</span>)^<span class="id" title="var">D</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">dp_apD_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap011</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_ind_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">dp_apD_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_ind_beta_gluel</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_ind_beta_gluer'</span> {<span class="id" title="var">P</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Psm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)} {<span class="id" title="var">Pl</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxl</span>} {<span class="id" title="var">Pr</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxr</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span>) <span class="id" title="var">Pl</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span>) <span class="id" title="var">Pr</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">Smash_ind</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">gluer'</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= (<span class="id" title="var">Pgr</span> <span class="id" title="var">a</span>) @<span class="id" title="var">Dp</span> ((<span class="id" title="var">Pgr</span> <span class="id" title="var">b</span>)^<span class="id" title="var">D</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">dp_apD_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap011</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_ind_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">dp_apD_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_ind_beta_gluer</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_ind_beta_glue</span> {<span class="id" title="var">P</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Psm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)} {<span class="id" title="var">Pl</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxl</span>} {<span class="id" title="var">Pr</span> : <span class="id" title="var">P</span> <span class="id" title="var">auxr</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span>) <span class="id" title="var">Pl</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span>) <span class="id" title="var">Pr</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">X</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">Smash_ind</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">glue</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= ((<span class="id" title="var">Pgl</span> <span class="id" title="var">a</span>) @<span class="id" title="var">Dp</span> ((<span class="id" title="var">Pgl</span> <span class="id" title="var">pt</span>)^<span class="id" title="var">D</span>)) @<span class="id" title="var">Dp</span> ((<span class="id" title="var">Pgr</span> <span class="id" title="var">pt</span>) @<span class="id" title="var">Dp</span> ((<span class="id" title="var">Pgr</span> <span class="id" title="var">b</span>)^<span class="id" title="var">D</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">dp_apD_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap011</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_ind_beta_gluel'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_ind_beta_gluer'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_rec</span> {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">Psm</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span>) (<span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> : <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> = <span class="id" title="var">Pl</span>) (<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> = <span class="id" title="var">Pr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Smash_ind</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">dp_const</span> (<span class="id" title="var">Pgl</span> <span class="id" title="var">x</span>)) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">dp_const</span> (<span class="id" title="var">Pgr</span> <span class="id" title="var">x</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Version&nbsp;of&nbsp;smash_rec&nbsp;that&nbsp;forces&nbsp;(Pgl&nbsp;pt)&nbsp;and&nbsp;(Pgr&nbsp;pt)&nbsp;to&nbsp;be&nbsp;idpath&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_rec'</span> {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Psm</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> = <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">pt</span>) (<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> = <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">pt</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ql</span> : <span class="id" title="var">Pgl</span> <span class="id" title="var">pt</span> = 1) (<span class="id" title="var">qr</span> : <span class="id" title="var">Pgr</span> <span class="id" title="var">pt</span> = 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Smash_rec</span> <span class="id" title="var">Psm</span> (<span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">pt</span>) (<span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">pt</span>) <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_rec_beta_gluel</span> {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Psm</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span>} {<span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> : <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> = <span class="id" title="var">Pl</span>) (<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> = <span class="id" title="var">Pr</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">Smash_rec</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) = <span class="id" title="var">Pgl</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">dp_const</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_equiv_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">dp_apD_const</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_ind_beta_gluel</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_rec_beta_gluer</span> {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Psm</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span>} {<span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> : <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> = <span class="id" title="var">Pl</span>) (<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> = <span class="id" title="var">Pr</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">Smash_rec</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) = <span class="id" title="var">Pgr</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">dp_const</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_equiv_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">dp_apD_const</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_ind_beta_gluer</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_rec_beta_gluel'</span> {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Psm</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span>} {<span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> : <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> = <span class="id" title="var">Pl</span>) (<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> = <span class="id" title="var">Pr</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">Smash_rec</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">gluel'</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) = <span class="id" title="var">Pgl</span> <span class="id" title="var">a</span> @ (<span class="id" title="var">Pgl</span> <span class="id" title="var">b</span>)^.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">inverse2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_rec_beta_gluer'</span> {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Psm</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span>} {<span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> : <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> = <span class="id" title="var">Pl</span>) (<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> = <span class="id" title="var">Pr</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">Smash_rec</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">gluer'</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) = <span class="id" title="var">Pgr</span> <span class="id" title="var">a</span> @ (<span class="id" title="var">Pgr</span> <span class="id" title="var">b</span>)^.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">inverse2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_rec_beta_glue</span> {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Psm</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">P</span>} {<span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> : <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Pgl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> = <span class="id" title="var">Pl</span>) (<span class="id" title="var">Pgr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">Psm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> = <span class="id" title="var">Pr</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">Y</span>) : <span class="id" title="var">ap</span> (<span class="id" title="var">Smash_rec</span> <span class="id" title="var">Psm</span> <span class="id" title="var">Pl</span> <span class="id" title="var">Pr</span> <span class="id" title="var">Pgl</span> <span class="id" title="var">Pgr</span>) (<span class="id" title="var">glue</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= ((<span class="id" title="var">Pgl</span> <span class="id" title="var">a</span>) @ (<span class="id" title="var">Pgl</span> <span class="id" title="var">pt</span>)^) @ (<span class="id" title="var">Pgr</span> <span class="id" title="var">pt</span> @ (<span class="id" title="var">Pgr</span> <span class="id" title="var">b</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluel'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluer'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Smash</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">sm</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">auxl</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">gluel</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">gluer</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1130"></a><h2 class="section">Miscellaneous lemmas about Smash</h2>
+
+<div class="paragraph"> </div>
+
+ A version of <span class="inlinecode"><span class="id" title="var">Smash_ind</span></span> specifically for proving that two functions from a <span class="inlinecode"><span class="id" title="var">Smash</span></span> are homotopic. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_ind_FlFr</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> -&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hsm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">f</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) = <span class="id" title="var">g</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hl</span> : <span class="id" title="var">f</span> <span class="id" title="var">auxl</span> = <span class="id" title="var">g</span> <span class="id" title="var">auxl</span>) (<span class="id" title="var">Hr</span> : <span class="id" title="var">f</span> <span class="id" title="var">auxr</span> = <span class="id" title="var">g</span> <span class="id" title="var">auxr</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hgluel</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">Hl</span> = <span class="id" title="var">Hsm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hgluer</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">Hr</span> = <span class="id" title="var">Hsm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> == <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">Smash_ind</span> <span class="id" title="var">Hsm</span> <span class="id" title="var">Hl</span> <span class="id" title="var">Hr</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FlFr'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Hgluel</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FlFr'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Hgluer</span> <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A version of <span class="inlinecode"><span class="id" title="var">Smash_ind</span></span>j specifically for proving that the composition of two functions is the identity map. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Smash_ind_FFlr</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> -&gt; <span class="id" title="var">P</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hsm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">g</span> (<span class="id" title="var">f</span> (<span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)) = <span class="id" title="var">sm</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hl</span> : <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">auxl</span>) = <span class="id" title="var">auxl</span>) (<span class="id" title="var">Hr</span> : <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">auxr</span>) = <span class="id" title="var">auxr</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hgluel</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>)) @ <span class="id" title="var">Hl</span> = <span class="id" title="var">Hsm</span> <span class="id" title="var">a</span> <span class="id" title="var">pt</span> @ <span class="id" title="var">gluel</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Hgluer</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>)) @ <span class="id" title="var">Hr</span> = <span class="id" title="var">Hsm</span> <span class="id" title="var">pt</span> <span class="id" title="var">b</span> @ <span class="id" title="var">gluer</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">Smash_ind</span> <span class="id" title="var">Hsm</span> <span class="id" title="var">Hl</span> <span class="id" title="var">Hr</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">transport_paths_FFlr'</span> (<span class="id" title="var">f</span> := <span class="id" title="var">f</span>) (<span class="id" title="var">g</span> := <span class="id" title="var">g</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Hgluel</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">transport_paths_FFlr'</span> (<span class="id" title="var">f</span> := <span class="id" title="var">f</span>) (<span class="id" title="var">g</span> := <span class="id" title="var">g</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Hgluer</span> <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1131"></a><h2 class="section">Functoriality of the smash product</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_smash</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">X</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Smash</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pMap</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> (<span class="id" title="var">Smash_rec</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">sm</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)) <span class="id" title="var">auxl</span> <span class="id" title="var">auxr</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>; <span class="id" title="var">cbn</span> <span class="id" title="keyword">beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">gluel</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap011</span> <span class="id" title="var">_</span> 1 (<span class="id" title="var">point_eq</span> <span class="id" title="var">g</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>; <span class="id" title="var">cbn</span> <span class="id" title="keyword">beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">gluer</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap011</span> <span class="id" title="var">_</span> (<span class="id" title="var">point_eq</span> <span class="id" title="var">f</span>) 1).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap011</span> <span class="id" title="var">_</span> (<span class="id" title="var">point_eq</span> <span class="id" title="var">f</span>) (<span class="id" title="var">point_eq</span> <span class="id" title="var">g</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_smash_idmap</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor_smash</span> (@<span class="id" title="var">pmap_idmap</span> <span class="id" title="var">X</span>) (@<span class="id" title="var">pmap_idmap</span> <span class="id" title="var">Y</span>) $== <span class="id" title="var">pmap_idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">snrapply</span> <span class="id" title="var">Smash_ind_FlFr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1-3: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_smash_compose</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">X</span> $-&gt; <span class="id" title="var">A</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">Y</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor_smash</span> (<span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>) (<span class="id" title="var">k</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>) $== <span class="id" title="var">functor_smash</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> $<span class="id" title="var">o</span> <span class="id" title="var">functor_smash</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">pointed_reduce</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">snrapply</span> <span class="id" title="var">Smash_ind_FlFr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1-3: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">functor_smash</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">functor_smash</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> (<span class="id" title="var">gluer</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_smash_homotopic</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">f</span> <span class="id" title="var">h</span> : <span class="id" title="var">X</span> $-&gt; <span class="id" title="var">A</span>} {<span class="id" title="var">g</span> <span class="id" title="var">k</span> : <span class="id" title="var">Y</span> $-&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">f</span> $== <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">g</span> $== <span class="id" title="var">k</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor_smash</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $== <span class="id" title="var">functor_smash</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">pointed_reduce</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">snrapply</span> <span class="id" title="var">Smash_ind_FlFr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">ap011</span> <span class="id" title="var">_</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>) (<span class="id" title="var">q</span> <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1,2: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">induction</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerR</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">induction</span> (<span class="id" title="var">q</span> <span class="id" title="var">y</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerR</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ap011_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> 1 1). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap022</span> <span class="id" title="var">_</span> (<span class="id" title="var">concat_p1</span> (<span class="id" title="var">p</span> <span class="id" title="var">pt</span>))^ (<span class="id" title="var">concat_p1</span> (<span class="id" title="var">q</span> <span class="id" title="var">pt</span>))^ @ (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)^).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0bifunctor_smash</span> : <span class="id" title="var">Is0Bifunctor</span> <span class="id" title="var">Smash</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is0Bifunctor'</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">X</span> <span class="id" title="var">Y</span>] [<span class="id" title="var">A</span> <span class="id" title="var">B</span>] [<span class="id" title="var">f</span> <span class="id" title="var">g</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">functor_smash</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1bifunctor_smash</span> : <span class="id" title="var">Is1Bifunctor</span> <span class="id" title="var">Smash</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Bifunctor'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">X</span> <span class="id" title="var">Y</span>] [<span class="id" title="var">A</span> <span class="id" title="var">B</span>] [<span class="id" title="var">f</span> <span class="id" title="var">g</span>] [<span class="id" title="var">h</span> <span class="id" title="var">i</span>] [<span class="id" title="var">p</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">functor_smash_homotopic</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">X</span> <span class="id" title="var">Y</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">functor_smash_idmap</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">X</span> <span class="id" title="var">Y</span>] [<span class="id" title="var">A</span> <span class="id" title="var">B</span>] [<span class="id" title="var">C</span> <span class="id" title="var">D</span>] [<span class="id" title="var">f</span> <span class="id" title="var">g</span>] [<span class="id" title="var">h</span> <span class="id" title="var">i</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">functor_smash_compose</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">i</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1132"></a><h2 class="section">Symmetry of the smash product</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pswap</span> (<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>) : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> $-&gt; <span class="id" title="var">Smash</span> <span class="id" title="var">Y</span> <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_pMap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Smash_rec</span> (<span class="id" title="var">flip</span> <span class="id" title="var">sm</span>) <span class="id" title="var">auxr</span> <span class="id" title="var">auxl</span> <span class="id" title="var">gluer</span> <span class="id" title="var">gluel</span>) 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pswap_pswap</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pswap</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> $<span class="id" title="var">o</span> <span class="id" title="var">pswap</span> <span class="id" title="var">Y</span> <span class="id" title="var">X</span> $== <span class="id" title="var">pmap_idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Smash_ind_FFlr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1-3: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pequiv_pswap</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>} : <span class="id" title="var">Smash</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> $&lt;~&gt; <span class="id" title="var">Smash</span> <span class="id" title="var">Y</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">cate_adjointify</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">exact</span> (<span class="id" title="var">pswap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">exact</span> <span class="id" title="var">pswap_pswap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pswap_natural</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">X</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pswap</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> $<span class="id" title="var">o</span> <span class="id" title="var">functor_smash</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $== <span class="id" title="var">functor_smash</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">pswap</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">pointed_reduce</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Smash_ind_FlFr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1-3: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">pswap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">functor_smash</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">pswap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">gluel</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">pswap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">functor_smash</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">functor_smash</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">pswap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">gluer</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Smash_rec_beta_gluer</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

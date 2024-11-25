@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>BiInv</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library BiInv</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="var">Types.Prod</span> <span class="id" title="var">Types.Equiv</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1078"></a><h1 class="section">Bi-invertible maps</h1>
+
+<div class="paragraph"> </div>
+
+ A map is "bi-invertible" if it has both a section and a retraction, not necessarily the same.  This definition of equivalence was proposed by Andre Joyal. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">BiInv</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= {<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span> &amp; <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">idmap</span>} * {<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span> &amp; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span> == <span class="id" title="var">idmap</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It seems that the easiest way to show that bi-invertibility is equivalent to being an equivalence is also to show that both are h-props and that they are logically equivalent. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_biinv</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">BiInv</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[<span class="id" title="var">g</span> <span class="id" title="var">s</span>] [<span class="id" title="var">h</span> <span class="id" title="var">r</span>]].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>)^ @ <span class="id" title="var">s</span> (<span class="id" title="var">h</span> <span class="id" title="var">x</span>)) @ <span class="id" title="var">r</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">s</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">biinv_isequiv</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">BiInv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">g</span> <span class="id" title="var">s</span> <span class="id" title="var">r</span> <span class="id" title="var">adj</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">g</span>; <span class="id" title="var">r</span>), (<span class="id" title="var">g</span>; <span class="id" title="var">s</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iff_biinv_isequiv</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">BiInv</span> <span class="id" title="var">f</span> &lt;-&gt; <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_biinv</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">biinv_isequiv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_biinv</span> `{<span class="id" title="var">Funext</span>} `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) : <span class="id" title="var">IsHProp</span> (<span class="id" title="var">BiInv</span> <span class="id" title="var">f</span>) | 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_inhabited_contr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">bif</span>; <span class="id" title="tactic">pose</span> (<span class="id" title="var">fe</span> := <span class="id" title="var">isequiv_biinv</span> <span class="id" title="var">f</span> <span class="id" title="var">bif</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> @<span class="id" title="var">contr_prod</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;For&nbsp;this,&nbsp;we've&nbsp;done&nbsp;all&nbsp;the&nbsp;work&nbsp;already.&nbsp;*)</span><br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">contr_retr_equiv</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">contr_sect_equiv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_biinv_isequiv</span> `{<span class="id" title="var">Funext</span>} `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">BiInv</span> <span class="id" title="var">f</span> &lt;~&gt; <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_iff_hprop_uncurried</span>, <span class="id" title="var">iff_biinv_isequiv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

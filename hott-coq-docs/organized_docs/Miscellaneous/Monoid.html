@@ -1,0 +1,386 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Monoid</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Monoid</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span> <span class="id" title="var">Basics.Equivalences</span> <span class="id" title="var">Basics.Trunc</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Sigma</span> <span class="id" title="var">Types.Forall</span> <span class="id" title="var">Types.Prod</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span> <span class="id" title="var">WildCat.Induced</span> <span class="id" title="var">WildCat.Equiv</span> <span class="id" title="var">WildCat.Universe</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">WildCat.Products</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> (<span class="id" title="var">notations</span>) <span class="id" title="var">Classes.interfaces.canonical_names</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> (<span class="id" title="var">hints</span>) <span class="id" title="var">Classes.interfaces.abstract_algebra</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> (<span class="id" title="var">hints</span>) <span class="id" title="var">Classes.interfaces.canonical_names</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Classes.interfaces.canonical_names</span> (<span class="id" title="var">SgOp</span>, <span class="id" title="var">sg_op</span>, <span class="id" title="var">One</span>, <span class="id" title="var">one</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">MonUnit</span>, <span class="id" title="var">mon_unit</span>, <span class="id" title="var">LeftIdentity</span>, <span class="id" title="var">left_identity</span>, <span class="id" title="var">RightIdentity</span>, <span class="id" title="var">right_identity</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Negate</span>, <span class="id" title="var">negate</span>, <span class="id" title="var">Associative</span>, <span class="id" title="var">simple_associativity</span>, <span class="id" title="keyword">associativity</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">LeftInverse</span>, <span class="id" title="var">left_inverse</span>, <span class="id" title="var">RightInverse</span>, <span class="id" title="var">right_inverse</span>, <span class="id" title="var">Commutative</span>, <span class="id" title="var">commutativity</span>).<br/>
+<span class="id" title="keyword">Export</span> <span class="id" title="var">canonical_names.BinOpNotations</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Classes.interfaces.abstract_algebra</span> (<span class="id" title="var">IsSemiGroup</span>(..), <span class="id" title="var">sg_set</span>, <span class="id" title="var">sg_ass</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsMonoid</span>(..), <span class="id" title="var">monoid_left_id</span>, <span class="id" title="var">monoid_right_id</span>, <span class="id" title="var">monoid_semigroup</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsMonoidPreserving</span>(..), <span class="id" title="var">monmor_unitmor</span>, <span class="id" title="var">monmor_sgmor</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsSemiGroupPreserving</span>, <span class="id" title="var">preserves_sg_op</span>, <span class="id" title="var">IsUnitPreserving</span>, <span class="id" title="var">preserves_mon_unit</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Polymorphic</span> <span class="id" title="keyword">Inductive</span> <span class="id" title="var">Cumulativity</span>.<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_mult_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab206"></a><h1 class="section">Monoids</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab207"></a><h2 class="section">Definition</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">Monoid</span> := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">monoid_type</span> :&gt; <span class="id" title="keyword">Type</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">monoid_sgop</span> :: <span class="id" title="var">SgOp</span> <span class="id" title="var">monoid_type</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">monoid_unit</span> :: <span class="id" title="var">MonUnit</span> <span class="id" title="var">monoid_type</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">monoid_ismonoid</span> :: <span class="id" title="var">IsMonoid</span> <span class="id" title="var">monoid_type</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">monoid_sgop</span> {<span class="id" title="var">_</span>}.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">monoid_unit</span> {<span class="id" title="var">_</span>}.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">monoid_ismonoid</span> {<span class="id" title="var">_</span>}.<br/>
+<span class="id" title="keyword">Global Opaque</span> <span class="id" title="var">monoid_ismonoid</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_monoid</span> : <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">Monoid</span> := <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">MonoidLaws</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">M</span> : <span class="id" title="var">Monoid</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">M</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_assoc</span> := <span class="id" title="keyword">associativity</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_unit_l</span> := <span class="id" title="var">left_identity</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_unit_r</span> := <span class="id" title="var">right_identity</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">MonoidLaws</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab208"></a><h2 class="section">Monoid homomorphisms</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">MonoidHomomorphism</span> (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">mnd_homo_map</span> :&gt; <span class="id" title="var">monoid_type</span> <span class="id" title="var">M</span> -&gt; <span class="id" title="var">monoid_type</span> <span class="id" title="var">N</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">ismonoidpreserving_mnd_homo</span> :: <span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">mnd_homo_map</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">mnd_homo_map</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span>}.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Build_MonoidHomomorphism</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">ismonoidpreserving_mnd_homo</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span>} <span class="id" title="var">f</span> : <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_MonoidHomomorphism</span> (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab209"></a><h2 class="section">Basics properties of monoid homomorphisms</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_homo_op</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">M</span>), <span class="id" title="var">f</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) = <span class="id" title="var">f</span> <span class="id" title="var">x</span> * <span class="id" title="var">f</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">monmor_sgmor</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_homo_unit</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> <span class="id" title="var">mon_unit</span> = <span class="id" title="var">mon_unit</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">monmor_unitmor</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_monoidhomomorphism</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> == <span class="id" title="var">g</span> &lt;~&gt; <span class="id" title="var">f</span> = <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">equiv_ap</span> (<span class="id" title="var">issig_MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>)^-1 <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_path_sigma_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_forall</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishset_monoidhomomorphism</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHSet</span> (<span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">equiv_path_monoidhomomorphism</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_homo_id</span> {<span class="id" title="var">M</span> : <span class="id" title="var">Monoid</span>} : <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_MonoidHomomorphism</span> <span class="id" title="var">idmap</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_homo_compose</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> -&gt; <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;-&gt; <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">Build_MonoidHomomorphism</span> (<span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab210"></a><h2 class="section">Monoid Isomorphisms</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">MonoidIsomorphism</span> (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">mnd_iso_homo</span> :&gt; <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">isequiv_mnd_iso</span> :: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">mnd_iso_homo</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_MonoidIsomorphism'</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">M</span> &lt;~&gt; <span class="id" title="var">N</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_MonoidIsomorphism</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">srapply</span> <span class="id" title="var">Build_MonoidHomomorphism</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_MonoidIsomorphism</span> (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">MonoidIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">equiv_mnd_iso</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">MonoidIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> -&gt; <span class="id" title="var">M</span> &lt;~&gt; <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_iso_id</span> {<span class="id" title="var">M</span> : <span class="id" title="var">Monoid</span>} : <span class="id" title="var">MonoidIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_MonoidIsomorphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">mnd_homo_id</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_iso_compose</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">MonoidIsomorphism</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> -&gt; <span class="id" title="var">MonoidIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;-&gt; <span class="id" title="var">MonoidIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">Build_MonoidIsomorphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">mnd_homo_compose</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_iso_inverse</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">MonoidIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> -&gt; <span class="id" title="var">MonoidIsomorphism</span> <span class="id" title="var">N</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">Build_MonoidIsomorphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Build_MonoidHomomorphism</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">_</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">reflexive_monoidisomorphism</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Reflexive</span> <span class="id" title="var">MonoidIsomorphism</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">M</span> =&gt; <span class="id" title="var">mnd_iso_id</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">symmetric_monoidisomorphism</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Symmetric</span> <span class="id" title="var">MonoidIsomorphism</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> =&gt; <span class="id" title="var">mnd_iso_inverse</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">transitive_monoidisomorphism</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Transitive</span> <span class="id" title="var">MonoidIsomorphism</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">mnd_iso_compose</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab211"></a><h2 class="section">The category of monoids</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isgraph_monoid</span> : <span class="id" title="var">IsGraph</span> <span class="id" title="var">Monoid</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_IsGraph</span> <span class="id" title="var">Monoid</span> <span class="id" title="var">MonoidHomomorphism</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_monoid</span> : <span class="id" title="var">Is01Cat</span> <span class="id" title="var">Monoid</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Is01Cat</span> <span class="id" title="var">Monoid</span> <span class="id" title="var">_</span> (@<span class="id" title="var">mnd_homo_id</span>) (@<span class="id" title="var">mnd_homo_compose</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Local Notation</span> <span class="id" title="var">mnd_homo_map'</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= (@<span class="id" title="var">mnd_homo_map</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">_</span> -&gt; (<span class="id" title="var">monoid_type</span> <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">_</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is2graph_monoid</span> : <span class="id" title="var">Is2Graph</span> <span class="id" title="var">Monoid</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> =&gt; <span class="id" title="var">isgraph_induced</span> (<span class="id" title="var">mnd_homo_map'</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isgraph_monoidhomomorphism</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>} : <span class="id" title="var">IsGraph</span> (<span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isgraph_induced</span> (<span class="id" title="var">mnd_homo_map'</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_monoidhomomorphism</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>} : <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is01cat_induced</span> (<span class="id" title="var">mnd_homo_map'</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0gpd_monoidhomomorphism</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>} : <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is0gpd_induced</span> (<span class="id" title="var">mnd_homo_map'</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_postcomp_monoidhomomorphism</span><br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> : <span class="id" title="var">Monoid</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">N</span> $-&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (@<span class="id" title="var">cat_postcomp</span> <span class="id" title="var">Monoid</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> <span class="id" title="var">h</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ? ? <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">h</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_precomp_monoidhomomorphism</span><br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> : <span class="id" title="var">Monoid</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (@<span class="id" title="var">cat_precomp</span> <span class="id" title="var">Monoid</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> <span class="id" title="var">h</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ? ? <span class="id" title="var">p</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_monoid</span> : <span class="id" title="var">Is1Cat</span> <span class="id" title="var">Monoid</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">rapply</span> <span class="id" title="var">Build_Is1Cat</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasequivs_monoid</span> : <span class="id" title="var">HasEquivs</span> <span class="id" title="var">Monoid</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_HasEquivs</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">MonoidIsomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">Build_MonoidIsomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">mnd_iso_inverse</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> ????; <span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> ????; <span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_monoid_type</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">monoid_type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Is0Functor</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">monoid_type</span> (@<span class="id" title="var">mnd_homo_map</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_monoid_type</span> : <span class="id" title="var">Is1Functor</span> <span class="id" title="var">monoid_type</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab212"></a><h2 class="section">Direct product of monoids</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_prod</span> : <span class="id" title="var">Monoid</span> -&gt; <span class="id" title="var">Monoid</span> -&gt; <span class="id" title="var">Monoid</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">Build_Monoid</span> (<span class="id" title="var">M</span> * <span class="id" title="var">N</span>)).<br/>
+&nbsp;&nbsp;3: <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">m1</span> <span class="id" title="var">n1</span>] [<span class="id" title="var">m2</span> <span class="id" title="var">n2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">m1</span> * <span class="id" title="var">m2</span>, <span class="id" title="var">n1</span> * <span class="id" title="var">n2</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">mon_unit</span>, <span class="id" title="var">mon_unit</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">mnd_assoc</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">mnd_unit_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">mnd_unit_r</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_prod_pr1</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">MonoidHomomorphism</span> (<span class="id" title="var">mnd_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>) <span class="id" title="var">M</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_MonoidHomomorphism</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">fst</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_prod_pr2</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">MonoidHomomorphism</span> (<span class="id" title="var">mnd_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>) <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_MonoidHomomorphism</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">snd</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mnd_prod_corec</span> {<span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">P</span> : <span class="id" title="var">Monoid</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">P</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">P</span> <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">MonoidHomomorphism</span> <span class="id" title="var">P</span> (<span class="id" title="var">mnd_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_MonoidHomomorphism</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">f</span> <span class="id" title="var">x</span>, <span class="id" title="var">g</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">mnd_homo_op</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">mnd_homo_unit</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasbinaryproducts_monoid</span> : <span class="id" title="var">HasBinaryProducts</span> <span class="id" title="var">Monoid</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_BinaryProduct</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">mnd_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">mnd_prod_pr1</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">mnd_prod_pr2</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">P</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">mnd_prod_corec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">P</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">Id</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">P</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">Id</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">P</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">path_prod'</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span>) (<span class="id" title="var">q</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

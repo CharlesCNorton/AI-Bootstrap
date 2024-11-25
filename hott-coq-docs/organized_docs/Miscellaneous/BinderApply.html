@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>BinderApply</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library BinderApply</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab1611"></a><h1 class="section">Apply a lemma under binders</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Tactics.EvalIn</span>.<br/>
+</div>
+
+<div class="doc">
+There are some cases where <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span> will fail, but <span class="inlinecode"><span class="id" title="tactic">intros</span>;</span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span> will succeed.  The tactic <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> is like <span class="inlinecode"><span class="id" title="tactic">intros</span>;</span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span>, but it cleans up after itself by <span class="inlinecode"><span class="id" title="var">revert</span></span>ing the things it introduced.  The tactic <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> is to <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span>, as <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> is to <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span>.  Note, however, that the implementation of <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> is completely different and significantly more complicated. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">can_binder_apply</span> <span class="id" title="var">apply_tac</span> <span class="id" title="var">fail1_tac</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">first</span> [ <span class="id" title="var">assert_succeeds</span> <span class="id" title="var">apply_tac</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">assert_succeeds</span> (<span class="id" title="tactic">intro</span>; <span class="id" title="var">can_binder_apply</span> <span class="id" title="var">apply_tac</span> <span class="id" title="var">fail1_tac</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">fail1_tac</span> ].<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">binder_apply</span> <span class="id" title="var">apply_tac</span> <span class="id" title="var">fail1_tac</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">can_binder_apply</span> <span class="id" title="var">apply_tac</span> <span class="id" title="var">fail1_tac</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">first</span> [ <span class="id" title="var">apply_tac</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="keyword">let</span> <span class="id" title="var">H</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">H</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">binder_apply</span> <span class="id" title="var">apply_tac</span> <span class="id" title="var">fail1_tac</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="tactic">fail</span> 1 "Cannot re-revert some introduced hypothesis" ].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The tactic <span class="inlinecode"><span class="id" title="var">eval_under_binders</span></span> <span class="inlinecode"><span class="id" title="var">tac</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> is equivalent to <span class="inlinecode"><span class="id" title="var">tac</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> if <span class="inlinecode"><span class="id" title="var">H</span></span> is not a product (lambda-abstraction), and roughly equivalent to the constr <span class="inlinecode"><span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="var">eval_under_binders</span></span> <span class="inlinecode"><span class="id" title="var">tac</span></span> <span class="inlinecode">(<span class="id" title="var">H</span></span> <span class="inlinecode"><span class="id" title="var">x</span>)</span> if <span class="inlinecode"><span class="id" title="var">H</span></span> is a product. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">eval_under_binders</span> <span class="id" title="var">tac</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Bind a convenient name for the recursive call 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">rec_tac</span> := <span class="id" title="var">eval_under_binders</span> <span class="id" title="var">tac</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+If the hypothesis is a product (<span class="inlinecode"><span class="id" title="keyword">forall</span></span>), we want to recurse under binders; if not, we're in the base case, and we simply compute the new term.  We use <span class="inlinecode"><span class="id" title="keyword">match</span></span> rather than <span class="inlinecode"><span class="id" title="keyword">lazymatch</span></span> so that if the tactic fails to apply under all of the binders, we try again under fewer binders.  We want to try first under as many binders as possible, in case the tactic, e.g., instantiates extra binders with evars. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">H</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Standard pattern for recursing under binders.  We zeta-expand to work around https://coq.inria.fr/bugs/show_bug.cgi?id=3248 and https://coq.inria.fr/bugs/show_bug.cgi?id=3458; we'd otherwise need globally unique name for <span class="inlinecode"><span class="id" title="var">x</span></span>.  We zeta-reduce afterwards so the user doesn't see our zeta-expansion.  We use <span class="inlinecode"><span class="id" title="var">x</span></span> in both the pattern and the returned constructor so that we preserve the given name for the binder.  
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : ?<span class="id" title="var">T</span>, @?<span class="id" title="var">P</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="keyword">let</span> <span class="id" title="var">ret</span> := <span class="id" title="keyword">constr</span>:(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">T</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">Hx</span> := <span class="id" title="var">H</span> <span class="id" title="var">x</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">ltac</span>:(<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">ret'</span> := <span class="id" title="var">rec_tac</span> <span class="id" title="var">Hx</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">ret'</span>)) <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">ret'</span> := (<span class="id" title="tactic">eval</span> <span class="id" title="tactic">cbv</span> <span class="id" title="keyword">zeta</span> <span class="id" title="tactic">in</span> <span class="id" title="var">ret</span>) <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">constr</span>:(<span class="id" title="var">ret'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Base case - simply return <span class="inlinecode"><span class="id" title="var">tac</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span>  
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="var">tac</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The tactic <span class="inlinecode"><span class="id" title="var">make_tac_under_binders_using_in</span></span> <span class="inlinecode"><span class="id" title="var">tac</span></span> <span class="inlinecode"><span class="id" title="var">using_tac</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> uses <span class="inlinecode"><span class="id" title="var">tac</span></span> to transform a term <span class="inlinecode"><span class="id" title="var">H</span></span>, solving side-conditions (e.g., if <span class="inlinecode"><span class="id" title="var">tac</span></span> uses <span class="inlinecode"><span class="id" title="tactic">apply</span></span>) with <span class="inlinecode"><span class="id" title="var">using_tac</span></span>.  It returns the updated version of <span class="inlinecode"><span class="id" title="var">H</span></span> as a constr; if <span class="inlinecode"><span class="id" title="var">H</span></span> is a hypothesis in the context, it does not modify it.  Conceptually, <span class="inlinecode"><span class="id" title="var">make_tac_under_binders_using_in</span></span> <span class="inlinecode"><span class="id" title="var">tac</span></span> <span class="inlinecode"><span class="id" title="tactic">idtac</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> is the composition of two tactics: a <span class="inlinecode"><span class="id" title="var">transform_under_binders</span></span> <span class="inlinecode">:</span> <span class="inlinecode">(<span class="id" title="keyword">constr</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">constr</span>)</span> <span class="inlinecode">-&gt;</span> <span class="inlinecode">(<span class="id" title="keyword">constr</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">constr</span>)</span> that runs a tactic under the binders of the constr it's given, and what would be an <span class="inlinecode"><span class="id" title="tactic">eval</span></span> <span class="inlinecode"><span class="id" title="var">tac</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span>, except for the fact that, e.g., <span class="inlinecode"><span class="id" title="tactic">eval</span></span> <span class="inlinecode"><span class="id" title="tactic">rewrite</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> doesn't actually work because it predates tactics in terms (we use <span class="inlinecode"><span class="id" title="var">eval_in_using</span></span> <span class="inlinecode"><span class="id" title="var">tac</span></span> <span class="inlinecode"><span class="id" title="var">using_tac</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> instead).
+
+<div class="paragraph"> </div>
+
+    The arguments are:
+
+<div class="paragraph"> </div>
+
+<ul class="doclist">
+<li> <span class="inlinecode"><span class="id" title="var">tac</span></span> - should take the name of a hypothesis, and modify that hypothesis in place.  It could, for example, be <span class="inlinecode"><span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="tactic">rewrite</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> to do the <span class="inlinecode"><span class="id" title="tactic">rewrite</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> under binders.
+
+<div class="paragraph"> </div>
+
+
+</li>
+<li> <span class="inlinecode"><span class="id" title="var">using_tac</span></span> - used to solve any side-conditions that <span class="inlinecode"><span class="id" title="var">tac</span></span> generates.  Not strictly necessary, since <span class="inlinecode"><span class="id" title="var">tac</span></span> can always solve its own side-conditions, but it's sometimes convenient to instantiate <span class="inlinecode"><span class="id" title="var">tac</span></span> with <span class="inlinecode"><span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="tactic">eapply</span></span> <span class="inlinecode"><span class="id" title="var">lem</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H</span></span> or something, and solve the side-conditions with <span class="inlinecode"><span class="id" title="var">eassumption</span></span>.
+
+<div class="paragraph"> </div>
+
+
+</li>
+<li> <span class="inlinecode"><span class="id" title="var">H</span></span> - the name of the hypothesis to start from.
+
+</li>
+</ul>
+
+<div class="paragraph"> </div>
+
+    N.B. We do not require <span class="inlinecode"><span class="id" title="var">Funext</span></span> to use this tactic; <span class="inlinecode"><span class="id" title="var">Funext</span></span> would only required to relate the term returned by this tactic and the original term.  Note also that we only rewrite under top-level binders (e.g., under the <span class="inlinecode"><span class="id" title="var">x</span></span> in a hypothesis of type <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">x</span>,</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span>, but not under the <span class="inlinecode"><span class="id" title="var">x</span></span> in a hypothesis of type <span class="inlinecode">(<span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">y</span>)</span> <span class="inlinecode">=</span> <span class="inlinecode">(<span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">x</span>)</span>). 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">make_tac_under_binders_using_in</span> <span class="id" title="var">tac</span> <span class="id" title="var">using_tac</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">eval_under_binders</span> <span class="id" title="keyword">ltac</span>:(<span class="id" title="keyword">fun</span> <span class="id" title="var">H'</span> =&gt; <span class="id" title="var">eval_in_using</span> <span class="id" title="var">tac</span> <span class="id" title="var">using_tac</span> <span class="id" title="var">H'</span>) <span class="id" title="var">H</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">do_tac_under_binders_using_in</span> <span class="id" title="var">tac</span> <span class="id" title="var">using_tac</span> <span class="id" title="var">H</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">H'</span> := <span class="id" title="var">make_tac_under_binders_using_in</span> <span class="id" title="var">tac</span> <span class="id" title="var">using_tac</span> <span class="id" title="var">H</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">H''</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> <span class="id" title="var">H'</span> <span class="id" title="keyword">as</span> <span class="id" title="var">H''</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">clear</span> <span class="id" title="var">H</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rename</span> <span class="id" title="var">H''</span> <span class="id" title="var">into</span> <span class="id" title="var">H</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "constrbinder" "apply" <span class="id" title="keyword">constr</span>(<span class="id" title="var">lem</span>) "in" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) "using" <span class="id" title="var">tactic3</span>(<span class="id" title="var">tac</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">make_tac_under_binders_using_in</span> <span class="id" title="keyword">ltac</span>:(<span class="id" title="keyword">fun</span> <span class="id" title="var">H'</span> =&gt; <span class="id" title="tactic">apply</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>) <span class="id" title="var">tac</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "constrbinder" "eapply" <span class="id" title="var">open_constr</span>(<span class="id" title="var">lem</span>) "in" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) "using" <span class="id" title="var">tactic3</span>(<span class="id" title="var">tac</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">constrbinder</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="keyword">using</span> <span class="id" title="var">tac</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "binder" "apply" <span class="id" title="keyword">constr</span>(<span class="id" title="var">lem</span>) "in" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) "using" <span class="id" title="var">tactic3</span>(<span class="id" title="var">tac</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">do_tac_under_binders_using_in</span> <span class="id" title="keyword">ltac</span>:(<span class="id" title="keyword">fun</span> <span class="id" title="var">H'</span> =&gt; <span class="id" title="tactic">apply</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>) <span class="id" title="var">tac</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "binder" "eapply" <span class="id" title="var">open_constr</span>(<span class="id" title="var">lem</span>) "in" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) "using" <span class="id" title="var">tactic3</span>(<span class="id" title="var">tac</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">binder</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="keyword">using</span> <span class="id" title="var">tac</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "constrbinder" "apply" <span class="id" title="keyword">constr</span>(<span class="id" title="var">lem</span>) "in" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) := <span class="id" title="var">constrbinder</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="keyword">using</span> <span class="id" title="tactic">idtac</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "constrbinder" "eapply" <span class="id" title="var">open_constr</span>(<span class="id" title="var">lem</span>) "in" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) := <span class="id" title="var">constrbinder</span> <span class="id" title="tactic">eapply</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="keyword">using</span> <span class="id" title="tactic">idtac</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "binder" "apply" <span class="id" title="keyword">constr</span>(<span class="id" title="var">lem</span>) := <span class="id" title="var">binder_apply</span> <span class="id" title="keyword">ltac</span>:(<span class="id" title="tactic">apply</span> <span class="id" title="var">lem</span>) <span class="id" title="keyword">ltac</span>:(<span class="id" title="tactic">fail</span> 1 "Cannot apply" <span class="id" title="var">lem</span>).<br/>
+<span class="id" title="keyword">Tactic Notation</span> "binder" "eapply" <span class="id" title="var">open_constr</span>(<span class="id" title="var">lem</span>) := <span class="id" title="var">binder_apply</span> <span class="id" title="keyword">ltac</span>:(<span class="id" title="tactic">eapply</span> <span class="id" title="var">lem</span>) <span class="id" title="keyword">ltac</span>:(<span class="id" title="tactic">fail</span> 1 "Cannot eapply" <span class="id" title="var">lem</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "binder" "apply" <span class="id" title="keyword">constr</span>(<span class="id" title="var">lem</span>) "in" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) := <span class="id" title="var">binder</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="keyword">using</span> <span class="id" title="tactic">idtac</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "binder" "eapply" <span class="id" title="var">open_constr</span>(<span class="id" title="var">lem</span>) "in" <span class="id" title="keyword">constr</span>(<span class="id" title="var">H</span>) := <span class="id" title="var">binder</span> <span class="id" title="tactic">eapply</span> <span class="id" title="var">lem</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span> <span class="id" title="keyword">using</span> <span class="id" title="tactic">idtac</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Example</span> <span class="id" title="var">basic_goal</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">HA</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span>) (<span class="id" title="var">HB</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">C</span> <span class="id" title="var">x</span>) : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span>, <span class="id" title="var">C</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+If we try to <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">HB</span></span>, wanting to replace <span class="inlinecode"><span class="id" title="var">C</span></span> with <span class="inlinecode"><span class="id" title="var">B</span></span>, we get an error about being unable to unify <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode">?</span> with <span class="inlinecode"><span class="id" title="var">A</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">HB</span>.<br/>
+</div>
+
+<div class="doc">
+The tactic <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> fixes this shortcoming. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">binder</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">HB</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">HA</span>.<br/>
+</div>
+
+<div class="doc">
+We <span class="inlinecode"><span class="id" title="keyword">Abort</span></span>, so that we don't get an extra constant floating around. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Example</span> <span class="id" title="var">basic</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">HA</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span>) (<span class="id" title="var">HB</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">C</span> <span class="id" title="var">x</span>) : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span>, <span class="id" title="var">C</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+If we try to <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">HB</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">HA</span></span>, wanting to replace <span class="inlinecode"><span class="id" title="var">B</span></span> with <span class="inlinecode"><span class="id" title="var">C</span></span>, we get an error about being unable to instantiate the argument of type <span class="inlinecode"><span class="id" title="var">A</span></span>: "Error: Unable to find an instance for the variable x." 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">HB</span> <span class="id" title="tactic">in</span> <span class="id" title="var">HA</span>.<br/>
+</div>
+
+<div class="doc">
+The tactic <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> fixes this shortcoming. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">binder</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">HB</span> <span class="id" title="tactic">in</span> <span class="id" title="var">HA</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">HA</span>.<br/>
+</div>
+
+<div class="doc">
+We <span class="inlinecode"><span class="id" title="keyword">Abort</span></span>, so that we don't get an extra constant floating around. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Example</span> <span class="id" title="var">ex_funext</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span>} <span class="id" title="var">f</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">H'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">w</span> : <span class="id" title="var">A</span>, <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">w</span> = <span class="id" title="var">g</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">w</span> :&gt; <span class="id" title="var">A</span>)<br/>
+: <span class="id" title="var">f</span> = <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+We need to apply <span class="inlinecode"><span class="id" title="var">path_forall</span></span> under binders five times in <span class="inlinecode"><span class="id" title="var">H'</span></span>.  We use a different variant each time to demonstrate the various ways of using this tactic.  In a normal proof, you'd probably just do <span class="inlinecode"><span class="id" title="tactic">do</span></span> <span class="inlinecode">4</span> <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode">(@<span class="id" title="var">path_forall</span></span> <span class="inlinecode"><span class="id" title="var">_</span>)</span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H'</span></span> or just <span class="inlinecode"><span class="id" title="tactic">repeat</span></span> <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode">(@<span class="id" title="var">path_forall</span></span> <span class="inlinecode"><span class="id" title="var">_</span>)</span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H'</span></span>.  If we do <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">path_forall</span></span> <span class="inlinecode"><span class="id" title="tactic">in</span></span> <span class="inlinecode"><span class="id" title="var">H'</span></span>, we are told that Coq can't infer the argument <span class="inlinecode"><span class="id" title="var">A</span></span> to <span class="inlinecode"><span class="id" title="var">path_forall</span></span>.  Instead, we can <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">eapply</span></span> it, to tell Coq to defer inference and use an evar for now. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">Fail</span> <span class="id" title="var">binder</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">binder</span> <span class="id" title="tactic">eapply</span> <span class="id" title="var">path_forall</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>.<br/>
+</div>
+
+<div class="doc">
+Alternatively, we can make <span class="inlinecode"><span class="id" title="var">A</span></span> explicit.  But then we get an error about not being able to resolve the instance of <span class="inlinecode"><span class="id" title="var">Funext</span></span>.  We can either tell Coq to solve the side condition using the <span class="inlinecode"><span class="id" title="tactic">assumption</span></span> tactic (or <span class="inlinecode"><span class="id" title="var">typeclasses</span></span> <span class="inlinecode"><span class="id" title="tactic">eauto</span></span>, for that matter), or we can have typeclass inference run when we construct the lemma to apply.  Some versions of Proof General are bad about noticing <span class="inlinecode"><span class="id" title="var">Fail</span></span> within a tactic; see http://proofgeneral.inf.ed.ac.uk/trac/ticket/494.  So we comment this one out. 
+<div class="paragraph"> </div>
+
+<pre>
+  Fail binder apply @path_forall in H'.
+</pre>
+  Error: Tactic failure: Cannot use &lt;tactic&gt; to solve side-condition goal
+Funext . Extended goal with context:
+(Funext -&gt;
+ forall (A : Type) (f g : A -&gt; A -&gt; A -&gt; A -&gt; A)
+   (H' : forall x' x'0 x'1 : A, f x' x'0 x'1 = g x' x'0 x'1),
+ let H0 := H' in Funext). 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">binder</span> <span class="id" title="tactic">apply</span> @<span class="id" title="var">path_forall</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span> <span class="id" title="keyword">using</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">binder</span> <span class="id" title="tactic">apply</span> @<span class="id" title="var">path_forall</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span> <span class="id" title="keyword">using</span> <span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">binder</span> <span class="id" title="tactic">apply</span> (@<span class="id" title="var">path_forall</span> <span class="id" title="var">_</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>.<br/>
+</div>
+
+<div class="doc">
+Now we have removed all arguments to <span class="inlinecode"><span class="id" title="var">f</span></span> and <span class="inlinecode"><span class="id" title="var">g</span></span> in <span class="inlinecode"><span class="id" title="var">H'</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">H'</span>.<br/>
+</div>
+
+<div class="doc">
+We <span class="inlinecode"><span class="id" title="keyword">Abort</span></span>, so that we don't get an extra constant floating around. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+N.B. <span class="inlinecode"><span class="id" title="var">constrbinder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> is like <span class="inlinecode"><span class="id" title="var">binder</span></span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span>, except that it constructs a new term and returns it, rather than applying a lemma in-place to a hypothesis.  It's primarily useful as plumbing for higher-level tactics. 
+</div>
+<div class="code">
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

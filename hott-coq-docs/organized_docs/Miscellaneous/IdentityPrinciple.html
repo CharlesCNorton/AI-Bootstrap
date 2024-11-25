@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>IdentityPrinciple</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library IdentityPrinciple</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab1005"></a><h1 class="section">The Structure Identity Principle</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Core</span> <span class="id" title="var">Category.Univalent</span> <span class="id" title="var">Category.Morphisms</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Structure.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Sigma</span> <span class="id" title="var">Trunc</span> <span class="id" title="var">Equivalences</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Iff</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Polymorphism</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Asymmetric</span> <span class="id" title="var">Patterns</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">category_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">morphism_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">structure_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Quoting the Homotopy Type Theory Book (with slight changes for
+    notational consistency): 
+<div class="paragraph"> </div>
+
+ Theorem (Structure identity principle): If <span class="inlinecode"><span class="id" title="var">X</span></span> is a category and
+    <span class="inlinecode">(<span class="id" title="var">P</span>,</span> <span class="inlinecode"><span class="id" title="var">H</span>)</span> is a standard notion of structure over <span class="inlinecode"><span class="id" title="var">X</span></span>, then the
+    precategory <span class="inlinecode"><span class="id" title="var">Str_</span>{(<span class="id" title="var">P</span>,</span> <span class="inlinecode"><span class="id" title="var">H</span>)}(<span class="id" title="var">X</span>)</span> is a category. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">sip</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">X</span> : <span class="id" title="var">PreCategory</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">P</span> : <span class="id" title="var">NotionOfStructure</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsCategory</span> <span class="id" title="var">X</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{@<span class="id" title="var">IsStandardNotionOfStructure</span> <span class="id" title="var">X</span> <span class="id" title="var">P</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">StrX</span> := @<span class="id" title="var">precategory_of_structures</span> <span class="id" title="var">X</span> <span class="id" title="var">P</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sip_isotoid_helper</span> (<span class="id" title="var">xa</span> <span class="id" title="var">yb</span> : <span class="id" title="var">StrX</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">xa</span> &lt;~=~&gt; <span class="id" title="var">yb</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">xa</span>.1 &lt;~=~&gt; <span class="id" title="var">yb</span>.1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">PreCategoryOfStructures.f</span> (<span class="id" title="var">f</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">PreCategoryOfStructures.f</span> <span class="id" title="var">f</span>^-1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (@<span class="id" title="var">PreCategoryOfStructures.f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (@<span class="id" title="var">left_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (@<span class="id" title="var">PreCategoryOfStructures.f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (@<span class="id" title="var">right_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">sip_isotoid_helper_refl</span> (<span class="id" title="var">xa</span> : <span class="id" title="var">StrX</span>)<br/>
+&nbsp;&nbsp;: @<span class="id" title="var">sip_isotoid_helper</span> <span class="id" title="var">xa</span> <span class="id" title="var">xa</span> (<span class="id" title="tactic">reflexivity</span> <span class="id" title="var">_</span>) = <span class="id" title="tactic">reflexivity</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">sip_isotoid_helper</span>, <span class="id" title="tactic">reflexivity</span>, <span class="id" title="var">isomorphic_refl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">sip_helper</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">y</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">P</span> <span class="id" title="var">x</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">P</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">transport</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span> = <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&gt; <span class="id" title="var">is_structure_homomorphism</span> <span class="id" title="var">P</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">idtoiso</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span>) <span class="id" title="var">a</span> <span class="id" title="var">b</span> *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">is_structure_homomorphism</span> <span class="id" title="var">P</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">idtoiso</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span>)^-1 <span class="id" title="var">b</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="var">path_induction</span>; <span class="id" title="tactic">split</span>; <span class="id" title="tactic">apply</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">H0</span> <span class="id" title="var">H1</span>]; <span class="id" title="var">path_induction</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">antisymmetry_structure</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sip_isotoid</span> (<span class="id" title="var">xa</span> <span class="id" title="var">yb</span> : <span class="id" title="var">StrX</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">xa</span> &lt;~=~&gt; <span class="id" title="var">yb</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">xa</span> = <span class="id" title="var">yb</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">path_sigma_uncurried</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">isotoid</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">xa</span>.1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">yb</span>.1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sip_isotoid_helper</span> <span class="id" title="var">f</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sip_helper</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">lazymatch</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">idtoiso</span> ?<span class="id" title="var">X</span> ((<span class="id" title="var">isotoid</span> ?<span class="id" title="var">X</span> ?<span class="id" title="var">x</span> ?<span class="id" title="var">y</span>) ?<span class="id" title="var">m</span>)] ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">eisretr</span> (@<span class="id" title="var">idtoiso</span> <span class="id" title="var">X</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">m</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">H'</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pattern</span> (<span class="id" title="var">idtoiso</span> <span class="id" title="var">X</span> ((<span class="id" title="var">isotoid</span> <span class="id" title="var">X</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">m</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> <span class="id" title="var">_</span> <span class="id" title="var">H'</span>^ <span class="id" title="var">_</span>); <span class="id" title="tactic">clear</span> <span class="id" title="var">H'</span>; <span class="id" title="tactic">simpl</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">PreCategoryOfStructures.h</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">sip_isotoid_refl</span> <span class="id" title="var">xa</span><br/>
+&nbsp;&nbsp;: @<span class="id" title="var">sip_isotoid</span> <span class="id" title="var">xa</span> <span class="id" title="var">xa</span> (<span class="id" title="tactic">reflexivity</span> <span class="id" title="var">_</span>) = <span class="id" title="tactic">reflexivity</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">eta_path_sigma_uncurried</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">path_sigma_uncurried</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">eisretr</span> (<span class="id" title="var">isotoid</span> <span class="id" title="var">X</span> <span class="id" title="var">xa</span>.1 <span class="id" title="var">xa</span>.1) 1%<span class="id" title="var">path</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sip_isotoid_helper_refl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_f_idtoiso_precategory_of_structures</span> <span class="id" title="var">xa</span> <span class="id" title="var">yb</span> (<span class="id" title="var">p</span> : <span class="id" title="var">xa</span> = <span class="id" title="var">yb</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">PreCategoryOfStructures.f</span> (<span class="id" title="var">idtoiso</span> (<span class="id" title="var">precategory_of_structures</span> <span class="id" title="var">P</span>) <span class="id" title="var">p</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">idtoiso</span> <span class="id" title="var">X</span> <span class="id" title="var">p</span>..1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">structure_identity_principle_helper</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">xa</span> <span class="id" title="var">yb</span> : <span class="id" title="var">StrX</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">xa</span> &lt;~=~&gt; <span class="id" title="var">yb</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">PreCategoryOfStructures.f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">idtoiso</span> (<span class="id" title="var">precategory_of_structures</span> <span class="id" title="var">P</span>) (<span class="id" title="var">sip_isotoid</span> <span class="id" title="var">x</span>) : <span class="id" title="var">morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">PreCategoryOfStructures.f</span> (<span class="id" title="var">x</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">path_f_idtoiso_precategory_of_structures</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ (<span class="id" title="var">ap</span> (@<span class="id" title="var">morphism_isomorphic</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">eisretr</span> (@<span class="id" title="var">idtoiso</span> <span class="id" title="var">X</span> <span class="id" title="var">xa</span>.1 <span class="id" title="var">yb</span>.1) (<span class="id" title="var">sip_isotoid_helper</span> <span class="id" title="var">_</span>)))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">pr1_path_sigma_uncurried</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">structure_identity_principle</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsCategory</span> (<span class="id" title="var">precategory_of_structures</span> <span class="id" title="var">P</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">xa</span> <span class="id" title="var">yb</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_adjointify</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> (@<span class="id" title="var">sip_isotoid</span> <span class="id" title="var">xa</span> <span class="id" title="var">yb</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">abstract</span> (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_isomorphic</span>; <span class="id" title="tactic">simpl</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">PreCategoryOfStructures.path_morphism</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">structure_identity_principle_helper</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">abstract</span> (<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">sip_isotoid_refl</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">sip</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

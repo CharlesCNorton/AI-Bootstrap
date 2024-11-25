@@ -1,0 +1,482 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>AbelianGroup</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library AbelianGroup</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span> <span class="id" title="var">Spaces.Int</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Classes.interfaces.canonical_names</span> (<span class="id" title="var">Zero</span>, <span class="id" title="var">zero</span>, <span class="id" title="var">Plus</span>).<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Classes.interfaces.abstract_algebra</span> (<span class="id" title="var">IsAbGroup</span>(..), <span class="id" title="var">abgroup_group</span>, <span class="id" title="var">abgroup_commutative</span>).<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Algebra.Groups.Group</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Algebra.Groups.Subgroup</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.Groups.QuotientGroup</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Polymorphic</span> <span class="id" title="keyword">Inductive</span> <span class="id" title="var">Cumulativity</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_add_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab92"></a><h1 class="section">Abelian groups</h1>
+
+<div class="paragraph"> </div>
+
+ Definition of an abelian group 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">AbGroup</span> := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">abgroup_group</span> : <span class="id" title="var">Group</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">abgroup_commutative</span> : <span class="id" title="var">Commutative</span> (@<span class="id" title="var">group_sgop</span> <span class="id" title="var">abgroup_group</span>);<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">abgroup_group</span> : <span class="id" title="var">AbGroup</span> &gt;-&gt; <span class="id" title="var">Group</span>.<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">abgroup_commutative</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isabgroup_abgroup</span> {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>} : <span class="id" title="var">IsAbGroup</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Easier way to build abelian groups without redundant information. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_AbGroup'</span> (<span class="id" title="var">G</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Zero</span> <span class="id" title="var">G</span>, <span class="id" title="var">Negate</span> <span class="id" title="var">G</span>, <span class="id" title="var">Plus</span> <span class="id" title="var">G</span>, <span class="id" title="var">IsHSet</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">comm</span> : <span class="id" title="var">Commutative</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">G</span>) (+))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">assoc</span> : <span class="id" title="var">Associative</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">G</span>) (+))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">unit_l</span> : <span class="id" title="var">LeftIdentity</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">G</span>) (+) 0)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">inv_l</span> : <span class="id" title="var">LeftInverse</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">G</span>) (+) (-) 0)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbGroup</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_AbGroup</span>.<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;TODO:&nbsp;introduce&nbsp;smart&nbsp;constructor&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">Build_Group</span></span>&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">Build_Group</span> <span class="id" title="var">G</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>; <span class="id" title="var">only</span> 1-3, 5: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">comm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">unit_l</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">comm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">inv_l</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_abgroup</span> : <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">AbGroup</span> := <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">zero_abgroup</span> (<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>) : <span class="id" title="var">Zero</span> <span class="id" title="var">A</span> := <span class="id" title="var">group_unit</span>.<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">plus_abgroup</span> (<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>) : <span class="id" title="var">Plus</span> <span class="id" title="var">A</span> := <span class="id" title="var">group_sgop</span>.<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">negate_abgroup</span> (<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>) : <span class="id" title="var">Negate</span> <span class="id" title="var">A</span> := <span class="id" title="var">group_inverse</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_comm</span> {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">x</span> + <span class="id" title="var">y</span> = <span class="id" title="var">y</span> + <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">commutativity</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_neg_op</span> {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) : - (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>) = -<span class="id" title="var">x</span> - <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_inv_op</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ab_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab93"></a><h2 class="section">Paths between abelian groups</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_abgroup</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> &lt;~&gt; (<span class="id" title="var">A</span> = <span class="id" title="var">B</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_ap_inv</span> <span class="id" title="var">issig_abgroup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_path_sigma_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">equiv_path_group</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_abgroup_group</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">A</span> = <span class="id" title="var">B</span> :&gt; <span class="id" title="var">AbGroup</span>) &lt;~&gt; (<span class="id" title="var">A</span> = <span class="id" title="var">B</span> :&gt; <span class="id" title="var">Group</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_path_group</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_path_abgroup</span>^-1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab94"></a><h2 class="section">Subgroups of abelian groups</h2>
+
+<div class="paragraph"> </div>
+
+ Subgroups of abelian groups are abelian 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isabgroup_subgroup</span> (<span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>) (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsAbGroup</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_IsAbGroup</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given any subgroup of an abelian group, we can coerce it to an abelian group. Note that Coq complains this coercion doesn't satisfy the uniform-inheritance condition, but in practice it works and doesn't cause any issue, so we ignore it. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abgroup_subgroup</span> (<span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>) : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">H</span> =&gt; <span class="id" title="var">Build_AbGroup</span> <span class="id" title="var">H</span> <span class="id" title="var">_</span>.<br/>
+#[<span class="id" title="var">warnings</span>="-uniform-inheritance"]<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">abgroup_subgroup</span> : <span class="id" title="var">Subgroup</span> &gt;-&gt; <span class="id" title="var">AbGroup</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isnormal_ab_subgroup</span> (<span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>) (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsNormalSubgroup</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ab_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab95"></a><h2 class="section">Quotients of abelian groups</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isabgroup_quotient</span> (<span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>) (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsAbGroup</span> (<span class="id" title="var">QuotientGroup'</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> (<span class="id" title="var">isnormal_ab_subgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_IsAbGroup</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Quotient_ind2_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">class_of</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuotientAbGroup</span> (<span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>) (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) : <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">Build_AbGroup</span> (<span class="id" title="var">QuotientGroup'</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> (<span class="id" title="var">isnormal_ab_subgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span>)) <span class="id" title="var">_</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">quotient_abgroup_rec</span> {<span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) (<span class="id" title="var">H</span> : <span class="id" title="var">AbGroup</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span>) (<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">G</span>, <span class="id" title="var">N</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">f</span> <span class="id" title="var">n</span> = <span class="id" title="var">mon_unit</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">GroupHomomorphism</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">G</span> <span class="id" title="var">N</span>) <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">grp_quotient_rec</span> <span class="id" title="var">G</span> (<span class="id" title="var">Build_NormalSubgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">N</span> <span class="id" title="var">_</span>) <span class="id" title="var">f</span> <span class="id" title="var">h</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">equiv_quotient_abgroup_ump</span> {<span class="id" title="var">F</span> : <span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) (<span class="id" title="var">H</span> : <span class="id" title="var">Group</span>)<br/>
+&nbsp;&nbsp;: {<span class="id" title="var">f</span> : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> &amp; <span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> : <span class="id" title="var">G</span>), <span class="id" title="var">N</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">f</span> <span class="id" title="var">n</span> = <span class="id" title="var">mon_unit</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; (<span class="id" title="var">GroupHomomorphism</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">G</span> <span class="id" title="var">N</span>) <span class="id" title="var">H</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_grp_quotient_ump</span> (<span class="id" title="var">Build_NormalSubgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">N</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab96"></a><h2 class="section">The wild category of abelian groups</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isgraph_abgroup</span> : <span class="id" title="var">IsGraph</span> <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isgraph_induced</span> <span class="id" title="var">abgroup_group</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_abgroup</span> : <span class="id" title="var">Is01Cat</span> <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is01cat_induced</span> <span class="id" title="var">abgroup_group</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_grouphomomorphism</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} : <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is01cat_induced</span> (@<span class="id" title="var">grp_homo_map</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0gpd_grouphomomorphism</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} : <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is0gpd_induced</span> (@<span class="id" title="var">grp_homo_map</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is2graph_abgroup</span> : <span class="id" title="var">Is2Graph</span> <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is2graph_induced</span> <span class="id" title="var">abgroup_group</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+AbGroup forms a 1Cat 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_abgroup</span> : <span class="id" title="var">Is1Cat</span> <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is1cat_induced</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasmorext_abgroup</span> `{<span class="id" title="var">Funext</span>} : <span class="id" title="var">HasMorExt</span> <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hasmorext_induced</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasequivs_abgroup</span> : <span class="id" title="var">HasEquivs</span> <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hasequivs_induced</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Zero object of AbGroup 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abgroup_trivial</span> : <span class="id" title="var">AbGroup</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">Build_AbGroup</span> <span class="id" title="var">grp_trivial</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">intros</span> [].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+AbGroup is a pointed category 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispointedcat_abgroup</span> : <span class="id" title="var">IsPointedCat</span> <span class="id" title="var">AbGroup</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_IsPointedCat</span> <span class="id" title="keyword">with</span> <span class="id" title="var">abgroup_trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">intro</span> <span class="id" title="var">A</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ispointedcat_group</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Image of group homomorphisms between abelian groups 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abgroup_image</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) : <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_AbGroup</span> (<span class="id" title="var">grp_image</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+First isomorphism theorem of abelian groups 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abgroup_first_iso</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">GroupIsomorphism</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">A</span> (<span class="id" title="var">grp_kernel</span> <span class="id" title="var">f</span>)) (<span class="id" title="var">abgroup_image</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="var">rapply</span> <span class="id" title="var">grp_first_iso</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_iso_quotient_normal</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab97"></a><h2 class="section">Kernels of abelian groups</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_kernel</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) : <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_AbGroup</span> (<span class="id" title="var">grp_kernel</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab98"></a><h2 class="section">Transporting in families related to abelian groups</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">transport_abgrouphomomorphism_from_const</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">B'</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">B</span> = <span class="id" title="var">B'</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">transport</span> (<span class="id" title="var">Hom</span> <span class="id" title="var">A</span>) <span class="id" title="var">p</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">grp_homo_compose</span> (<span class="id" title="var">equiv_path_abgroup</span>^-1 <span class="id" title="var">p</span>) <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">transport_iso_abgrouphomomorphism_from_const</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">B'</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">phi</span> : <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">B</span> <span class="id" title="var">B'</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">transport</span> (<span class="id" title="var">Hom</span> <span class="id" title="var">A</span>) (<span class="id" title="var">equiv_path_abgroup</span> <span class="id" title="var">phi</span>) <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">grp_homo_compose</span> <span class="id" title="var">phi</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_abgrouphomomorphism_from_const</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">eissect</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">transport_abgrouphomomorphism_to_const</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> <span class="id" title="var">A'</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">A</span> = <span class="id" title="var">A'</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">G</span> =&gt; <span class="id" title="var">Hom</span> <span class="id" title="var">G</span> <span class="id" title="var">B</span>) <span class="id" title="var">p</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">grp_homo_compose</span> <span class="id" title="var">f</span> (<span class="id" title="var">grp_iso_inverse</span> (<span class="id" title="var">equiv_path_abgroup</span>^-1 <span class="id" title="var">p</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">p</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">transport_iso_abgrouphomomorphism_to_const</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> <span class="id" title="var">A'</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">phi</span> : <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">A'</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">G</span> =&gt; <span class="id" title="var">Hom</span> <span class="id" title="var">G</span> <span class="id" title="var">B</span>) (<span class="id" title="var">equiv_path_abgroup</span> <span class="id" title="var">phi</span>) <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">grp_homo_compose</span> <span class="id" title="var">f</span> (<span class="id" title="var">grp_iso_inverse</span> <span class="id" title="var">phi</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_abgrouphomomorphism_to_const</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">eissect</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab99"></a><h2 class="section">Operations on abelian groups</h2>
+
+<div class="paragraph"> </div>
+
+ The negation automorphism of an abelian group 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_homo_negation</span> {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>} : <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupIsomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupHomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; -<span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_inv_op</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; -<span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1-2: <span class="id" title="tactic">exact</span> <span class="id" title="var">negate_involutive</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Multiplication by <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Int</span></span> defines an endomorphism of any abelian group <span class="inlinecode"><span class="id" title="var">A</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_mul</span> {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupHomomorphism</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">grp_pow</span> <span class="id" title="var">a</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_pow_mul</span>, <span class="id" title="var">ab_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">ab_mul</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> is natural. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_mul_natural</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">ab_mul</span> <span class="id" title="var">n</span> == <span class="id" title="var">ab_mul</span> <span class="id" title="var">n</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">grp_pow_natural</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The image of an inclusion is a normal subgroup. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_image_embedding</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEmbedding</span> <span class="id" title="var">f</span>} : <span class="id" title="var">NormalSubgroup</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;:= {| <span class="id" title="var">normalsubgroup_subgroup</span> := <span class="id" title="var">grp_image_embedding</span> <span class="id" title="var">f</span>; <span class="id" title="var">normalsubgroup_isnormal</span> := <span class="id" title="var">_</span> |}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_image_in_embedding</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEmbedding</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">A</span> (<span class="id" title="var">ab_image_embedding</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">grp_image_in_embedding</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The cokernel of a homomorphism into an abelian group. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_cokernel</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group@</span>{<span class="id" title="var">u</span>}} {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup@</span>{<span class="id" title="var">u</span>}} (<span class="id" title="var">f</span> : <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">G</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbGroup</span> := <span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">_</span> (<span class="id" title="var">grp_image</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_cokernel_embedding</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">G</span> $-&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">IsEmbedding</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbGroup</span> := <span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">_</span> (<span class="id" title="var">grp_image_embedding</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_cokernel_embedding_rec</span> {<span class="id" title="var">G</span>: <span class="id" title="var">Group</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">G</span> $-&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">IsEmbedding</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">grp_homo_compose</span> <span class="id" title="var">h</span> <span class="id" title="var">f</span> $== <span class="id" title="var">grp_homo_const</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_cokernel_embedding</span> <span class="id" title="var">f</span> $-&gt; <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">grp_quotient_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> [<span class="id" title="var">g</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

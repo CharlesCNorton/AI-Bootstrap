@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>OnObjects</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library OnObjects</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab706"></a><h1 class="section">∑-categories on objects - a generalization of subcategories</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Core</span> <span class="id" title="var">Functor.Core</span> <span class="id" title="var">Category.Sigma.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="var">Functor.Composition.Core</span> <span class="id" title="var">Functor.Identity</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Paths</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Identity.FunctorIdentityNotations</span>.<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Composition.Core.FunctorCompositionCoreNotations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Polymorphism</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Asymmetric</span> <span class="id" title="var">Patterns</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Notation</span> <span class="id" title="var">sig_type</span> := <span class="id" title="var">Overture.sig</span>.<br/>
+<span class="id" title="keyword">Local Notation</span> <span class="id" title="var">pr1_type</span> := <span class="id" title="var">Overture.pr1</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">morphism_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">functor_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">sig_obj</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">A</span> : <span class="id" title="var">PreCategory</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">Pobj</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab707"></a><h2 class="section">Definition of <span class="inlinecode"><span class="id" title="var">sig_obj</span></span>-precategory</h2>
+
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sig_obj</span> : <span class="id" title="var">PreCategory</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">Build_PreCategory</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sig_type</span> <span class="id" title="var">Pobj</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span> =&gt; <span class="id" title="var">morphism</span> <span class="id" title="var">A</span> (<span class="id" title="var">pr1_type</span> <span class="id" title="var">s</span>) (<span class="id" title="var">pr1_type</span> <span class="id" title="var">d</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; @<span class="id" title="var">identity</span> <span class="id" title="var">A</span> (<span class="id" title="var">pr1_type</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span> <span class="id" title="var">m1</span> <span class="id" title="var">m2</span> =&gt; <span class="id" title="var">m1</span> <span class="id" title="var">o</span> <span class="id" title="var">m2</span>)%<span class="id" title="var">morphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="keyword">associativity</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">left_identity</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">right_identity</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab708"></a><h2 class="section">First projection functor</h2>
+
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pr1_obj</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">sig_obj</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Functor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sig_obj</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(@<span class="id" title="var">pr1_type</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span> <span class="id" title="var">m</span> =&gt; <span class="id" title="var">m</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sig_obj_as_sig</span> : <span class="id" title="var">PreCategory</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">sig</span> <span class="id" title="var">A</span> <span class="id" title="var">Pobj</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">Unit</span>) <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">tt</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">tt</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sig_functor_obj</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">sig_obj_as_sig</span> <span class="id" title="var">sig_obj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Functor</span> <span class="id" title="var">sig_obj_as_sig</span> <span class="id" title="var">sig_obj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; @<span class="id" title="var">pr1_type</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sig_functor_obj_inv</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">sig_obj</span> <span class="id" title="var">sig_obj_as_sig</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Functor</span> <span class="id" title="var">sig_obj</span> <span class="id" title="var">sig_obj_as_sig</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">m</span> =&gt; <span class="id" title="var">exist</span> <span class="id" title="var">_</span> <span class="id" title="var">m</span> <span class="id" title="var">tt</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">functor_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">sig_obj_eq</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">sig_functor_obj</span> <span class="id" title="var">o</span> <span class="id" title="var">sig_functor_obj_inv</span> = 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;/\ <span class="id" title="var">sig_functor_obj_inv</span> <span class="id" title="var">o</span> <span class="id" title="var">sig_functor_obj</span> = 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="var">path_functor</span>; <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> [].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> [].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> [? []].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sig_obj_compat</span> : <span class="id" title="var">pr1_obj</span> <span class="id" title="var">o</span> <span class="id" title="var">sig_functor_obj</span> = <span class="id" title="var">pr1'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">idpath</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">sig_obj</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">pr1_obj</span> {<span class="id" title="var">A</span> <span class="id" title="var">Pobj</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">CategorySigmaOnObjectsNotations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;{ x : A | P }" := (<span class="id" title="var">sig_obj</span> <span class="id" title="var">A</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">P</span>)) : <span class="id" title="var">category_scope</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">CategorySigmaOnObjectsNotations</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

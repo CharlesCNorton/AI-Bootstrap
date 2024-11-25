@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Powers</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Powers</h1>
+
+<div class="code">
+<span class="id" title="keyword">From</span> <span class="id" title="var">HoTT</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">TruncType</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">HoTT</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Universes.Smallness</span>.<br/>
+<span class="id" title="keyword">From</span> <span class="id" title="var">HoTT</span> <span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Card</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1332"></a><h1 class="section">Definition of Power types</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="comment">(*&nbsp;The&nbsp;definition&nbsp;is&nbsp;only&nbsp;used&nbsp;in&nbsp;Hartogs.v&nbsp;to&nbsp;allow&nbsp;defining&nbsp;a&nbsp;coercion,&nbsp;and&nbsp;one&nbsp;place&nbsp;below.&nbsp;&nbsp;Everywhere&nbsp;else&nbsp;we&nbsp;prefer&nbsp;to&nbsp;write&nbsp;out&nbsp;the&nbsp;definition&nbsp;for&nbsp;clarity.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">power_type</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">A</span> -&gt; <span class="id" title="var">HProp</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1333"></a><h1 class="section">Iterated powers</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Injection_power</span> {<span class="id" title="var">PR</span> : <span class="id" title="var">PropResizing</span>} <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHSet</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Injection</span> <span class="id" title="var">X</span> (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">HProp</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">HX</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">f</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>) := <span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">Build_HProp</span> (<span class="id" title="var">smalltype</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">f</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">equiv_smalltype</span>. <span class="id" title="tactic">change</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">H</span>. <span class="id" title="var">cbn</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_smalltype</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">power_iterated</span> <span class="id" title="var">X</span> <span class="id" title="var">n</span> := <span class="id" title="var">nat_iter</span> <span class="id" title="var">n</span> <span class="id" title="var">power_type</span> <span class="id" title="var">X</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">power_iterated_shift</span> <span class="id" title="var">X</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">power_iterated</span> (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">HProp</span>) <span class="id" title="var">n</span> = (<span class="id" title="var">power_iterated</span> <span class="id" title="var">X</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">HProp</span>)<br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">nat_iter_succ_r</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hset_power</span> {<span class="id" title="var">UA</span> : <span class="id" title="var">Univalence</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">HSet</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHSet</span> (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">HProp</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_allpath</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">H</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">equiv_path_arrow</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">f</span> [<span class="id" title="var">g</span> <span class="id" title="var">Hfg</span> <span class="id" title="var">Hgf</span> <span class="id" title="var">_</span>]].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">Hfg</span> <span class="id" title="var">H</span>), &lt;- (<span class="id" title="var">Hfg</span> <span class="id" title="var">H'</span>). <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hset_power_iterated</span> {<span class="id" title="var">UA</span> : <span class="id" title="var">Univalence</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">HSet</span>) <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHSet</span> (<span class="id" title="var">power_iterated</span> <span class="id" title="var">X</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">nat_iter_invariant</span> <span class="id" title="var">n</span> <span class="id" title="var">power_type</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">A</span> =&gt; <span class="id" title="var">IsHSet</span> <span class="id" title="var">A</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">Y</span> <span class="id" title="var">HS</span>. <span class="id" title="var">rapply</span> <span class="id" title="var">hset_power</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Injection_power_iterated</span> {<span class="id" title="var">UA</span> : <span class="id" title="var">Univalence</span>} {<span class="id" title="var">PR</span> : <span class="id" title="var">PropResizing</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">HSet</span>) <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Injection</span> <span class="id" title="var">X</span> (<span class="id" title="var">power_iterated</span> <span class="id" title="var">X</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">eapply</span> <span class="id" title="var">Injection_trans</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Injection_power</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">infinite_inject</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">infinite</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Injection</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">infinite</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Injection_trans</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">infinite_power_iterated</span> {<span class="id" title="var">UA</span> : <span class="id" title="var">Univalence</span>} {<span class="id" title="var">PR</span> : <span class="id" title="var">PropResizing</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">HSet</span>) <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">infinite</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">infinite</span> (<span class="id" title="var">power_iterated</span> <span class="id" title="var">X</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">eapply</span> <span class="id" title="var">infinite_inject</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">H</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Injection_power_iterated</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

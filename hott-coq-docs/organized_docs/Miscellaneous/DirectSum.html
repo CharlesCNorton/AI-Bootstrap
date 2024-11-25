@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>DirectSum</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library DirectSum</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">Truncations.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pointed.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span> <span class="id" title="var">Homotopy.ExactSequence</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">AbGroups.AbelianGroup</span> <span class="id" title="var">AbSES.Core</span> <span class="id" title="var">AbGroups.Biproduct</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">pointed_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">type_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_add_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab141"></a><h1 class="section">The direct sum of short exact sequences</h1>
+
+<div class="paragraph"> </div>
+
+ Biproducts of abelian groups preserve exactness. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ab_biprod_exact</span> {<span class="id" title="var">A</span> <span class="id" title="var">E</span> <span class="id" title="var">B</span> <span class="id" title="var">X</span> <span class="id" title="var">F</span> <span class="id" title="var">Y</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">i</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">E</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">E</span> $-&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">ex0</span> : <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1)) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">i</span> <span class="id" title="var">p</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">j</span> : <span class="id" title="var">X</span> $-&gt; <span class="id" title="var">F</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">F</span> $-&gt; <span class="id" title="var">Y</span>) `{<span class="id" title="var">ex1</span> : <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1)) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">j</span> <span class="id" title="var">q</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1)) (<span class="id" title="var">functor_ab_biprod</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">functor_ab_biprod</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsExact</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">phomotopy_homotopy_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">ex0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">ex1</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [[<span class="id" title="var">e</span> <span class="id" title="var">f</span>] <span class="id" title="var">u</span>]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">U</span> := (<span class="id" title="var">equiv_path_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 <span class="id" title="var">u</span>); <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">U</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">a</span> := <span class="id" title="var">isexact_preimage</span> <span class="id" title="var">_</span> <span class="id" title="var">i</span> <span class="id" title="var">p</span> <span class="id" title="var">e</span> (<span class="id" title="var">fst</span> <span class="id" title="var">U</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">x</span> := <span class="id" title="var">isexact_preimage</span> <span class="id" title="var">_</span> <span class="id" title="var">j</span> <span class="id" title="var">q</span> <span class="id" title="var">f</span> (<span class="id" title="var">snd</span> <span class="id" title="var">U</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">ab_biprod_inl</span> <span class="id" title="var">a</span>.1 + <span class="id" title="var">ab_biprod_inr</span> <span class="id" title="var">x</span>.1); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">IS</span> := <span class="id" title="var">sg_set</span> (<span class="id" title="var">ab_biprod</span> <span class="id" title="var">B</span> <span class="id" title="var">Y</span>)). <span class="comment">(*&nbsp;This&nbsp;hint&nbsp;speeds&nbsp;up&nbsp;the&nbsp;next&nbsp;line.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">right_identity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">a</span>.2.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">left_identity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">x</span>.2.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The pointwise direct sum of two short exact sequences. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abses_direct_sum</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbSES</span> (<span class="id" title="var">ab_biprod</span> <span class="id" title="var">B</span> <span class="id" title="var">B'</span>) (<span class="id" title="var">ab_biprod</span> <span class="id" title="var">A</span> <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_AbSES</span> (<span class="id" title="var">ab_biprod</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">functor_ab_biprod</span> (<span class="id" title="var">inclusion</span> <span class="id" title="var">E</span>) (<span class="id" title="var">inclusion</span> <span class="id" title="var">F</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">functor_ab_biprod</span> (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>) (<span class="id" title="var">projection</span> <span class="id" title="var">F</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">functor_ab_biprod_embedding</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">functor_ab_biprod_surjection</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ab_biprod_exact</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For any short exact sequences <span class="inlinecode"><span class="id" title="var">E</span></span>, <span class="inlinecode"><span class="id" title="var">E'</span></span>, <span class="inlinecode"><span class="id" title="var">F</span></span>, <span class="inlinecode"><span class="id" title="var">F'</span></span>, and morphisms <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">E'</span></span> and <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">F'</span></span> there is a morphism <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">E'</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">F'</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">functor_abses_directsum</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">A'</span> <span class="id" title="var">B</span> <span class="id" title="var">B'</span> <span class="id" title="var">C</span> <span class="id" title="var">C'</span> <span class="id" title="var">D</span> <span class="id" title="var">D'</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>} {<span class="id" title="var">E'</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span>} {<span class="id" title="var">F</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">D</span> <span class="id" title="var">C</span>} {<span class="id" title="var">F'</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">D'</span> <span class="id" title="var">C'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">AbSESMorphism</span> <span class="id" title="var">E</span> <span class="id" title="var">E'</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">AbSESMorphism</span> <span class="id" title="var">F</span> <span class="id" title="var">F'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbSESMorphism</span> (<span class="id" title="var">abses_direct_sum</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span>) (<span class="id" title="var">abses_direct_sum</span> <span class="id" title="var">E'</span> <span class="id" title="var">F'</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_AbSESMorphism</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">functor_ab_biprod</span> (<span class="id" title="var">component1</span> <span class="id" title="var">f</span>) (<span class="id" title="var">component1</span> <span class="id" title="var">g</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">functor_ab_biprod</span> (<span class="id" title="var">component2</span> <span class="id" title="var">f</span>) (<span class="id" title="var">component2</span> <span class="id" title="var">g</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">functor_ab_biprod</span> (<span class="id" title="var">component3</span> <span class="id" title="var">f</span>) (<span class="id" title="var">component3</span> <span class="id" title="var">g</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">left_square</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">right_square</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For any short exact sequence <span class="inlinecode"><span class="id" title="var">E</span></span>, there is a morphism <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">abses_direct_sum</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span>, where each component is ab_diagonal. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abses_diagonal</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbSESMorphism</span> <span class="id" title="var">E</span> (<span class="id" title="var">abses_direct_sum</span> <span class="id" title="var">E</span> <span class="id" title="var">E</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_AbSESMorphism</span>.<br/>
+&nbsp;&nbsp;1,2,3: <span class="id" title="tactic">exact</span> <span class="id" title="var">ab_diagonal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For any short exact sequence <span class="inlinecode"><span class="id" title="var">E</span></span>, there is dually a morphism <span class="inlinecode"><span class="id" title="var">abses_direct_sum</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">E</span></span>, with each component being the codiagonal. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abses_codiagonal</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbSESMorphism</span> (<span class="id" title="var">abses_direct_sum</span> <span class="id" title="var">E</span> <span class="id" title="var">E</span>) <span class="id" title="var">E</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_AbSESMorphism</span>.<br/>
+&nbsp;&nbsp;1,2,3: <span class="id" title="tactic">exact</span> <span class="id" title="var">ab_codiagonal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">grp_homo_op</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+There is always a morphism <span class="inlinecode"><span class="id" title="var">abses_direct_sum</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">abses_direct_sum</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> of short exact sequences, for any <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">AbSES</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> and <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">AbSES</span></span> <span class="inlinecode"><span class="id" title="var">B'</span></span> <span class="inlinecode"><span class="id" title="var">A'</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abses_swap_morphism</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">A'</span> <span class="id" title="var">B</span> <span class="id" title="var">B'</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>) (<span class="id" title="var">F</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbSESMorphism</span> (<span class="id" title="var">abses_direct_sum</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span>) (<span class="id" title="var">abses_direct_sum</span> <span class="id" title="var">F</span> <span class="id" title="var">E</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_AbSESMorphism</span>.<br/>
+&nbsp;&nbsp;1,2,3: <span class="id" title="tactic">exact</span> <span class="id" title="var">direct_sum_swap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For <span class="inlinecode"><span class="id" title="var">E</span>,</span> <span class="inlinecode"><span class="id" title="var">F</span>,</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">AbSES</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span>, there is a morphism <span class="inlinecode">(<span class="id" title="var">E</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">F</span>)</span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode">(<span class="id" title="var">G</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">F</span>)</span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">E</span></span> induced by the above map, where <span class="inlinecode">+</span> denotes <span class="inlinecode"><span class="id" title="var">abses_direct_sum</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">abses_twist_directsum</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbSESMorphism</span> (<span class="id" title="var">abses_direct_sum</span> (<span class="id" title="var">abses_direct_sum</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span>) <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_direct_sum</span> (<span class="id" title="var">abses_direct_sum</span> <span class="id" title="var">G</span> <span class="id" title="var">F</span>) <span class="id" title="var">E</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_AbSESMorphism</span>.<br/>
+&nbsp;&nbsp;1,2,3: <span class="id" title="tactic">exact</span> <span class="id" title="var">ab_biprod_twist</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

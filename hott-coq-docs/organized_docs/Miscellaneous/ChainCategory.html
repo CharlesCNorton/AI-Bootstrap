@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>ChainCategory</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library ChainCategory</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab428"></a><h1 class="section">The category ω of (ℕ, ≤), and the chain categories <span class="inlinecode">[<span class="id" title="var">n</span>]</span></h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Subcategory.Full</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Sigma.Univalent</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Morphisms</span> <span class="id" title="var">Category.Univalent</span> <span class="id" title="var">Category.Strict</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span> <span class="id" title="var">HoTT.Spaces.Nat.Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Polymorphism</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Asymmetric</span> <span class="id" title="var">Patterns</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab429"></a><h2 class="section">Definitions</h2>
+ Quoting Wikipedia (http://en.wikipedia.org/wiki/Total_order#Chains):
+
+<div class="paragraph"> </div>
+
+    While chain is sometimes merely a synonym for totally ordered set,
+    it can also refer to a totally ordered subset of some partially
+    ordered set. The latter definition has a crucial role in Zorn's
+    lemma.  We take the convention that a "chain" is a totally ordered or
+    linearly ordered set; the corresponding category on that set has,
+    as morphisms, the order relation. 
+</div>
+<div class="code">
+<span class="comment">(*&nbsp;N.B.&nbsp;The&nbsp;notation&nbsp;here&nbsp;(including&nbsp;that&nbsp;<span class="inlinecode">[<span class="id" title="var">n</span>]</span>&nbsp;have&nbsp;as&nbsp;objects&nbsp;the<br/>
+&nbsp;&nbsp;&nbsp;set&nbsp;<span class="inlinecode">{0,</span> <span class="inlinecode">1,</span> <span class="inlinecode">...,</span> <span class="inlinecode"><span class="id" title="var">n</span>}</span>)&nbsp;was&nbsp;originally&nbsp;suggested&nbsp;by&nbsp;David&nbsp;Spivak.<br/>
+&nbsp;&nbsp;&nbsp;It's&nbsp;possible&nbsp;that&nbsp;we&nbsp;should&nbsp;pick&nbsp;a&nbsp;different&nbsp;or&nbsp;more&nbsp;common<br/>
+&nbsp;&nbsp;&nbsp;terminology.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Core</span>.<br/>
+</div>
+
+<div class="doc">
+<a id="lab430"></a><h3 class="section"><span class="inlinecode">[ω]</span>, the linear order on ℕ</h3>
+
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">omega</span> : <span class="id" title="var">PreCategory</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">Build_PreCategory</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">leq</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">leq_refl</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> =&gt; <span class="id" title="var">leq_trans</span> <span class="id" title="var">q</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">path_ishprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">path_ishprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">path_ishprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab431"></a><h3 class="section"><span class="inlinecode">[<span class="id" title="var">n</span>]</span>, a linear order on a finite set with <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">+</span> <span class="inlinecode">1</span> elements</h3>
+ Using <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">+</span> <span class="inlinecode">1</span> elements allows us to agree with the common
+      definition of an <span class="inlinecode"><span class="id" title="var">n</span></span>-simplex, where a 0-simplex is a point, and
+      a 1-simplex has two end-points, etc. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">chain</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">PreCategory</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= { <span class="id" title="var">m</span> : <span class="id" title="var">omega</span> | <span class="id" title="var">m</span> &lt;= <span class="id" title="var">n</span> }%<span class="id" title="var">category</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: Possibly generalize this to arbitrary sets with arbitrary
+      (total?) orders on them? 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">ChainCategoryCoreNotations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;[ n ]" := (<span class="id" title="var">chain</span> <span class="id" title="var">n</span>) : <span class="id" title="var">category_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">ChainCategoryCoreNotations</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Notations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Include</span> <span class="id" title="var">ChainCategoryCoreNotations</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Notations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="var">Utf8</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Export</span> <span class="id" title="var">Notations</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;[ ∞ ]" := <span class="id" title="var">omega</span> : <span class="id" title="var">category_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> &quot;[ 'ω' ]" := <span class="id" title="var">omega</span> : <span class="id" title="var">category_scope</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Utf8</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="keyword">Strict</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isstrict_omega</span> : <span class="id" title="var">IsStrictCategory</span> <span class="id" title="var">omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isstrict_chain</span> {<span class="id" title="var">n</span>} : <span class="id" title="var">IsStrictCategory</span> [<span class="id" title="var">n</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="keyword">Strict</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Univalent</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">iscategory_omega</span> : <span class="id" title="var">IsCategory</span> <span class="id" title="var">omega</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_iff_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">issig_isomorphic</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">refine</span> <span class="id" title="var">_</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intro</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_antisym</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">m</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iscategory_chain</span> {<span class="id" title="var">n</span>} : <span class="id" title="var">IsCategory</span> [<span class="id" title="var">n</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Univalent</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,918 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Sequential</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Sequential</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab1057"></a><h1 class="section">Sequential colimits</h1>
+
+<div class="paragraph"> </div>
+
+ We present a proof of the conjecture that sequential colimits in HoTT appropriately commute with Σ-types. As a corollary, we characterize the path space of a sequential colimit as a sequential colimit of path spaces. For the written account of these results see https://www.cs.cornell.edu/~ks858/papers/sequential_colimits_homotopy.pdf. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Diagram</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Sequence</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Cocone</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Colimit</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">PathAny</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">coe</span></span> is <span class="inlinecode"><span class="id" title="var">transport</span></span> <span class="inlinecode"><span class="id" title="var">idmap</span></span> <span class="inlinecode">:</span> <span class="inlinecode">(<span class="id" title="var">A</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">B</span>)</span> <span class="inlinecode">-&gt;</span> <span class="inlinecode">(<span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">B</span>)</span>, but is described as the underlying map of an equivalence so that Coq knows that it is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">coe</span> := (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>)).<br/>
+<span class="id" title="keyword">Notation</span> &quot;a ^+" := (@<span class="id" title="var">arr</span> <span class="id" title="var">sequence_graph</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> 1 <span class="id" title="var">a</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Mapping spaces into hprops from colimits of sequences can be characterized. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equiv_colim_seq_rec</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>) (<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsHProp</span> <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Colimit</span> <span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span>) &lt;~&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">A</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_colimit_rec</span> <span class="id" title="var">P</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">issig_Cocone</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Equiv</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">pr1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If a sequential colimit has maps homotopic to a constant map then the colimit is contractible. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">contr_colim_seq_into_prop</span> {<span class="id" title="var">funext</span> : <span class="id" title="var">Funext</span>} (<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">A</span> <span class="id" title="var">n</span>) (<span class="id" title="var">H</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">const</span> (<span class="id" title="var">a</span> <span class="id" title="var">n</span>.+1) == <span class="id" title="var">A</span> <span class="id" title="var">_f</span> <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Contr</span> (<span class="id" title="var">Colimit</span> <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">transparent</span> <span class="id" title="tactic">assert</span> (<span class="id" title="var">B</span> : <span class="id" title="var">Sequence</span>).<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">srapply</span> <span class="id" title="var">Build_Sequence</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">A</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">const</span> (<span class="id" title="var">a</span> <span class="id" title="var">n</span>.+1)). }<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">contr_equiv'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">rapply</span> <span class="id" title="var">equiv_functor_colimit</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">rapply</span> (<span class="id" title="var">equiv_sequence</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">equiv_idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">H</span> <span class="id" title="var">_</span> (<span class="id" title="var">e</span> <span class="id" title="var">x</span>)). }<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Contr</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">colim</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">B</span>) 1%<span class="id" title="var">nat</span> (<span class="id" title="var">a</span> 1%<span class="id" title="var">nat</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">colimp</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">B</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">idpath</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">IHi</span> (<span class="id" title="var">a</span> <span class="id" title="var">i</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">colimp</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">B</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">idpath</span> (<span class="id" title="var">a</span> <span class="id" title="var">i</span>))^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">colimp</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">B</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">idpath</span> (<span class="id" title="var">a</span> <span class="id" title="var">i</span>.+1))^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">colimp</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">B</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">idpath</span> <span class="id" title="var">x</span>). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> [] <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_paths_FlFr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_const</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">hott_simpl</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_shift_from_zero_by</span> {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span> 0) <span class="id" title="var">k</span> : <span class="id" title="var">A</span> <span class="id" title="var">k</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">k</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>^+.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;a ^+ k" := (<span class="id" title="var">seq_shift_from_zero_by</span> <span class="id" title="var">a</span> <span class="id" title="var">k</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Shiftings; described in the paragraph after Lemma 3.7. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_pair_shift</span> {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">sig</span> <span class="id" title="var">A</span>) : <span class="id" title="var">sig</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">n</span> <span class="id" title="var">a</span>]; <span class="id" title="tactic">exact</span> (<span class="id" title="var">n</span>.+1; <span class="id" title="var">a</span>^+).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_pair_shift_by</span> {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">sig</span> <span class="id" title="var">A</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">sig</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">k</span> <span class="id" title="var">y</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">seq_pair_shift</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;x ^++" := (<span class="id" title="var">seq_pair_shift</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Notation</span> &quot;x ^++ k" := (<span class="id" title="var">seq_pair_shift_by</span> <span class="id" title="var">x</span> <span class="id" title="var">k</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_pair_shift_assoc</span> {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">sig</span> <span class="id" title="var">A</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">x</span>^++)^++<span class="id" title="var">k</span> = <span class="id" title="var">x</span>^++(<span class="id" title="var">k</span>.+1).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">k</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">seq_pair_shift</span> <span class="id" title="var">q</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_shift_pair_from_zero</span> {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span> 0) <span class="id" title="var">k</span> : (0;<span class="id" title="var">a</span>)^++<span class="id" title="var">k</span> = (<span class="id" title="var">k</span>;<span class="id" title="var">a</span>^+<span class="id" title="var">k</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">k</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">seq_pair_shift</span> <span class="id" title="var">q</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">inj</span> <span class="id" title="var">A</span> := (@<span class="id" title="var">colim</span> <span class="id" title="var">sequence_graph</span> <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Notation</span> <span class="id" title="var">glue</span> <span class="id" title="var">A</span> := (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; @<span class="id" title="var">colimp</span> <span class="id" title="var">sequence_graph</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span>.+1 1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The uniqueness principle for sequential colimits; Lemma 3.3. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colimit_uniq</span> {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} <span class="id" title="var">E</span> (<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">Colimit</span> <span class="id" title="var">A</span> -&gt; <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">F</span> <span class="id" title="var">o</span> <span class="id" title="var">inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> == <span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>, <span class="id" title="var">ap</span> <span class="id" title="var">F</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">h</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> = <span class="id" title="var">h</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">a</span>^+ @ <span class="id" title="var">ap</span> <span class="id" title="var">G</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> == <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Colimit_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">H</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>); <span class="id" title="tactic">generalize</span> (<span class="id" title="var">h</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>); <span class="id" title="tactic">destruct</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>; <span class="id" title="var">srefine</span> ((<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>); <span class="id" title="var">srefine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The successor sequence from Lemma 3.6. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">succ_seq</span> (<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>) : <span class="id" title="var">Sequence</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Sequence</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">A</span> <span class="id" title="var">k</span>.+1) (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span>^+).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The shifted sequence from Lemma 3.7. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">shift_seq</span> (<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>) <span class="id" title="var">n</span> : <span class="id" title="var">Sequence</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Sequence</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">A</span> (<span class="id" title="var">k</span>+<span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span>^+).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The canonical equivalence between the colimit of the succesor sequence and the colimit of the original sequence; Lemma 3.6. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span> : <span class="id" title="var">Colimit</span> (<span class="id" title="var">succ_seq</span> <span class="id" title="var">A</span>) -&gt; <span class="id" title="var">Colimit</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_Cocone</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>.+1).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">colim_succ_seq_to_colim_seq_beta_glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span>) (<span class="id" title="var">glue</span> (<span class="id" title="var">succ_seq</span> <span class="id" title="var">A</span>) <span class="id" title="var">n</span> <span class="id" title="var">a</span>) = <span class="id" title="var">glue</span> <span class="id" title="var">A</span> (<span class="id" title="var">n</span>.+1) <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">colim_succ_seq_to_colim_seq_ap_inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> (<span class="id" title="var">a1</span> <span class="id" title="var">a2</span> : <span class="id" title="var">succ_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">a1</span> = <span class="id" title="var">a2</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span>) (<span class="id" title="var">ap</span> (<span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span>) <span class="id" title="var">p</span>) = <span class="id" title="var">ap</span> (<span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span>.+1) <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_Cocone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">inj</span> (<span class="id" title="var">succ_seq</span> <span class="id" title="var">A</span>) <span class="id" title="var">n</span> <span class="id" title="var">a</span>^+).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">glue</span> (<span class="id" title="var">succ_seq</span> <span class="id" title="var">A</span>) <span class="id" title="var">n</span> <span class="id" title="var">a</span>^+).<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">seq_colimit_uniq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">glue</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_idmap</span>, <span class="id" title="var">ap_compose</span>, <span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">colim_succ_seq_to_colim_seq_beta_glue</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">seq_colimit_uniq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">glue</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_idmap</span>, <span class="id" title="var">ap_compose</span>, <span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (@<span class="id" title="var">Colimit_rec_beta_colimp</span> <span class="id" title="var">_</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> 1); <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span> : <span class="id" title="var">Colimit</span> (<span class="id" title="var">succ_seq</span> <span class="id" title="var">A</span>) &lt;~&gt; <span class="id" title="var">Colimit</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The canonical equivalence between the colimit of the shifted sequence and the colimit of the original sequence; Lemma 3.6. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">colim_shift_seq_to_colim_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> : <span class="id" title="var">Colimit</span> (<span class="id" title="var">shift_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) -&gt; <span class="id" title="var">Colimit</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_Cocone</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">inj</span> <span class="id" title="var">A</span> (<span class="id" title="var">k</span>+<span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> (<span class="id" title="var">k</span>+<span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">colim_shift_seq_to_colim_seq_beta_glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">colim_shift_seq_to_colim_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) (<span class="id" title="var">glue</span> (<span class="id" title="var">shift_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) <span class="id" title="var">k</span> <span class="id" title="var">a</span>) = <span class="id" title="var">glue</span> <span class="id" title="var">A</span> (<span class="id" title="var">k</span>+<span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">colim_shift_seq_to_colim_seq_ap_inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> (<span class="id" title="var">a1</span> <span class="id" title="var">a2</span> : <span class="id" title="var">shift_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">a1</span> = <span class="id" title="var">a2</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">colim_shift_seq_to_colim_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) (<span class="id" title="var">ap</span> (<span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span>) <span class="id" title="var">p</span>) = <span class="id" title="var">ap</span> (<span class="id" title="var">inj</span> <span class="id" title="var">_</span> (<span class="id" title="var">k</span>+<span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>) <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">J</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">y</span>} {<span class="id" title="var">I</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Y</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">Z</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x2</span> = <span class="id" title="var">x1</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">I</span> <span class="id" title="var">x2</span> <span class="id" title="var">y</span> = <span class="id" title="var">I</span> <span class="id" title="var">x1</span> (<span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">K</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">y</span>} <span class="id" title="var">F</span> <span class="id" title="var">G</span> (<span class="id" title="var">p</span> : <span class="id" title="var">x1</span> = <span class="id" title="var">x2</span>) :<br/>
+&nbsp;&nbsp;<span class="id" title="var">G</span> <span class="id" title="var">x2</span> (<span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) <span class="id" title="var">y</span>) = <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> (<span class="id" title="var">ap</span> <span class="id" title="var">F</span> <span class="id" title="var">p</span>)) (<span class="id" title="var">G</span> <span class="id" title="var">x1</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">L</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">y</span>} {<span class="id" title="var">F</span> <span class="id" title="var">G</span>} {<span class="id" title="var">I</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Y</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">Z</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">x2</span> = <span class="id" title="var">x1</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Q</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">I</span> (<span class="id" title="var">F</span> <span class="id" title="var">x</span>) (<span class="id" title="var">G</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) = <span class="id" title="var">I</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Q</span> <span class="id" title="var">x2</span> <span class="id" title="var">y</span> @ <span class="id" title="var">J</span> <span class="id" title="var">p</span> =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">J</span> (<span class="id" title="var">ap</span> <span class="id" title="var">F</span> <span class="id" title="var">p</span>) @ (<span class="id" title="var">ap</span> (<span class="id" title="var">I</span> (<span class="id" title="var">F</span> <span class="id" title="var">x1</span>)) (<span class="id" title="var">K</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">p</span>)^ @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Q</span> <span class="id" title="var">x1</span> (<span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) <span class="id" title="var">y</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_colim_shift_seq_to_colim_seq</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">A</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">colim_shift_seq_to_colim_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">n</span> <span class="id" title="var">e</span>]; <span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_homotopic'</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_colimit</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_diagram_equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">Build_DiagramMap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">A</span> (<span class="id" title="var">nat_add_zero_r</span> <span class="id" title="var">k</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>. <span class="id" title="var">srapply</span> (<span class="id" title="var">K</span> <span class="id" title="var">S</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span>^+) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">seq_colimit_uniq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">J</span> (<span class="id" title="var">nat_add_zero_r</span> <span class="id" title="var">k</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">Colimit_rec_beta_colimp</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">L</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">transitivity</span> (<span class="id" title="var">Colimit</span> (<span class="id" title="var">succ_seq</span> (<span class="id" title="var">shift_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_colimit</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_diagram_equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="var">srapply</span> <span class="id" title="var">Build_DiagramMap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">A</span> (<span class="id" title="var">nat_add_succ_r</span> <span class="id" title="var">k</span> <span class="id" title="var">n</span>))). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="var">rapply</span> (<span class="id" title="var">K</span> <span class="id" title="var">S</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span>^+) (<span class="id" title="var">nat_add_succ_r</span> <span class="id" title="var">k</span> <span class="id" title="var">n</span>)). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">srefine</span> (<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">equiv_colim_succ_seq_to_colim_seq</span> <span class="id" title="var">_</span>) (<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">e</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">seq_colimit_uniq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">J</span> (<span class="id" title="var">nat_add_succ_r</span> <span class="id" title="var">k</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2(<span class="id" title="var">ap_compose'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">glue</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span>)), <span class="id" title="var">Colimit_rec_beta_colimp</span>, 2<span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">colim_succ_seq_to_colim_seq_ap_inj</span>, <span class="id" title="var">colim_shift_seq_to_colim_seq_ap_inj</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">colim_succ_seq_to_colim_seq_beta_glue</span> (<span class="id" title="var">shift_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">colim_shift_seq_to_colim_seq_beta_glue</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">L</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_colim_shift_seq_to_colim_seq</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">A</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Colimit</span> (<span class="id" title="var">shift_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) &lt;~&gt; <span class="id" title="var">Colimit</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">colim_shift_seq_to_colim_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Corollary 7.7.1 for k := -2; implies Lemma 7.2. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">contr_colim_contr_seq</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, <span class="id" title="var">Contr</span> (<span class="id" title="var">A</span> <span class="id" title="var">k</span>)) -&gt; <span class="id" title="var">Contr</span> (<span class="id" title="var">Colimit</span> <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">h_seqcontr</span>; <span class="id" title="tactic">pose</span> (<span class="id" title="var">unit_seq</span> := <span class="id" title="var">Build_Sequence</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">Unit</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">tt</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv'</span> (<span class="id" title="var">Colimit</span> <span class="id" title="var">unit_seq</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_colimit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_diagram_equiv</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_DiagramMap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">tt</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> (<span class="id" title="var">Build_Contr</span> <span class="id" title="var">_</span> (<span class="id" title="var">inj</span> <span class="id" title="var">unit_seq</span> 0 <span class="id" title="var">tt</span>)); <span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">symmetry</span>; <span class="id" title="var">revert</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">seq_colimit_uniq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">n</span> <span class="id" title="var">r</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">glue</span> <span class="id" title="var">unit_seq</span> <span class="id" title="var">n</span> <span class="id" title="var">tt</span> @ <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intro</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_idmap</span>, <span class="id" title="var">ap_const</span>, <span class="id" title="var">concat_p1</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Fibered sequences; Section 4. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Record</span> <span class="id" title="var">FibSequence</span> (<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">fibSequence</span> : <span class="id" title="var">sig</span> <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">fibSequenceArr</span> <span class="id" title="var">x</span> : <span class="id" title="var">fibSequence</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">fibSequence</span> <span class="id" title="var">x</span>^++<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">fibSequence</span> : <span class="id" title="var">FibSequence</span>  &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">fibSequence</span> {<span class="id" title="var">A</span>}.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">fibSequenceArr</span> {<span class="id" title="var">A</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;b ^+f" := (<span class="id" title="var">fibSequenceArr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The Sigma of a fibered type sequence; Definition 4.3. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sig_seq</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>) : <span class="id" title="var">Sequence</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Sequence</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; {<span class="id" title="var">a</span> : <span class="id" title="var">A</span> <span class="id" title="var">n</span> &amp; <span class="id" title="var">B</span> (<span class="id" title="var">n</span>;<span class="id" title="var">a</span>)}).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>]; <span class="id" title="tactic">exact</span> (<span class="id" title="var">a</span>^+; <span class="id" title="var">b</span>^+<span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The canonical projection from the sequential colimit of Sigmas to the sequential colimit of the first component; Definition 4.3. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_to_seq_colim_fst</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Colimit</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) -&gt; <span class="id" title="var">Colimit</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_Cocone</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> [<span class="id" title="var">a</span> <span class="id" title="var">_</span>]; <span class="id" title="tactic">exact</span> (<span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>]; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">glue</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given a sequence fibered over A, aach point x : sig A induces a new type sequence; Section 4. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fib_seq_to_seq</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">sig</span> <span class="id" title="var">A</span>) : <span class="id" title="var">Sequence</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Sequence</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>; <span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">k</span> <span class="id" title="var">h</span>].<br/>
+&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">B</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">h</span> <span class="id" title="var">x</span>^++).<br/>
+&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">b</span>^+<span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">h</span> <span class="id" title="var">x</span>^++).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The induced sequence can be equivalently described by using shifting; Lemma 7.1. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fib_seq_to_seq'</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">sig</span> <span class="id" title="var">A</span>) : <span class="id" title="var">Sequence</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Sequence</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">B</span> <span class="id" title="var">x</span>^++<span class="id" title="var">k</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">b</span>^+<span class="id" title="var">f</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_fib_seq_to_seq</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">sig</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fib_seq_to_seq</span> <span class="id" title="var">B</span> <span class="id" title="var">x</span> ~<span class="id" title="var">d</span>~ <span class="id" title="var">fib_seq_to_seq'</span> <span class="id" title="var">B</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_diagram_equiv</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">Build_DiagramMap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intro</span> <span class="id" title="var">n</span>; <span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">n</span> <span class="id" title="var">e</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idmap</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">B</span> (<span class="id" title="var">seq_pair_shift_assoc</span> <span class="id" title="var">x</span> <span class="id" title="var">n</span>)) <span class="id" title="var">o</span> <span class="id" title="var">e</span> <span class="id" title="var">x</span>^++).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">n</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">K</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">p</span> (<span class="id" title="var">x</span>^++) <span class="id" title="var">b</span>))).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">n</span>; <span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">n</span> <span class="id" title="var">e</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">isequiv_idmap</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_compose</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A fibered type sequence defines a type family; Section 4. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fib_seq_to_type_fam</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>) : <span class="id" title="var">Colimit</span> <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_Cocone</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">Colimit</span> (<span class="id" title="var">fib_seq_to_seq</span> <span class="id" title="var">B</span> (<span class="id" title="var">n</span>;<span class="id" title="var">a</span>))).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_universe_uncurried</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_colim_succ_seq_to_colim_seq</span> (<span class="id" title="var">fib_seq_to_seq</span> <span class="id" title="var">B</span> (<span class="id" title="var">n</span>;<span class="id" title="var">a</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fib_seq_to_type_fam_beta_glue</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">fib_seq_to_type_fam</span> <span class="id" title="var">B</span>) (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>))=<br/>
+&nbsp;&nbsp;<span class="id" title="var">colim_succ_seq_to_colim_seq</span> (<span class="id" title="var">fib_seq_to_seq</span> <span class="id" title="var">B</span> (<span class="id" title="var">n</span>;<span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">Colimit_rec_beta_colimp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">transport_idmap_path_universe_uncurried</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Delta</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">F</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x1</span> = <span class="id" title="var">x2</span>) (<span class="id" title="var">psi</span> : <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) = <span class="id" title="var">F</span>) <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;: (<span class="id" title="var">x1</span>;<span class="id" title="var">y</span>) = (<span class="id" title="var">x2</span>;<span class="id" title="var">F</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">psi</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Delta_proj</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">F</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x1</span> = <span class="id" title="var">x2</span>) (<span class="id" title="var">psi</span> : <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) = <span class="id" title="var">F</span>) <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">pr1</span> (<span class="id" title="var">Delta</span> <span class="id" title="var">p</span> <span class="id" title="var">psi</span> <span class="id" title="var">y</span>) = <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">psi</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The canonical map from the sequential colimit of Sigmas to the Sigma of sequential colimits; Definition 5.1. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Colimit</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) -&gt; <span class="id" title="var">sig</span> (<span class="id" title="var">fib_seq_to_type_fam</span> <span class="id" title="var">B</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Build_Cocone</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>]; <span class="id" title="tactic">exact</span> (<span class="id" title="var">inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>; <span class="id" title="var">inj</span> (<span class="id" title="var">fib_seq_to_seq</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) 0 <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>]; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="var">srefine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">glue</span> (<span class="id" title="var">fib_seq_to_seq</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) 0 <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Delta</span> <span class="id" title="var">_</span> (<span class="id" title="var">fib_seq_to_type_fam_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_to_sum_seq_colim_beta_glue</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> :<br/>
+&nbsp;&nbsp;<span class="id" title="var">ap</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>) (<span class="id" title="var">glue</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) <span class="id" title="var">n</span> (<span class="id" title="var">a</span>;<span class="id" title="var">b</span>)) =<br/>
+&nbsp;&nbsp;<span class="id" title="var">Delta</span> <span class="id" title="var">_</span> (<span class="id" title="var">fib_seq_to_type_fam_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) (<span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @<br/>
+&nbsp;&nbsp;<span class="id" title="var">ap</span> (<span class="id" title="var">exist</span> <span class="id" title="var">_</span> (<span class="id" title="var">inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>)) (<span class="id" title="var">glue</span> (<span class="id" title="var">fib_seq_to_seq</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) 0 <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An alternative induction principle for the sum of colimits; Lemma 5.2 and Section 6. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">SeqColimitSumInd</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">E</span> : <span class="id" title="var">sig</span> (<span class="id" title="var">fib_seq_to_type_fam</span> <span class="id" title="var">B</span>) -&gt; <span class="id" title="keyword">Type</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">e</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">E</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span> (<span class="id" title="var">inj</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) <span class="id" title="var">n</span> (<span class="id" title="var">a</span>;<span class="id" title="var">b</span>)))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">t</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">ap</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>) (<span class="id" title="var">glue</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) <span class="id" title="var">n</span> (<span class="id" title="var">a</span>;<span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;# <span class="id" title="var">e</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">a</span>^+) (<span class="id" title="var">b</span>^+<span class="id" title="var">f</span>) = <span class="id" title="var">e</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The point-point case of the nested induction; corresponds to "h" in the paper. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Q</span> <span class="id" title="var">k</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">E</span> (<span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>; <span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">k</span> <span class="id" title="var">h</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">Delta</span> <span class="id" title="var">_</span> (<span class="id" title="var">fib_seq_to_type_fam_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) <span class="id" title="var">_</span> # <span class="id" title="var">h</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">a</span>^+) <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The path-point case of the nested induction is just reflexivity; corresponds to "mu" in the paper. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Eta</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">y1</span> <span class="id" title="var">y2</span> : <span class="id" title="var">Y</span> <span class="id" title="var">x</span>} {<span class="id" title="var">z</span> : <span class="id" title="var">sig</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">y1</span> = <span class="id" title="var">y2</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">q1</span> : <span class="id" title="var">z</span> = (<span class="id" title="var">x</span>;<span class="id" title="var">y1</span>)} {<span class="id" title="var">q2</span> : <span class="id" title="var">z</span> = (<span class="id" title="var">x</span>;<span class="id" title="var">y2</span>)} (<span class="id" title="var">theta</span> : <span class="id" title="var">q2</span> = <span class="id" title="var">q1</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">transport</span> (<span class="id" title="var">Z</span> <span class="id" title="var">o</span> <span class="id" title="var">exist</span> <span class="id" title="var">Y</span> <span class="id" title="var">x</span>) <span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">transport</span> <span class="id" title="var">Z</span> <span class="id" title="var">q1</span> == <span class="id" title="var">transport</span> <span class="id" title="var">Z</span> <span class="id" title="var">q2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span> <span class="id" title="tactic">in</span> <span class="id" title="var">theta</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">theta</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">q1</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Epsilon</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">y1</span> <span class="id" title="var">y2</span>} {<span class="id" title="var">F</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x1</span> = <span class="id" title="var">x2</span>) {<span class="id" title="var">q</span> : <span class="id" title="var">y1</span> = <span class="id" title="var">y2</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">psi</span> : <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) = <span class="id" title="var">F</span>} {<span class="id" title="var">r</span> : <span class="id" title="var">F</span> <span class="id" title="var">y1</span> = <span class="id" title="var">F</span> <span class="id" title="var">y2</span>} (<span class="id" title="var">theta</span> : <span class="id" title="var">ap</span> <span class="id" title="var">F</span> <span class="id" title="var">q</span> = <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">transport</span> (<span class="id" title="var">Z</span> <span class="id" title="var">o</span> <span class="id" title="var">exist</span> <span class="id" title="var">Y</span> <span class="id" title="var">x2</span>) <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">transport</span> <span class="id" title="var">Z</span> (<span class="id" title="var">Delta</span> <span class="id" title="var">p</span> <span class="id" title="var">psi</span> <span class="id" title="var">y1</span>) ==<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transport</span> <span class="id" title="var">Z</span> (<span class="id" title="var">Delta</span> <span class="id" title="var">p</span> <span class="id" title="var">psi</span> <span class="id" title="var">y2</span>) <span class="id" title="var">o</span> <span class="id" title="var">transport</span> (<span class="id" title="var">Z</span> <span class="id" title="var">o</span> <span class="id" title="var">exist</span> <span class="id" title="var">Y</span> <span class="id" title="var">x1</span>) <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">theta</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The point-path case of the nested induction; corresponds to "H" in the paper. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">R</span> <span class="id" title="var">k</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transport</span> (<span class="id" title="var">E</span> <span class="id" title="var">o</span> <span class="id" title="var">exist</span> <span class="id" title="var">_</span> (<span class="id" title="var">inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>)) (<span class="id" title="var">glue</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Q</span> <span class="id" title="var">k</span>.+1 <span class="id" title="var">n</span> <span class="id" title="var">a</span> (<span class="id" title="var">b</span>^+)) = <span class="id" title="var">Q</span> <span class="id" title="var">k</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">k</span> <span class="id" title="var">h</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">t</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Eta</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="var">srefine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">h</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">a</span>^+) <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Epsilon</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) (<span class="id" title="var">colim_succ_seq_to_colim_seq_beta_glue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The point case of the nested induction; corresponds to "g" in the paper. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">F</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">E</span> (<span class="id" title="var">inj</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>; <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">Q</span> <span class="id" title="var">k</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">R</span> <span class="id" title="var">k</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">F_beta_glue</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">apD</span> (<span class="id" title="var">F</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) (<span class="id" title="var">glue</span> <span class="id" title="var">_</span> 0 <span class="id" title="var">b</span>) = <span class="id" title="var">R</span> 0 <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind_beta_colimp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Phi</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">y1</span> <span class="id" title="var">y2</span>} {<span class="id" title="var">F</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x1</span> = <span class="id" title="var">x2</span>) {<span class="id" title="var">q</span> : <span class="id" title="var">y1</span> = <span class="id" title="var">y2</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">psi</span> : <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) = <span class="id" title="var">F</span>} {<span class="id" title="var">G1</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">Z</span> (<span class="id" title="var">x1</span>;<span class="id" title="var">y</span>)} {<span class="id" title="var">G2</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">Z</span> (<span class="id" title="var">x2</span>;<span class="id" title="var">y</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">r</span> : <span class="id" title="var">F</span> <span class="id" title="var">y1</span> = <span class="id" title="var">F</span> <span class="id" title="var">y2</span>} (<span class="id" title="var">theta</span> : <span class="id" title="var">ap</span> <span class="id" title="var">F</span> <span class="id" title="var">q</span> = <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">u1</span> <span class="id" title="var">u2</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">apD</span> <span class="id" title="var">G2</span> <span class="id" title="var">r</span> @ <span class="id" title="var">u2</span> = <span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> <span class="id" title="var">_</span> <span class="id" title="var">r</span>) <span class="id" title="var">u1</span> @ <span class="id" title="var">Epsilon</span> <span class="id" title="var">p</span> <span class="id" title="var">theta</span> (<span class="id" title="var">G1</span> <span class="id" title="var">y1</span>) @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> <span class="id" title="var">Z</span> (<span class="id" title="var">Delta</span> <span class="id" title="var">p</span> <span class="id" title="var">psi</span> <span class="id" title="var">y2</span>)) (<span class="id" title="var">apD</span> <span class="id" title="var">G1</span> <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">G2</span> (<span class="id" title="var">F</span> <span class="id" title="var">y</span>) = <span class="id" title="var">Delta</span> <span class="id" title="var">p</span> <span class="id" title="var">psi</span> <span class="id" title="var">y</span> # <span class="id" title="var">G1</span> <span class="id" title="var">y</span>) <span class="id" title="var">q</span> <span class="id" title="var">u1</span> = <span class="id" title="var">u2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">theta</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">u1</span> <span class="id" title="var">u2</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_idmap</span>, !<span class="id" title="var">concat_p1</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">s</span>; <span class="id" title="var">srefine</span> (<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The path case of the nested induction; corresponds to "omega" in the paper. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">G</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">F</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">_</span> = <span class="id" title="var">Delta</span> <span class="id" title="var">_</span> (<span class="id" title="var">fib_seq_to_type_fam_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) <span class="id" title="var">y</span> # <span class="id" title="var">F</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">a</span>^+) <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">k</span> <span class="id" title="var">l</span> <span class="id" title="var">p</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">Phi</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) (<span class="id" title="var">colim_succ_seq_to_colim_seq_beta_glue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">Colimit_ind_beta_colimp</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">Q</span> <span class="id" title="var">k</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">Colimit_ind_beta_colimp</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">Q</span> <span class="id" title="var">k</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">a</span>^+) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p1</span>, <span class="id" title="var">concat_1p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">I</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">x1</span> = <span class="id" title="var">x2</span>} {<span class="id" title="var">F</span>} (<span class="id" title="var">psi</span> : <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) = <span class="id" title="var">F</span>) {<span class="id" title="var">G1</span> <span class="id" title="var">G2</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">Z</span> (<span class="id" title="var">x</span>;<span class="id" title="var">y</span>)) <span class="id" title="var">p</span> <span class="id" title="var">G1</span> = <span class="id" title="var">G2</span> &lt;~&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, <span class="id" title="var">G2</span> (<span class="id" title="var">F</span> <span class="id" title="var">y</span>) = <span class="id" title="var">Delta</span> <span class="id" title="var">p</span> <span class="id" title="var">psi</span> <span class="id" title="var">y</span> # <span class="id" title="var">G1</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">psi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">equiv_path_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">equiv_apD10</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The alternative induction rule in curried form; corresponds to curried "G" in
+      the paper. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_ind_cur</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">E</span> (<span class="id" title="var">x</span>;<span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Colimit_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">F</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">I</span> (<span class="id" title="var">fib_seq_to_type_fam_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>))^-1 (<span class="id" title="var">G</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The computation rule for the alternative induction rule in curried form. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_ind_cur_beta_glue</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">I</span> (<span class="id" title="var">fib_seq_to_type_fam_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) (<span class="id" title="var">apD</span> <span class="id" title="var">seq_colim_sum_ind_cur</span> (<span class="id" title="var">glue</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>)) = <span class="id" title="var">G</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_M</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind_beta_colimp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The alternative induction rule; corresponds to "G" in the paper. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_ind</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">E</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">y</span>]; <span class="id" title="tactic">apply</span> <span class="id" title="var">seq_colim_sum_ind_cur</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Xi</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} <span class="id" title="var">G</span> {<span class="id" title="var">x</span> : <span class="id" title="var">X</span>} {<span class="id" title="var">y1</span> <span class="id" title="var">y2</span> : <span class="id" title="var">Y</span> <span class="id" title="var">x</span>} {<span class="id" title="var">z</span> : <span class="id" title="var">sig</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">p</span> : <span class="id" title="var">y1</span> = <span class="id" title="var">y2</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">q1</span> : <span class="id" title="var">z</span> = (<span class="id" title="var">x</span>;<span class="id" title="var">y1</span>)} {<span class="id" title="var">q2</span> : <span class="id" title="var">z</span> = (<span class="id" title="var">x</span>;<span class="id" title="var">y2</span>)} (<span class="id" title="var">theta</span> : <span class="id" title="var">q2</span> = <span class="id" title="var">q1</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">exist</span> <span class="id" title="var">Y</span> <span class="id" title="var">x</span>) <span class="id" title="var">p</span> =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">Z</span> <span class="id" title="var">o</span> <span class="id" title="var">exist</span> <span class="id" title="var">Y</span> <span class="id" title="var">x</span>) <span class="id" title="var">p</span>) (<span class="id" title="var">apD</span> <span class="id" title="var">G</span> <span class="id" title="var">q1</span>)^ @ <span class="id" title="var">Eta</span> <span class="id" title="var">theta</span> (<span class="id" title="var">G</span> <span class="id" title="var">z</span>) @ <span class="id" title="var">apD</span> <span class="id" title="var">G</span> <span class="id" title="var">q2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">theta</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">equiv_ind</span> (<span class="id" title="var">equiv_path_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)). <span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">q1</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">equiv_ind</span> (<span class="id" title="var">equiv_path_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">Mu</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span>} {<span class="id" title="var">x1</span> <span class="id" title="var">x2</span> : <span class="id" title="var">X</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x1</span> = <span class="id" title="var">x2</span>) {<span class="id" title="var">F</span>} (<span class="id" title="var">G</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">z</span>, <span class="id" title="var">Z</span> <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">psi</span> : <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">Y</span> <span class="id" title="var">p</span>) = <span class="id" title="var">F</span>} {<span class="id" title="var">q</span>} (<span class="id" title="var">theta</span> : <span class="id" title="var">I</span> <span class="id" title="var">psi</span> (<span class="id" title="var">apD</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">G</span> (<span class="id" title="var">x</span>;<span class="id" title="var">y</span>)) <span class="id" title="var">p</span>) = <span class="id" title="var">q</span>) <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> <span class="id" title="var">G</span> (<span class="id" title="var">Delta</span> <span class="id" title="var">p</span> <span class="id" title="var">psi</span> <span class="id" title="var">y</span>) = (<span class="id" title="var">q</span> <span class="id" title="var">y</span>)^.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">psi</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">theta</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The computation rule for the alternative induction rule. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_ind_beta_glue</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">apD</span> <span class="id" title="var">seq_colim_sum_ind</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>) (<span class="id" title="var">glue</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) <span class="id" title="var">n</span> <span class="id" title="var">_</span>)) =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">t</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">pose</span> (<span class="id" title="var">h</span> := <span class="id" title="var">F_beta_glue</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">Xi</span> <span class="id" title="var">seq_colim_sum_ind</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)) <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">Mu</span> (<span class="id" title="var">glue</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) <span class="id" title="var">seq_colim_sum_ind</span> (<span class="id" title="var">seq_colim_sum_ind_cur_beta_glue</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>)) <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_1p</span> <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">cancelL</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">SeqColimitSumInd</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An alternative recursion principle for the sum of colimits; Lemma 5.3. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">SeqColimitSumRec</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> <span class="id" title="var">E</span> (<span class="id" title="var">e</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>, <span class="id" title="var">B</span> (<span class="id" title="var">n</span>;<span class="id" title="var">a</span>) -&gt; <span class="id" title="var">E</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">t</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> (<span class="id" title="var">b</span> : <span class="id" title="var">B</span> (<span class="id" title="var">n</span>;<span class="id" title="var">a</span>)), <span class="id" title="var">e</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">a</span>^+) (<span class="id" title="var">b</span>^+<span class="id" title="var">f</span>) = <span class="id" title="var">e</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_rec</span> : <span class="id" title="var">sig</span> (<span class="id" title="var">fib_seq_to_type_fam</span> <span class="id" title="var">B</span>)-&gt; <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">seq_colim_sum_ind</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span> <span class="id" title="var">e</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">transport_const</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">t</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_rec_beta_glue</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> <span class="id" title="var">seq_colim_sum_rec</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>) (<span class="id" title="var">glue</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) <span class="id" title="var">n</span> (<span class="id" title="var">a</span>;<span class="id" title="var">b</span>))) =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">t</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">cancelL</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> ((<span class="id" title="var">apD_const</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">seq_colim_sum_ind_beta_glue</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">SeqColimitSumRec</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Lemma 5.4. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colimit_sum_uniq</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>) <span class="id" title="var">E</span><br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> <span class="id" title="var">G</span> : <span class="id" title="var">sig</span> (<span class="id" title="var">fib_seq_to_type_fam</span> <span class="id" title="var">B</span>) -&gt; <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">F</span> <span class="id" title="var">o</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>) == <span class="id" title="var">G</span> <span class="id" title="var">o</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">F</span> == <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">h</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">seq_colim_sum_ind</span> <span class="id" title="var">B</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">h</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> ((<span class="id" title="var">transport_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>); <span class="id" title="tactic">exact</span> (<span class="id" title="var">apD</span> <span class="id" title="var">h</span> (<span class="id" title="var">glue</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) <span class="id" title="var">n</span> (<span class="id" title="var">a</span>;<span class="id" title="var">b</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The canonical map from the sequential colimit of Sigmas to the Sigma of sequential colimits is an equivalence; Theorem 5.1. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_seq_colim_sum_to_sum_seq_colim</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">L</span> : {<span class="id" title="var">G</span> : <span class="id" title="var">_</span> &amp; <span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span> == <span class="id" title="var">idmap</span>}).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> (<span class="id" title="var">_</span>;<span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">seq_colim_sum_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">inj</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) <span class="id" title="var">n</span> (<span class="id" title="var">a</span>;<span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">glue</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) <span class="id" title="var">n</span> (<span class="id" title="var">a</span>;<span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">seq_colimit_uniq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_1p</span>, <span class="id" title="var">concat_p1</span>, <span class="id" title="var">ap_compose</span>, <span class="id" title="var">ap_idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">seq_colim_sum_rec_beta_glue</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">_</span> <span class="id" title="var">L</span>.1 <span class="id" title="var">_</span> <span class="id" title="var">L</span>.2); <span class="id" title="var">srapply</span> <span class="id" title="var">seq_colimit_sum_uniq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">L</span>.2; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_seq_colim_sum_to_sum_seq_colim</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Colimit</span> (<span class="id" title="var">sig_seq</span> <span class="id" title="var">B</span>) &lt;~&gt; <span class="id" title="var">sig</span> (<span class="id" title="var">fib_seq_to_type_fam</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">isequiv_seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The canonical map from the sequential colimit of Sigmas to the Sigma of sequential colimits commutes with the first projection; Theorem 5.1. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">seq_colim_sum_to_sum_seq_colim_fst</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span>} (<span class="id" title="var">B</span> : <span class="id" title="var">FibSequence</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">pr1</span> <span class="id" title="var">o</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>) == <span class="id" title="var">seq_colim_sum_to_seq_colim_fst</span> <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">seq_colimit_uniq</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>]; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_1p</span>, <span class="id" title="var">concat_p1</span>, <span class="id" title="var">ap_compose</span>, !<span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pp</span>, (<span class="id" title="var">Delta_proj</span> <span class="id" title="var">_</span> (<span class="id" title="var">fib_seq_to_type_fam_beta_glue</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_const</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The characterization of path spaces in sequential colimits; Theorem 7.4, first part. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_seq</span> (<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>) (<span class="id" title="var">a1</span> <span class="id" title="var">a2</span> : <span class="id" title="var">A</span> 0)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Sequence</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">a1</span>^+<span class="id" title="var">k</span> = <span class="id" title="var">a2</span>^+<span class="id" title="var">k</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span>^+) <span class="id" title="var">p</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_colim_zero</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} (<span class="id" title="var">a1</span> <span class="id" title="var">a2</span> : <span class="id" title="var">A</span> 0) :<br/>
+&nbsp;&nbsp;(<span class="id" title="var">inj</span> <span class="id" title="var">A</span> 0 <span class="id" title="var">a1</span> = <span class="id" title="var">inj</span> <span class="id" title="var">A</span> 0 <span class="id" title="var">a2</span>) &lt;~&gt; <span class="id" title="var">Colimit</span> (<span class="id" title="var">path_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">a1</span> <span class="id" title="var">a2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">B</span> := <span class="id" title="var">Build_FibSequence</span> <span class="id" title="var">A</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">a1</span>^+(<span class="id" title="var">x</span>.1) = <span class="id" title="var">x</span>.2) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span>^+))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">fib_seq_to_type_fam</span> <span class="id" title="var">B</span> (<span class="id" title="var">inj</span> <span class="id" title="var">A</span> 0 <span class="id" title="var">a2</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">symmetry</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">equiv_path_from_contr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">inj</span> (<span class="id" title="var">fib_seq_to_seq</span> <span class="id" title="var">B</span> (0;<span class="id" title="var">a1</span>)) 0 <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">srefine</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">seq_colim_sum_to_sum_seq_colim</span> <span class="id" title="var">B</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">contr_colim_contr_seq</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">k</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">contr_basedpaths</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_colimit</span>; <span class="id" title="var">srefine</span> (<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">equiv_fib_seq_to_seq</span> <span class="id" title="var">B</span> (0;<span class="id" title="var">a2</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_diagram_equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="var">srapply</span> <span class="id" title="var">Build_DiagramMap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">coe</span> (<span class="id" title="var">ap</span> <span class="id" title="var">B</span> (<span class="id" title="var">seq_shift_pair_from_zero</span> <span class="id" title="var">a2</span> <span class="id" title="var">n</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">K</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">seq_shift_pair_from_zero</span> <span class="id" title="var">a2</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The characterization of path spaces in sequential colimits; Theorem 7.4, second part. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_colim</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} <span class="id" title="var">n</span> (<span class="id" title="var">a1</span> <span class="id" title="var">a2</span> : <span class="id" title="var">A</span> <span class="id" title="var">n</span>) :<br/>
+&nbsp;&nbsp;(<span class="id" title="var">inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a1</span> = <span class="id" title="var">inj</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">a2</span>) &lt;~&gt; <span class="id" title="var">Colimit</span> (<span class="id" title="var">path_seq</span> (<span class="id" title="var">shift_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) <span class="id" title="var">a1</span> <span class="id" title="var">a2</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="tactic">transitivity</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_path_colim_zero</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (@<span class="id" title="var">equiv_ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">colim_shift_seq_to_colim_seq</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">trunc_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Corollary 7.7.1, second part. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">trunc_seq_colim</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">Sequence</span>} <span class="id" title="var">k</span> :<br/>
+&nbsp;&nbsp;(<span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">IsTrunc</span> <span class="id" title="var">k</span> (<span class="id" title="var">A</span> <span class="id" title="var">n</span>)) -&gt; <span class="id" title="var">IsTrunc</span> <span class="id" title="var">k</span> (<span class="id" title="var">Colimit</span> <span class="id" title="var">A</span>) | 100.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">A</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">k</span> <span class="id" title="var">IHk</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="var">srapply</span> <span class="id" title="var">contr_colim_contr_seq</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">trH</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">n</span>; <span class="id" title="var">revert</span> <span class="id" title="var">trH</span>; <span class="id" title="var">revert</span> <span class="id" title="var">A</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">trH</span> <span class="id" title="var">a</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">b</span>; <span class="id" title="var">revert</span> <span class="id" title="var">b</span>; <span class="id" title="var">revert</span> <span class="id" title="var">a</span>; <span class="id" title="var">revert</span> <span class="id" title="var">trH</span>; <span class="id" title="var">revert</span> <span class="id" title="var">A</span>; <span class="id" title="tactic">induction</span> <span class="id" title="var">m</span> <span class="id" title="keyword">as</span> [ | <span class="id" title="var">m</span> <span class="id" title="var">IHm</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">trH</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_inverse</span> (<span class="id" title="var">equiv_path_colim</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>))). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">trH</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_inverse</span> (<span class="id" title="var">equiv_concat_l</span> (<span class="id" title="var">glue</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>) <span class="id" title="var">_</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (@<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span> (<span class="id" title="var">IHm</span> (<span class="id" title="var">succ_seq</span> <span class="id" title="var">A</span>) <span class="id" title="var">_</span> (@<span class="id" title="var">arr</span> <span class="id" title="var">_</span> <span class="id" title="var">A</span> 0%<span class="id" title="var">nat</span> <span class="id" title="var">_</span> 1%<span class="id" title="var">path</span> <span class="id" title="var">a</span>) <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">equiv_ap</span> (<span class="id" title="var">colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span>)). }}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">b</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">path_ishprop</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">ishprop_istrunc</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">trH</span> <span class="id" title="var">a</span>; <span class="id" title="var">srapply</span> (<span class="id" title="var">functor_forall_equiv_pb</span> (<span class="id" title="var">colim_succ_seq_to_colim_seq</span> <span class="id" title="var">A</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">srapply</span> (@<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span> (<span class="id" title="var">IHn</span> (<span class="id" title="var">succ_seq</span> <span class="id" title="var">A</span>) <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">x</span>)); <span class="id" title="var">srapply</span> <span class="id" title="var">equiv_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">path_ishprop</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">istrunc_forall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">srapply</span> <span class="id" title="var">ishprop_istrunc</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

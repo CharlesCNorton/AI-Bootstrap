@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>surjective_factor</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library surjective_factor</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Basics</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">HoTT.Truncations.Core</span> <span class="id" title="var">Modalities.Modality</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Definition by factoring through a surjection. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">surjective_factor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">C</span>} `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>) `(<span class="id" title="var">g</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">Esurj</span> : <span class="id" title="var">IsSurjection</span> <span class="id" title="var">g</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> (<span class="id" title="var">Eg</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">g</span> <span class="id" title="var">x</span> = <span class="id" title="var">g</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">f</span> <span class="id" title="var">y</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ishprop_surjective_factor_aux</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="tactic">exists</span> <span class="id" title="var">c</span> : <span class="id" title="var">C</span>, <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">g</span> <span class="id" title="var">a</span> = <span class="id" title="var">b</span> -&gt; <span class="id" title="var">f</span> <span class="id" title="var">a</span> = <span class="id" title="var">c</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">Sigma.ishprop_sigma_disjoint</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c1</span> <span class="id" title="var">c2</span> <span class="id" title="var">E1</span> <span class="id" title="var">E2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (@<span class="id" title="var">center</span> <span class="id" title="var">_</span> (<span class="id" title="var">Esurj</span> <span class="id" title="var">b</span>)); <span class="id" title="tactic">apply</span> (<span class="id" title="var">Trunc_ind</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">p</span>];<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_via</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">surjective_factor_aux</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@<span class="id" title="var">conn_map_elim</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">Esurj</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="tactic">exists</span> <span class="id" title="var">c</span> : <span class="id" title="var">C</span>, <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">g</span> <span class="id" title="var">a</span> = <span class="id" title="var">b</span> -&gt; <span class="id" title="var">f</span> <span class="id" title="var">a</span> = <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ishprop_surjective_factor_aux</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">exist</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span> = <span class="id" title="var">c</span>) (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">a'</span> =&gt; <span class="id" title="var">Eg</span> <span class="id" title="var">a'</span> <span class="id" title="var">a</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">surjective_factor</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; (<span class="id" title="var">surjective_factor_aux</span> <span class="id" title="var">b</span>).1.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">surjective_factor_pr</span> : <span class="id" title="var">f</span> == <span class="id" title="var">compose</span> <span class="id" title="var">surjective_factor</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">surjective_factor_aux</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>)).2. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">surjective_factor</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Iff</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Iff</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab330"></a><h1 class="section">If and only if</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab331"></a><h2 class="section">Definition</h2>
+
+<div class="paragraph"> </div>
+
+ <span class="inlinecode"><span class="id" title="var">iff</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span>, written <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">&lt;-&gt;</span> <span class="inlinecode"><span class="id" title="var">B</span></span>, expresses the logical equivalence of <span class="inlinecode"><span class="id" title="var">A</span></span> and <span class="inlinecode"><span class="id" title="var">B</span></span> 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iff</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>) := <span class="id" title="var">prod</span> (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;A &lt;-&gt; B" := (<span class="id" title="var">iff</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) : <span class="id" title="var">type_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab332"></a><h2 class="section">Basic Properties</h2>
+
+<div class="paragraph"> </div>
+
+ Everything is logically equivlaent to itself. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iff_refl</span> {<span class="id" title="var">A</span>} : <span class="id" title="var">A</span> &lt;-&gt; <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">idmap</span> , <span class="id" title="var">idmap</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">iff</span></span> is a reflexive relation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">iff_reflexive</span> : <span class="id" title="var">Reflexive</span> <span class="id" title="var">iff</span> | 1<br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">iff_refl</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Logical equivalences can be inverted. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iff_inverse</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} : (<span class="id" title="var">A</span> &lt;-&gt; <span class="id" title="var">B</span>) -&gt; (<span class="id" title="var">B</span> &lt;-&gt; <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;:=  <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; (<span class="id" title="var">snd</span> <span class="id" title="var">f</span> , <span class="id" title="var">fst</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">iff</span></span> is a symmetric relation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">symmetric_iff</span> : <span class="id" title="var">Symmetric</span> <span class="id" title="var">iff</span> | 1<br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">iff_inverse</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Logical equivalences can be composed. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iff_compose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> &lt;-&gt; <span class="id" title="var">C</span>) : <span class="id" title="var">A</span> &lt;-&gt; <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">fst</span> <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">fst</span> <span class="id" title="var">f</span> , <span class="id" title="var">snd</span> <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">snd</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">iff</span></span> is a transitive relation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">transitive_iff</span> : <span class="id" title="var">Transitive</span> <span class="id" title="var">iff</span> | 1<br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">iff_compose</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Any equivalence can be considered a logical equivalence by discarding everything but the maps. We make this a coercion so that equivalences can be used in place of logical equivalences. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">iff_equiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> &lt;-&gt; <span class="id" title="var">B</span> := (<span class="id" title="var">equiv_fun</span> <span class="id" title="var">f</span>, <span class="id" title="var">f</span>^-1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab333"></a><h2 class="section">Logical Laws</h2>
+
+<div class="paragraph"> </div>
+
+ One of De Morgan's Laws.  The dual statement about negating a product appears in Decidable.v due to decidability requirements. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iff_not_sum</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> : ~ (<span class="id" title="var">A</span> + <span class="id" title="var">B</span>) &lt;-&gt; ~ <span class="id" title="var">A</span> * ~ <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">ns</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ns</span> <span class="id" title="var">o</span> <span class="id" title="var">inl</span>, <span class="id" title="var">ns</span> <span class="id" title="var">o</span> <span class="id" title="var">inr</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">intros</span> []; <span class="id" title="var">snrapply</span> <span class="id" title="var">sum_ind</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iff_contradiction</span> <span class="id" title="var">A</span> : <span class="id" title="var">A</span> * ~<span class="id" title="var">A</span> &lt;-&gt; <span class="id" title="var">Empty</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">na</span>]; <span class="id" title="tactic">exact</span> (<span class="id" title="var">na</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">Empty_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">e</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

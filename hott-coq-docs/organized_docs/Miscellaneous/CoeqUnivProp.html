@@ -1,0 +1,350 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>CoeqUnivProp</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library CoeqUnivProp</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.PathGroupoids</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Paths</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Coeq</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Cubical.DPath</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Cubical.DPathSquare</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Displayed</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Equiv</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.EquivGpd</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Forall</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.NatTrans</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Paths</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.ZeroGroupoid</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Using wild 0-groupoids, the universal property can be proven without funext. A simple equivalence of 0-groupoids between <span class="inlinecode"><span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">P</span></span> and <span class="inlinecode">{</span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">&amp;</span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">==</span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">}</span> would not carry all the higher-dimensional information, but if we generalize it to dependent functions, then it does suffice. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">UnivProp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="keyword">Type</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This allows Coq to infer 0-groupoid structures of the form <span class="inlinecode">@<span class="id" title="var">isgraph_forall</span></span> <span class="inlinecode"><span class="id" title="var">C</span></span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">(<span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="var">isgraph_paths</span></span> <span class="inlinecode">(<span class="id" title="var">P</span></span> <span class="inlinecode"><span class="id" title="var">c</span>))</span> on any type of the form <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">c</span>,</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span>.  <span class="inlinecode"><span class="id" title="var">isgraph_paths</span></span> is not a global instance.  <span class="inlinecode"><span class="id" title="var">isgraph_total</span></span> is, but we need to adjust the priority.  The other needed ingredients are all global instances. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Existing Instances</span> <span class="id" title="var">isgraph_total</span> | 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Existing Instances</span> <span class="id" title="var">isgraph_paths</span> | 2.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The domain of the equivalence: sections of <span class="inlinecode"><span class="id" title="var">P</span></span> over <span class="inlinecode"><span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span>. Coq correctly infers the 0-groupoid structure <span class="inlinecode">@<span class="id" title="var">isgraph_forall</span></span> <span class="inlinecode">(<span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">g</span>)</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">(<span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">z</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="var">isgraph_paths</span></span> <span class="inlinecode">(<span class="id" title="var">P</span></span> <span class="inlinecode"><span class="id" title="var">z</span>))</span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind_type</span> := <span class="id" title="keyword">forall</span> <span class="id" title="var">z</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>, <span class="id" title="var">P</span> <span class="id" title="var">z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The codomain of the equivalence is a sigma-groupoid of this family: 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind_data</span> (<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> : <span class="id" title="var">A</span>, <span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> : <span class="id" title="var">B</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) (<span class="id" title="var">h</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">h</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We consider <span class="inlinecode"><span class="id" title="var">Coeq_ind_data</span></span> to be a displayed 0-groupoid, where objects over <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span>,</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">(<span class="id" title="var">coeq</span></span> <span class="inlinecode"><span class="id" title="var">a</span>)</span> are dependent paths as defined above and morphisms over <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode">==</span> <span class="inlinecode"><span class="id" title="var">k</span></span> are witnesses that <span class="inlinecode"><span class="id" title="var">p</span></span> commutes with the homotopies over <span class="inlinecode"><span class="id" title="var">h</span></span> and <span class="inlinecode"><span class="id" title="var">k</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isdgraph_Coeq_ind_data</span> : <span class="id" title="var">IsDGraph</span> <span class="id" title="var">Coeq_ind_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> <span class="id" title="var">P</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">p</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)) @ <span class="id" title="var">s</span> <span class="id" title="var">b</span> = <span class="id" title="var">r</span> <span class="id" title="var">b</span> @ <span class="id" title="var">p</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isd01cat_Coeq_ind_data</span> : <span class="id" title="var">IsD01Cat</span> <span class="id" title="var">Coeq_ind_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_IsD01Cat</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">h'</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_1p_p1</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">j</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">h'</span> <span class="id" title="var">k'</span> <span class="id" title="var">j'</span> <span class="id" title="var">p'</span> <span class="id" title="var">q'</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">p'</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">q'</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isd0gpd_Coeq_ind_data</span> : <span class="id" title="var">IsD0Gpd</span> <span class="id" title="var">Coeq_ind_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">p'</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">ap_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">moveL_pV</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">p'</span> <span class="id" title="var">b</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">concat_Vp</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here is the functor. The domain is the fully-applied type of <span class="inlinecode"><span class="id" title="var">Coeq_ind</span></span>: sections of <span class="inlinecode"><span class="id" title="var">P</span></span> over <span class="inlinecode"><span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span>. The codomain consists of input data for <span class="inlinecode"><span class="id" title="var">Coeq_ind</span></span> given a 0-groupoid structure via <span class="inlinecode"><span class="id" title="var">is0gpd_total</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind_inv</span> : <span class="id" title="var">Coeq_ind_type</span> -&gt; <span class="id" title="var">sig</span> <span class="id" title="var">Coeq_ind_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">apD</span> <span class="id" title="var">h</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Use <span class="inlinecode"><span class="id" title="keyword">Set</span></span> <span class="inlinecode"><span class="id" title="keyword">Printing</span></span> <span class="inlinecode"><span class="id" title="keyword">Implicit</span></span> to see the 0-groupoid structures described above. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">is0functor_Coeq_ind_inv</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">Coeq_ind_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">p</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">moveL_pM</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">apD_homotopic</span> <span class="id" title="var">p</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>))^).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">issurjinj_Coeq_ind_inv</span> : <span class="id" title="var">IsSurjInj</span> <span class="id" title="var">Coeq_ind_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_IsSurjInj</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">h</span> <span class="id" title="var">r</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">h</span> <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_1p_q1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Coeq_ind_beta_cglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> [<span class="id" title="var">p</span> <span class="id" title="var">p'</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Coeq_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">specialize</span> (<span class="id" title="var">p'</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FlFr_D</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> <span class="id" title="var">p'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">concat_Vp</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_0gpd_Coeq_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Build_ZeroGpd</span> <span class="id" title="var">Coeq_ind_type</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$&lt;~&gt; <span class="id" title="var">Build_ZeroGpd</span> (<span class="id" title="var">sig</span> <span class="id" title="var">Coeq_ind_data</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_CatEquiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">rapply</span> <span class="id" title="var">Build_Morphism_0Gpd</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isequiv_0gpd_issurjinj</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">UnivProp</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here we prove that the 0-groupoid universal property established in the previous section is natural with respect to <span class="inlinecode"><span class="id" title="var">functor_coeq</span></span>. More precisely, we show that <span class="inlinecode"><span class="id" title="var">Coeq_ind_inv</span></span> commutes with precomposition with <span class="inlinecode"><span class="id" title="var">k</span></span> and <span class="inlinecode"><span class="id" title="var">functor_coeq</span></span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode"><span class="id" title="var">q</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">UnivPropNat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>) {<span class="id" title="var">B'</span> <span class="id" title="var">A'</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f'</span> <span class="id" title="var">g'</span> : <span class="id" title="var">B'</span> -&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span> -&gt; <span class="id" title="keyword">Type</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">dpath_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We recall these instances to allow Coq to infer the same 0-groupoid structures as in the previous section. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Existing Instances</span> <span class="id" title="var">isgraph_total</span> | 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Existing Instances</span> <span class="id" title="var">isgraph_paths</span> | 2.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Existing Instances</span> <span class="id" title="var">isdgraph_Coeq_ind_data</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Help Coq find the same graph structure for the sigma-groupoid of <span class="inlinecode"><span class="id" title="var">Coeq_ind_data</span></span> when precomposing with <span class="inlinecode"><span class="id" title="var">functor_coeq</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isgraph_Coeq_ind_data_total</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsGraph</span> (<span class="id" title="var">sig</span> (<span class="id" title="var">Coeq_ind_data</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isgraph_total</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given a map out of <span class="inlinecode"><span class="id" title="var">A'</span></span> that coequalizes the parallel pair <span class="inlinecode"><span class="id" title="var">f'</span></span> and <span class="inlinecode"><span class="id" title="var">g'</span></span>, we construct a map out of <span class="inlinecode"><span class="id" title="var">A</span></span> that coequalizes <span class="inlinecode"><span class="id" title="var">f</span></span> and <span class="inlinecode"><span class="id" title="var">g</span></span>. Precomposing with <span class="inlinecode"><span class="id" title="var">k</span></span> yields a dependent map <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span>,</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">(<span class="id" title="var">coeq</span></span> <span class="inlinecode">(<span class="id" title="var">k</span></span> <span class="inlinecode"><span class="id" title="var">a</span>))</span>, and <span class="inlinecode"><span class="id" title="var">functor_coeq_beta_cglue</span></span> gives us a way to relate the paths. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_Coeq_ind_data</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">sig</span> (<span class="id" title="var">Coeq_ind_data</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">sig</span> (<span class="id" title="var">Coeq_ind_data</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">m</span> <span class="id" title="var">r</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">m</span> <span class="id" title="var">o</span> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Coeq_ind_data</span> <span class="id" title="tactic">in</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">dp_compose'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">functor_coeq_beta_cglue</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> @<span class="id" title="var">Dp</span> <span class="id" title="var">r</span> (<span class="id" title="var">h</span> <span class="id" title="var">b</span>) @<span class="id" title="var">Dp</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">dp_compose</span> <span class="id" title="var">coeq</span> <span class="id" title="var">P</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>) (<span class="id" title="var">apD</span> <span class="id" title="var">m</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">dp_compose</span> <span class="id" title="var">coeq</span> <span class="id" title="var">P</span> (<span class="id" title="var">q</span> <span class="id" title="var">b</span>)^ (<span class="id" title="var">apD</span> <span class="id" title="var">m</span> (<span class="id" title="var">q</span> <span class="id" title="var">b</span>)^)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A helper lemma for proving functoriality of <span class="inlinecode"><span class="id" title="var">functor_Coeq_ind_data</span></span>. This is the action of <span class="inlinecode"><span class="id" title="var">Coeq_ind</span></span> <span class="inlinecode"><span class="id" title="var">_</span></span> <span class="inlinecode"><span class="id" title="var">_</span></span> <span class="inlinecode"><span class="id" title="var">_</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">functor_coeq</span></span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode"><span class="id" title="var">q</span></span> on the path <span class="inlinecode"><span class="id" title="var">cglue</span></span> <span class="inlinecode"><span class="id" title="var">b</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Lemma</span> <span class="id" title="var">Coeq_ind_functor_coeq_beta_cglue</span> {<span class="id" title="var">b</span> : <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">m</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a'</span> : <span class="id" title="var">A'</span>, <span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a'</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">r</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b'</span> : <span class="id" title="var">B'</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b'</span>) (<span class="id" title="var">m</span> (<span class="id" title="var">f'</span> <span class="id" title="var">b'</span>)) (<span class="id" title="var">m</span> (<span class="id" title="var">g'</span> <span class="id" title="var">b'</span>))}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span> (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= (<span class="id" title="var">dp_compose'</span> (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) <span class="id" title="var">P</span> (<span class="id" title="var">functor_coeq_beta_cglue</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">b</span>))^-1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="var">dp_compose</span> <span class="id" title="var">coeq</span> <span class="id" title="var">P</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>) (<span class="id" title="var">apD</span> <span class="id" title="var">m</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>)) @<span class="id" title="var">Dp</span> <span class="id" title="var">r</span> (<span class="id" title="var">h</span> <span class="id" title="var">b</span>)) @<span class="id" title="var">Dp</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">dp_compose</span> <span class="id" title="var">coeq</span> <span class="id" title="var">P</span> (<span class="id" title="var">q</span> <span class="id" title="var">b</span>)^ (<span class="id" title="var">apD</span> <span class="id" title="var">m</span> (<span class="id" title="var">q</span> <span class="id" title="var">b</span>)^)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ (<span class="id" title="var">dp_apD_compose'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span>))^)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">dp_whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_apD_compose_inv</span> <span class="id" title="var">coeq</span> <span class="id" title="var">P</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span>))^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">dp_whiskerR</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_whiskerR</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_apD_compose_inv</span> <span class="id" title="var">coeq</span> <span class="id" title="var">P</span> <span class="id" title="var">_</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">dp_whiskerR</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">Coeq_ind_beta_cglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">dp_whiskerR</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_apD_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">dp_apD_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">is0functor_functor_Coeq_ind_data</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> <span class="id" title="var">functor_Coeq_ind_data</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">m</span> <span class="id" title="var">r</span>] [<span class="id" title="var">n</span> <span class="id" title="var">s</span>] [<span class="id" title="var">u</span> <span class="id" title="var">v</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">u</span> <span class="id" title="var">o</span> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> <span class="id" title="var">Coeq_ind_functor_coeq_beta_cglue</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerR</span> <span class="id" title="var">Coeq_ind_functor_coeq_beta_cglue</span>^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">moveL_Mp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrefine</span> (<span class="id" title="var">transport_paths_FlFr_D</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) (<span class="id" title="var">Coeq_ind_homotopy</span> <span class="id" title="var">P</span> <span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">_</span>))^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ds_dp</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">_</span>) (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">dp_apD_nat</span> (<span class="id" title="var">Coeq_ind_homotopy</span> <span class="id" title="var">P</span> <span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">o</span> <span class="id" title="var">_</span>) (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Recall the domain of this functor is the type of dependent maps <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">z</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f'</span></span> <span class="inlinecode"><span class="id" title="var">g'</span>,</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode"><span class="id" title="var">z</span></span>. By precomposing with <span class="inlinecode"><span class="id" title="var">functor_coeq</span></span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode"><span class="id" title="var">q</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f'</span></span> <span class="inlinecode"><span class="id" title="var">g'</span></span> we get a dependent map <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">z</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Coeq</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">g</span>,</span> <span class="inlinecode">(<span class="id" title="var">P</span></span> <span class="inlinecode">(<span class="id" title="var">functor_coeq</span></span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode"><span class="id" title="var">q</span></span> <span class="inlinecode"><span class="id" title="var">z</span>))</span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_Coeq_ind_type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Coeq_ind_type</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span> <span class="id" title="var">P</span> -&gt; <span class="id" title="var">Coeq_ind_type</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">is0functor_functor_Coeq_ind_type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> <span class="id" title="var">functor_Coeq_ind_type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We now have two different ways of mappping from <span class="inlinecode"><span class="id" title="var">Coeq_ind_type</span></span> <span class="inlinecode"><span class="id" title="var">f'</span></span> <span class="inlinecode"><span class="id" title="var">g'</span></span> <span class="inlinecode"><span class="id" title="var">P</span></span> to <span class="inlinecode"><span class="id" title="var">sig</span></span> <span class="inlinecode">(<span class="id" title="var">Coeq_ind_data</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">(<span class="id" title="var">P</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">functor_coeq</span></span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode"><span class="id" title="var">k</span></span> <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode"><span class="id" title="var">q</span>))</span>. Here we construct a transformation between these two maps.
+<pre>
+  Coeq_ind_type f' g' P ---------functor_Coeq_ind_type---&gt; Coeq_ind_type f g (P o functor_coeq h k p q)
+        |                                                                   |
+        |                                                                   |
+  Coeq_ind_inv f' g' P                                      Coeq_ind_inv f g (P o functor_coeq h k p q)
+        |                                                                   |
+        |                                                                   |
+        V                                                                   V
+  sig (Coeq_ind_data f' g' P) ---functor_Coeq_ind_data---&gt; sig (Coeq_ind_data f g (P o functor_coeq h k p q))
+</pre>
+  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind_inv_nat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Coeq_ind_inv</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) <span class="id" title="var">o</span> <span class="id" title="var">functor_Coeq_ind_type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$=&gt; <span class="id" title="var">functor_Coeq_ind_data</span> <span class="id" title="var">o</span> (<span class="id" title="var">Coeq_ind_inv</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span> <span class="id" title="var">P</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_1p</span>; <span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">dp_apD_compose'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">functor_coeq_beta_cglue</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">b</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">dp_apD_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">dp_whiskerR</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_apD_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">dp_whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_apD_compose_inv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">dp_whiskerR</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_whiskerR</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_apD_compose_inv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">UnivPropNat</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

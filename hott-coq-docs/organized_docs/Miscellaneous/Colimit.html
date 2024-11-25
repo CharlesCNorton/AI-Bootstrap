@@ -1,0 +1,443 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Colimit</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Colimit</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Diagram</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Graph</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.Cocone</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Diagrams.ConstantDiagram</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Coeq</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This file contains the definition of colimits, and functoriality results on colimits. 
+<div class="paragraph"> </div>
+
+<a id="lab1015"></a><h1 class="section">Colimits</h1>
+
+<div class="paragraph"> </div>
+
+ A colimit is the extremity of a cocone. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsColimit</span> `(<span class="id" title="var">D</span>: <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>) (<span class="id" title="var">Q</span>: <span class="id" title="keyword">Type</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">iscolimit_cocone</span> : <span class="id" title="var">Cocone</span> <span class="id" title="var">D</span> <span class="id" title="var">Q</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">iscolimit_unicocone</span> : <span class="id" title="var">UniversalCocone</span> <span class="id" title="var">iscolimit_cocone</span>;<br/>
+}.<br/>
+<span class="comment">(*&nbsp;Use&nbsp;:&gt;&nbsp;and&nbsp;remove&nbsp;the&nbsp;two&nbsp;following&nbsp;lines,<br/>
+&nbsp;&nbsp;&nbsp;once&nbsp;Coq&nbsp;8.16&nbsp;is&nbsp;the&nbsp;minimum&nbsp;required&nbsp;version.&nbsp;*)</span><br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <span class="id" title="var">iscolimit_cocone</span>.<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">iscolimit_cocone</span> : <span class="id" title="var">IsColimit</span> &gt;-&gt; <span class="id" title="var">Cocone</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Build_IsColimit</span> {<span class="id" title="var">G</span> <span class="id" title="var">D</span> <span class="id" title="var">Q</span>} <span class="id" title="var">C</span> <span class="id" title="var">H</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">iscolimit_cocone</span> {<span class="id" title="var">G</span> <span class="id" title="var">D</span> <span class="id" title="var">Q</span>} <span class="id" title="var">C</span> : <span class="id" title="tactic">rename</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">iscolimit_unicocone</span> {<span class="id" title="var">G</span> <span class="id" title="var">D</span> <span class="id" title="var">Q</span>} <span class="id" title="var">H</span> : <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">cocone_postcompose_inv</span></span> is defined for convenience: it is only the inverse of <span class="inlinecode"><span class="id" title="var">cocone_postcompose</span></span>. It allows to recover the map <span class="inlinecode"><span class="id" title="var">h</span></span> from a cocone <span class="inlinecode"><span class="id" title="var">C'</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cocone_postcompose_inv</span> `{<span class="id" title="var">D</span>: <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} {<span class="id" title="var">Q</span> <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="var">IsColimit</span> <span class="id" title="var">D</span> <span class="id" title="var">Q</span>) (<span class="id" title="var">C'</span> : <span class="id" title="var">Cocone</span> <span class="id" title="var">D</span> <span class="id" title="var">X</span>) : <span class="id" title="var">Q</span> -&gt; <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">equiv_inv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">iscolimit_unicocone</span> <span class="id" title="var">H</span> <span class="id" title="var">X</span>) <span class="id" title="var">C'</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1016"></a><h1 class="section">Existence of colimits</h1>
+
+<div class="paragraph"> </div>
+
+ Whatever the diagram considered, there exists a colimit of it. The existence is given by the HIT <span class="inlinecode"><span class="id" title="var">colimit</span></span>. 
+<div class="paragraph"> </div>
+
+<a id="lab1017"></a><h2 class="section">Definition of the HIT</h2>
+
+<pre>
+  HIT Colimit {G : Graph} (D : Diagram G) : Type :=
+  | colim : forall i, D i -&gt; Colimit D
+  | colimp : forall i j (f : G i j) (x : D i) : colim j (D _f f x) = colim i x
+  .
+</pre>
+
+<div class="paragraph"> </div>
+
+ A colimit is just the coequalizer of the source and target maps of the diagram.  The source type in the coequalizer ought to be:
+<pre>
+{x : sig D &amp; {y : sig D &amp; {f : G x.1 y.1 &amp; D _f f x.2 = y.2}}}
+</pre>
+However we notice that the path type forms a contractible component, so we can use the more efficient:
+<pre>
+{x : sig D &amp; {j : G &amp; G x.1 j}}
+</pre>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Colimit</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} (<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>) : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;@<span class="id" title="var">Coeq</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">x</span> : <span class="id" title="var">sig</span> <span class="id" title="var">D</span> &amp; {<span class="id" title="var">j</span> : <span class="id" title="var">G</span> &amp; <span class="id" title="var">G</span> <span class="id" title="var">x</span>.1 <span class="id" title="var">j</span>}}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sig</span> <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">t</span> =&gt; <span class="id" title="var">t</span>.1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">t</span> =&gt; (<span class="id" title="var">t</span>.2.1; <span class="id" title="var">D</span> <span class="id" title="var">_f</span> <span class="id" title="var">t</span>.2.2 <span class="id" title="var">t</span>.1.2))<br/>
+&nbsp;&nbsp;.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">colim</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} (<span class="id" title="var">i</span> : <span class="id" title="var">G</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">D</span> <span class="id" title="var">i</span>) : <span class="id" title="var">Colimit</span> <span class="id" title="var">D</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">coeq</span> (<span class="id" title="var">i</span> ; <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">colimp</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">G</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">D</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">colim</span> <span class="id" title="var">j</span> (<span class="id" title="var">D</span> <span class="id" title="var">_f</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>) = <span class="id" title="var">colim</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">cglue</span> ((<span class="id" title="var">i</span>; <span class="id" title="var">x</span>); <span class="id" title="var">j</span>; <span class="id" title="var">f</span>))^.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Colimit_ind</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">Colimit</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+(<span class="id" title="var">q</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> (<span class="id" title="var">colim</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span>))<br/>
+(<span class="id" title="var">pp_q</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">G</span>) (<span class="id" title="var">g</span>: <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">D</span> <span class="id" title="var">i</span>),<br/>
+&nbsp;&nbsp;(@<span class="id" title="var">colimp</span> <span class="id" title="var">G</span> <span class="id" title="var">D</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) # (<span class="id" title="var">q</span> <span class="id" title="var">j</span> (<span class="id" title="var">D</span> <span class="id" title="var">_f</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>)) = <span class="id" title="var">q</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span>)<br/>
+: <span class="id" title="keyword">forall</span> <span class="id" title="var">w</span>, <span class="id" title="var">P</span> <span class="id" title="var">w</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">i</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">q</span> <span class="id" title="var">x</span> <span class="id" title="var">i</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [[<span class="id" title="var">i</span> <span class="id" title="var">x</span>] [<span class="id" title="var">j</span> <span class="id" title="var">f</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">f</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_transport_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">pp_q</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Colimit_ind_beta_colimp</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">Colimit</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">q</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> (<span class="id" title="var">colim</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">pp_q</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">i</span> <span class="id" title="var">j</span>: <span class="id" title="var">G</span>) (<span class="id" title="var">g</span>: <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) (<span class="id" title="var">x</span>: <span class="id" title="var">D</span> <span class="id" title="var">i</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@<span class="id" title="var">colimp</span> <span class="id" title="var">G</span> <span class="id" title="var">D</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> # <span class="id" title="var">q</span> <span class="id" title="var">_</span> (<span class="id" title="var">D</span> <span class="id" title="var">_f</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) = <span class="id" title="var">q</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">G</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">D</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">Colimit_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">q</span> <span class="id" title="var">pp_q</span>) (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) = <span class="id" title="var">pp_q</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">apD_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_M</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_M</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Coeq_ind_beta_cglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_transport_p_V</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Colimit_rec</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} (<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">C</span> : <span class="id" title="var">Cocone</span> <span class="id" title="var">D</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Colimit</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="var">P</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Colimit_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_const</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">legs_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Colimit_rec_beta_colimp</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">C</span> : <span class="id" title="var">Cocone</span> <span class="id" title="var">D</span> <span class="id" title="var">P</span>) (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">G</span>) (<span class="id" title="var">g</span>: <span class="id" title="var">G</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) (<span class="id" title="var">x</span>: <span class="id" title="var">D</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">Colimit_rec</span> <span class="id" title="var">P</span> <span class="id" title="var">C</span>) (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) = <span class="id" title="var">legs_comm</span> <span class="id" title="var">C</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">cancelL</span> (<span class="id" title="var">transport_const</span> (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>) <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> ((<span class="id" title="var">apD_const</span> (<span class="id" title="var">Colimit_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">P</span>) <span class="id" title="var">C</span> <span class="id" title="var">_</span>) (<span class="id" title="var">colimp</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>))^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Colimit_ind_beta_colimp</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">P</span>) <span class="id" title="var">C</span> <span class="id" title="var">_</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">colim</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">colimp</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Colimit_rec is an equivalence 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_colimit_rec</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} (<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">Colimit_rec</span> (<span class="id" title="var">D</span>:=<span class="id" title="var">D</span>) <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Cocone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">f</span>, (<span class="id" title="var">colim</span> <span class="id" title="var">i</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">colimp</span>. }<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intro</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ????; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FlFr'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>. }<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> [].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_cocone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ????; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hott_simpl</span>. }<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_colimit_rec</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} (<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Cocone</span> <span class="id" title="var">D</span> <span class="id" title="var">P</span> &lt;~&gt; (<span class="id" title="var">Colimit</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="var">P</span>) := <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">isequiv_colimit_rec</span> <span class="id" title="var">P</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And we can now show that the HIT is actually a colimit. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cocone_colimit</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} (<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>) : <span class="id" title="var">Cocone</span> <span class="id" title="var">D</span> (<span class="id" title="var">Colimit</span> <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Cocone</span> <span class="id" title="var">colim</span> <span class="id" title="var">colimp</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">unicocone_colimit</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} (<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">UniversalCocone</span> (<span class="id" title="var">cocone_colimit</span> <span class="id" title="var">D</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_UniversalCocone</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">Y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">_</span> (<span class="id" title="var">Colimit_rec</span> <span class="id" title="var">Y</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">C</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_cocone</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Colimit_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">transport_paths_FlFr'</span> (<span class="id" title="var">g</span>:=<span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Colimit_rec_beta_colimp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">iscolimit_colimit</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} (<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsColimit</span> <span class="id" title="var">D</span> (<span class="id" title="var">Colimit</span> <span class="id" title="var">D</span>) := <span class="id" title="var">Build_IsColimit</span> <span class="id" title="var">_</span> (<span class="id" title="var">unicocone_colimit</span> <span class="id" title="var">D</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1018"></a><h1 class="section">Functoriality of colimits</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">FunctorialityColimit</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Colimits are preserved by composition with a (diagram) equivalence. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iscolimit_precompose_equiv</span> {<span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">m</span> : <span class="id" title="var">D1</span> ~<span class="id" title="var">d</span>~ <span class="id" title="var">D2</span>) {<span class="id" title="var">Q</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsColimit</span> <span class="id" title="var">D2</span> <span class="id" title="var">Q</span> -&gt; <span class="id" title="var">IsColimit</span> <span class="id" title="var">D1</span> <span class="id" title="var">Q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">HQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Build_IsColimit</span> (<span class="id" title="var">cocone_precompose</span> <span class="id" title="var">m</span> <span class="id" title="var">HQ</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cocone_precompose_equiv_universality</span>, <span class="id" title="var">HQ</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iscolimit_postcompose_equiv</span> {<span class="id" title="var">D</span>: <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} `(<span class="id" title="var">f</span>: <span class="id" title="var">Q</span> &lt;~&gt; <span class="id" title="var">Q'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsColimit</span> <span class="id" title="var">D</span> <span class="id" title="var">Q</span> -&gt; <span class="id" title="var">IsColimit</span> <span class="id" title="var">D</span> <span class="id" title="var">Q'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">HQ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Build_IsColimit</span> (<span class="id" title="var">cocone_postcompose</span> <span class="id" title="var">HQ</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cocone_postcompose_equiv_universality</span>, <span class="id" title="var">HQ</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A diagram map <span class="inlinecode"><span class="id" title="var">m</span></span> : <span class="inlinecode"><span class="id" title="var">D1</span></span> =&gt; <span class="inlinecode"><span class="id" title="var">D2</span></span> induces a map between any two colimits of <span class="inlinecode"><span class="id" title="var">D1</span></span> and <span class="inlinecode"><span class="id" title="var">D2</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_colimit</span> {<span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} (<span class="id" title="var">m</span> : <span class="id" title="var">DiagramMap</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Q1</span> <span class="id" title="var">Q2</span>} (<span class="id" title="var">HQ1</span> : <span class="id" title="var">IsColimit</span> <span class="id" title="var">D1</span> <span class="id" title="var">Q1</span>) (<span class="id" title="var">HQ2</span> : <span class="id" title="var">IsColimit</span> <span class="id" title="var">D2</span> <span class="id" title="var">Q2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Q1</span> -&gt; <span class="id" title="var">Q2</span> := <span class="id" title="var">cocone_postcompose_inv</span> <span class="id" title="var">HQ1</span> (<span class="id" title="var">cocone_precompose</span> <span class="id" title="var">m</span> <span class="id" title="var">HQ2</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And this map commutes with diagram map. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_colimit_commute</span> {<span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">m</span> : <span class="id" title="var">DiagramMap</span> <span class="id" title="var">D1</span> <span class="id" title="var">D2</span>) {<span class="id" title="var">Q1</span> <span class="id" title="var">Q2</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">HQ1</span> : <span class="id" title="var">IsColimit</span> <span class="id" title="var">D1</span> <span class="id" title="var">Q1</span>) (<span class="id" title="var">HQ2</span>: <span class="id" title="var">IsColimit</span> <span class="id" title="var">D2</span> <span class="id" title="var">Q2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cocone_precompose</span> <span class="id" title="var">m</span> <span class="id" title="var">HQ2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">cocone_postcompose</span> <span class="id" title="var">HQ1</span> (<span class="id" title="var">functor_colimit</span> <span class="id" title="var">m</span> <span class="id" title="var">HQ1</span> <span class="id" title="var">HQ2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">eisretr</span> (<span class="id" title="var">cocone_postcompose</span> <span class="id" title="var">HQ1</span>) <span class="id" title="var">_</span>)^.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1019"></a><h2 class="section">Colimits of equivalent diagrams</h2>
+
+<div class="paragraph"> </div>
+
+ Now we have than two equivalent diagrams have equivalent colimits. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">D1</span> <span class="id" title="var">D2</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} (<span class="id" title="var">m</span> : <span class="id" title="var">D1</span> ~<span class="id" title="var">d</span>~ <span class="id" title="var">D2</span>) {<span class="id" title="var">Q1</span> <span class="id" title="var">Q2</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">HQ1</span> : <span class="id" title="var">IsColimit</span> <span class="id" title="var">D1</span> <span class="id" title="var">Q1</span>) (<span class="id" title="var">HQ2</span> : <span class="id" title="var">IsColimit</span> <span class="id" title="var">D2</span> <span class="id" title="var">Q2</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_colimit_eissect</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">functor_colimit</span> <span class="id" title="var">m</span> <span class="id" title="var">HQ1</span> <span class="id" title="var">HQ2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> <span class="id" title="var">functor_colimit</span> (<span class="id" title="var">diagram_equiv_inv</span> <span class="id" title="var">m</span>) <span class="id" title="var">HQ2</span> <span class="id" title="var">HQ1</span> == <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap10</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">equiv_inj</span> (<span class="id" title="var">cocone_postcompose</span> <span class="id" title="var">HQ2</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">HQ2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2:<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">cocone_postcompose_identity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">cocone_postcompose_comp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">eisretr</span>, <span class="id" title="var">cocone_precompose_postcompose</span>, <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">cocone_precompose_comp</span>, <span class="id" title="var">diagram_inv_is_section</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cocone_precompose_identity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_colimit_eisretr</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">functor_colimit</span> (<span class="id" title="var">diagram_equiv_inv</span> <span class="id" title="var">m</span>) <span class="id" title="var">HQ2</span> <span class="id" title="var">HQ1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> <span class="id" title="var">functor_colimit</span> <span class="id" title="var">m</span> <span class="id" title="var">HQ1</span> <span class="id" title="var">HQ2</span> == <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap10</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">equiv_inj</span> (<span class="id" title="var">cocone_postcompose</span> <span class="id" title="var">HQ1</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">HQ1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2:<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">cocone_postcompose_identity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">cocone_postcompose_comp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">eisretr</span>, <span class="id" title="var">cocone_precompose_postcompose</span>, <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">cocone_precompose_comp</span>, <span class="id" title="var">diagram_inv_is_retraction</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cocone_precompose_identity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_functor_colimit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">functor_colimit</span> <span class="id" title="var">m</span> <span class="id" title="var">HQ1</span> <span class="id" title="var">HQ2</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">functor_colimit_eissect</span> <span class="id" title="var">functor_colimit_eisretr</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_functor_colimit</span> : <span class="id" title="var">Q1</span> &lt;~&gt; <span class="id" title="var">Q2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">isequiv_functor_colimit</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">FunctorialityColimit</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1020"></a><h1 class="section">Unicity of colimits</h1>
+
+<div class="paragraph"> </div>
+
+ A particuliar case of the functoriality result is that all colimits of a diagram are equivalent (and hence equal in presence of univalence). 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">colimit_unicity</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} {<span class="id" title="var">Q1</span> <span class="id" title="var">Q2</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">HQ1</span> : <span class="id" title="var">IsColimit</span> <span class="id" title="var">D</span> <span class="id" title="var">Q1</span>) (<span class="id" title="var">HQ2</span> : <span class="id" title="var">IsColimit</span> <span class="id" title="var">D</span> <span class="id" title="var">Q2</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Q1</span> &lt;~&gt; <span class="id" title="var">Q2</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_colimit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">Build_diagram_equiv</span> (<span class="id" title="var">diagram_idmap</span> <span class="id" title="var">D</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1021"></a><h1 class="section">Colimits are left adjoint to constant diagram</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">colimit_adjoint</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Graph</span>} {<span class="id" title="var">D</span> : <span class="id" title="var">Diagram</span> <span class="id" title="var">G</span>} {<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Colimit</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="var">C</span>) &lt;~&gt; <span class="id" title="var">DiagramMap</span> <span class="id" title="var">D</span> (<span class="id" title="var">diagram_const</span> <span class="id" title="var">C</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_colimit_rec</span> <span class="id" title="var">C</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_diagram_const_cocone</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,551 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>MonoidObject</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library MonoidObject</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span> <span class="id" title="var">WildCat.Equiv</span> <span class="id" title="var">WildCat.Monoidal</span> <span class="id" title="var">WildCat.Bifunctor</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">WildCat.NatTrans</span> <span class="id" title="var">WildCat.Opposite</span> <span class="id" title="var">WildCat.Products</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">abstract_algebra</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab165"></a><h1 class="section">Monoids and Comonoids</h1>
+
+<div class="paragraph"> </div>
+
+ Here we define a monoid internal to a monoidal category. Note that we don't actually need the full monoidal structure so we assume only the parts we need. This allows us to keep the definitions general between various flavours of monoidal category.
+
+<div class="paragraph"> </div>
+
+Many algebraic theories such as groups and rings may also be internalized, however these specifically require a cartesian monoidal structure. The theory of monoids however has no such requirement and can therefore be developed in much greater generality. This can be used to define a range of objects such as R-algebras, H-spaces, Hopf algebras and more. 
+<div class="paragraph"> </div>
+
+<a id="lab166"></a><h1 class="section">Monoid objects</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">MonoidObject</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">tensor</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>} {<span class="id" title="var">unit</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is0Bifunctor</span> <span class="id" title="var">tensor</span>, !<span class="id" title="var">Is1Bifunctor</span> <span class="id" title="var">tensor</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">Associator</span> <span class="id" title="var">tensor</span>, !<span class="id" title="var">LeftUnitor</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>, !<span class="id" title="var">RightUnitor</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An object <span class="inlinecode"><span class="id" title="var">x</span></span> of <span class="inlinecode"><span class="id" title="var">A</span></span> is a monoid object if it comes with the following data: 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsMonoidObject</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) := {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+A multiplication map from the tensor product of <span class="inlinecode"><span class="id" title="var">x</span></span> with itself to <span class="inlinecode"><span class="id" title="var">x</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">mo_mult</span> : <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+A unit of the multplication. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">mo_unit</span> : <span class="id" title="var">unit</span> $-&gt; <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The multiplication map is associative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">mo_assoc</span> : <span class="id" title="var">mo_mult</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap10</span> <span class="id" title="var">tensor</span> <span class="id" title="var">mo_mult</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">associator</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$== <span class="id" title="var">mo_mult</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap01</span> <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">mo_mult</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The multiplication map is left unital. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">mo_left_unit</span> : <span class="id" title="var">mo_mult</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap10</span> <span class="id" title="var">tensor</span> <span class="id" title="var">mo_unit</span> <span class="id" title="var">x</span> $== <span class="id" title="var">left_unitor</span> <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The multiplication map is right unital. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">mo_right_unit</span> : <span class="id" title="var">mo_mult</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap01</span> <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">mo_unit</span> $== <span class="id" title="var">right_unitor</span> <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">Braiding</span> <span class="id" title="var">tensor</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An object <span class="inlinecode"><span class="id" title="var">x</span></span> of <span class="inlinecode"><span class="id" title="var">A</span></span> is a commutative monoid object if: 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsCommutativeMonoidObject</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) := {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+It is a monoid object. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cmo_mo</span> :: <span class="id" title="var">IsMonoidObject</span> <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The multiplication map is commutative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cmo_comm</span> : <span class="id" title="var">mo_mult</span> $<span class="id" title="var">o</span> <span class="id" title="var">braid</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> $== <span class="id" title="var">mo_mult</span>;<br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">MonoidObject</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">IsMonoidObject</span> {<span class="id" title="var">A</span>} <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">IsCommutativeMonoidObject</span> {<span class="id" title="var">A</span>} <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">ComonoidObject</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">tensor</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) (<span class="id" title="var">unit</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is0Bifunctor</span> <span class="id" title="var">tensor</span>, !<span class="id" title="var">Is1Bifunctor</span> <span class="id" title="var">tensor</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">Associator</span> <span class="id" title="var">tensor</span>, !<span class="id" title="var">LeftUnitor</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>, !<span class="id" title="var">RightUnitor</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A comonoid object is a monoid object in the opposite category. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsComonoidObject</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">ismonoid_comonoid_op</span> :: <span class="id" title="var">IsMonoidObject</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can build comonoid objects from the following data: 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_IsComonoidObject</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+A comultplication map. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">co_comult</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+A counit. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">co_counit</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">unit</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The comultiplication is coassociative. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">co_coassoc</span> : <span class="id" title="var">associator</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap01</span> <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">co_comult</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$== <span class="id" title="var">fmap10</span> <span class="id" title="var">tensor</span> <span class="id" title="var">co_comult</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The comultiplication is left counital. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">co_left_counit</span> : <span class="id" title="var">left_unitor</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap10</span> <span class="id" title="var">tensor</span> <span class="id" title="var">co_counit</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span> $== <span class="id" title="var">Id</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The comultiplication is right counital. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">co_right_counit</span> : <span class="id" title="var">right_unitor</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap01</span> <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">co_counit</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span> $== <span class="id" title="var">Id</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsComonoidObject</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsMonoidObject</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">co_comult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">co_counit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">nrapply</span> <span class="id" title="var">cate_moveR_eV</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">co_coassoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">cat_idr</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">cate_moveL_Ve</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">co_left_counit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">cat_idr</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">cate_moveL_Ve</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">co_right_counit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Comultiplication 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">co_comult</span> {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">IsComonoidObject</span> <span class="id" title="var">x</span>} : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">mo_mult</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">tensor</span>:=<span class="id" title="var">tensor</span>) (<span class="id" title="var">unit</span>:=<span class="id" title="var">unit</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Counit 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">co_counit</span> {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">IsComonoidObject</span> <span class="id" title="var">x</span>} : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">unit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">mo_unit</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">tensor</span>:=<span class="id" title="var">tensor</span>) (<span class="id" title="var">unit</span>:=<span class="id" title="var">unit</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Coassociativity 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">co_coassoc</span> {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">IsComonoidObject</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">associator</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap01</span> <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">co_comult</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$== <span class="id" title="var">fmap10</span> <span class="id" title="var">tensor</span> <span class="id" title="var">co_comult</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cate_moveR_Me</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">mo_assoc</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">tensor</span>:=<span class="id" title="var">tensor</span>) (<span class="id" title="var">unit</span>:=<span class="id" title="var">unit</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Left counitality 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">co_left_counit</span> {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">IsComonoidObject</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">left_unitor</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap10</span> <span class="id" title="var">tensor</span> <span class="id" title="var">co_counit</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span> $== <span class="id" title="var">Id</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cate_moveR_Me</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">cat_idr</span> <span class="id" title="var">_</span>)^$).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">mo_left_unit</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">tensor</span>:=<span class="id" title="var">tensor</span>) (<span class="id" title="var">unit</span>:=<span class="id" title="var">unit</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Right counitality 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">co_right_counit</span> {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">IsComonoidObject</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">right_unitor</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap01</span> <span class="id" title="var">tensor</span> <span class="id" title="var">x</span> <span class="id" title="var">co_counit</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span> $== <span class="id" title="var">Id</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cate_moveR_Me</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">cat_idr</span> <span class="id" title="var">_</span>)^$).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">mo_right_unit</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">tensor</span>:=<span class="id" title="var">tensor</span>) (<span class="id" title="var">unit</span>:=<span class="id" title="var">unit</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">Braiding</span> <span class="id" title="var">tensor</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A cocommutative comonoid objects is a commutative monoid object in the opposite category. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsCocommutativeComonoidObject</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">iscommuatativemonoid_cocomutativemonoid_op</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:: <span class="id" title="var">IsCommutativeMonoidObject</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can build cocommutative comonoid objects from the following data: 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_IsCocommutativeComonoidObject</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+A comonoid. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsComonoidObject</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Together with a proof of cocommutativity. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cco_cocomm</span> : <span class="id" title="var">braid</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span> $== <span class="id" title="var">co_comult</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsCocommutativeComonoidObject</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsCommutativeMonoidObject</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">cco_cocomm</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">co_cco</span> {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">IsCocommutativeComonoidObject</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsComonoidObject</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cmo_mo</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Cocommutativity 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cco_cocomm</span> {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">IsCocommutativeComonoidObject</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">braid</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> $<span class="id" title="var">o</span> <span class="id" title="var">co_comult</span> $== <span class="id" title="var">co_comult</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cmo_comm</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">tensor</span>:=<span class="id" title="var">tensor</span>) (<span class="id" title="var">unit</span>:=<span class="id" title="var">unit</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">ComonoidObject</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A comonoid object in <span class="inlinecode"><span class="id" title="var">A</span>^<span class="id" title="var">op</span></span> is a monoid object in <span class="inlinecode"><span class="id" title="var">A</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mo_co_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">tensor</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>} {<span class="id" title="var">unit</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is0Bifunctor</span> <span class="id" title="var">tensor</span>, !<span class="id" title="var">Is1Bifunctor</span> <span class="id" title="var">tensor</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">Associator</span> <span class="id" title="var">tensor</span>, !<span class="id" title="var">LeftUnitor</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>, !<span class="id" title="var">RightUnitor</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{<span class="id" title="var">C</span> : !<span class="id" title="var">IsComonoidObject</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsMonoidObject</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsMonoidObject</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">co_comult</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">co_counit</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">cate_moveR_eM</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">co_coassoc</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">cat_idl</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cate_moveL_eM</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">co_left_counit</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> $@ <span class="id" title="var">cat_idl</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cate_moveL_eM</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">co_right_counit</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A cocommutative cocomonoid object in <span class="inlinecode"><span class="id" title="var">A</span>^<span class="id" title="var">op</span></span> is a commutative monoid object in <span class="inlinecode"><span class="id" title="var">A</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cmo_coco_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">tensor</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>} {<span class="id" title="var">unit</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>, !<span class="id" title="var">Is0Bifunctor</span> <span class="id" title="var">tensor</span>, !<span class="id" title="var">Is1Bifunctor</span> <span class="id" title="var">tensor</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">Associator</span> <span class="id" title="var">tensor</span>, !<span class="id" title="var">LeftUnitor</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>, !<span class="id" title="var">RightUnitor</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;!<span class="id" title="var">Braiding</span> <span class="id" title="var">tensor</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} `{<span class="id" title="var">C</span> : !<span class="id" title="var">IsCocommutativeComonoidObject</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsCommutativeMonoidObject</span> <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsCommutativeMonoidObject</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">nrapply</span> <span class="id" title="var">mo_co_op</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">co_cco</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">cco_cocomm</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">tensor</span> <span class="id" title="var">unit</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab167"></a><h2 class="section">Monoid enrichment</h2>
+
+<div class="paragraph"> </div>
+
+ A hom <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">y</span></span> in a cartesian category where <span class="inlinecode"><span class="id" title="var">y</span></span> is a monoid object has the structure of a monoid. Equivalently, a hom <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">y</span></span> in a cartesian category where <span class="inlinecode"><span class="id" title="var">x</span></span> is a comonoid object has the structure of a monoid. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">MonoidEnriched</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>} `{!<span class="id" title="var">HasBinaryProducts</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">unit</span> : <span class="id" title="var">A</span>) `{!<span class="id" title="var">IsTerminal</span> <span class="id" title="var">unit</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">IsHSet</span> (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>)}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Monoid</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">IsMonoidObject</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">sgop_hom</span> : <span class="id" title="var">SgOp</span> (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">mo_mult</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_binprod_corec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">monunit_hom</span> : <span class="id" title="var">MonUnit</span> (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>) := <span class="id" title="var">mo_unit</span> $<span class="id" title="var">o</span> <span class="id" title="var">mor_terminal</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">associative_hom</span> : <span class="id" title="var">Associative</span> <span class="id" title="var">sgop_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">sgop_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">cat_binprod_fmap01_corec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">mo_assoc</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)^$ $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">cat_binprod_fmap10_corec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">cat_binprod_associator_corec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">leftidentity_hom</span> : <span class="id" title="var">LeftIdentity</span> <span class="id" title="var">sgop_hom</span> <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">sgop_hom</span>, <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">cat_binprod_fmap10_corec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$) $@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (((<span class="id" title="var">mo_left_unit</span> $@ <span class="id" title="var">_</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">cate_buildequiv_fun</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">trans_nattrans</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> ((((<span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">cate_buildequiv_fun</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">cat_binprod_beta_pr1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">cat_binprod_beta_pr2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">rightidentity_hom</span> : <span class="id" title="var">RightIdentity</span> <span class="id" title="var">sgop_hom</span> <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">sgop_hom</span>, <span class="id" title="var">mon_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">cat_binprod_fmap01_corec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$) $@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (((<span class="id" title="var">mo_right_unit</span> $@ <span class="id" title="var">_</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">cate_buildequiv_fun</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">cat_binprod_beta_pr1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">issemigroup_hom</span> : <span class="id" title="var">IsSemiGroup</span> (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>) := {}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">ismonoid_hom</span> : <span class="id" title="var">IsMonoid</span> (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>) := {}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Monoid</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{!<span class="id" title="var">IsCommutativeMonoidObject</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Existing Instances</span> <span class="id" title="var">sgop_hom</span> <span class="id" title="var">monunit_hom</span> <span class="id" title="var">ismonoid_hom</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">commutative_hom</span> : <span class="id" title="var">Commutative</span> <span class="id" title="var">sgop_hom</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">sgop_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span>^$) $@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">cmo_comm</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">cat_binprod_swap_corec</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">iscommutativemonoid_hom</span> : <span class="id" title="var">IsCommutativeMonoid</span> (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">y</span>) := {}.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">MonoidEnriched</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab168"></a><h2 class="section">Preservation of monoid objects by lax monoidal functors</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">mo_preserved</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">tensorA</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>} {<span class="id" title="var">tensorB</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">IA</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">IB</span> : <span class="id" title="var">B</span>} <br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsMonoidalFunctor</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">tensorA</span> <span class="id" title="var">tensorB</span> <span class="id" title="var">IA</span> <span class="id" title="var">IB</span> <span class="id" title="var">F</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsMonoidObject</span> <span class="id" title="var">tensorA</span> <span class="id" title="var">IA</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">IsMonoidObject</span> <span class="id" title="var">tensorB</span> <span class="id" title="var">IB</span> (<span class="id" title="var">F</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">mo_x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsMonoidObject</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">mo_mult</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap_tensor</span> <span class="id" title="var">F</span> (<span class="id" title="var">x</span>, <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">F</span> <span class="id" title="var">mo_unit</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap_unit</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">fmap10_comp</span> <span class="id" title="var">tensorB</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$@ <span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">fmap01_comp</span> <span class="id" title="var">tensorB</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span>^$) $@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">snrapply</span> <span class="id" title="var">fmap_tensor_nat_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ ((<span class="id" title="var">fmap2</span> <span class="id" title="var">_</span> <span class="id" title="var">mo_assoc</span> $@ <span class="id" title="var">fmap_comp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ ((<span class="id" title="var">fmap_comp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">fmap_comp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>))^$ $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ <span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">_</span>^$ $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">snrapply</span> <span class="id" title="var">fmap_tensor_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$@ (((<span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">fmap_tensor_nat_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">fmap10_comp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>))) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">snrapply</span> <span class="id" title="var">fmap_tensor_nat_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ ((<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(((<span class="id" title="var">fmap_comp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ <span class="id" title="var">fmap2</span> <span class="id" title="var">_</span> <span class="id" title="var">mo_left_unit</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span>^$).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">fmap_tensor_left_unitor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> ((<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> <span class="id" title="var">fmap01_comp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">cat_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$@ (<span class="id" title="var">_</span> $@<span class="id" title="var">L</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ (<span class="id" title="var">_</span> $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>))) $@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">snrapply</span> <span class="id" title="var">fmap_tensor_nat_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@ ((<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $@<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(((<span class="id" title="var">fmap_comp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^$ $@ <span class="id" title="var">fmap2</span> <span class="id" title="var">_</span> <span class="id" title="var">mo_right_unit</span>) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>)) $@<span class="id" title="var">R</span> <span class="id" title="var">_</span>) $@ <span class="id" title="var">_</span>^$).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">fmap_tensor_right_unitor</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

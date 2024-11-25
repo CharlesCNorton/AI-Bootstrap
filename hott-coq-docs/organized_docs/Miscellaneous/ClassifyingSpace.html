@@ -1,0 +1,869 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>ClassifyingSpace</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library ClassifyingSpace</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pointed</span> <span class="id" title="var">WildCat</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Cubical.DPath</span> <span class="id" title="var">Cubical.PathSquare</span> <span class="id" title="var">Cubical.DPathSquare</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.AbGroups</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Homotopy.HSpace.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">TruncType</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Truncations.Core</span> <span class="id" title="var">Truncations.Connectedness</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Homotopy.HomotopyGroup</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Homotopy.WhiteheadsPrinciple</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">pointed_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">trunc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_mult_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1110"></a><h1 class="section">We define the Classifying space of a group to be the following HIT:</h1>
+
+
+<div class="paragraph"> </div>
+
+  HIT ClassifyingSpace (G : Group) : 1-Type
+   | bbase : ClassifyingSpace
+   | bloop : X -&gt; bbase = bbase
+   | bloop_pp : forall x y, bloop (x * y) = bloop x @ bloop y.
+
+<div class="paragraph"> </div>
+
+  We implement this is a private inductive type.
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">ClassifyingSpace</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">ClassifyingSpace</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Private Inductive</span> <span class="id" title="var">ClassifyingSpace</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">bbase</span> : <span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <span class="id" title="var">bloop</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="var">bbase</span> <span class="id" title="var">G</span> = <span class="id" title="var">bbase</span> <span class="id" title="var">G</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Global Arguments</span> <span class="id" title="var">bbase</span> {<span class="id" title="var">_</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Axiom</span> <span class="id" title="var">bloop_pp</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">bloop</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) = <span class="id" title="var">bloop</span> <span class="id" title="var">x</span> @ <span class="id" title="var">bloop</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">istrunc_ClassifyingSpace</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsTrunc</span> 1 (<span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">ClassifyingSpace</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we can state the expected dependent elimination principle, and derive other versions of the elimination principle from it. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">ClassifyingSpace_ind</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">dpath_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Note that since our classifying space is 1-truncated, we can only eliminate into 1-truncated type families. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ClassifyingSpace_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">IsTrunc</span> 1 (<span class="id" title="var">P</span> <span class="id" title="var">b</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bbase'</span> : <span class="id" title="var">P</span> <span class="id" title="var">bbase</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>) <span class="id" title="var">bbase'</span> <span class="id" title="var">bbase'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop_pp'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>,  <span class="id" title="var">DPathSquare</span> <span class="id" title="var">P</span> (<span class="id" title="var">sq_G1</span> (<span class="id" title="var">bloop_pp</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop'</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>)) ((<span class="id" title="var">bloop'</span> <span class="id" title="var">x</span>) @<span class="id" title="var">Dp</span> (<span class="id" title="var">bloop'</span> <span class="id" title="var">y</span>)) 1 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">P</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">b</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bbase</span> =&gt; (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">bbase'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> <span class="id" title="var">bloop'</span> <span class="id" title="var">bloop_pp'</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here we state the computation rule for <span class="inlinecode"><span class="id" title="var">ClassifyingSpace_ind</span></span> over <span class="inlinecode"><span class="id" title="var">bloop</span></span> as an axiom. We don't need one for <span class="inlinecode"><span class="id" title="var">bloop_pp</span></span> since we have a 1-type. We leave this as admitted since the computation rule is an axiom. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ClassifyingSpace_ind_beta_bloop</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">IsTrunc</span> 1 (<span class="id" title="var">P</span> <span class="id" title="var">b</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bbase'</span> : <span class="id" title="var">P</span> <span class="id" title="var">bbase</span>) (<span class="id" title="var">bloop'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>) <span class="id" title="var">bbase'</span> <span class="id" title="var">bbase'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop_pp'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>,  <span class="id" title="var">DPathSquare</span> <span class="id" title="var">P</span> (<span class="id" title="var">sq_G1</span> (<span class="id" title="var">bloop_pp</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop'</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>)) ((<span class="id" title="var">bloop'</span> <span class="id" title="var">x</span>) @<span class="id" title="var">Dp</span> (<span class="id" title="var">bloop'</span> <span class="id" title="var">y</span>)) 1 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">ClassifyingSpace_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">bbase'</span> <span class="id" title="var">bloop'</span> <span class="id" title="var">bloop_pp'</span>) (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>) = <span class="id" title="var">bloop'</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="var">Admitted</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">ClassifyingSpace_ind</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">ClassifyingSpace</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Other eliminators 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Eliminators</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The non-dependent eliminator 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ClassifyingSpace_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">P</span>} (<span class="id" title="var">bbase'</span> : <span class="id" title="var">P</span>) (<span class="id" title="var">bloop'</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="var">bbase'</span> = <span class="id" title="var">bbase'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop_pp'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>, <span class="id" title="var">bloop'</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) = <span class="id" title="var">bloop'</span> <span class="id" title="var">x</span> @ <span class="id" title="var">bloop'</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">P</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">ClassifyingSpace_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">P</span>) <span class="id" title="var">bbase'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">dp_const</span>, <span class="id" title="var">bloop'</span>, <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ds_const'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">sq_GGcc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">dp_const_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1,2: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">sq_G1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Computation rule for non-dependent eliminator 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">P</span>} (<span class="id" title="var">bbase'</span> : <span class="id" title="var">P</span>) (<span class="id" title="var">bloop'</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="var">bbase'</span> = <span class="id" title="var">bbase'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop_pp'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>, <span class="id" title="var">bloop'</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) = <span class="id" title="var">bloop'</span> <span class="id" title="var">x</span> @ <span class="id" title="var">bloop'</span> <span class="id" title="var">y</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">ClassifyingSpace_rec</span> <span class="id" title="var">P</span> <span class="id" title="var">bbase'</span> <span class="id" title="var">bloop'</span> <span class="id" title="var">bloop_pp'</span>) (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>) = <span class="id" title="var">bloop'</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">dp_apD_const'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">ClassifyingSpace_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ClassifyingSpace_ind_beta_bloop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Sometimes we want to induct into a set which means we can ignore the bloop_pp arguments. Since this is a routine argument, we turn it into a special case of our induction principle. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">IsTrunc</span> 0 (<span class="id" title="var">P</span> <span class="id" title="var">b</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bbase'</span> : <span class="id" title="var">P</span> <span class="id" title="var">bbase</span>) (<span class="id" title="var">bloop'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">DPath</span> <span class="id" title="var">P</span> (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>) <span class="id" title="var">bbase'</span> <span class="id" title="var">bbase'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ClassifyingSpace_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">bbase'</span> <span class="id" title="var">bloop'</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ds_G1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ClassifyingSpace_rec_hset</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsTrunc</span> 0 <span class="id" title="var">P</span>} (<span class="id" title="var">bbase'</span> : <span class="id" title="var">P</span>) (<span class="id" title="var">bloop'</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="var">bbase'</span> = <span class="id" title="var">bbase'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">P</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">ClassifyingSpace_rec</span> <span class="id" title="var">P</span> <span class="id" title="var">bbase'</span> <span class="id" title="var">bloop'</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Similarly, when eliminating into an hprop, we only have to handle the basepoint. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ClassifyingSpace_ind_hprop</span> (<span class="id" title="var">P</span> : <span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">IsTrunc</span> (-1) (<span class="id" title="var">P</span> <span class="id" title="var">b</span>)} (<span class="id" title="var">bbase'</span> : <span class="id" title="var">P</span> <span class="id" title="var">bbase</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ClassifyingSpace_ind_hset</span> <span class="id" title="var">P</span> <span class="id" title="var">bbase'</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">dp_ishprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Eliminators</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The classifying space is 0-connected. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isconnected_classifyingspace</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsConnected</span> 0 (<span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Build_Contr</span> <span class="id" title="var">_</span> (<span class="id" title="var">tr</span> <span class="id" title="var">bbase</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Trunc_ind</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">ClassifyingSpace_ind_hprop</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The classifying space of a group is pointed. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispointed_classifyingspace</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsPointed</span> (<span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">bbase</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pClassifyingSpace</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) := [<span class="id" title="var">ClassifyingSpace</span> <span class="id" title="var">G</span>, <span class="id" title="var">bbase</span>].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+To use the <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> notation for <span class="inlinecode"><span class="id" title="var">pClassifyingSpace</span></span> import this module. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">ClassifyingSpaceNotation</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">B</span> <span class="id" title="var">G</span> := <span class="id" title="var">pClassifyingSpace</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">ClassifyingSpaceNotation</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">bloop</span></span> takes the unit of the group to reflexivity. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">bloop_id</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} : <span class="id" title="var">bloop</span> (<span class="id" title="var">mon_unit</span> : <span class="id" title="var">G</span>) = <span class="id" title="var">idpath</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">cancelL</span> (<span class="id" title="var">bloop</span> <span class="id" title="var">mon_unit</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">bloop_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">left_identity</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_p1</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">bloop</span></span> "preserves inverses" by taking inverses in <span class="inlinecode"><span class="id" title="var">G</span></span> to inverses of paths in <span class="inlinecode"><span class="id" title="var">BG</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">bloop_inv</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">G</span>, <span class="id" title="var">bloop</span> (-<span class="id" title="var">x</span>) = (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>)^.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_Vp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">bloop_id</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">bloop_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">right_inverse</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The underlying pointed map of <span class="inlinecode"><span class="id" title="var">pequiv_g_loops_bg</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pbloop</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} : <span class="id" title="var">G</span> -&gt;* <span class="id" title="var">loops</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_pMap</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">bloop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">bloop_id</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;This&nbsp;says&nbsp;that&nbsp;<span class="inlinecode"><span class="id" title="var">B</span></span>&nbsp;is&nbsp;left&nbsp;adjoint&nbsp;to&nbsp;the&nbsp;loop&nbsp;space&nbsp;functor&nbsp;from&nbsp;pointed&nbsp;1-types&nbsp;to&nbsp;groups.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pClassifyingSpace_rec</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">pType</span>) `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop'</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="var">loops</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop_pp'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>, <span class="id" title="var">bloop'</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) = <span class="id" title="var">bloop'</span> <span class="id" title="var">x</span> @ <span class="id" title="var">bloop'</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">B</span> <span class="id" title="var">G</span> -&gt;* <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_pMap</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>) <span class="id" title="var">P</span> (<span class="id" title="var">ClassifyingSpace_rec</span> <span class="id" title="var">P</span> (<span class="id" title="var">point</span> <span class="id" title="var">P</span>) <span class="id" title="var">bloop'</span> <span class="id" title="var">bloop_pp'</span>) <span class="id" title="var">idpath</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;And&nbsp;this&nbsp;is&nbsp;one&nbsp;of&nbsp;the&nbsp;standard&nbsp;facts&nbsp;about&nbsp;adjoint&nbsp;functors:&nbsp;(R&nbsp;h')&nbsp;o&nbsp;eta&nbsp;=&nbsp;h,&nbsp;where&nbsp;h&nbsp;:&nbsp;G&nbsp;-&gt;&nbsp;R&nbsp;P,&nbsp;h'&nbsp;:&nbsp;L&nbsp;G&nbsp;-&gt;&nbsp;P&nbsp;is&nbsp;the&nbsp;adjunct,&nbsp;and&nbsp;eta&nbsp;(bloop)&nbsp;is&nbsp;the&nbsp;unit.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pClassifyingSpace_rec_beta_bloop</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">pType</span>) `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop'</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="var">loops</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bloop_pp'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>, <span class="id" title="var">bloop'</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) = <span class="id" title="var">bloop'</span> <span class="id" title="var">x</span> @ <span class="id" title="var">bloop'</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">loops</span> (<span class="id" title="var">pClassifyingSpace_rec</span> <span class="id" title="var">P</span> <span class="id" title="var">bloop'</span> <span class="id" title="var">bloop_pp'</span>) <span class="id" title="var">o</span> <span class="id" title="var">bloop</span> == <span class="id" title="var">bloop'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here we prove that <span class="inlinecode"><span class="id" title="var">BG</span></span> is a delooping of <span class="inlinecode"><span class="id" title="var">G</span></span>, i.e. that <span class="inlinecode"><span class="id" title="var">loops</span></span> <span class="inlinecode"><span class="id" title="var">BG</span></span> <span class="inlinecode">&lt;~&gt;</span> <span class="inlinecode"><span class="id" title="var">G</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">EncodeDecode</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">codes</span> : <span class="id" title="var">B</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">HSet</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">ClassifyingSpace_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> (<span class="id" title="var">Build_HSet</span> <span class="id" title="var">G</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_trunctype</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">t</span> =&gt; <span class="id" title="var">t</span> * <span class="id" title="var">x</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="var">cbn</span> <span class="id" title="keyword">beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">path_trunctype_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">path_equiv</span>, <span class="id" title="var">path_forall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">encode</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">bbase</span> = <span class="id" title="var">b</span> -&gt; <span class="id" title="var">codes</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">transport</span> <span class="id" title="var">codes</span> <span class="id" title="var">p</span> <span class="id" title="var">mon_unit</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">codes_transport</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>, <span class="id" title="var">transport</span> <span class="id" title="var">codes</span> (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>) <span class="id" title="var">y</span> = <span class="id" title="var">y</span> * <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_idmap_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_trunctype</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_path_universe_uncurried</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">decode</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">b</span> : <span class="id" title="var">B</span> <span class="id" title="var">G</span>), <span class="id" title="var">codes</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">bbase</span> = <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">bloop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">dp_arrow</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">dp_paths_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">bloop_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">codes_transport</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Lemma</span> <span class="id" title="var">decode_encode</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>, <span class="id" title="var">decode</span> <span class="id" title="var">b</span> (<span class="id" title="var">encode</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>) = <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">bloop_id</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_bloop</span> : <span class="id" title="var">IsEquiv</span> (@<span class="id" title="var">bloop</span> <span class="id" title="var">G</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">encode</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">rapply</span> <span class="id" title="var">decode_encode</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">codes_transport</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">left_identity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The defining property of BG. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_g_loops_bg</span> : <span class="id" title="var">G</span> &lt;~&gt; <span class="id" title="var">loops</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">bloop</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Pointed version of the defining property. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pequiv_g_loops_bg</span> : <span class="id" title="var">G</span> &lt;~&gt;* <span class="id" title="var">loops</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_pEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">pbloop</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">pequiv_loops_bg_g</span> := <span class="id" title="var">pequiv_g_loops_bg</span>^-1*%<span class="id" title="var">equiv</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We also have that the equivalence is a group isomorphism. 
+<div class="paragraph"> </div>
+
+ First we show that the loop space of a pointed 1-type is a group. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">LoopGroup</span> (<span class="id" title="var">X</span> : <span class="id" title="var">pType</span>) `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">X</span>} : <span class="id" title="var">Group</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Group</span> (<span class="id" title="var">loops</span> <span class="id" title="var">X</span>) <span class="id" title="var">concat</span> <span class="id" title="var">idpath</span> <span class="id" title="var">inverse</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Build_IsGroup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Build_IsMonoid</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Build_IsSemiGroup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">concat_p_pp</span>) <span class="id" title="var">concat_1p</span> <span class="id" title="var">concat_p1</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">concat_Vp</span> <span class="id" title="var">concat_pV</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">grp_iso_g_loopgroup_bg</span> : <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">G</span> (<span class="id" title="var">LoopGroup</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupIsomorphism'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">equiv_g_loops_bg</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">bloop_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">grp_iso_g_pi1_bg</span> : <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">G</span> (<span class="id" title="var">Pi1</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">transitive_groupisomorphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">grp_iso_g_loopgroup_bg</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupIsomorphism'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">rapply</span> <span class="id" title="var">equiv_tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;also&nbsp;record&nbsp;this&nbsp;fact.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">grp_homo_loops</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>} `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">X</span>} `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">X</span> -&gt;** <span class="id" title="var">Y</span>) -&gt;* [<span class="id" title="var">LoopGroup</span> <span class="id" title="var">X</span> $-&gt; <span class="id" title="var">LoopGroup</span> <span class="id" title="var">Y</span>, <span class="id" title="var">grp_homo_const</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pMap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupHomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">loops</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">nrapply</span> <span class="id" title="var">fmap_loops_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">cbn</span> <span class="id" title="keyword">beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">pointed_htpy</span> <span class="id" title="var">fmap_loops_pconst</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">EncodeDecode</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+When <span class="inlinecode"><span class="id" title="var">G</span></span> is an abelian group, <span class="inlinecode"><span class="id" title="var">BG</span></span> is an H-space. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">HSpace_bg</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">bg_mul</span> : <span class="id" title="var">B</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">B</span> <span class="id" title="var">G</span> -&gt; <span class="id" title="var">B</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">ClassifyingSpace_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">dp_paths_lr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_pp_p</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">bloop_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span> @ <span class="id" title="var">bloop_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">commutativity</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">ClassifyingSpace_ind_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">bloop_pp</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">bg_mul_symm</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">bg_mul</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> = <span class="id" title="var">bg_mul</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sq_dp</span>^-1, <span class="id" title="var">sq_1G</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_idmap</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>; <span class="id" title="var">revert</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">ClassifyingSpace_ind_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">transport_paths_FFlr'</span> (<span class="id" title="var">g</span> := <span class="id" title="var">idmap</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">ap_idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">bg_mul_left_id</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> : <span class="id" title="var">B</span> <span class="id" title="var">G</span>, <span class="id" title="var">bg_mul</span> <span class="id" title="var">bbase</span> <span class="id" title="var">b</span> = <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">bg_mul_symm</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">bg_mul_right_id</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> : <span class="id" title="var">B</span> <span class="id" title="var">G</span>, <span class="id" title="var">bg_mul</span> <span class="id" title="var">b</span> <span class="id" title="var">bbase</span> = <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishspace_bg</span> : <span class="id" title="var">IsHSpace</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_IsHSpace</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bg_mul</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bg_mul_left_id</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bg_mul_right_id</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">HSpace_bg</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Functoriality of B(-) 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_pclassifyingspace</span> : <span class="id" title="var">Is0Functor</span> <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">pClassifyingSpace_rec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">bloop</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">bloop</span> (<span class="id" title="var">grp_homo_op</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">bloop_pp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">bloop_natural</span> (<span class="id" title="var">G</span> <span class="id" title="var">H</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">G</span> $-&gt; <span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">loops</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>) <span class="id" title="var">o</span> <span class="id" title="var">bloop</span> == <span class="id" title="var">bloop</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">pClassifyingSpace_rec_beta_bloop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">pbloop_natural</span> (<span class="id" title="var">G</span> <span class="id" title="var">K</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">G</span> $-&gt; <span class="id" title="var">K</span>) <br/>
+&nbsp;&nbsp;: <span class="id" title="var">fmap</span> <span class="id" title="var">loops</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>) <span class="id" title="var">o</span>* <span class="id" title="var">pbloop</span> ==* <span class="id" title="var">pbloop</span> <span class="id" title="var">o</span>* <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">phomotopy_homotopy_hset</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">bloop_natural</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_g_loops_bg</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> <span class="id" title="var">ptype_group</span> (<span class="id" title="var">loops</span> <span class="id" title="var">o</span> <span class="id" title="var">B</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">intros</span> <span class="id" title="var">G</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">pequiv_g_loops_bg</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">pbloop_natural</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_pclassifyingspace</span> : <span class="id" title="var">Is1Functor</span> <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is1Functor</span>.<br/>
+</div>
+
+<div class="doc">
+Action on 2-cells 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">snrapply</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_sq_dp</span>^-1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sq_1G</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+</div>
+
+<div class="doc">
+Preservation of identity 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">snrapply</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_sq_dp</span>^-1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sq_1G</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap_idmap</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+</div>
+
+<div class="doc">
+Preservation of composition 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> <span class="id" title="var">K</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">snrapply</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_sq_dp</span>^-1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">sq_ccGG</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1,2: <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">ClassifyingSpace_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> <span class="id" title="var">bloop</span> (<span class="id" title="var">grp_homo_op</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) @ <span class="id" title="var">bloop_pp</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>) (<span class="id" title="var">g</span> <span class="id" title="var">y</span>))) <span class="id" title="var">_</span> (<span class="id" title="var">bloop</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1-3: <span class="id" title="var">nrapply</span> <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sq_1G</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Interestingly, <span class="inlinecode"><span class="id" title="var">fmap</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> is an equivalence 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_fmap_pclassifyingspace</span> `{<span class="id" title="var">U</span> : <span class="id" title="var">Univalence</span>} (<span class="id" title="var">G</span> <span class="id" title="var">H</span> : <span class="id" title="var">Group</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">fmap</span> <span class="id" title="var">B</span> (<span class="id" title="var">a</span> := <span class="id" title="var">G</span>) (<span class="id" title="var">b</span> := <span class="id" title="var">H</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_homo_compose</span> (<span class="id" title="var">grp_iso_inverse</span> <span class="id" title="var">_</span>) (<span class="id" title="var">grp_homo_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1,3: <span class="id" title="var">rapply</span> <span class="id" title="var">grp_iso_g_loopgroup_bg</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">grp_homo_loops</span> <span class="id" title="var">f</span>). }<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_path_pforall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pHomotopy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">snrapply</span> <span class="id" title="var">ClassifyingSpace_ind_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">cbn</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">point_eq</span> <span class="id" title="var">f</span>). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_sq_dp</span>^-1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ClassifyingSpace_rec_beta_bloop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">sq_ccGc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">symmetry</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">decode_encode</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_sq_path</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>. } }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">moveR_equiv_V'</span> <span class="id" title="var">equiv_g_loops_bg</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">pClassifyingSpace_rec_beta_bloop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Hence we have that group homomorphisms are equivalent to pointed maps between their deloopings. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">equiv_grp_homo_pmap_bg</span> `{<span class="id" title="var">U</span> : <span class="id" title="var">Univalence</span>} (<span class="id" title="var">G</span> <span class="id" title="var">H</span> : <span class="id" title="var">Group</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">G</span> $-&gt; <span class="id" title="var">H</span>) &lt;~&gt; (<span class="id" title="var">B</span> <span class="id" title="var">G</span> $-&gt; <span class="id" title="var">B</span> <span class="id" title="var">H</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Equiv</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_fmap_pclassifyingspace</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1natural_grp_homo_pmap_bg_r</span> {<span class="id" title="var">U</span> : <span class="id" title="var">Univalence</span>} (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">G</span>) (<span class="id" title="var">opyon</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>) <span class="id" title="var">o</span> <span class="id" title="var">B</span>) (<span class="id" title="var">equiv_grp_homo_pmap_bg</span> <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Natural</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">K</span> <span class="id" title="var">H</span> <span class="id" title="var">f</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_hom</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">fmap_comp</span> <span class="id" title="var">B</span> <span class="id" title="var">h</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">natequiv_grp_homo_pmap_bg</span> `{<span class="id" title="var">U</span> : <span class="id" title="var">Univalence</span>} (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> (<span class="id" title="var">opyon</span> <span class="id" title="var">G</span>) (<span class="id" title="var">opyon</span> (<span class="id" title="var">B</span> <span class="id" title="var">G</span>) <span class="id" title="var">o</span> <span class="id" title="var">B</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">B</span>(<span class="id" title="var">Pi</span></span> <span class="inlinecode">1</span> <span class="inlinecode"><span class="id" title="var">X</span>)</span> <span class="inlinecode">&lt;~&gt;*</span> <span class="inlinecode"><span class="id" title="var">X</span></span> for a 0-connected 1-truncated <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">pequiv_pclassifyingspace_pi1</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">X</span> : <span class="id" title="var">pType</span>) `{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">X</span>} `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">B</span> (<span class="id" title="var">Pi1</span> <span class="id" title="var">X</span>) &lt;~&gt;* <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+The pointed map <span class="inlinecode"><span class="id" title="var">f</span></span> is the adjunct to the inverse of the natural map <span class="inlinecode"><span class="id" title="var">loops</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Pi1</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>. We define it first, to make the later goals easier to read. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">transparent</span> <span class="id" title="tactic">assert</span> (<span class="id" title="var">f</span> : (<span class="id" title="var">B</span> (<span class="id" title="var">Pi1</span> <span class="id" title="var">X</span>) -&gt;* <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">snrapply</span> <span class="id" title="var">pClassifyingSpace_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_tr</span> 0 <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">Build_pEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>).<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">f</span></span> is an equivalence since <span class="inlinecode"><span class="id" title="var">loops_functor</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">bloop</span></span> <span class="inlinecode">==</span> <span class="inlinecode"><span class="id" title="var">tr</span>^-1</span>, and the other two maps are equivalences. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_is0connected_isequiv_loops</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">cancelR_isequiv</span> <span class="id" title="var">bloop</span>).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isequiv_homotopic'</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">pClassifyingSpace_rec_beta_bloop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">natequiv_bg_pi1_adjoint</span> `{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">pType</span>) `{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> (<span class="id" title="var">opyon</span> (<span class="id" title="var">Pi1</span> <span class="id" title="var">X</span>)) (<span class="id" title="var">opyon</span> <span class="id" title="var">X</span> <span class="id" title="var">o</span> <span class="id" title="var">B</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">natequiv_compose</span> (<span class="id" title="var">G</span> := <span class="id" title="var">opyon</span> (<span class="id" title="var">Pi1</span> (<span class="id" title="var">pTr</span> 1 <span class="id" title="var">X</span>))) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">exact</span> (<span class="id" title="var">natequiv_opyon_equiv</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">Group</span>) (<span class="id" title="var">grp_iso_inverse</span> (<span class="id" title="var">grp_iso_pi_Tr</span> 0 <span class="id" title="var">X</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">natequiv_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">natequiv_grp_homo_pmap_bg</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">natequiv_compose</span> (<span class="id" title="var">G</span> := <span class="id" title="var">opyon</span> (<span class="id" title="var">pTr</span> 1 <span class="id" title="var">X</span>) <span class="id" title="var">o</span> <span class="id" title="var">B</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="var">revgoals</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">natequiv_prewhisker</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">natequiv_opyon_equiv</span> <span class="id" title="var">_</span>^-1$).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">pequiv_pclassifyingspace_pi1</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_NatEquiv</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">intro</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">pequiv_ptr_rec</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">is1natural_prewhisker</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The classifying space functor and the fundamental group functor form an adjunction (pType needs to be restricted to the subcategory of 0-connected pTypes). Note that the full adjunction should also be natural in X, but this was not needed yet. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">equiv_bg_pi1_adjoint</span> `{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">pType</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">X</span>} (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Pi</span> 1 <span class="id" title="var">X</span> $-&gt; <span class="id" title="var">G</span>) &lt;~&gt; (<span class="id" title="var">X</span> $-&gt; <span class="id" title="var">B</span> <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">natequiv_bg_pi1_adjoint</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">is1natural_equiv_bg_pi1_adjoint_r</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">X</span> : <span class="id" title="var">pType</span>) `{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Natural</span> (<span class="id" title="var">opyon</span> (<span class="id" title="var">Pi1</span> <span class="id" title="var">X</span>)) (<span class="id" title="var">opyon</span> <span class="id" title="var">X</span> <span class="id" title="var">o</span> <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_bg_pi1_adjoint</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">is1natural_natequiv</span> (<span class="id" title="var">natequiv_bg_pi1_adjoint</span> <span class="id" title="var">X</span>)).<br/>
+</div>
+
+<div class="doc">
+Why so slow? Fixed by making this opaque. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Opaque</span> <span class="id" title="var">equiv_bg_pi1_adjoint</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">Transparent</span> <span class="id" title="var">equiv_bg_pi1_adjoint</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

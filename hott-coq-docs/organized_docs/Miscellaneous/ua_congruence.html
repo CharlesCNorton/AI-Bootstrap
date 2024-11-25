@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>ua_congruence</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library ua_congruence</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Universes.HProp</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.canonical_names</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.ua_algebra</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">algebra_notations</span> <span class="id" title="var">ne_list.notations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="tactic">congruence</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {σ : <span class="id" title="var">Signature</span>} (<span class="id" title="var">A</span> : <span class="id" title="var">Algebra</span> σ) (<span class="id" title="var">Φ</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">Relation</span> (<span class="id" title="var">A</span> <span class="id" title="var">s</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An operation <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">s1</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">s2</span></span> <span class="inlinecode">→</span> <span class="inlinecode">...</span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">sn</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">t</span></span> satisfies
+    <span class="inlinecode"><span class="id" title="var">OpCompatible</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> iff
+
+<div class="paragraph"> </div>
+
+<pre>
+      Φ s1 x1 y1 ∧ Φ s2 x2 y2 ∧ ... ∧ Φ sn xn yn
+</pre>
+
+<div class="paragraph"> </div>
+
+    implies
+
+<div class="paragraph"> </div>
+
+<pre>
+      Φ t (f x1 x2 ... xn) (f y1 y2 ... yn).
+</pre>
+
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">OpCompatible</span> {<span class="id" title="var">w</span> : <span class="id" title="var">SymbolType</span> σ} (<span class="id" title="var">f</span> : <span class="id" title="var">Operation</span> <span class="id" title="var">A</span> <span class="id" title="var">w</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= ∀ (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">FamilyProd</span> <span class="id" title="var">A</span> (<span class="id" title="var">dom_symboltype</span> <span class="id" title="var">w</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">for_all_2_family_prod</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> <span class="id" title="var">Φ</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Φ</span> (<span class="id" title="var">cod_symboltype</span> <span class="id" title="var">w</span>) (<span class="id" title="var">ap_operation</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>) (<span class="id" title="var">ap_operation</span> <span class="id" title="var">f</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">OpsCompatible</span> : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">ops_compatible</span> : ∀ (<span class="id" title="var">u</span> : <span class="id" title="var">Symbol</span> σ), <span class="id" title="var">OpCompatible</span> <span class="id" title="var">u</span>.#<span class="id" title="var">A</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">trunc_ops_compatible</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!∀ <span class="id" title="var">s</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> (<span class="id" title="var">Φ</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> <span class="id" title="var">OpsCompatible</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_forall</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A family of relations <span class="inlinecode"><span class="id" title="var">Φ</span></span> is a congruence iff it is a family of
+      mere equivalence relations and <span class="inlinecode"><span class="id" title="var">OpsCompatible</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">Φ</span></span> holds. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsCongruence</span> : <span class="id" title="keyword">Type</span> := <span class="id" title="var">BuildIsCongruence</span><br/>
+&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">is_mere_relation_cong</span> : ∀ (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ), <span class="id" title="var">is_mere_relation</span> (<span class="id" title="var">A</span> <span class="id" title="var">s</span>) (<span class="id" title="var">Φ</span> <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;; <span class="id" title="var">equiv_rel_cong</span> : ∀ (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ), <span class="id" title="var">EquivRel</span> (<span class="id" title="var">Φ</span> <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;; <span class="id" title="var">ops_compatible_cong</span> : <span class="id" title="var">OpsCompatible</span> }.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Arguments</span> <span class="id" title="var">BuildIsCongruence</span> {<span class="id" title="var">is_mere_relation_cong</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">equiv_rel_cong</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">ops_compatible_cong</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">is_mere_relation_cong</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">equiv_rel_cong</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">ops_compatible_cong</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hprop_is_congruence</span> `{<span class="id" title="var">Funext</span>} : <span class="id" title="var">IsHProp</span> <span class="id" title="var">IsCongruence</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_hprop_allpath</span> <span class="id" title="var">_</span>)^-1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">C1</span> <span class="id" title="var">C2</span> <span class="id" title="var">C3</span>] [<span class="id" title="var">D1</span> <span class="id" title="var">D2</span> <span class="id" title="var">D3</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> (<span class="id" title="var">path_ishprop</span> <span class="id" title="var">C1</span> <span class="id" title="var">D1</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">path_ishprop</span> <span class="id" title="var">C2</span> <span class="id" title="var">D2</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">path_ishprop</span> <span class="id" title="var">C3</span> <span class="id" title="var">D3</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="tactic">congruence</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If <span class="inlinecode"><span class="id" title="var">Φ</span></span> is a congruence and <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">s1</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">s2</span></span> <span class="inlinecode">→</span> <span class="inlinecode">...</span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">sn</span></span> an
+    operation such that <span class="inlinecode"><span class="id" title="var">OpCompatible</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">Φ</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> holds.
+    Then <span class="inlinecode"><span class="id" title="var">OpCompatible</span></span> <span class="inlinecode">(<span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">x</span>)</span> holds for all <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">s1</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">op_compatible_cons</span> {σ : <span class="id" title="var">Signature</span>} {<span class="id" title="var">A</span> : <span class="id" title="var">Algebra</span> σ}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Φ</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">Relation</span> (<span class="id" title="var">A</span> <span class="id" title="var">s</span>)) `{!<span class="id" title="var">IsCongruence</span> <span class="id" title="var">A</span> <span class="id" title="var">Φ</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ) (<span class="id" title="var">w</span> : <span class="id" title="var">SymbolType</span> σ) (<span class="id" title="var">f</span> : <span class="id" title="var">Operation</span> <span class="id" title="var">A</span> (<span class="id" title="var">s</span> ::: <span class="id" title="var">w</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">A</span> <span class="id" title="var">s</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">OpCompatible</span> <span class="id" title="var">A</span> <span class="id" title="var">Φ</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">OpCompatible</span> <span class="id" title="var">A</span> <span class="id" title="var">Φ</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">P</span> (<span class="id" title="var">x</span>,<span class="id" title="var">a</span>) (<span class="id" title="var">x</span>,<span class="id" title="var">b</span>) (<span class="id" title="var">EquivRel_Reflexive</span> <span class="id" title="var">x</span>, <span class="id" title="var">R</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

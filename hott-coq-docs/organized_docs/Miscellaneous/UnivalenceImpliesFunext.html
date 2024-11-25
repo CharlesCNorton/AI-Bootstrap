@@ -1,0 +1,188 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>UnivalenceImpliesFunext</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library UnivalenceImpliesFunext</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Universe</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Metatheory.Core</span> <span class="id" title="var">Metatheory.FunextVarieties</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1207"></a><h1 class="section">Univalence Implies Functional Extensionality</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">UnivalenceImpliesFunext</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">ua</span> : <span class="id" title="var">Univalence_type</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Exponentiation preserves equivalences, i.e., if <span class="inlinecode"><span class="id" title="var">e</span></span> is an equivalence then so is post-composition by <span class="inlinecode"><span class="id" title="var">e</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Should&nbsp;this&nbsp;go&nbsp;somewhere&nbsp;else?&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Theorem</span> <span class="id" title="var">univalence_isequiv_postcompose</span> `{<span class="id" title="var">H0</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">w</span>} <span class="id" title="var">C</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">C</span>-&gt;<span class="id" title="var">A</span>) =&gt; <span class="id" title="var">w</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Univalence_type</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_adjointify</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">C</span>-&gt;<span class="id" title="var">A</span>) =&gt; <span class="id" title="var">w</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">C</span>-&gt;<span class="id" title="var">B</span>) =&gt; <span class="id" title="var">w</span>^-1 <span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">w</span> <span class="id" title="var">_</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">w'</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">H0</span> <span class="id" title="keyword">with</span> (@<span class="id" title="var">equiv_isequiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">w'</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">w</span> <span class="id" title="keyword">with</span> (@<span class="id" title="var">equiv_fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">w'</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">w'</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">H0</span> <span class="id" title="var">w</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (@<span class="id" title="var">eisretr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (@<span class="id" title="var">equiv_path</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) (<span class="id" title="var">ua</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) <span class="id" title="var">w'</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> ((@<span class="id" title="var">equiv_inv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) (<span class="id" title="var">ua</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>)) <span class="id" title="var">w'</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">clear</span> <span class="id" title="var">w'</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We are ready to prove functional extensionality, starting with the naive non-dependent version. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isequiv_src_compose</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;: @<span class="id" title="var">IsEquiv</span> (<span class="id" title="var">A</span> -&gt; {<span class="id" title="var">xy</span> : <span class="id" title="var">B</span> * <span class="id" title="var">B</span> &amp; <span class="id" title="var">fst</span> <span class="id" title="var">xy</span> = <span class="id" title="var">snd</span> <span class="id" title="var">xy</span>})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; (<span class="id" title="var">fst</span> <span class="id" title="var">o</span> <span class="id" title="var">pr1</span>) <span class="id" title="var">o</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> @<span class="id" title="var">univalence_isequiv_postcompose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_adjointify</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fst</span> <span class="id" title="var">o</span> <span class="id" title="var">pr1</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; ((<span class="id" title="var">x</span>, <span class="id" title="var">x</span>); <span class="id" title="var">idpath</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">p</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[? ?] <span class="id" title="var">p</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">isequiv_tgt_compose</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;: @<span class="id" title="var">IsEquiv</span> (<span class="id" title="var">A</span> -&gt; {<span class="id" title="var">xy</span> : <span class="id" title="var">B</span> * <span class="id" title="var">B</span> &amp; <span class="id" title="var">fst</span> <span class="id" title="var">xy</span> = <span class="id" title="var">snd</span> <span class="id" title="var">xy</span>})<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; (<span class="id" title="var">snd</span> <span class="id" title="var">o</span> <span class="id" title="var">pr1</span>) <span class="id" title="var">o</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> @<span class="id" title="var">univalence_isequiv_postcompose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_adjointify</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">snd</span> <span class="id" title="var">o</span> <span class="id" title="var">pr1</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; ((<span class="id" title="var">x</span>, <span class="id" title="var">x</span>); <span class="id" title="var">idpath</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">p</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[? ?] <span class="id" title="var">p</span>];<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Theorem</span> <span class="id" title="var">Univalence_implies_FunextNondep</span> : <span class="id" title="var">NaiveNondepFunext</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+</div>
+
+<div class="doc">
+Consider the following maps. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">d</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span> =&gt; <span class="id" title="var">exist</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">xy</span> =&gt; <span class="id" title="var">fst</span> <span class="id" title="var">xy</span> = <span class="id" title="var">snd</span> <span class="id" title="var">xy</span>) (<span class="id" title="var">f</span> <span class="id" title="var">x</span>, <span class="id" title="var">f</span> <span class="id" title="var">x</span>) (<span class="id" title="var">idpath</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">e</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">A</span> =&gt; <span class="id" title="var">exist</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">xy</span> =&gt; <span class="id" title="var">fst</span> <span class="id" title="var">xy</span> = <span class="id" title="var">snd</span> <span class="id" title="var">xy</span>) (<span class="id" title="var">f</span> <span class="id" title="var">x</span>, <span class="id" title="var">g</span> <span class="id" title="var">x</span>) (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)).<br/>
+</div>
+
+<div class="doc">
+If we compose <span class="inlinecode"><span class="id" title="var">d</span></span> and <span class="inlinecode"><span class="id" title="var">e</span></span> with <span class="inlinecode"><span class="id" title="var">free_path_target</span></span>, we get <span class="inlinecode"><span class="id" title="var">f</span></span> and <span class="inlinecode"><span class="id" title="var">g</span></span>, respectively. So, if we had a path from <span class="inlinecode"><span class="id" title="var">d</span></span> to <span class="inlinecode"><span class="id" title="var">e</span></span>, we would get one from <span class="inlinecode"><span class="id" title="var">f</span></span> to <span class="inlinecode"><span class="id" title="var">g</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">f</span> <span class="id" title="keyword">with</span> ((<span class="id" title="var">snd</span> <span class="id" title="var">o</span> <span class="id" title="var">pr1</span>) <span class="id" title="var">o</span> <span class="id" title="var">d</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> <span class="id" title="var">g</span> <span class="id" title="keyword">with</span> ((<span class="id" title="var">snd</span> <span class="id" title="var">o</span> <span class="id" title="var">pr1</span>) <span class="id" title="var">o</span> <span class="id" title="var">e</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">snd</span> <span class="id" title="var">o</span> <span class="id" title="var">pr1</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>)).<br/>
+</div>
+
+<div class="doc">
+Since composition with <span class="inlinecode"><span class="id" title="var">src</span></span> is an equivalence, we can freely compose with <span class="inlinecode"><span class="id" title="var">src</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>=&gt; @<span class="id" title="var">equiv_inv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (@<span class="id" title="var">isequiv_ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (@<span class="id" title="var">isequiv_src_compose</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) <span class="id" title="var">x</span> <span class="id" title="var">y</span>)) <span class="id" title="keyword">as</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">UnivalenceImpliesFunext</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we use this to prove strong dependent funext.  Again only the codomain universe must be univalent, but the domain universe must be no larger than it is.  Thus practically speaking this means that a univalent universe satisfies funext only for functions between two types in that same universe. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Univalence_implies_WeakFunext</span> : <span class="id" title="var">Univalence_type</span> -&gt; <span class="id" title="var">WeakFunext</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">NaiveNondepFunext_implies_WeakFunext</span> <span class="id" title="var">o</span> @<span class="id" title="var">Univalence_implies_FunextNondep</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Univalence_type_implies_Funext_type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">ua</span> : <span class="id" title="var">Univalence_type@</span>{<span class="id" title="var">j</span> <span class="id" title="var">jplusone</span>} }<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Funext_type@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">j</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">NaiveNondepFunext_implies_Funext</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(@<span class="id" title="var">Univalence_implies_FunextNondep</span> <span class="id" title="var">ua</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The above proof justifies assuming <span class="inlinecode"><span class="id" title="var">Univalence</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Funext</span></span>, which we did axiomatically in <span class="inlinecode"><span class="id" title="keyword">Types</span>/<span class="id" title="var">Universe.v</span></span>. 
+</div>
+<div class="code">
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

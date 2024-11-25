@@ -1,0 +1,299 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>ObjectClassifier</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library ObjectClassifier</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span> <span class="id" title="var">HFiber</span> <span class="id" title="var">Limits.Pullback</span> <span class="id" title="var">Pointed</span> <span class="id" title="var">Truncations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">pointed_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1792"></a><h1 class="section">The object classifier</h1>
+
+<div class="paragraph"> </div>
+
+ We prove that type families correspond to fibrations <span class="inlinecode"><span class="id" title="var">equiv_sigma_fibration</span></span> (Theorem 4.8.3) and the projection <span class="inlinecode"><span class="id" title="var">pointed_type</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">pType</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">Type</span></span> is an object classifier <span class="inlinecode"><span class="id" title="var">ispullback_square_objectclassifier</span></span> (Theorem 4.8.4). 
+<div class="paragraph"> </div>
+
+ We denote the type of all maps into a type <span class="inlinecode"><span class="id" title="var">Y</span></span> as follows, and refer to them "bundles over Y". 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Slice</span> (<span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}) := { <span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>} &amp; <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> }.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pSlice</span> (<span class="id" title="var">Y</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}) := { <span class="id" title="var">X</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>} &amp; <span class="id" title="var">X</span> -&gt;* <span class="id" title="var">Y</span> }.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sigma_fibration@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} {<span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}} (<span class="id" title="var">P</span> : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}) : <span class="id" title="var">Slice@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">Y</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">sig@</span>{<span class="id" title="var">u</span> <span class="id" title="var">u</span>} <span class="id" title="var">P</span>; <span class="id" title="var">pr1</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sigma_fibration_inverse</span> {<span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}} (<span class="id" title="var">p</span> : <span class="id" title="var">Slice</span> <span class="id" title="var">Y</span>) : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hfiber</span> <span class="id" title="var">p</span>.2.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">isequiv_sigma_fibration</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (@<span class="id" title="var">sigma_fibration</span> <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">sigma_fibration_inverse</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">X</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_sigma</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">path_universe</span> (<span class="id" title="var">equiv_fibration_replacement</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">transport_arrow_toconst_path_universe</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">P</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">y</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">path_universe</span> (@<span class="id" title="var">hfiber_fibration</span>  <span class="id" title="var">_</span> <span class="id" title="var">y</span> <span class="id" title="var">P</span>))^).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Theorem 4.8.3. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_sigma_fibration</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}) &lt;~&gt; { <span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>} &amp; <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">isequiv_sigma_fibration</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The universal map is the forgetful map <span class="inlinecode"><span class="id" title="var">pointed_type</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">pType</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">Type</span></span>. 
+<div class="paragraph"> </div>
+
+ We construct the universal square for the object classifier. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">topmap</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">e</span> : <span class="id" title="var">sig</span> <span class="id" title="var">P</span>) : <span class="id" title="var">pType</span><br/>
+&nbsp;&nbsp;:= [<span class="id" title="var">P</span> <span class="id" title="var">e</span>.1, <span class="id" title="var">e</span>.2].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The square commutes definitionally. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">objectclassifier_square</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">P</span> <span class="id" title="var">o</span> <span class="id" title="var">pr1</span> == <span class="id" title="var">pointed_type</span> <span class="id" title="var">o</span> (<span class="id" title="var">topmap</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">e</span> : <span class="id" title="var">sig</span> <span class="id" title="var">P</span> =&gt; <span class="id" title="var">idpath</span> (<span class="id" title="var">P</span> <span class="id" title="var">e</span>.1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Theorem 4.8.4. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">ispullback_objectclassifier_square</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsPullback</span> (<span class="id" title="var">objectclassifier_square</span> <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> [<span class="id" title="var">F</span> <span class="id" title="var">p</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">a</span>; <span class="id" title="var">transport</span> <span class="id" title="var">idmap</span> <span class="id" title="var">p</span>^ (<span class="id" title="var">point</span> <span class="id" title="var">F</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> [[<span class="id" title="var">T</span> <span class="id" title="var">t</span>] <span class="id" title="var">p</span>]]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">path_sigma'</span> <span class="id" title="var">_</span> (<span class="id" title="var">idpath</span> <span class="id" title="var">a</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">induction</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1793"></a><h2 class="section">Classifying bundles with specified fiber</h2>
+
+<div class="paragraph"> </div>
+
+ Bundles over <span class="inlinecode"><span class="id" title="var">B</span></span> with fiber <span class="inlinecode"><span class="id" title="var">F</span></span> correspond to pointed maps into the universe pointed at <span class="inlinecode"><span class="id" title="var">F</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">equiv_sigma_fibration_p@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> +} `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">Y</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}} {<span class="id" title="var">F</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}, <span class="id" title="var">F</span>]) &lt;~&gt; { <span class="id" title="var">p</span> : <span class="id" title="var">Slice@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">Y</span> &amp; <span class="id" title="var">hfiber</span> <span class="id" title="var">p</span>.2 (<span class="id" title="var">point</span> <span class="id" title="var">Y</span>) &lt;~&gt; <span class="id" title="var">F</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">issig_pmap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">equiv_functor_sigma'</span> <span class="id" title="var">equiv_sigma_fibration</span>); <span class="id" title="tactic">intro</span> <span class="id" title="var">P</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_path_universe@</span>{<span class="id" title="var">u</span> <span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">equiv_idmap</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hfiber_fibration</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If the fiber <span class="inlinecode"><span class="id" title="var">F</span></span> is pointed we may upgrade the right-hand side to pointed fiber sequences. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equiv_pfiber_fibration_pfibration@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} {<span class="id" title="var">Y</span> <span class="id" title="var">F</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: { <span class="id" title="var">p</span> : <span class="id" title="var">Slice@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">Y</span> &amp; <span class="id" title="var">hfiber</span> <span class="id" title="var">p</span>.2 (<span class="id" title="var">point</span> <span class="id" title="var">Y</span>) &lt;~&gt; <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; { <span class="id" title="var">p</span> : <span class="id" title="var">pSlice@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">Y</span> &amp; <span class="id" title="var">pfiber</span> <span class="id" title="var">p</span>.2 &lt;~&gt;* <span class="id" title="var">F</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">equiv_via</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sig@</span>{<span class="id" title="var">v</span> <span class="id" title="var">u</span>} (<span class="id" title="keyword">fun</span> <span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>} =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">x</span> : <span class="id" title="var">X</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">p</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">eq</span> : <span class="id" title="var">p</span> <span class="id" title="var">x</span> = <span class="id" title="var">point</span> <span class="id" title="var">Y</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">e</span> : <span class="id" title="var">hfiber</span> <span class="id" title="var">p</span> (<span class="id" title="var">point</span> <span class="id" title="var">Y</span>) &lt;~&gt; <span class="id" title="var">F</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp; <span class="id" title="var">e</span>^-1 (<span class="id" title="var">point</span> <span class="id" title="var">F</span>) = (<span class="id" title="var">x</span>; <span class="id" title="var">eq</span>) } } } })).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">do</span> 5 (<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intro</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_sigma</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">cbn</span>; <span class="id" title="var">make_equiv_contr_basedpaths</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: { <span class="id" title="tactic">do</span> 5 (<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intro</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_path_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_moveL_equiv_M</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">make_equiv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_sigma_pfibration@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> +} `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">Y</span> <span class="id" title="var">F</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}, <span class="id" title="var">F</span>]) &lt;~&gt; { <span class="id" title="var">p</span> : <span class="id" title="var">pSlice@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">Y</span> &amp; <span class="id" title="var">pfiber</span> <span class="id" title="var">p</span>.2 &lt;~&gt;* <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_pfiber_fibration_pfibration</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_fibration_p</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1794"></a><h1 class="section">The classifier for O-local types</h1>
+
+<div class="paragraph"> </div>
+
+ Families of O-local types correspond to bundles with O-local fibers. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">equiv_sigma_fibration_O@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">O</span> : <span class="id" title="var">Subuniverse</span>} {<span class="id" title="var">Y</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Type_@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">O</span>) &lt;~&gt; { <span class="id" title="var">p</span> : { <span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>} &amp; <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> } &amp; <span class="id" title="var">MapIn</span> <span class="id" title="var">O</span> <span class="id" title="var">p</span>.2 }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_sig_coind@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">v</span> <span class="id" title="var">v</span> <span class="id" title="var">u</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_functor_sigma'@</span>{<span class="id" title="var">v</span> <span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">v</span> <span class="id" title="var">v</span> <span class="id" title="var">v</span>} <span class="id" title="var">equiv_sigma_fibration@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>}); <span class="id" title="tactic">intro</span> <span class="id" title="var">P</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_forall_inO_mapinO_pr1</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1795"></a><h2 class="section">Classifying O-local bundles with specified fiber</h2>
+
+<div class="paragraph"> </div>
+
+ We consider a pointed base <span class="inlinecode"><span class="id" title="var">Y</span></span>, and the universe of O-local types <span class="inlinecode"><span class="id" title="var">Type_</span></span> <span class="inlinecode"><span class="id" title="var">O</span></span> pointed at some O-local type <span class="inlinecode"><span class="id" title="var">F</span></span>. 
+<div class="paragraph"> </div>
+
+ Pointed maps into <span class="inlinecode"><span class="id" title="var">Type_</span></span> <span class="inlinecode"><span class="id" title="var">O</span></span> correspond to O-local bundles with fiber <span class="inlinecode"><span class="id" title="var">F</span></span> over the base point of <span class="inlinecode"><span class="id" title="var">Y</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">equiv_sigma_fibration_Op@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> +} `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">O</span> : <span class="id" title="var">Subuniverse</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Y</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}} {<span class="id" title="var">F</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}} `{<span class="id" title="var">inO</span> : <span class="id" title="var">In</span> <span class="id" title="var">O</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type_</span> <span class="id" title="var">O</span>, (<span class="id" title="var">F</span>; <span class="id" title="var">inO</span>)])<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; { <span class="id" title="var">p</span> : { <span class="id" title="var">q</span> : <span class="id" title="var">Slice@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">Y</span> &amp; <span class="id" title="var">MapIn</span> <span class="id" title="var">O</span> <span class="id" title="var">q</span>.2 } &amp; <span class="id" title="var">hfiber</span> <span class="id" title="var">p</span>.1.2 (<span class="id" title="var">point</span> <span class="id" title="var">Y</span>) &lt;~&gt; <span class="id" title="var">F</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">issig_pmap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">equiv_functor_sigma'</span> <span class="id" title="var">equiv_sigma_fibration_O</span>); <span class="id" title="tactic">intro</span> <span class="id" title="var">P</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_path_sigma_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_path_universe</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">equiv_idmap</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">hfiber_fibration</span> (<span class="id" title="var">point</span> <span class="id" title="var">Y</span>) <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+When the base <span class="inlinecode"><span class="id" title="var">Y</span></span> is connected, the fibers being O-local follow from the fact that the fiber <span class="inlinecode"><span class="id" title="var">F</span></span> over the base point is. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">equiv_sigma_fibration_Op_connected@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> +} `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">O</span> : <span class="id" title="var">Subuniverse</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Y</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}} `{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">Y</span>} {<span class="id" title="var">F</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}} `{<span class="id" title="var">inO</span> : <span class="id" title="var">In</span> <span class="id" title="var">O</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type_</span> <span class="id" title="var">O</span>, (<span class="id" title="var">F</span>; <span class="id" title="var">inO</span>)])<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; { <span class="id" title="var">p</span> : <span class="id" title="var">Slice@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">Y</span> &amp; <span class="id" title="var">hfiber</span> <span class="id" title="var">p</span>.2 (<span class="id" title="var">point</span> <span class="id" title="var">Y</span>) &lt;~&gt; <span class="id" title="var">F</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_fibration_Op</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_sigma_assoc'</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">hfiber</span> <span class="id" title="var">p</span>.2 (<span class="id" title="var">point</span> <span class="id" title="var">Y</span>) &lt;~&gt; <span class="id" title="var">F</span>))^-1%<span class="id" title="var">equiv</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intro</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_symm0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_sigma_contr</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">conn_point_elim</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">inO_equiv_inO</span> <span class="id" title="var">F</span> <span class="id" title="var">e</span>^-1).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1796"></a><h3 class="section">Classifying O-local bundles with specified pointed fiber</h3>
+
+<div class="paragraph"> </div>
+
+ When the fiber <span class="inlinecode"><span class="id" title="var">F</span></span> is pointed, the right-hand side can be upgraded to pointed fiber sequences with O-local fibers.  
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">equiv_sigma_pfibration_O</span> `{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">O</span> : <span class="id" title="var">Subuniverse</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Y</span> <span class="id" title="var">F</span> : <span class="id" title="var">pType</span>} `{<span class="id" title="var">inO</span> : <span class="id" title="var">In</span> <span class="id" title="var">O</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type_</span> <span class="id" title="var">O</span>, (<span class="id" title="var">pointed_type</span> <span class="id" title="var">F</span>; <span class="id" title="var">inO</span>)])<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; { <span class="id" title="var">p</span> : { <span class="id" title="var">q</span> : <span class="id" title="var">pSlice</span> <span class="id" title="var">Y</span> &amp; <span class="id" title="var">MapIn</span> <span class="id" title="var">O</span> <span class="id" title="var">q</span>.2 } &amp; <span class="id" title="var">pfiber</span> <span class="id" title="var">p</span>.1.2 &lt;~&gt;* <span class="id" title="var">F</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_fibration_Op</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_symm'</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">q</span> =&gt; <span class="id" title="var">hfiber</span> <span class="id" title="var">q</span>.2 (<span class="id" title="var">point</span> <span class="id" title="var">Y</span>) &lt;~&gt; <span class="id" title="var">F</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_sigma_symm'</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">q</span> =&gt; <span class="id" title="var">pfiber</span> <span class="id" title="var">q</span>.2 &lt;~&gt;* <span class="id" title="var">F</span>) <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">rapply</span> (<span class="id" title="var">equiv_functor_sigma'</span> <span class="id" title="var">equiv_pfiber_fibration_pfibration</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+When moreover the base <span class="inlinecode"><span class="id" title="var">Y</span></span> is connected, the right-hand side is exactly the type of pointed fiber sequences, since the fibers being O-local follow from <span class="inlinecode"><span class="id" title="var">F</span></span> being O-local and <span class="inlinecode"><span class="id" title="var">Y</span></span> connected. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_sigma_pfibration_O_connected@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> +} `{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">O</span> : <span class="id" title="var">Subuniverse</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Y</span> <span class="id" title="var">F</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}} `{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">Y</span>} `{<span class="id" title="var">inO</span> : <span class="id" title="var">In</span> <span class="id" title="var">O</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type_</span> <span class="id" title="var">O</span>, (<span class="id" title="var">pointed_type</span> <span class="id" title="var">F</span>; <span class="id" title="var">inO</span>)])<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; { <span class="id" title="var">p</span> : <span class="id" title="var">pSlice@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">Y</span> &amp; <span class="id" title="var">pfiber</span> <span class="id" title="var">p</span>.2 &lt;~&gt;* <span class="id" title="var">F</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_pfiber_fibration_pfibration</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_fibration_Op_connected</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+As a corollary, pointed maps into the unverse of O-local types are just pointed maps into the universe, when the base <span class="inlinecode"><span class="id" title="var">Y</span></span> is connected. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_pmap_typeO_type_connected</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">O</span> : <span class="id" title="var">Subuniverse</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Y</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}} `{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">Y</span>} {<span class="id" title="var">F</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}} `{<span class="id" title="var">inO</span> : <span class="id" title="var">In</span> <span class="id" title="var">O</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type_</span> <span class="id" title="var">O</span>, (<span class="id" title="var">F</span>; <span class="id" title="var">inO</span>)]) &lt;~&gt; (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}, <span class="id" title="var">F</span>])<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_sigma_fibration_p</span>^-1 <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_fibration_Op_connected</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>epi</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library epi</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="keyword">Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">TruncType</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">ReflectiveSubuniverse</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.Pushout</span> <span class="id" title="var">Truncations.Core</span> <span class="id" title="var">HIT.SetCone</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">AssumingUA</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">ua</span>:<span class="id" title="var">Univalence</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We will now prove that for sets, epis and surjections are equivalent.
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isepi</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} `(<span class="id" title="var">f</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>) := <span class="id" title="keyword">forall</span> <span class="id" title="var">Z</span>: <span class="id" title="var">HSet</span>,<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>: <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span>, <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> = <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">g</span> = <span class="id" title="var">h</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isepi_funext</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">forall</span> <span class="id" title="var">Z</span> : <span class="id" title="var">HSet</span>, <span class="id" title="keyword">forall</span> <span class="id" title="var">g0</span> <span class="id" title="var">g1</span> : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span>, <span class="id" title="var">g0</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">g1</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">g0</span> == <span class="id" title="var">g1</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isepi'</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} `(<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">Z</span> : <span class="id" title="var">HSet</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span>), <span class="id" title="var">Contr</span> { <span class="id" title="var">h</span> : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span> | <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> = <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> }.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equiv_isepi_isepi'</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} <span class="id" title="var">f</span> : @<span class="id" title="var">isepi</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span> &lt;~&gt; @<span class="id" title="var">isepi'</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">isepi</span>, <span class="id" title="var">isepi'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (@<span class="id" title="var">equiv_functor_forall'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">intro</span> <span class="id" title="var">Z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (@<span class="id" title="var">equiv_functor_forall'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv_idmap</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="tactic">transitivity</span> (@<span class="id" title="var">equiv_sig_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">h</span> : <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span> =&gt; <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> = <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">h</span> =&gt; <span class="id" title="var">g</span> = <span class="id" title="var">h</span>.1)) <span class="id" title="var">_</span>).<br/>
+</div>
+
+<div class="doc">
+TODO(JasonGross): Can we do this entirely by chaining equivalences? 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intro</span> <span class="id" title="var">hepi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">Build_Contr</span> <span class="id" title="var">_</span> (<span class="id" title="var">g</span>; <span class="id" title="var">idpath</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">xy</span>; <span class="id" title="tactic">specialize</span> (<span class="id" title="var">hepi</span> <span class="id" title="var">xy</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_uncurried</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">hepi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>. }<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">hepi</span> <span class="id" title="var">xy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">pr1</span> ((<span class="id" title="var">contr</span> (<span class="id" title="var">g</span>; 1))^ @ <span class="id" title="var">contr</span> <span class="id" title="var">xy</span>)). }<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_isepi_isepi_funext</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">isepi</span> <span class="id" title="var">f</span> &lt;~&gt; <span class="id" title="var">isepi_funext</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span> ? <span class="id" title="var">g0</span> <span class="id" title="var">g1</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_arrow</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">path_arrow</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">e</span> ? <span class="id" title="var">g0</span> <span class="id" title="var">g1</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_arrow</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_arrow</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">cones</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">isepi'_contr_cone</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">HSet</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) : <span class="id" title="var">isepi'</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">Contr</span> (<span class="id" title="var">setcone</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">hepi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Build_Contr</span> <span class="id" title="var">_</span> (<span class="id" title="var">setcone_point</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">alpha1</span> := @<span class="id" title="var">pglue</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">Unit</span> <span class="id" title="var">f</span> (<span class="id" title="var">const_tt</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">tot</span>:= { <span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">setcone</span> <span class="id" title="var">f</span> &amp; <span class="id" title="var">tr</span> <span class="id" title="var">o</span> <span class="id" title="var">push</span> <span class="id" title="var">o</span> <span class="id" title="var">inl</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> = <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> }).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transparent</span> <span class="id" title="tactic">assert</span> (<span class="id" title="var">l</span> : <span class="id" title="var">tot</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">tr</span> <span class="id" title="var">o</span> <span class="id" title="var">_</span> <span class="id" title="var">o</span> <span class="id" title="var">inl</span>; <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> <span class="id" title="var">push</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> <span class="id" title="var">idpath</span>. } }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">r</span> := (@<span class="id" title="var">const</span> <span class="id" title="var">B</span> (<span class="id" title="var">setcone</span> <span class="id" title="var">f</span>) (<span class="id" title="var">setcone_point</span> <span class="id" title="var">_</span>); (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; @<span class="id" title="var">tr</span> 0 <span class="id" title="var">_</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) (<span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">alpha1</span>))) : <span class="id" title="var">tot</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">tot</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">X</span> : <span class="id" title="var">l</span> = <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="keyword">let</span> <span class="id" title="var">lem</span> := <span class="id" title="keyword">constr</span>:(<span class="id" title="keyword">fun</span> <span class="id" title="var">X</span> <span class="id" title="var">push'</span> =&gt; <span class="id" title="var">hepi</span> (<span class="id" title="var">Build_HSet</span> (<span class="id" title="var">setcone</span> <span class="id" title="var">f</span>)) (<span class="id" title="var">tr</span> <span class="id" title="var">o</span> <span class="id" title="var">push'</span> <span class="id" title="var">o</span> @<span class="id" title="var">inl</span> <span class="id" title="var">_</span> <span class="id" title="var">X</span>)) <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">lem</span> <span class="id" title="var">_</span> <span class="id" title="var">push</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">path_contr</span> <span class="id" title="var">l</span> <span class="id" title="var">r</span>). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">l</span> <span class="id" title="var">r</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">I0</span> <span class="id" title="var">b</span> := <span class="id" title="var">ap10</span> (<span class="id" title="var">X</span> ..1) <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Trunc_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> : <span class="id" title="var">B</span> + <span class="id" title="var">Unit</span> =&gt; (<span class="id" title="keyword">match</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> <span class="id" title="var">a</span> <span class="id" title="keyword">return</span> <span class="id" title="var">setcone_point</span> <span class="id" title="var">_</span> = <span class="id" title="var">tr</span> (<span class="id" title="var">push</span> <span class="id" title="var">a</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">inl</span> <span class="id" title="var">a'</span> =&gt; (<span class="id" title="var">I0</span> <span class="id" title="var">a'</span>)^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">inr</span> <span class="id" title="var">tt</span> =&gt; <span class="id" title="var">idpath</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>)) <span class="id" title="keyword">as</span> <span class="id" title="var">I0f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Pushout_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a'</span> =&gt; <span class="id" title="var">I0f</span> (<span class="id" title="var">inl</span> <span class="id" title="var">a'</span>)) (<span class="id" title="keyword">fun</span> <span class="id" title="var">u</span> =&gt; (<span class="id" title="var">I0f</span> (<span class="id" title="var">inr</span> <span class="id" title="var">u</span>))) <span class="id" title="var">_</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">subst</span> <span class="id" title="var">alpha1</span>. <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">setcone_point</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">I0</span>. <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">X</span>..2) <span class="id" title="keyword">as</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">transport_precompose</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">X</span>..1) <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">H'</span>:=<span class="id" title="var">concat</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap10</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span>) <span class="id" title="var">p</span>) (<span class="id" title="var">ap10_ap_postcompose</span> <span class="id" title="var">tr</span> (<span class="id" title="var">path_arrow</span> (<span class="id" title="var">pushl</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) (<span class="id" title="var">pushr</span> <span class="id" title="var">o</span> <span class="id" title="var">const_tt</span> <span class="id" title="var">_</span>) <span class="id" title="var">pglue</span>) <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap10_path_arrow</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">clear</span> <span class="id" title="var">p</span>.<br/>
+</div>
+
+<div class="doc">
+Apparently <span class="inlinecode"><span class="id" title="tactic">pose</span>;</span> <span class="inlinecode"><span class="id" title="var">clearbody</span></span> is only ~.8 seconds, while <span class="inlinecode"><span class="id" title="tactic">pose</span></span> <span class="inlinecode"><span class="id" title="var">proof</span></span> is ~4 seconds? 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">concat</span> (<span class="id" title="var">ap10_ap_precompose</span> <span class="id" title="var">f</span> (<span class="id" title="var">X</span> ..1) <span class="id" title="var">a</span>)^ <span class="id" title="var">H'</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_paths_Fr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_Vp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">cones</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">issurj_isepi</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">f</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>): <span class="id" title="var">IsSurjection</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">isepi</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">sur</span> ? ? ? <span class="id" title="var">ep</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>. <span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="tactic">specialize</span> (<span class="id" title="var">sur</span> <span class="id" title="var">y</span>). <span class="id" title="tactic">pose</span> (<span class="id" title="var">center</span> (<span class="id" title="var">merely</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>))).<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">Trunc_rec</span> (<span class="id" title="var">n</span>:=-1) (<span class="id" title="var">A</span>:=(<span class="id" title="var">sig</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">X</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">y</span>))));<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">p</span>]. <span class="id" title="tactic">set</span> (<span class="id" title="var">p0</span>:=<span class="id" title="var">apD10</span> <span class="id" title="var">ep</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+- <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+- <span class="id" title="tactic">transitivity</span> (<span class="id" title="var">h</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>));<span class="id" title="tactic">auto</span> <span class="id" title="keyword">with</span> <span class="id" title="var">path_hints</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Corollary</span> <span class="id" title="var">issurj_isepi_funext</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} (<span class="id" title="var">f</span>:<span class="id" title="var">X</span>-&gt;<span class="id" title="var">Y</span>) : <span class="id" title="var">IsSurjection</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">isepi_funext</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_isepi_isepi_funext</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">issurj_isepi</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Old-style proof using polymorphic Omega. Needs resizing for the isepi proof to live in the
+ same universe as X and Y (the Z quantifier is instantiated with an HSet at a level higher)
+<pre>
+Lemma isepi_issurj {X Y} (f:X-&gt;Y): isepi f -&gt; issurj f.
+Proof.
+  intros epif y.
+  set (g :=fun _:Y =&gt; Unit_hp).
+  set (h:=(fun y:Y =&gt; (hp (hexists (fun _ : Unit =&gt; {x:X &amp; y = (f x)})) _ ))).
+  assert (X1: g o f = h o f ).
+  - apply path_forall. intro x. apply path_equiv_biimp_rec;[|done].
+    intros _ . apply min1. exists tt. by (exists x).
+  - specialize (epif _ g h).
+    specialize (epif X1). clear X1.
+    set (p:=apD10 epif y).
+    apply (@minus1Trunc_map (sig (fun _ : Unit =&gt; sig (fun x : X =&gt; y = f x)))).
+    + intros [ _ [x eq]].
+      exists x.
+        by symmetry.
+    + apply (transport hproptype p tt).
+Defined.
+</pre>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">isepi_issurj</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">HSet</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">Hisepi</span> : <span class="id" title="var">isepi</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">epif</span> := <span class="id" title="var">equiv_isepi_isepi'</span> <span class="id" title="var">_</span> <span class="id" title="var">Hisepi</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">fam</span> (<span class="id" title="var">c</span> : <span class="id" title="var">setcone</span> <span class="id" title="var">f</span>) : <span class="id" title="var">HProp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">fib</span> <span class="id" title="var">y</span> := <span class="id" title="var">hexists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">X</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; @<span class="id" title="var">Trunc_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">HProp</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">c</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Pushout_rec</span> <span class="id" title="var">HProp</span> <span class="id" title="var">fib</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">Unit_hp</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">_</span>)).<br/>
+</div>
+
+<div class="doc">
+Prove that the truncated sigma is equivalent to Unit 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">contr_inhabited_hprop</span> (<span class="id" title="var">fib</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">tr</span> (<span class="id" title="var">x</span>; <span class="id" title="var">idpath</span>))) <span class="id" title="keyword">as</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_hprop</span>. <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_contr_unit</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">isepi_issurj</span> : <span class="id" title="var">IsSurjection</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">i</span> := <span class="id" title="var">isepi'_contr_cone</span> <span class="id" title="var">_</span> <span class="id" title="var">epif</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">X0</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">setcone</span> <span class="id" title="var">f</span>, <span class="id" title="var">fam</span> <span class="id" title="var">x</span> = <span class="id" title="var">fam</span> (<span class="id" title="var">setcone_point</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">contr_dom_equiv</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">i</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">X0</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">push</span> (<span class="id" title="var">inl</span> <span class="id" title="var">y</span>)))). <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">X0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">IsConnected</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">A</span> =&gt; <span class="id" title="var">Contr</span> <span class="id" title="var">A</span>) (<span class="id" title="var">ap</span> <span class="id" title="var">trunctype_type</span> <span class="id" title="var">X0</span>)^ <span class="id" title="var">_</span>); <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">isepi_issurj</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">isepi_isequiv</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}<br/>
+: <span class="id" title="var">isepi</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> ? <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap10</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">g</span> (<span class="id" title="var">f</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">transitivity</span> (<span class="id" title="var">h</span> (<span class="id" title="var">f</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">eisretr</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">AssumingUA</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>archimedean</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library archimedean</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.abstract_algebra</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.orders</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.rationals</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.archimedean</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.fields</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.orders.rings</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">Q</span> <span class="id" title="var">F</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">strict_field_order</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Rationals</span> <span class="id" title="var">Q</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">Qmeet</span>} {<span class="id" title="var">Qjoin</span>} `{@<span class="id" title="var">LatticeOrder</span> <span class="id" title="var">Q</span> (<span class="id" title="var">_</span> : <span class="id" title="var">Le</span> <span class="id" title="var">Q</span>) <span class="id" title="var">Qmeet</span> <span class="id" title="var">Qjoin</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">OrderedField</span> <span class="id" title="var">F</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">archim</span> : <span class="id" title="var">ArchimedeanProperty</span> <span class="id" title="var">Q</span> <span class="id" title="var">F</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">qinc</span> : <span class="id" title="var">Cast</span> <span class="id" title="var">Q</span> <span class="id" title="var">F</span> := <span class="id" title="var">rationals_to_field</span> <span class="id" title="var">Q</span> <span class="id" title="var">F</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Existing Instance</span> <span class="id" title="var">qinc</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_minus_left</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : - <span class="id" title="var">x</span> &lt; <span class="id" title="var">y</span> -&gt; - <span class="id" title="var">y</span> &lt; <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ltnxy</span>. <span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">x</span>). <span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">flip_lt_negate</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)). <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_minus_right</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">x</span> &lt; - <span class="id" title="var">y</span> -&gt; <span class="id" title="var">y</span> &lt; - <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ltnxy</span>. <span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">y</span>). <span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">flip_lt_negate</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)). <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_plus_left</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">q</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' <span class="id" title="var">q</span> &lt; <span class="id" title="var">x</span> + <span class="id" title="var">y</span> &lt;-&gt; <span class="id" title="var">hexists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">s</span> : <span class="id" title="var">Q</span> =&gt; (' <span class="id" title="var">s</span> &lt; <span class="id" title="var">x</span>) /\ (' (<span class="id" title="var">q</span> - <span class="id" title="var">s</span>) &lt; <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_plus_right</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">x</span> + <span class="id" title="var">y</span> &lt; ' <span class="id" title="var">r</span> &lt;-&gt; <span class="id" title="var">hexists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">t</span> : <span class="id" title="var">Q</span> =&gt; (<span class="id" title="var">x</span> &lt; ' <span class="id" title="var">t</span>) /\ (<span class="id" title="var">y</span> &lt; ' (<span class="id" title="var">r</span> - <span class="id" title="var">t</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hexists4</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> <span class="id" title="var">Z</span> <span class="id" title="var">W</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span> -&gt; <span class="id" title="var">Z</span> -&gt; <span class="id" title="var">W</span> -&gt; <span class="id" title="keyword">Type</span>) : <span class="id" title="var">HProp</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">hexists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">xyzw</span> =&gt; <span class="id" title="keyword">match</span> <span class="id" title="var">xyzw</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ((<span class="id" title="var">x</span> , <span class="id" title="var">y</span>) , (<span class="id" title="var">z</span> , <span class="id" title="var">w</span>)) =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">w</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_times_left</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">q</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' <span class="id" title="var">q</span> &lt; <span class="id" title="var">x</span> * <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&gt; <span class="id" title="var">hexists4</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> : <span class="id" title="var">Q</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">q</span> &lt; <span class="id" title="var">meet</span> (<span class="id" title="var">meet</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">meet</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((' <span class="id" title="var">a</span> &lt; <span class="id" title="var">x</span> &lt; ' <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/\<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(' <span class="id" title="var">c</span> &lt; <span class="id" title="var">y</span> &lt; ' <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_times_right</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">x</span> * <span class="id" title="var">y</span> &lt; ' <span class="id" title="var">r</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;-&gt; <span class="id" title="var">hexists4</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> : <span class="id" title="var">Q</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">and</span> (<span class="id" title="var">join</span> (<span class="id" title="var">join</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) (<span class="id" title="var">join</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span>) &lt; <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">and</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(' <span class="id" title="var">a</span> &lt; <span class="id" title="var">x</span> &lt; ' <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(' <span class="id" title="var">c</span> &lt; <span class="id" title="var">y</span> &lt; ' <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_recip_pos_left</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">q</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">F</span>) (<span class="id" title="var">nu</span> : 0 &lt; <span class="id" title="var">z</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'<span class="id" title="var">q</span> &lt; <span class="id" title="var">recip'</span> <span class="id" title="var">z</span> (<span class="id" title="var">positive_apart_zero</span> <span class="id" title="var">z</span> <span class="id" title="var">nu</span>) &lt;-&gt; ' <span class="id" title="var">q</span> * <span class="id" title="var">z</span> &lt; 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_recip_pos_right</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">F</span>) (<span class="id" title="var">nu</span> : 0 &lt; <span class="id" title="var">z</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">recip'</span> <span class="id" title="var">z</span> (<span class="id" title="var">positive_apart_zero</span> <span class="id" title="var">z</span> <span class="id" title="var">nu</span>) &lt; ' <span class="id" title="var">r</span> &lt;-&gt; 1 &lt; ' <span class="id" title="var">r</span> * <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_recip_neg_left</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">q</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">w</span> : <span class="id" title="var">F</span>) (<span class="id" title="var">nu</span> : <span class="id" title="var">w</span> &lt; 0),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'<span class="id" title="var">q</span> &lt; <span class="id" title="var">recip'</span> <span class="id" title="var">w</span> (<span class="id" title="var">negative_apart_zero</span> <span class="id" title="var">w</span> <span class="id" title="var">nu</span>) &lt;-&gt; ' <span class="id" title="var">q</span> * <span class="id" title="var">w</span> &lt; 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_recip_neg_right</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">w</span> : <span class="id" title="var">F</span>) (<span class="id" title="var">nu</span> : <span class="id" title="var">w</span> &lt; 0),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">recip'</span> <span class="id" title="var">w</span> (<span class="id" title="var">negative_apart_zero</span> <span class="id" title="var">w</span> <span class="id" title="var">nu</span>) &lt; ' <span class="id" title="var">r</span> &lt;-&gt; ' <span class="id" title="var">r</span> * <span class="id" title="var">w</span> &lt; 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_meet_left</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">q</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' <span class="id" title="var">q</span> &lt; <span class="id" title="var">meet</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> &lt;-&gt; ' <span class="id" title="var">q</span> &lt; <span class="id" title="var">x</span> /\ ' <span class="id" title="var">q</span> &lt; <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_meet_right</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">meet</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> &lt; '<span class="id" title="var">r</span> &lt;-&gt; <span class="id" title="var">hor</span> (<span class="id" title="var">x</span> &lt; '<span class="id" title="var">r</span>) (<span class="id" title="var">y</span> &lt; '<span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_join_left</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">q</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' <span class="id" title="var">q</span> &lt; <span class="id" title="var">join</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> &lt;-&gt; <span class="id" title="var">hor</span> ('<span class="id" title="var">q</span> &lt; <span class="id" title="var">x</span>) ('<span class="id" title="var">q</span> &lt; <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">char_join_right</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> : <span class="id" title="var">Q</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">join</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> &lt; ' <span class="id" title="var">r</span> &lt;-&gt; <span class="id" title="var">x</span> &lt; ' <span class="id" title="var">r</span> /\ <span class="id" title="var">y</span> &lt; ' <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>. <span class="id" title="keyword">Abort</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">strict_field_order</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

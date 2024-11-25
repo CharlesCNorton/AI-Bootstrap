@@ -1,0 +1,1258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Equivalences</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Equivalences</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab328"></a><h1 class="section">Equivalences</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Basics.Overture</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Basics.PathGroupoids</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Basics.Contractible</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Basics.Tactics</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We now give many ways to construct equivalences.  In each case, we define an instance of the typeclass <span class="inlinecode"><span class="id" title="var">IsEquiv</span></span> named <span class="inlinecode"><span class="id" title="var">isequiv_X</span></span>, followed by an element of the record type <span class="inlinecode"><span class="id" title="var">Equiv</span></span> named <span class="inlinecode"><span class="id" title="var">equiv_X</span></span>.
+
+<div class="paragraph"> </div>
+
+   Whenever we need to assume, as a hypothesis, that a certain function is an equivalence, we do it by assuming separately a function and a proof of <span class="inlinecode"><span class="id" title="var">IsEquiv</span></span>.  This is more general than assuming an inhabitant of <span class="inlinecode"><span class="id" title="var">Equiv</span></span>, since the latter has an implicit coercion and an existing instance to give us the former automatically.  Moreover, implicit generalization makes it easy to assume a function and a proof of <span class="inlinecode"><span class="id" title="var">IsEquiv</span></span>. 
+<div class="paragraph"> </div>
+
+ A word on naming: some of the lemmas about equivalences are analogues of those for paths in PathGroupoids.  We name them in an analogous way but adding <span class="inlinecode"><span class="id" title="var">_equiv</span></span> in an appropriate place, e.g. instead of <span class="inlinecode"><span class="id" title="var">moveR_M</span></span> we have <span class="inlinecode"><span class="id" title="var">moveR_equiv_M</span></span>.  
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The identity map is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_idmap</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">idmap</span> | 0 :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">Build_IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> <span class="id" title="var">idmap</span> <span class="id" title="var">idmap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1) (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1) (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_idmap</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">A</span> := <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> <span class="id" title="var">idmap</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">equiv_idmap</span> {<span class="id" title="var">A</span>} , <span class="id" title="var">A</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;1" := <span class="id" title="var">equiv_idmap</span> : <span class="id" title="var">equiv_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">reflexive_equiv</span> : <span class="id" title="var">Reflexive</span> <span class="id" title="var">Equiv</span> | 0 := @<span class="id" title="var">equiv_idmap</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">reflexive_equiv</span> /.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The composition of equivalences is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_compose</span> `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) | 1000<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span>^-1 <span class="id" title="var">o</span> <span class="id" title="var">g</span>^-1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> (<span class="id" title="var">g</span>^-1 <span class="id" title="var">c</span>)) @ <span class="id" title="var">eisretr</span> <span class="id" title="var">g</span> <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">ap</span> (<span class="id" title="var">f</span>^-1) (<span class="id" title="var">eissect</span> <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>)) @ <span class="id" title="var">eissect</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">eisadj</span> <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>))) @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap_pp</span> <span class="id" title="var">g</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap02</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( (<span class="id" title="var">concat_A1p</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span>) (<span class="id" title="var">eissect</span> <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>)))^ @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap_compose</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">f</span> <span class="id" title="var">_</span> @@ <span class="id" title="var">eisadj</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>) @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap_pp</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap_compose</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">_</span>)^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;).<br/>
+
+<br/>
+<span class="comment">(*&nbsp;An&nbsp;alias&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">isequiv_compose</span></span>,&nbsp;with&nbsp;some&nbsp;arguments&nbsp;explicit;&nbsp;often&nbsp;convenient&nbsp;when&nbsp;type&nbsp;class&nbsp;search&nbsp;fails.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_compose'</span><br/>
+&nbsp;&nbsp;{<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">_</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">_</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_compose</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_compose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_compose'</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_compose</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We put <span class="inlinecode"><span class="id" title="var">g</span></span> and <span class="inlinecode"><span class="id" title="var">f</span></span> in <span class="inlinecode"><span class="id" title="var">equiv_scope</span></span> explicitly.  This is a partial work-around for https://github.com/coq/coq/issues/3990, which is that implicitly bound scopes don't nest well. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Notation</span> &quot;g 'oE' f" := (<span class="id" title="var">equiv_compose'</span> <span class="id" title="var">g</span>%<span class="id" title="var">equiv</span> <span class="id" title="var">f</span>%<span class="id" title="var">equiv</span>) : <span class="id" title="var">equiv_scope</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;The&nbsp;TypeClass&nbsp;<span class="inlinecode"><span class="id" title="var">Transitive</span></span>&nbsp;has&nbsp;a&nbsp;different&nbsp;order&nbsp;of&nbsp;parameters&nbsp;than&nbsp;<span class="inlinecode"><span class="id" title="var">equiv_compose</span></span>.&nbsp;&nbsp;Thus&nbsp;in&nbsp;declaring&nbsp;the&nbsp;instance&nbsp;we&nbsp;have&nbsp;to&nbsp;switch&nbsp;the&nbsp;order&nbsp;of&nbsp;arguments.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">transitive_equiv</span> : <span class="id" title="var">Transitive</span> <span class="id" title="var">Equiv</span> | 0 :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">equiv_compose</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">transitive_equiv</span> /.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A tactic to simplify "oE".  See <span class="inlinecode"><span class="id" title="var">ev_equiv</span></span> below for a more extensive tactic. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">change_apply_equiv_compose</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span> [ <span class="id" title="var">equiv_fun</span> (?<span class="id" title="var">f</span> <span class="id" title="var">oE</span> ?<span class="id" title="var">g</span>) ?<span class="id" title="var">x</span> ] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> ((<span class="id" title="var">f</span> <span class="id" title="var">oE</span> <span class="id" title="var">g</span>) <span class="id" title="var">x</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">f</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Transporting is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">EquivTransport</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">y</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_transport</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">transport</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span>) | 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_IsEquiv</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>) (<span class="id" title="var">P</span> <span class="id" title="var">y</span>) (<span class="id" title="var">transport</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span>) (<span class="id" title="var">transport</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span>^)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">transport_pV</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span>) (<span class="id" title="var">transport_Vp</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span>) (<span class="id" title="var">transport_pVp</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_transport</span> : <span class="id" title="var">P</span> <span class="id" title="var">x</span> &lt;~&gt; <span class="id" title="var">P</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">transport</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">EquivTransport</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In all the above cases, we were able to directly construct all the structure of an equivalence.  However, as is evident, sometimes it is quite difficult to prove the adjoint law.
+
+<div class="paragraph"> </div>
+
+   The following adjointification theorem allows us to be lazy about this if we wish.  It says that if we have all the data of an (adjoint) equivalence except the triangle identity, then we can always obtain the triangle identity by modifying the datum <span class="inlinecode"><span class="id" title="var">equiv_is_section</span></span> (or <span class="inlinecode"><span class="id" title="var">equiv_is_retraction</span></span>).  The proof is the same as the standard categorical argument that any equivalence can be improved to an adjoint equivalence.
+
+<div class="paragraph"> </div>
+
+   As a stylistic matter, we try to avoid using adjointification in the library whenever possible, to preserve the homotopies specified by the user.  
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Adjointify</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">isretr</span> : <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">idmap</span>) (<span class="id" title="var">issect</span> : <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">idmap</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;This&nbsp;is&nbsp;the&nbsp;modified&nbsp;<span class="inlinecode"><span class="id" title="var">eissect</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">issect'</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">issect</span> <span class="id" title="var">x</span>)^)  @  <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">isretr</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))  @  <span class="id" title="var">issect</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">is_adjoint'</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">isretr</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>) = <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">issect'</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">issect'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_M1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pp</span>, <span class="id" title="var">concat_p_pp</span>; <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA1</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; (<span class="id" title="var">isretr</span> <span class="id" title="var">b</span>)^) (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">issect</span> <span class="id" title="var">a</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_V</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_Vp</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p_pp</span>, &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA1</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; (<span class="id" title="var">isretr</span> <span class="id" title="var">b</span>)^) (<span class="id" title="var">isretr</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pV</span>, <span class="id" title="var">concat_1p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We don't make this a typeclass instance, because we want to control when we are applying it. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_adjointify</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">isretr</span> <span class="id" title="var">issect'</span> <span class="id" title="var">is_adjoint'</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_adjointify</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Adjointify</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">isequiv_adjointify</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>}%<span class="id" title="var">_type_scope</span> (<span class="id" title="var">f</span> <span class="id" title="var">g</span>)%<span class="id" title="var">_function_scope</span> <span class="id" title="var">isretr</span> <span class="id" title="var">issect</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">equiv_adjointify</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>}%<span class="id" title="var">_type_scope</span> (<span class="id" title="var">f</span> <span class="id" title="var">g</span>)%<span class="id" title="var">_function_scope</span> <span class="id" title="var">isretr</span> <span class="id" title="var">issect</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Anything homotopic to an equivalence is an equivalence. This should not be an instance; it can cause the unifier to spin forever searching for functions to be homotopic to. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_homotopic</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">f</span> == <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>^-1.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>. <span class="id" title="tactic">exact</span> ((<span class="id" title="var">h</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>^-1 (<span class="id" title="var">h</span> <span class="id" title="var">a</span>)^ @ <span class="id" title="var">eissect</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_homotopic'</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">f</span> == <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_homotopic</span> <span class="id" title="var">f</span> <span class="id" title="var">h</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_homotopic</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">f</span> == <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">g</span> (<span class="id" title="var">isequiv_homotopic</span> <span class="id" title="var">f</span> <span class="id" title="var">h</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If <span class="inlinecode"><span class="id" title="var">e</span></span> is an equivalence, <span class="inlinecode"><span class="id" title="var">f</span></span> is homotopic to <span class="inlinecode"><span class="id" title="var">e</span></span>, and <span class="inlinecode"><span class="id" title="var">g</span></span> is homotopic to <span class="inlinecode"><span class="id" title="var">e</span>^-1</span>, then there is an equivalence whose underlying map is <span class="inlinecode"><span class="id" title="var">f</span></span> and whose inverse is <span class="inlinecode"><span class="id" title="var">g</span></span>, definitionally. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_homotopic_inverse</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>} (<span class="id" title="var">h</span> : <span class="id" title="var">f</span> == <span class="id" title="var">e</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">g</span> == <span class="id" title="var">e</span>^-1)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">equiv_adjointify</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">k</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">h</span> <span class="id" title="var">_</span> @ <span class="id" title="var">eisretr</span> <span class="id" title="var">e</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">h</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">k</span> <span class="id" title="var">_</span> @ <span class="id" title="var">eissect</span> <span class="id" title="var">e</span> <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+An involution is an endomap that is its own inverse. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_involution</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) (<span class="id" title="var">isinvol</span> : <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">idmap</span>)<br/>
+: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span> <span class="id" title="var">isinvol</span> <span class="id" title="var">isinvol</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_involution</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) (<span class="id" title="var">isinvol</span> : <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">idmap</span>)<br/>
+: <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_adjointify</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span> <span class="id" title="var">isinvol</span> <span class="id" title="var">isinvol</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Several lemmas useful for rewriting. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">moveR_equiv_M</span> `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">f</span>^-1 <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">p</span> @ <span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">moveR_equiv_M'</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">f</span>^-1 <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">moveR_equiv_M</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">moveL_equiv_M</span> `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">f</span>^-1 <span class="id" title="var">y</span> = <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">y</span> = <span class="id" title="var">f</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>)^ @ <span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">moveL_equiv_M'</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">f</span>^-1 <span class="id" title="var">y</span> = <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">y</span> = <span class="id" title="var">f</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">moveL_equiv_M</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">moveR_equiv_V</span> `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span> = <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">ap</span> (<span class="id" title="var">f</span>^-1) <span class="id" title="var">p</span> @ <span class="id" title="var">eissect</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">moveR_equiv_V'</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span> = <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">moveR_equiv_V</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">moveL_equiv_V</span> `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> <span class="id" title="var">y</span> = <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">y</span> = <span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">eissect</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>)^ @ <span class="id" title="var">ap</span> (<span class="id" title="var">f</span>^-1) <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">moveL_equiv_V'</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">y</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> <span class="id" title="var">y</span> = <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">y</span> = <span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">moveL_equiv_V</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Equivalence preserves contractibility (which of course is trivial under univalence). 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">contr_equiv</span> <span class="id" title="var">A</span> {<span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} `{<span class="id" title="var">Contr</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Contr</span> <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Build_Contr</span> <span class="id" title="var">_</span> (<span class="id" title="var">f</span> (<span class="id" title="var">center</span> <span class="id" title="var">A</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_M</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">contr</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">contr_equiv'</span> <span class="id" title="var">A</span> {<span class="id" title="var">B</span>} `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">Contr</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Contr</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">contr_equiv</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Any two contractible types are equivalent. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_contr_contr</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Contr</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Contr</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; (<span class="id" title="var">center</span> <span class="id" title="var">A</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">path_contr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">path_contr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">path_contr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_contr_contr</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Contr</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Contr</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">center</span> <span class="id" title="var">B</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The projection from the sum of a family of contractible types is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_pr1</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Contr</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (@<span class="id" title="var">pr1</span> <span class="id" title="var">A</span> <span class="id" title="var">P</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Build_IsEquiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span> (@<span class="id" title="var">pr1</span> <span class="id" title="var">A</span> <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">x</span> ; <span class="id" title="var">center</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">xy</span> =&gt; <span class="id" title="keyword">match</span> <span class="id" title="var">xy</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">exist</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">ap</span> (<span class="id" title="var">exist</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>) (<span class="id" title="var">contr</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">y</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap_const</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_pr1</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Contr</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;: { <span class="id" title="var">x</span> : <span class="id" title="var">A</span> &amp; <span class="id" title="var">P</span> <span class="id" title="var">x</span> } &lt;~&gt; <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (@<span class="id" title="var">pr1</span> <span class="id" title="var">A</span> <span class="id" title="var">P</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Equivalences between path spaces 
+<div class="paragraph"> </div>
+
+ If <span class="inlinecode"><span class="id" title="var">f</span></span> is an equivalence, then so is <span class="inlinecode"><span class="id" title="var">ap</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span>.  We are lazy and use <span class="inlinecode"><span class="id" title="var">adjointify</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_ap</span> `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (@<span class="id" title="var">ap</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) | 1000<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_adjointify</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">q</span> =&gt; (<span class="id" title="var">eissect</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>)^  @  <span class="id" title="var">ap</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">q</span>  @  <span class="id" title="var">eissect</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">q</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap_pp</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">whiskerR</span> (<span class="id" title="var">ap_pp</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@ ((<span class="id" title="var">ap_V</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> @ <span class="id" title="var">inverse2</span> (<span class="id" title="var">eisadj</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span>)^)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@@ (<span class="id" title="var">ap_compose</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">f</span> <span class="id" title="var">_</span>)^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@@ (<span class="id" title="var">eisadj</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span>)^)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">concat_pA1_p</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">whiskerR</span> (<span class="id" title="var">concat_Vp</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">whiskerR</span> (<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">_</span>)^) <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">concat_pA1_p</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">whiskerR</span> (<span class="id" title="var">concat_Vp</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_ap</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>) &lt;~&gt; (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Arguments</span> <span class="id" title="var">equiv_ap</span> (<span class="id" title="var">A</span> <span class="id" title="var">B</span>)%<span class="id" title="var">_type_scope</span> <span class="id" title="var">f</span>%<span class="id" title="var">_function_scope</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_ap'</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>) &lt;~&gt; (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_ap</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_inj</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">f</span> <span class="id" title="var">y</span>) -&gt; (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>)^-1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Assuming function extensionality, composing with an equivalence is itself an equivalence 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_precompose</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">B</span>-&gt;<span class="id" title="var">C</span>) =&gt; <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) | 1000<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_adjointify</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">B</span>-&gt;<span class="id" title="var">C</span>) =&gt; <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">h</span> =&gt; <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>^-1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">h</span> =&gt; <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">h</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>))).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_precompose</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) &lt;~&gt; (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">B</span>-&gt;<span class="id" title="var">C</span>) =&gt; <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_precompose'</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) &lt;~&gt; (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">B</span>-&gt;<span class="id" title="var">C</span>) =&gt; <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_postcompose</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">A</span>-&gt;<span class="id" title="var">B</span>) =&gt; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>) | 1000<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_adjointify</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">A</span>-&gt;<span class="id" title="var">B</span>) =&gt; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">h</span> =&gt; <span class="id" title="var">f</span>^-1 <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">h</span> =&gt; <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> (<span class="id" title="var">h</span> <span class="id" title="var">x</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">eissect</span> <span class="id" title="var">f</span> (<span class="id" title="var">g</span> <span class="id" title="var">y</span>))).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_postcompose</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) &lt;~&gt; (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">A</span>-&gt;<span class="id" title="var">B</span>) =&gt; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_postcompose'</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) &lt;~&gt; (<span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">A</span>-&gt;<span class="id" title="var">B</span>) =&gt; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Conversely, if pre- or post-composing with a function is always an equivalence, then that function is also an equivalence.  This is a form of the Yoneda lemma.  It's convenient to know that we only need to assume the equivalence when the other type is the domain or the codomain. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_isequiv_precompose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">precomp</span> := (<span class="id" title="keyword">fun</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) =&gt; <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Aeq</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">precomp</span> <span class="id" title="var">A</span>)) (<span class="id" title="var">Beq</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">precomp</span> <span class="id" title="var">B</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">g</span>:=(<span class="id" title="var">precomp</span> <span class="id" title="var">A</span>)^-1 <span class="id" title="var">idmap</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">p</span>:=<span class="id" title="var">eisretr</span> (<span class="id" title="var">precomp</span> <span class="id" title="var">A</span>) <span class="id" title="var">idmap</span> : <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> = <span class="id" title="var">idmap</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">ap10</span> <span class="id" title="var">_</span>) (<span class="id" title="var">ap10</span> <span class="id" title="var">p</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> (<span class="id" title="var">precomp</span> <span class="id" title="var">B</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">precomp</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">k</span>) <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_isequiv_postcompose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">postcomp</span> := (<span class="id" title="keyword">fun</span> (<span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">A</span>) =&gt; <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Aeq</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">postcomp</span> <span class="id" title="var">A</span>)) (<span class="id" title="var">Beq</span> : <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">postcomp</span> <span class="id" title="var">B</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">g</span>:=(<span class="id" title="var">postcomp</span> <span class="id" title="var">B</span>)^-1 <span class="id" title="var">idmap</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">p</span>:=<span class="id" title="var">eisretr</span> (<span class="id" title="var">postcomp</span> <span class="id" title="var">B</span>) <span class="id" title="var">idmap</span> : <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> = <span class="id" title="var">idmap</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">ap10</span> <span class="id" title="var">p</span>) (<span class="id" title="var">ap10</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> (<span class="id" title="var">postcomp</span> <span class="id" title="var">A</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">postcomp</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The inverse of an equivalence is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_inverse</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">feq</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>^-1 | 10000.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_IsEquiv</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">f</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">f</span>) (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>)).<br/>
+<span class="comment">(*&nbsp;We&nbsp;will&nbsp;prove&nbsp;the&nbsp;equality&nbsp;as&nbsp;a&nbsp;composite&nbsp;of&nbsp;four&nbsp;paths,&nbsp;working&nbsp;right&nbsp;to&nbsp;left.<br/>
+&nbsp;&nbsp;The&nbsp;LHS&nbsp;remains&nbsp;<span class="inlinecode"><span class="id" title="var">ap</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">(<span class="id" title="var">eissect</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">(<span class="id" title="var">f</span>^-1</span> <span class="inlinecode"><span class="id" title="var">b</span>))</span>&nbsp;throughout&nbsp;the&nbsp;process.<br/>
+&nbsp;&nbsp;Both&nbsp;sides&nbsp;of&nbsp;the&nbsp;equation&nbsp;are&nbsp;paths&nbsp;of&nbsp;type&nbsp;<span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">(<span class="id" title="var">f</span>^-1</span> <span class="inlinecode">(<span class="id" title="var">f</span></span> <span class="inlinecode">(<span class="id" title="var">f</span>^-1</span> <span class="inlinecode"><span class="id" title="var">b</span>)))</span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">(<span class="id" title="var">f</span>^-1</span> <span class="inlinecode"><span class="id" title="var">b</span>)</span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">_</span> @ <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>); <span class="id" title="var">revgoals</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">ap_homotopic_id</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_pp_V</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eisadj</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If the goal is <span class="inlinecode"><span class="id" title="var">IsEquiv</span></span> <span class="inlinecode"><span class="id" title="var">_</span>^-1</span>, then use <span class="inlinecode"><span class="id" title="var">isequiv_inverse</span></span>; otherwise, don't pretend worry about if the goal is an evar and we want to add a <span class="inlinecode">^-1</span>. 
+</div>
+<div class="code">
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 0 (<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span>^-1) =&gt; <span class="id" title="tactic">apply</span> @<span class="id" title="var">isequiv_inverse</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">Equiv</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> is a symmetric relation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">equiv_inverse</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} : (<span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) -&gt; (<span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">e</span>^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_inverse</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;e ^-1" := (@<span class="id" title="var">equiv_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">e</span>) : <span class="id" title="var">equiv_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">symmetric_equiv</span> : <span class="id" title="var">Symmetric</span> <span class="id" title="var">Equiv</span> | 0 := @<span class="id" title="var">equiv_inverse</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">symmetric_equiv</span> /.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Inversion respects composition 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_inverse_compose</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">g</span> <span class="id" title="var">oE</span> <span class="id" title="var">f</span>)^-1 == <span class="id" title="var">f</span>^-1 <span class="id" title="var">oE</span> <span class="id" title="var">g</span>^-1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Inversion respects homotopies 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_inverse_homotopy</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> == <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">g</span>^-1 == <span class="id" title="var">f</span>^-1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;1:<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;1:<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">eisretr</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_ap_inv</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span> = <span class="id" title="var">f</span>^-1 <span class="id" title="var">y</span>) &lt;~&gt; (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= (@<span class="id" title="var">equiv_ap</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)^-1%<span class="id" title="var">equiv</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_ap_inv'</span> `(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span> = <span class="id" title="var">f</span>^-1 <span class="id" title="var">y</span>) &lt;~&gt; (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">equiv_ap'</span> <span class="id" title="var">f</span>^-1%<span class="id" title="var">equiv</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)^-1%<span class="id" title="var">equiv</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">\<span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> and <span class="inlinecode"><span class="id" title="var">f</span></span> are equivalences, so is <span class="inlinecode"><span class="id" title="var">g</span></span>.  This is not an Instance because it would require Coq to guess <span class="inlinecode"><span class="id" title="var">f</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelR_isequiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_homotopic</span> ((<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">o</span> <span class="id" title="var">f</span>^-1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> <span class="id" title="var">b</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelR_equiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">C</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span> (<span class="id" title="var">cancelR_isequiv</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">\<span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> and <span class="inlinecode"><span class="id" title="var">g</span></span> are equivalences, so is <span class="inlinecode"><span class="id" title="var">f</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelL_isequiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_homotopic</span> (<span class="id" title="var">g</span>^-1 <span class="id" title="var">o</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">eissect</span> <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cancelL_equiv</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>) {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">g</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> (<span class="id" title="var">cancelL_isequiv</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Combining these with <span class="inlinecode"><span class="id" title="var">isequiv_compose</span></span>, we see that equivalences can be transported across commutative squares. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_commsq</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span>}<br/>
+: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (@<span class="id" title="var">cancelR_isequiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span> <span class="id" title="var">g</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_homotopic</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_commsq'</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span> == <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">g</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span>}<br/>
+: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (@<span class="id" title="var">cancelL_isequiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isequiv_homotopic</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Based homotopy spaces 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">contr_basedhomotopy</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">A</span>:<span class="id" title="keyword">Type</span>} {<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span>)<br/>
+: <span class="id" title="var">Contr</span> {<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> &amp; <span class="id" title="var">f</span> == <span class="id" title="var">g</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">contr_equiv'</span> { <span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> &amp; <span class="id" title="var">f</span> = <span class="id" title="var">g</span> } <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_adjointify</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">g</span> <span class="id" title="var">h</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">g</span>; <span class="id" title="var">apD10</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">g</span>; <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">eissect</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">contr_basedhomotopy'</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">A</span>:<span class="id" title="keyword">Type</span>} {<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span>)<br/>
+: <span class="id" title="var">Contr</span> {<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> &amp; <span class="id" title="var">g</span> == <span class="id" title="var">f</span> }.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">contr_equiv'</span> { <span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> &amp; <span class="id" title="var">g</span> = <span class="id" title="var">f</span> } <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_adjointify</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">g</span> <span class="id" title="var">h</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">g</span>; <span class="id" title="var">apD10</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">g</span>; <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">eissect</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The function <span class="inlinecode"><span class="id" title="var">equiv_ind</span></span> says that given an equivalence <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">&lt;~&gt;</span> <span class="inlinecode"><span class="id" title="var">B</span></span>, and a hypothesis from <span class="inlinecode"><span class="id" title="var">B</span></span>, one may always assume that the hypothesis is in the image of <span class="inlinecode"><span class="id" title="var">e</span></span>.
+
+<div class="paragraph"> </div>
+
+In fibrational terms, if we have a fibration over <span class="inlinecode"><span class="id" title="var">B</span></span> which has a section once pulled back along an equivalence <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">&lt;~&gt;</span> <span class="inlinecode"><span class="id" title="var">B</span></span>, then it has a section over all of <span class="inlinecode"><span class="id" title="var">B</span></span>.  
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_ind</span> `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">A</span>, <span class="id" title="var">P</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)) -&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>:<span class="id" title="var">B</span>, <span class="id" title="var">P</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">transport</span> <span class="id" title="var">P</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>) (<span class="id" title="var">g</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">y</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">equiv_ind</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} <span class="id" title="var">f</span> {<span class="id" title="var">_</span>} <span class="id" title="var">P</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_ind_comp</span> `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">f</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">df</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">A</span>, <span class="id" title="var">P</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">equiv_ind</span> <span class="id" title="var">f</span> <span class="id" title="var">P</span> <span class="id" title="var">df</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>) = <span class="id" title="var">df</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv_ind</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">eisadj</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">transport_compose</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">apD</span> <span class="id" title="var">df</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Using <span class="inlinecode"><span class="id" title="var">equiv_ind</span></span>, we define a handy little tactic which introduces a variable <span class="inlinecode"><span class="id" title="var">x</span></span> and simultaneously substitutes it along an equivalence <span class="inlinecode"><span class="id" title="var">E</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">equiv_intro</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| |- <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, @?<span class="id" title="var">Q</span> <span class="id" title="var">y</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_ind</span> <span class="id" title="var">E</span> <span class="id" title="var">Q</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The same, but for several variables. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Tactic Notation</span> "equiv_intros" <span class="id" title="keyword">constr</span>(<span class="id" title="var">E</span>) <span class="id" title="var">ident</span>(<span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_intro</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "equiv_intros" <span class="id" title="keyword">constr</span>(<span class="id" title="var">E</span>) <span class="id" title="var">ident</span>(<span class="id" title="var">x</span>) <span class="id" title="var">ident</span>(<span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_intro</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span>; <span class="id" title="var">equiv_intro</span> <span class="id" title="var">E</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Tactic Notation</span> "equiv_intros" <span class="id" title="keyword">constr</span>(<span class="id" title="var">E</span>) <span class="id" title="var">ident</span>(<span class="id" title="var">x</span>) <span class="id" title="var">ident</span>(<span class="id" title="var">y</span>) <span class="id" title="var">ident</span>(<span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_intro</span> <span class="id" title="var">E</span> <span class="id" title="var">x</span>; <span class="id" title="var">equiv_intro</span> <span class="id" title="var">E</span> <span class="id" title="var">y</span>; <span class="id" title="var">equiv_intro</span> <span class="id" title="var">E</span> <span class="id" title="var">z</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A lemma that combines equivalence induction with path induction.  If <span class="inlinecode"><span class="id" title="var">e</span></span> is an equivalence from <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">b</span></span> to <span class="inlinecode"><span class="id" title="var">X</span></span>, then to prove <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">x</span>,</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> it is enough to prove <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">p</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">a</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">b</span>,</span> <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">(<span class="id" title="var">e</span></span> <span class="inlinecode"><span class="id" title="var">p</span>)</span>, and so by path induction it suffices to prove <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">(<span class="id" title="var">e</span></span> <span class="inlinecode">1)</span>. The idiom for using this is to first <span class="inlinecode"><span class="id" title="var">revert</span></span> <span class="inlinecode"><span class="id" title="var">b</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>, which allows Coq to determine the family <span class="inlinecode"><span class="id" title="var">P</span></span>. After using this, <span class="inlinecode"><span class="id" title="var">b</span></span> will be replaced by <span class="inlinecode"><span class="id" title="var">a</span></span> in the goal. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_ind</span> {<span class="id" title="var">A</span>} {<span class="id" title="var">a</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">X</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">e</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">b</span> : <span class="id" title="var">A</span>), <span class="id" title="var">a</span> = <span class="id" title="var">b</span> &lt;~&gt; <span class="id" title="var">X</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">b</span> : <span class="id" title="var">A</span>), <span class="id" title="var">X</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">P</span> <span class="id" title="var">a</span> (<span class="id" title="var">e</span> <span class="id" title="var">a</span> 1))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">b</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">X</span> <span class="id" title="var">b</span>), <span class="id" title="var">P</span> <span class="id" title="var">b</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">equiv_ind</span> (<span class="id" title="var">e</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">r</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">equiv_composeR'</span></span>, a flipped version of <span class="inlinecode"><span class="id" title="var">equiv_compose'</span></span>, is (like <span class="inlinecode"><span class="id" title="var">concatR</span></span>) most often useful partially applied, to give the “first half” of an equivalence one is constructing and leave the rest as a subgoal. One could similarly define <span class="inlinecode"><span class="id" title="var">equiv_composeR</span></span> as a flip of <span class="inlinecode"><span class="id" title="var">equiv_compose</span></span>, but it doesn’t seem so useful since it doesn’t leave the remaining equivalence as a subgoal. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_composeR'</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_compose'</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Shouldn't&nbsp;this&nbsp;become&nbsp;transitivity&nbsp;mid&nbsp;?&nbsp;*)</span><br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">equiv_via</span> <span class="id" title="var">mid</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> @<span class="id" title="var">equiv_composeR'</span> <span class="id" title="keyword">with</span> (<span class="id" title="var">B</span> := <span class="id" title="var">mid</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It's often convenient when constructing a chain of equivalences to use <span class="inlinecode"><span class="id" title="var">equiv_compose'</span></span>, etc.  But when we treat an <span class="inlinecode"><span class="id" title="var">Equiv</span></span> object constructed in that way as a function, via the coercion <span class="inlinecode"><span class="id" title="var">equiv_fun</span></span>, Coq sometimes needs a little help to realize that the result is the same as ordinary composition.  This tactic provides that help. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">ev_equiv</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_inverse</span> (<span class="id" title="var">equiv_inverse</span> ?<span class="id" title="var">f</span>))] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_inverse</span> (<span class="id" title="var">equiv_inverse</span> <span class="id" title="var">f</span>))) <span class="id" title="keyword">with</span> (<span class="id" title="var">equiv_fun</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[(@<span class="id" title="var">equiv_inv</span> ?<span class="id" title="var">B</span> ?<span class="id" title="var">A</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_inverse</span> ?<span class="id" title="var">f</span>)) ?<span class="id" title="var">iseq</span>)] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (@<span class="id" title="var">equiv_inv</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_inverse</span> <span class="id" title="var">f</span>)) <span class="id" title="var">iseq</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">equiv_fun</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[((<span class="id" title="var">equiv_fun</span> ?<span class="id" title="var">f</span>)^-1)^-1] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> ((<span class="id" title="var">equiv_fun</span> <span class="id" title="var">f</span>)^-1)^-1 <span class="id" title="keyword">with</span> (<span class="id" title="var">equiv_fun</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_compose'</span> ?<span class="id" title="var">g</span> ?<span class="id" title="var">f</span>) ?<span class="id" title="var">a</span>] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_compose'</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>) <span class="id" title="var">a</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_compose</span> ?<span class="id" title="var">g</span> ?<span class="id" title="var">f</span>) ?<span class="id" title="var">a</span>] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_compose</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>) <span class="id" title="var">a</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_inverse</span> ?<span class="id" title="var">f</span>) ?<span class="id" title="var">a</span>] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_inverse</span> <span class="id" title="var">f</span>) <span class="id" title="var">a</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_compose'</span> ?<span class="id" title="var">g</span> ?<span class="id" title="var">f</span>)] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_compose'</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>)) <span class="id" title="keyword">with</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_compose</span> ?<span class="id" title="var">g</span> ?<span class="id" title="var">f</span>)] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_compose</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>)) <span class="id" title="keyword">with</span> (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_inverse</span> ?<span class="id" title="var">f</span>)] ] =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">equiv_fun</span> (<span class="id" title="var">equiv_inverse</span> <span class="id" title="var">f</span>)) <span class="id" title="keyword">with</span> (<span class="id" title="var">f</span>^-1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab329"></a><h2 class="section">Building equivalences between nested sigma and record types</h2>
+
+<div class="paragraph"> </div>
+
+ The following tactic <span class="inlinecode"><span class="id" title="var">make_equiv</span></span> builds an equivalence between two types built out of arbitrarily nested sigma and record types, not necessarily right-associated, as long as they have all the same underyling components.  This is more general than <span class="inlinecode"><span class="id" title="var">issig</span></span> in that it doesn't just prove equivalences between a single record type and a single right-nested tower of sigma types, but less powerful in that it can't deduce the latter nested tower of sigmas automatically: you have to have both sides of the equivalence known. 
+</div>
+<div class="code">
+
+<br/>
+<span class="comment">(*&nbsp;Perform&nbsp;<span class="inlinecode"><span class="id" title="tactic">intros</span></span>&nbsp;repeatedly,&nbsp;recursively&nbsp;destructing&nbsp;all&nbsp;possibly-nested&nbsp;record&nbsp;types.&nbsp;We&nbsp;use&nbsp;a&nbsp;custom&nbsp;induction&nbsp;principle&nbsp;for&nbsp;<span class="inlinecode"><span class="id" title="var">Contr</span></span>,&nbsp;since&nbsp;<span class="inlinecode"><span class="id" title="tactic">elim</span></span>&nbsp;produces&nbsp;two&nbsp;goals.&nbsp;The&nbsp;<span class="inlinecode"><span class="id" title="tactic">hnf</span></span>&nbsp;is&nbsp;important,&nbsp;for&nbsp;example&nbsp;to&nbsp;unfold&nbsp;<span class="inlinecode"><span class="id" title="var">IsUnitPreserving</span></span>&nbsp;to&nbsp;an&nbsp;equality,&nbsp;which&nbsp;the&nbsp;<span class="inlinecode"><span class="id" title="keyword">lazymatch</span></span>&nbsp;then&nbsp;ignores.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">decomposing_intros</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">x</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="keyword">lazymatch</span> <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">x</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| ?<span class="id" title="var">a</span> = ?<span class="id" title="var">b</span> =&gt; <span class="id" title="tactic">idtac</span>           </div>
+
+<div class="doc">
+Don't destruct paths 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>:?<span class="id" title="var">A</span>, ?<span class="id" title="var">B</span> =&gt; <span class="id" title="tactic">idtac</span>   </div>
+
+<div class="doc">
+Don't apply functions 
+</div>
+<div class="code">
+&nbsp;&nbsp;| <span class="id" title="var">Contr</span> ?<span class="id" title="var">A</span> =&gt; <span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span> |- (<span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>, ?<span class="id" title="var">P</span> <span class="id" title="var">y</span>) =&gt; <span class="id" title="var">snrefine</span> (<span class="id" title="var">Contr_ind</span> <span class="id" title="var">A</span> <span class="id" title="var">P</span> <span class="id" title="var">_</span>) <span class="id" title="keyword">end</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">elim</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="var">decomposing_intros</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;A&nbsp;multi-success&nbsp;version&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="tactic">assumption</span></span>.&nbsp;&nbsp;That&nbsp;is,&nbsp;like&nbsp;<span class="inlinecode"><span class="id" title="tactic">assumption</span></span>,&nbsp;but&nbsp;if&nbsp;there&nbsp;are&nbsp;multiple&nbsp;hypotheses&nbsp;that&nbsp;match&nbsp;the&nbsp;type&nbsp;of&nbsp;the&nbsp;goal,&nbsp;then&nbsp;after&nbsp;choosing&nbsp;the&nbsp;first&nbsp;one,&nbsp;if&nbsp;a&nbsp;later&nbsp;tactic&nbsp;fails&nbsp;we&nbsp;can&nbsp;backtrack&nbsp;and&nbsp;choose&nbsp;another&nbsp;one.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">multi_assumption</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">multimatch</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;If&nbsp;we&nbsp;wrote&nbsp;<span class="inlinecode"></span> <span class="inlinecode"><span class="id" title="var">H</span></span> <span class="inlinecode">:</span> <span class="inlinecode">?<span class="id" title="var">A</span></span> <span class="inlinecode">|-</span> <span class="inlinecode">?<span class="id" title="var">A</span></span> <span class="inlinecode"></span>&nbsp;here&nbsp;instead,&nbsp;it&nbsp;would&nbsp;prevent&nbsp;Coq&nbsp;from&nbsp;choosing&nbsp;an&nbsp;assumption&nbsp;that&nbsp;would&nbsp;require&nbsp;instantiating&nbsp;evars,&nbsp;which&nbsp;it&nbsp;has&nbsp;to&nbsp;do&nbsp;in&nbsp;the&nbsp;contr_basedpaths&nbsp;case&nbsp;below.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="var">H</span> : ?<span class="id" title="var">A</span> |- <span class="id" title="var">_</span> ] =&gt; <span class="id" title="tactic">exact</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Build&nbsp;an&nbsp;element&nbsp;of&nbsp;a&nbsp;possibly-nested&nbsp;record&nbsp;type&nbsp;out&nbsp;of&nbsp;hypotheses&nbsp;in&nbsp;the&nbsp;context.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">build_record</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="var">multi_assumption</span> + (<span class="id" title="var">unshelve</span> <span class="id" title="tactic">econstructor</span>; <span class="id" title="var">build_record</span>).<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Construct&nbsp;an&nbsp;equivalence&nbsp;between&nbsp;two&nbsp;possibly-nested&nbsp;record/sigma&nbsp;types&nbsp;that&nbsp;differ&nbsp;only&nbsp;by&nbsp;associativity&nbsp;and&nbsp;permutation&nbsp;of&nbsp;their&nbsp;components.&nbsp;&nbsp;We&nbsp;could&nbsp;use&nbsp;<span class="inlinecode"><span class="id" title="var">Build_Equiv</span></span>&nbsp;and&nbsp;directly&nbsp;construct&nbsp;<span class="inlinecode"><span class="id" title="var">eisadj</span></span>&nbsp;by&nbsp;decomposing&nbsp;to&nbsp;reflexivity&nbsp;as&nbsp;well,&nbsp;but&nbsp;often&nbsp;with&nbsp;large&nbsp;nested&nbsp;types&nbsp;it&nbsp;seems&nbsp;to&nbsp;be&nbsp;faster&nbsp;to&nbsp;adjointify.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">make_equiv</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">equiv_adjointify</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="var">decomposing_intros</span>; <span class="id" title="var">build_record</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros</span>; <span class="id" title="var">build_record</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">idpath</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">idpath</span> ].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In case anyone ever needs it, here's the version that doesn't adjointify. It's not the default, because it can be slow. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">make_equiv_without_adjointification</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="var">decomposing_intros</span>; <span class="id" title="var">build_record</span> |<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">Build_IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="var">decomposing_intros</span>; <span class="id" title="var">build_record</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">idpath</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">idpath</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">idpath</span> ] ].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here are some examples of the use of this tactic that you can uncomment and explore. 
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<pre>
+Goal forall (A : Type) (B : A -&gt; Type) (C : forall a:A, B a -&gt; Type) (D : forall (a:A) (b:B a), C a b -&gt; Type),
+     { ab : {a : A &amp; B a } &amp; { c : C ab.1 ab.2 &amp; D ab.1 ab.2 c } }
+     &lt;~&gt; { a : A &amp; { bc : { b : B a &amp; C a b } &amp; D a bc.1 bc.2 } }.
+  intros A B C D.
+  make_equiv.
+  Undo.
+  (** Here's the eventually successful proof script produced by [make_equiv], extracted from [Info 0 make_equiv] and prettified, so you can step through it and see how the tactic works. *)
+  snrefine (equiv_adjointify _ _ _ _).
+  - (** Here begins [decomposing_intros] *)
+    intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a; cbn in a.
+    intros b; cbn in b.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros c; cbn in c. 
+    intros d; cbn in d.
+    (** Here begins [build_record] *)
+    cbn; unshelve econstructor.
+    { cbn; exact a. }
+    { cbn; unshelve econstructor.
+      { cbn; unshelve econstructor.
+        { cbn; exact b. }
+        { cbn; exact c. } }
+      { cbn; exact d. } }
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros a; cbn in a.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x. 
+    intros b; cbn in b.
+    intros c; cbn in c.
+    intros d; cbn in d.
+    cbn; unshelve econstructor.
+    { cbn; unshelve econstructor.
+      { cbn; exact a. }
+      { cbn; exact b. } }
+    { cbn; unshelve econstructor.
+      { cbn; exact c. }
+      { cbn; exact d. } }
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros a; cbn in a.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x. 
+    intros b; cbn in b.
+    intros c; cbn in c.
+    intros d; cbn in d.
+    cbn; exact idpath.
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a; cbn in a.
+    intros b; cbn in b.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros c; cbn in c. 
+    intros d; cbn in d.
+    cbn; exact idpath.
+Defined.
+</pre>
+
+<div class="paragraph"> </div>
+
+ Here is an example illustrating the need for <span class="inlinecode"><span class="id" title="var">multi_assumption</span></span> instead of just <span class="inlinecode"><span class="id" title="tactic">assumption</span></span>. 
+<div class="paragraph"> </div>
+
+<pre>
+Goal forall (A:Type) (R:A-&gt;A-&gt;Type),
+    { x : A &amp; { y : A &amp; R x y } } &lt;~&gt; { xy : A * A &amp; R (fst xy) (snd xy) }.
+  intros A R.
+  make_equiv.
+  Undo.
+  snrefine (equiv_adjointify _ _ _ _).
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros a1; cbn in a1.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a2; cbn in a2.
+    intros r; cbn in r.
+    cbn; unshelve econstructor.
+    { cbn; unshelve econstructor. 
+      { (** [build_record] can't guess at this point that it needs to use [a1] instead of [a2], and in fact it tries [a2] first; but later on, [exact r] fails in that case, causing backtracking to this point and a re-try with [a1].  *)
+        cbn; exact a1. }
+      { cbn; exact a2. } }
+    cbn; exact r.
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a1; cbn in a1.
+    intros a2; cbn in a2.
+    intros r; cbn in r.
+    cbn; unshelve econstructor.
+    { cbn; exact a1. }
+    { cbn; unshelve econstructor.
+      { cbn; exact a2. }
+      { cbn; exact r. } }
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a1; cbn in a1.
+    intros a2; cbn in a2.
+    intros r; cbn in r.
+    cbn; exact idpath.
+  - intros x; cbn in x.
+    elim x; clear x.
+    intros a1; cbn in a1.
+    intros x; cbn in x.
+    elim x; clear x.
+    intros a2; cbn in a2.
+    intros r; cbn in r.
+    cbn; exact idpath.
+Defined.
+</pre>
+
+<div class="paragraph"> </div>
+
+ Some "real-world" examples where <span class="inlinecode"><span class="id" title="var">make_equiv</span></span> simplifies things a lot include the associativity/symmetry proofs in <span class="inlinecode"><span class="id" title="keyword">Types</span>/<span class="id" title="var">Sigma.v</span></span>, <span class="inlinecode"><span class="id" title="var">issig_pequiv'</span></span> in <span class="inlinecode"><span class="id" title="var">Pointed</span>/<span class="id" title="var">pEquiv.v</span></span>, and <span class="inlinecode"><span class="id" title="var">loop_susp_adjoint</span></span> in <span class="inlinecode"><span class="id" title="var">Pointed</span>/<span class="id" title="var">pSusp.v</span></span>. 
+<div class="paragraph"> </div>
+
+ Now we give a version of <span class="inlinecode"><span class="id" title="var">make_equiv</span></span> that can also prove equivalences of nested sigma- and record types that involve contracting based path-spaces on either or both sides.  The basepoint and the path don't have to appear together, but can be in arbitrarily separated parts of the nested structure.  It does this by selectively applying path-induction to based paths appearing on both sides, if needed. 
+<div class="paragraph"> </div>
+
+ We start with a version of <span class="inlinecode"><span class="id" title="var">decomposing_intros</span></span> that is willing to destruct paths, though as a second choice. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">decomposing_intros_with_paths</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">x</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">hnf</span> <span class="id" title="tactic">in</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">x</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">multimatch</span> <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">x</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">type</span> <span class="id" title="keyword">of</span> <span class="id" title="var">x</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| </div>
+
+<div class="doc">
+Don't destruct paths at first 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;?<span class="id" title="var">a</span> = ?<span class="id" title="var">b</span> =&gt; <span class="id" title="tactic">fail</span> 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| </div>
+
+<div class="doc">
+Don't apply functions at first 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>:?<span class="id" title="var">A</span>, ?<span class="id" title="var">B</span> =&gt; <span class="id" title="tactic">fail</span> 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">_</span> =&gt; <span class="id" title="tactic">elim</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="var">decomposing_intros_with_paths</span><br/>
+&nbsp;&nbsp;| ?<span class="id" title="var">a</span> = ?<span class="id" title="var">b</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Destruct paths as a second choice.  But sometimes <span class="inlinecode"><span class="id" title="tactic">destruct</span></span> isn't smart enough to generalize the other hypotheses that use the free endpoint, so we manually apply <span class="inlinecode"><span class="id" title="var">paths_ind</span></span>, or its right-handed version, instead. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="tactic">move</span> <span class="id" title="var">x</span> <span class="id" title="keyword">before</span> <span class="id" title="var">b</span>; </div>
+
+<div class="doc">
+Ensure that <span class="inlinecode"><span class="id" title="var">b</span></span> and <span class="inlinecode"><span class="id" title="var">x</span></span> come first in the <span class="inlinecode"><span class="id" title="keyword">forall</span></span> goal resulting from <span class="inlinecode"><span class="id" title="tactic">generalize</span></span> <span class="inlinecode"><span class="id" title="tactic">dependent</span></span>, so that <span class="inlinecode"><span class="id" title="var">paths_ind</span></span> can apply to it. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">b</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">assert_fails</span> (<span class="id" title="tactic">move</span> <span class="id" title="var">b</span> <span class="id" title="tactic">at</span> <span class="id" title="var">top</span>); </div>
+
+<div class="doc">
+Check that <span class="inlinecode"><span class="id" title="var">b</span></span> was actually reverted.  (If it's a section variable that the goal depends on, <span class="inlinecode"><span class="id" title="tactic">generalize</span></span> <span class="inlinecode"><span class="id" title="tactic">dependent</span></span> <span class="inlinecode"><span class="id" title="var">b</span></span> will "succeed", but actually fail to generalize the goal over <span class="inlinecode"><span class="id" title="var">b</span></span> (since that can't be done within the section) and not clear <span class="inlinecode"><span class="id" title="var">b</span></span> from the context.)  
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">paths_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)) +<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Try the other endpoint too. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="tactic">move</span> <span class="id" title="var">x</span> <span class="id" title="keyword">before</span> <span class="id" title="var">a</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">a</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">assert_fails</span> (<span class="id" title="tactic">move</span> <span class="id" title="var">a</span> <span class="id" title="tactic">at</span> <span class="id" title="var">top</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">paths_ind_r</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="var">decomposing_intros_with_paths</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Going the other direction, we have to be willing to insert identity paths to fill in the based path-spaces that got destructed.  In fact <span class="inlinecode"><span class="id" title="tactic">econstructor</span></span> is already willing to do that, since <span class="inlinecode"><span class="id" title="var">idpath</span></span> is the constructor of <span class="inlinecode"><span class="id" title="var">paths</span></span>.  However, our previous <span class="inlinecode"><span class="id" title="var">build_record</span></span> won't manage to get to the point of being able to apply <span class="inlinecode"><span class="id" title="tactic">econstructor</span></span> to the necessary paths, since it'll get stuck earlier on trying to find the basepoint.  Thus, we give a version of <span class="inlinecode"><span class="id" title="var">build_record</span></span> that is willing to create existential variables ("evars") for goals that it can't solve, in hopes that a later <span class="inlinecode"><span class="id" title="var">idpath</span></span> (produced by <span class="inlinecode"><span class="id" title="tactic">econstructor</span></span>) will determine them by unification.  Note that if there are other fields that depend on the basepoint that occur before the <span class="inlinecode"><span class="id" title="var">idpath</span></span>, the evar will -- and, indeed, must -- get instantiated by them instead.  This is why <span class="inlinecode"><span class="id" title="var">multi_assumption</span></span>, above, must be willing to instantiate evars. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">build_record_with_evars</span> :=<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cbn</span>; <span class="id" title="var">multi_assumption</span> + (<span class="id" title="var">unshelve</span> <span class="id" title="tactic">econstructor</span>; <span class="id" title="var">build_record_with_evars</span>)) +<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Create a fresh evar to solve this goal 
+</div>
+<div class="code">
+&nbsp;&nbsp;(<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|- ?<span class="id" title="var">G</span> =&gt; <span class="id" title="keyword">let</span> <span class="id" title="var">x</span> := <span class="id" title="tactic">fresh</span> <span class="id" title="tactic">in</span> <span class="id" title="tactic">evar</span> (<span class="id" title="var">x</span> : <span class="id" title="var">G</span>); <span class="id" title="tactic">exact</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>; <span class="id" title="var">build_record_with_evars</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now here's the improved version of <span class="inlinecode"><span class="id" title="var">make_equiv</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">make_equiv_contr_basedpaths</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">equiv_adjointify</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="tactic">solve</span></span> <span class="inlinecode">[</span> <span class="inlinecode"><span class="id" title="var">unshelve</span></span> <span class="inlinecode"><span class="id" title="var">TAC</span></span> <span class="inlinecode">]</span> ensures that <span class="inlinecode"><span class="id" title="var">TAC</span></span> succeeds without leaving any leftover evars. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="var">decomposing_intros_with_paths</span>; <span class="id" title="tactic">solve</span> [ <span class="id" title="var">unshelve</span> <span class="id" title="var">build_record_with_evars</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros_with_paths</span>; <span class="id" title="tactic">solve</span> [ <span class="id" title="var">unshelve</span> <span class="id" title="var">build_record_with_evars</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros_with_paths</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">idpath</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">decomposing_intros_with_paths</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">idpath</span> ].<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+As before, we give some examples. 
+<div class="paragraph"> </div>
+
+
+<div class="paragraph"> </div>
+
+<pre>
+Section Examples.
+  Context (A : Type) (B : A -&gt; Type) (a0 : A).
+  Goal { a : A &amp; { b : B a &amp; a = a0 } } &lt;~&gt; B a0.
+  Proof.
+    make_equiv_contr_basedpaths.
+    Undo.
+    snrefine (equiv_adjointify _ _ _ _).
+    - (** Here begins [decomposing_intros_with_paths] *)
+      intros x; cbn in x.
+      elim x; clear x.
+      intros a; cbn in a.
+      intros x; cbn in x. 
+      elim x; clear x.
+      intros b; cbn in b.
+      intros p; cbn in p.
+      (** [decomposing_intros] wouldn't be willing to destruct [p] here, because it's a path.  But [decomposing_intros_with_paths] will try it when all else fails. *)
+      move p before a.
+      generalize dependent a.
+      not (move a at top).
+      refine (paths_ind_r _ _ _).
+      intros b; cbn in b.
+      (** Here begins [build_record_with_evars] *)
+      exact b.
+    - (** Here begins [decomposing_intros_with_paths] *)
+      intros b; cbn in b.
+      (** Here begins [build_record_with_evars] *)
+      cbn; unshelve econstructor.
+      { let x := fresh in evar (x : A); exact x. }
+      cbn; unshelve econstructor.
+      { (** This instantiates the evar. *)
+        exact b. }
+      { cbn; unshelve econstructor. }
+    - intros b; cbn in b.
+      exact idpath.
+    - intros x; cbn in x.
+      elim x; clear x.
+      intros a; cbn in a.
+      intros x; cbn in x. 
+      elim x; clear x.
+      intros b; cbn in b.
+      intros p; cbn in p.
+      move p before a.
+      generalize dependent a.
+      not (move a at top).
+      refine (paths_ind_r _ _ _).
+      intros b; cbn in b.
+      exact idpath.
+  Defined.
+End Examples.
+</pre>
+
+<div class="paragraph"> </div>
+
+ Some "real-world" examples where <span class="inlinecode"><span class="id" title="var">make_equiv_contr_basedpaths</span></span> simplifies things a lot include <span class="inlinecode"><span class="id" title="var">hfiber_compose</span></span> in <span class="inlinecode"><span class="id" title="var">HFiber.v</span></span>, <span class="inlinecode"><span class="id" title="var">hfiber_pullback_along</span></span> in <span class="inlinecode"><span class="id" title="var">Limits</span>/<span class="id" title="var">Pullback.v</span></span>, and <span class="inlinecode"><span class="id" title="var">equiv_Ocodeleft2plus</span></span> in <span class="inlinecode"><span class="id" title="var">BlakersMassey.v</span></span>. 
+</div>
+<div class="code">
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Idempotents</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Idempotents</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HFiber</span> <span class="id" title="var">Constant</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Truncations.Core</span> <span class="id" title="var">Modalities.Modality</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">PathAny</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab59"></a><h1 class="section">Idempotents and their splittings</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab60"></a><h2 class="section">Basic definitions</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab61"></a><h3 class="section">Retracts</h3>
+
+<div class="paragraph"> </div>
+
+ A *retract* of a type <span class="inlinecode"><span class="id" title="var">X</span></span> is a type <span class="inlinecode"><span class="id" title="var">A</span></span> equipped with a pair of morphisms <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">A</span></span> and <span class="inlinecode"><span class="id" title="var">s</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">X</span></span> such that the composite <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">s</span></span> is the identity of <span class="inlinecode"><span class="id" title="var">A</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">RetractOf</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} :=<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">retract_type</span> : <span class="id" title="keyword">Type</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">retract_retr</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">retract_type</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">retract_sect</span> : <span class="id" title="var">retract_type</span> -&gt; <span class="id" title="var">X</span> ;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">retract_issect</span> : <span class="id" title="var">retract_retr</span> <span class="id" title="var">o</span> <span class="id" title="var">retract_sect</span> == <span class="id" title="var">idmap</span> }.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span> : <span class="id" title="tactic">clear</span> <span class="id" title="var">implicits</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">retract_type</span> / .<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">retract_retr</span> / .<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">retract_sect</span> / .<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">retract_issect</span> / .<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For example, here is the identity retraction. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">idmap_retractof</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_RetractOf</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span> <span class="id" title="var">idmap</span> <span class="id" title="var">idmap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Retractions can be composed with equivalences on either side. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">retractof_equiv</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>) `{<span class="id" title="var">feq</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}<br/>
+: <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">RetractOf</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">A</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">H</span>]; <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_RetractOf</span> <span class="id" title="var">Y</span> <span class="id" title="var">A</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>^-1) (<span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">r</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">f</span> (<span class="id" title="var">s</span> <span class="id" title="var">x</span>)) @ <span class="id" title="var">H</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">retractof_equiv'</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Y</span>)<br/>
+: <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">RetractOf</span> <span class="id" title="var">Y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">retractof_equiv</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_retractof</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">retract_type</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">B</span>) `{<span class="id" title="var">feq</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}<br/>
+: <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">R</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">A</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">H</span>]; <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_RetractOf</span> <span class="id" title="var">X</span> <span class="id" title="var">B</span> (<span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>^-1) <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">H</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span>)) @ <span class="id" title="var">eisretr</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_retractof'</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">retract_type</span> <span class="id" title="var">R</span> &lt;~&gt; <span class="id" title="var">B</span>)<br/>
+: <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_retractof</span> <span class="id" title="var">R</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A commuting retract of the domain of map induces a retract of its fibers. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">retractof_hfiber</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="var">retract_type</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">retract_retr</span> <span class="id" title="var">R</span> == <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">y</span> : <span class="id" title="var">Y</span>)<br/>
+: <span class="id" title="var">RetractOf</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">R</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">A</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">H</span>]; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_RetractOf</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span>) (<span class="id" title="var">hfiber</span> <span class="id" title="var">g</span> <span class="id" title="var">y</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span> @ <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">s</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">p</span> (<span class="id" title="var">s</span> <span class="id" title="var">a</span>))^ @ <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">H</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">path_sigma'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">H</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">abstract</span> (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_paths_Fl</span>, !<span class="id" title="var">concat_p_pp</span>, <span class="id" title="var">concat_pp_V</span>, <span class="id" title="var">concat_Vp</span>, <span class="id" title="var">concat_1p</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Retraction preserves contractibility 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">contr_retracttype</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span> ) (<span class="id" title="var">contra</span> : <span class="id" title="var">Contr</span> <span class="id" title="var">X</span>) : <span class="id" title="var">Contr</span> (<span class="id" title="var">retract_type</span> <span class="id" title="var">R</span> )<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">contr_retract</span> (<span class="id" title="var">retract_retr</span> <span class="id" title="var">R</span>) (<span class="id" title="var">retract_sect</span> <span class="id" title="var">R</span>) (<span class="id" title="var">retract_issect</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Like any record type, <span class="inlinecode"><span class="id" title="var">RetractOf</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is equivalent to a nested sigma-type.  We use a product at one place in the middle, rather than a sigma, to simplify the next proof. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_retractof</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>)<br/>
+: { <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span> &amp; {<span class="id" title="var">r</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">A</span> &amp; {<span class="id" title="var">s</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">X</span> &amp; <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> == <span class="id" title="var">idmap</span> }}}<br/>
+&nbsp;&nbsp;&lt;~&gt; <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">issig</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Path&nbsp;spaces&nbsp;of&nbsp;types&nbsp;of&nbsp;retractions&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">PathRetractOf</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">R'</span> <span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;:= { <span class="id" title="var">Ap</span> : <span class="id" title="var">retract_type</span> <span class="id" title="var">R'</span> &lt;~&gt; <span class="id" title="var">retract_type</span> <span class="id" title="var">R</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">rp</span> : <span class="id" title="var">Ap</span> <span class="id" title="var">o</span> <span class="id" title="var">retract_retr</span> <span class="id" title="var">R'</span> == <span class="id" title="var">retract_retr</span> <span class="id" title="var">R</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">sp</span> : <span class="id" title="var">retract_sect</span> <span class="id" title="var">R'</span> <span class="id" title="var">o</span> <span class="id" title="var">Ap</span>^-1 == <span class="id" title="var">retract_sect</span> <span class="id" title="var">R</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">ap</span> <span class="id" title="var">Ap</span> (<span class="id" title="var">retract_issect</span> <span class="id" title="var">R'</span> (<span class="id" title="var">Ap</span>^-1 <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">eisretr</span> <span class="id" title="var">Ap</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">rp</span> (<span class="id" title="var">retract_sect</span> <span class="id" title="var">R'</span> (<span class="id" title="var">Ap</span>^-1 <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> (<span class="id" title="var">retract_retr</span> <span class="id" title="var">R</span>) (<span class="id" title="var">sp</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">retract_issect</span> <span class="id" title="var">R</span> <span class="id" title="var">a</span> } } }.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_retractof</span> `{<span class="id" title="var">ua</span> : <span class="id" title="var">Univalence</span>} {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">R'</span> <span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">PathRetractOf</span> <span class="id" title="var">X</span> <span class="id" title="var">R'</span> <span class="id" title="var">R</span> &lt;~&gt; <span class="id" title="var">R'</span> = <span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">R'</span> <span class="id" title="var">R</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_path_issig_contr</span> (<span class="id" title="var">issig_retractof</span> <span class="id" title="var">X</span>)).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> [<span class="id" title="var">A</span> [<span class="id" title="var">r</span> [<span class="id" title="var">s</span> <span class="id" title="var">H</span>]]]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">equiv_idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; 1%<span class="id" title="var">path</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; 1%<span class="id" title="var">path</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">equiv_p1_1q</span> (<span class="id" title="var">ap_idmap</span> (<span class="id" title="var">H</span> <span class="id" title="var">a</span>))). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">A</span> [<span class="id" title="var">r</span> [<span class="id" title="var">s</span> <span class="id" title="var">H</span>]]]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">PathRetractOf</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">contr_sigsig</span> <span class="id" title="var">A</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">A</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">contr_sigsig</span> <span class="id" title="var">r</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span> =&gt; <span class="id" title="var">idpath</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>)); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">contr_sigsig</span> <span class="id" title="var">s</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span>:<span class="id" title="var">A</span> =&gt; <span class="id" title="var">idpath</span> (<span class="id" title="var">s</span> <span class="id" title="var">x</span>)); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">contr_equiv'</span> {<span class="id" title="var">K</span> : <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> == <span class="id" title="var">idmap</span> &amp; <span class="id" title="var">H</span> == <span class="id" title="var">K</span>} <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">K</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_forall_id</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_concat_lr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">ap_idmap</span> (<span class="id" title="var">H</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_retractof</span> `{<span class="id" title="var">ua</span> : <span class="id" title="var">Univalence</span>} {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">R'</span> <span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Ap</span> <span class="id" title="var">rp</span> <span class="id" title="var">sp</span> <span class="id" title="var">Hp</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">R'</span> = <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_path_retractof</span> <span class="id" title="var">R'</span> <span class="id" title="var">R</span> (<span class="id" title="var">Ap</span>;<span class="id" title="var">rp</span>;<span class="id" title="var">sp</span>;<span class="id" title="var">Hp</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab62"></a><h3 class="section">Splittings</h3>
+
+<div class="paragraph"> </div>
+
+ If an endomap <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">X</span></span> arises from a retract as <span class="inlinecode"><span class="id" title="var">s</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">r</span></span>, we say that that retract is a *splitting* of <span class="inlinecode"><span class="id" title="var">f</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">retract_idem</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+: (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">retract_sect</span> <span class="id" title="var">R</span> <span class="id" title="var">o</span> <span class="id" title="var">retract_retr</span> <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">retract_idem</span> {<span class="id" title="var">_</span>} <span class="id" title="var">_</span> / <span class="id" title="var">x</span> .<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Splitting</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;:= { <span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span> &amp; <span class="id" title="var">retract_idem</span> <span class="id" title="var">R</span> == <span class="id" title="var">f</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For example, here is the canonical splitting of the identity. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">splitting_idmap</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : @<span class="id" title="var">Splitting</span> <span class="id" title="var">X</span> <span class="id" title="var">idmap</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">idmap_retractof</span> <span class="id" title="var">X</span> ; <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab63"></a><h3 class="section">Pre-idempotents</h3>
+
+<div class="paragraph"> </div>
+
+ An "idempotent" is a map that at least "ought" to be splittable.  The naive definition of idempotent, which is correct in set-level mathematics, is a morphism <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">X</span></span> such that <span class="inlinecode"><span class="id" title="keyword">forall</span></span> <span class="inlinecode"><span class="id" title="var">x</span>,</span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">(<span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">x</span>)</span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span>.  We will call this a "pre-idempotent". 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsPreIdempotent</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isidem</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">f</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>) = <span class="id" title="var">f</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">isidem</span> {<span class="id" title="var">X</span>} <span class="id" title="var">f</span> {<span class="id" title="var">_</span>} <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ispreidem_homotopic</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) `{<span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> == <span class="id" title="var">g</span>)<br/>
+: <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">isidem</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> @ <span class="id" title="var">p</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">p</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>; <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">ispreidem_homotopic</span> / .<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">PreIdempotent</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) := { <span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span> &amp; <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">f</span> }.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">preidempotent_pr1</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span> := <span class="id" title="var">pr1</span>.<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">preidempotent_pr1</span> : <span class="id" title="var">PreIdempotent</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispreidem_preidem</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">f</span>.2.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The identity function has a canonical structure of a pre-idempotent. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispreidem_idmap</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : @<span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">X</span> <span class="id" title="var">idmap</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">preidem_idmap</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">idmap</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Any pre-idempotent on a set splits. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_preidem_set</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">X</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_RetractOf</span> <span class="id" title="var">X</span> { <span class="id" title="var">x</span> : <span class="id" title="var">X</span> &amp; <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span> }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">f</span> <span class="id" title="var">x</span> ; <span class="id" title="var">isidem</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>)) <span class="id" title="var">pr1</span> <span class="id" title="var">_</span> ; <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">p</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma</span> <span class="id" title="keyword">with</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Any weakly constant pre-idempotent splits (Escardo) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_preidem_wconst</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">WeaklyConstant</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}<br/>
+: <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_RetractOf</span> <span class="id" title="var">X</span> (<span class="id" title="var">FixedBy</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">f</span> <span class="id" title="var">x</span> ; <span class="id" title="var">isidem</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>)) <span class="id" title="var">pr1</span> <span class="id" title="var">_</span> ; <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If <span class="inlinecode"><span class="id" title="var">f</span></span> is pre-idempotent and <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">x</span></span> is collapsible for all <span class="inlinecode"><span class="id" title="var">x</span></span>, then <span class="inlinecode"><span class="id" title="var">f</span></span> splits (Escardo). 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_preidem_splitsupp</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ss</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Collapsible</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span>))<br/>
+: <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_RetractOf</span> <span class="id" title="var">X</span> { <span class="id" title="var">x</span> : <span class="id" title="var">X</span> &amp; <span class="id" title="var">FixedBy</span> (@<span class="id" title="var">collapse</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) <span class="id" title="var">_</span>) }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">pr1</span> <span class="id" title="var">_</span> ; <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">exists</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>); <span class="id" title="tactic">unfold</span> <span class="id" title="var">FixedBy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">collapse</span> (<span class="id" title="var">isidem</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">wconst</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> [<span class="id" title="var">p</span> <span class="id" title="var">q</span>]]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma</span> <span class="id" title="keyword">with</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Moreover, in this case the section is an embedding. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isemb_split_preidem_splitsupp</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ss</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Collapsible</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span>))<br/>
+: <span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">retract_sect</span> (<span class="id" title="var">split_preidem_splitsupp</span> <span class="id" title="var">X</span> <span class="id" title="var">f</span> <span class="id" title="var">ss</span>).1).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istruncmap_mapinO_tr</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Conversely, if <span class="inlinecode"><span class="id" title="var">f</span></span> splits with a section that is an embedding, then (it is pre-idempotent and) <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">x</span></span> is collapsible for all <span class="inlinecode"><span class="id" title="var">x</span></span> (Escardo). 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">splitsupp_split_isemb</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) (<span class="id" title="var">S</span> : <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">retract_sect</span> <span class="id" title="var">S</span>.1)}<br/>
+: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">Collapsible</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">S</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">A</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">H</span>] <span class="id" title="var">K</span>]; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">c1</span> : <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span> -&gt; { <span class="id" title="var">a</span> : <span class="id" title="var">A</span> &amp; <span class="id" title="var">s</span> <span class="id" title="var">a</span> = <span class="id" title="var">x</span> }).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">exists</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">K</span> <span class="id" title="var">x</span> @ <span class="id" title="var">p</span>). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">c2</span> : { <span class="id" title="var">a</span> : <span class="id" title="var">A</span> &amp; <span class="id" title="var">s</span> <span class="id" title="var">a</span> = <span class="id" title="var">x</span> } -&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">K</span> <span class="id" title="var">x</span>)^ @ <span class="id" title="var">ap</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">q</span>^ @ <span class="id" title="var">ap</span> <span class="id" title="var">s</span> (<span class="id" title="var">H</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">q</span>). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">c2</span> <span class="id" title="var">o</span> <span class="id" title="var">c1</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">wconst_through_hprop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab64"></a><h3 class="section">Quasi-idempotents</h3>
+
+<div class="paragraph"> </div>
+
+ However, homotopically we may naturally expect to need some coherence on the witness <span class="inlinecode"><span class="id" title="var">isidem</span></span> of idempotency.  And indeed, in homotopy theory there are pre-idempotents which do not split; we will see an example later on.  We expect a "coherent idempotent" to involve infinitely many data.  However, Lemma 7.3.5.14 of *Higher Algebra* suggests that for an idempotent to admit *some* coherentification, hence also a splitting, it suffices to have *one* additional datum.  By modifying the construction given there, we can show similarly in type theory that any idempotent satisfying an additional coherence datum splits.  We will call a pre-idempotent with this one additional datum a "quasi-idempotent", since it is related to a fully coherent idempotent similarly to the way having a "quasi-inverse" is related to being a coherent equivalence. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsQuasiIdempotent</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) `{<span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isidem2</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">isidem</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>) = <span class="id" title="var">isidem</span> <span class="id" title="var">f</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">isidem2</span> {<span class="id" title="var">X</span>} <span class="id" title="var">f</span> {<span class="id" title="var">_</span> <span class="id" title="var">_</span>} <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isqidem_homotopic</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) `{<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">f</span> == <span class="id" title="var">g</span>)<br/>
+: @<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span> (<span class="id" title="var">ispreidem_homotopic</span> <span class="id" title="var">f</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">isidem</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_Ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)^) (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_pM</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA_p</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)^) (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA_p</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)^) (<span class="id" title="var">isidem</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_Ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)^) (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)^)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_V</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">isidem2</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_Ap</span> (<span class="id" title="var">isidem</span> <span class="id" title="var">f</span>) (<span class="id" title="var">p</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuasiIdempotent</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) := { <span class="id" title="var">f</span> : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span> &amp; <span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">f</span> }.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">quasiidempotent_pr1</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} : <span class="id" title="var">QuasiIdempotent</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span> := <span class="id" title="var">pr1</span>.<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">quasiidempotent_pr1</span> : <span class="id" title="var">QuasiIdempotent</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isqidem_qidem</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">QuasiIdempotent</span> <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">f</span>.2.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The identity function has a canonical structure of a quasi-idempotent. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isqidem_idmap</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : @<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">X</span> <span class="id" title="var">idmap</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">qidem_idmap</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">QuasiIdempotent</span> <span class="id" title="var">X</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">preidem_idmap</span> <span class="id" title="var">X</span>); <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We have made <span class="inlinecode"><span class="id" title="var">IsPreIdempotent</span></span> and <span class="inlinecode"><span class="id" title="var">IsQuasiIdempotent</span></span> typeclasses as an experiment.  It could be that they should revert back to <span class="inlinecode"><span class="id" title="var">Definitions</span></span>. 
+<div class="paragraph"> </div>
+
+<a id="lab65"></a><h2 class="section">Split morphisms are quasi-idempotent</h2>
+
+<div class="paragraph"> </div>
+
+ First we show that given a retract, the composite <span class="inlinecode"><span class="id" title="var">s</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">r</span></span> is quasi-idempotent. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispreidem_retract</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">IsPreIdempotent</span> (<span class="id" title="var">retract_idem</span> <span class="id" title="var">R</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">ap</span> (<span class="id" title="var">retract_sect</span> <span class="id" title="var">R</span>) (<span class="id" title="var">retract_issect</span> <span class="id" title="var">R</span> (<span class="id" title="var">retract_retr</span> <span class="id" title="var">R</span> <span class="id" title="var">x</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">preidem_retract</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span><br/>
+:= (<span class="id" title="var">retract_idem</span> <span class="id" title="var">R</span> ; <span class="id" title="var">ispreidem_retract</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">ispreidem_retract</span> / .<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">preidem_retract</span> / .<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isqidem_retract</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">IsQuasiIdempotent</span> (<span class="id" title="var">retract_idem</span> <span class="id" title="var">R</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">R</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">A</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">H</span>]; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">isidem</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ap_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ap_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cancelR</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_A1p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">qidem_retract</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">QuasiIdempotent</span> <span class="id" title="var">X</span><br/>
+:= (<span class="id" title="var">preidem_retract</span> <span class="id" title="var">R</span> ; <span class="id" title="var">isqidem_retract</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In particular, it follows that any split function is quasi-idempotent. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispreidem_split</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) (<span class="id" title="var">S</span> : <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span>)<br/>
+: <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">S</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">R</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ispreidem_homotopic</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>); <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">ispreidem_split</span> / .<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isqidem_split</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) (<span class="id" title="var">S</span> : <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span>)<br/>
+: @<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">X</span> <span class="id" title="var">f</span> (<span class="id" title="var">ispreidem_split</span> <span class="id" title="var">f</span> <span class="id" title="var">S</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">S</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">R</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">isqidem_homotopic</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>); <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">isqidem_split</span> / .<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab66"></a><h2 class="section">Quasi-idempotents split</h2>
+
+<div class="paragraph"> </div>
+
+ We now show the converse, that every quasi-idempotent splits. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Splitting</span>.<br/>
+</div>
+
+<div class="doc">
+We need funext because our construction will involve a sequential limit.  We could probably also use a HIT sequential colimit, which is more like what Lurie does.  (Note that, like an interval type, HIT sequential colimits probably imply funext, so our construction uses strictly weaker hypotheses.) 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">I</span> := <span class="id" title="var">isidem</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">J</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">I</span> <span class="id" title="var">x</span>) = <span class="id" title="var">I</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">isidem2</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The splitting will be the sequential limit of the sequence <span class="inlinecode">...</span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem</span> : <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= { <span class="id" title="var">a</span> : <span class="id" title="var">nat</span> -&gt; <span class="id" title="var">X</span> &amp; <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">f</span> (<span class="id" title="var">a</span> <span class="id" title="var">n</span>.+1) = <span class="id" title="var">a</span> <span class="id" title="var">n</span> }.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_pr1</span> : <span class="id" title="var">split_idem</span> -&gt; (<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">pr1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Coercion</span> <span class="id" title="var">split_idem_pr1</span> : <span class="id" title="var">split_idem</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Arguments</span> <span class="id" title="var">split_idem_pr1</span> / .<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The section, retraction, and the fact that the composite in one direction is <span class="inlinecode"><span class="id" title="var">f</span></span> are easy. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_sect</span> : <span class="id" title="var">split_idem</span> -&gt; <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">a</span> 0.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Arguments</span> <span class="id" title="var">split_idem_sect</span> / .<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_retr</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">split_idem</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">I</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Arguments</span> <span class="id" title="var">split_idem_retr</span> / .<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_splits</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">split_idem_retr</span> <span class="id" title="var">x</span>) = <span class="id" title="var">f</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+What remains is to show that the composite in the other direction is the identity.  We begin by showing how to construct paths in <span class="inlinecode"><span class="id" title="var">split_idem</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_split_idem</span> {<span class="id" title="var">a</span> <span class="id" title="var">a'</span> : <span class="id" title="var">split_idem</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">a</span>.1 == <span class="id" title="var">a'</span>.1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">q</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">a</span>.2 <span class="id" title="var">n</span> @ <span class="id" title="var">p</span> <span class="id" title="var">n</span> = <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">p</span> <span class="id" title="var">n</span>.+1) @ <span class="id" title="var">a'</span>.2 <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">a</span> = <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">path_sigma'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_arrow</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">abstract</span> (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_forall_constant</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_paths_FlFr</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_apply_l</span>, <span class="id" title="var">ap10_path_arrow</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">b</span> <span class="id" title="var">n</span>.+1) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span>) <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_apply_l</span>, <span class="id" title="var">ap10_path_arrow</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>; <span class="id" title="tactic">by</span> <span class="id" title="tactic">symmetry</span> ).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And we verify how those paths compute under <span class="inlinecode"><span class="id" title="var">split_idem_sect</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">sect_path_split_idem</span> {<span class="id" title="var">a</span> <span class="id" title="var">a'</span> : <span class="id" title="var">split_idem</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">a</span>.1 == <span class="id" title="var">a'</span>.1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">q</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span>, <span class="id" title="var">a</span>.2 <span class="id" title="var">n</span> @ <span class="id" title="var">p</span> <span class="id" title="var">n</span> = <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">p</span> <span class="id" title="var">n</span>.+1) @ <span class="id" title="var">a'</span>.2 <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">path_split_idem</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) = <span class="id" title="var">p</span> 0.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">ap</span> ((<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">b</span> 0) <span class="id" title="var">o</span> <span class="id" title="var">pr1</span>) (<span class="id" title="var">path_split_idem</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) = <span class="id" title="var">p</span> 0).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">pr1</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">b</span> 0) <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">b</span> 0)) (<span class="id" title="var">pr1_path_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap_apply_l</span> <span class="id" title="var">_</span> 0 @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap10_path_arrow</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Next we show that every element of <span class="inlinecode"><span class="id" title="var">split_idem</span></span> can be nudged to an equivalent one in which all the elements of <span class="inlinecode"><span class="id" title="var">X</span></span> occurring are double applications of <span class="inlinecode"><span class="id" title="var">f</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">nudge</span> (<span class="id" title="var">a</span> : <span class="id" title="var">split_idem</span>) : <span class="id" title="var">split_idem</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">f</span> (<span class="id" title="var">f</span> (<span class="id" title="var">a</span> (<span class="id" title="var">n</span>.+1)))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">a</span>.2 <span class="id" title="var">n</span>.+1))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">nudge_eq</span> <span class="id" title="var">a</span> : <span class="id" title="var">nudge</span> <span class="id" title="var">a</span> = <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transparent</span> <span class="id" title="tactic">assert</span> (<span class="id" title="var">a'</span> : <span class="id" title="var">split_idem</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">exists</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">f</span> (<span class="id" title="var">a</span> (<span class="id" title="var">n</span>.+1))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">a</span>.2 <span class="id" title="var">n</span>.+1)). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> <span class="id" title="var">a'</span>; <span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">path_split_idem</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">I</span> (<span class="id" title="var">a</span> <span class="id" title="var">n</span>.+1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> ((<span class="id" title="var">ap_compose</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> @@ 1)^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">concat_Ap</span> <span class="id" title="var">I</span> (<span class="id" title="var">a</span>.2 <span class="id" title="var">n</span>.+1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ (<span class="id" title="var">J</span> <span class="id" title="var">_</span> @@ 1)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">a</span>.2 <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we're ready to prove the final condition.  We prove the two arguments of <span class="inlinecode"><span class="id" title="var">path_split_idem</span></span> separately, in order to make the first one transparent and the second opaque. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">split_idem_issect_part1</span> (<span class="id" title="var">a</span> : <span class="id" title="var">split_idem</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">f</span> (<span class="id" title="var">f</span> (<span class="id" title="var">a</span> <span class="id" title="var">n</span>.+1)) = <span class="id" title="var">f</span> (<span class="id" title="var">a</span> 0).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">a</span>.2 0)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">a</span>.2 <span class="id" title="var">n</span>.+1) @ (<span class="id" title="var">I</span> (<span class="id" title="var">a</span> <span class="id" title="var">n</span>.+1))^ @ <span class="id" title="var">IH</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">split_idem_issect_part2</span> (<span class="id" title="var">a</span> : <span class="id" title="var">split_idem</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">a</span>.2 <span class="id" title="var">n</span>.+1)) @ <span class="id" title="var">split_idem_issect_part1</span> <span class="id" title="var">a</span> <span class="id" title="var">n</span> =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> <span class="id" title="var">f</span> ((<span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">a</span>.2 <span class="id" title="var">n</span>.+1) @ (<span class="id" title="var">I</span> (<span class="id" title="var">a</span>.1 <span class="id" title="var">n</span>.+1))^) @ <span class="id" title="var">split_idem_issect_part1</span> <span class="id" title="var">a</span> <span class="id" title="var">n</span>) @ <span class="id" title="var">I</span> (<span class="id" title="var">a</span>.1 0).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IH</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, <span class="id" title="var">ap_V</span>, !<span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>, <span class="id" title="var">moveL_Vp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">J</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>; <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">concat_Ap</span> <span class="id" title="var">I</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (1 @@ <span class="id" title="var">IH</span>) @ <span class="id" title="var">concat_p_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, !<span class="id" title="var">concat_p_pp</span>, <span class="id" title="var">ap_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">J</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">concat_pA_p</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (<span class="id" title="var">I</span> <span class="id" title="var">x</span>)^) <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @@ 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">a</span> : <span class="id" title="var">split_idem</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">split_idem_retr</span> (<span class="id" title="var">split_idem_sect</span> <span class="id" title="var">a</span>) = <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">nudge_eq</span> <span class="id" title="var">a</span>); <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">path_split_idem</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">split_idem_issect_part1</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">split_idem_issect_part2</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_retract</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_RetractOf</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">X</span> <span class="id" title="var">split_idem</span> <span class="id" title="var">split_idem_retr</span> <span class="id" title="var">split_idem_sect</span> <span class="id" title="var">split_idem_issect</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_split</span> : <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">split_idem_retract</span> ; <span class="id" title="var">split_idem_splits</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We end this section by showing that we can recover the witness <span class="inlinecode"><span class="id" title="var">I</span></span> of pre-idempotence from the splitting. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_preidem</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">split_idem_retr</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">I</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">split_idem_issect</span>, <span class="id" title="var">nudge_eq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, ?<span class="id" title="var">ap_V</span>, !<span class="id" title="var">sect_path_split_idem</span>; <span class="id" title="tactic">simpl</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>, <span class="id" title="var">whiskerR</span>; <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">J</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+However, the particular witness <span class="inlinecode"><span class="id" title="var">J</span></span> of quasi-idempotence can *not* in general be recovered from the splitting; we will mention a counterexample below.  This is analogous to how <span class="inlinecode"><span class="id" title="var">eissect</span></span> and <span class="inlinecode"><span class="id" title="var">eisretr</span></span> cannot both be recovered after <span class="inlinecode"><span class="id" title="var">isequiv_adjointify</span></span>; one of them has to be modified. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Splitting</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_retract'</span> `{<span class="id" title="var">fs</span> : <span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}<br/>
+: <span class="id" title="var">QuasiIdempotent</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span><br/>
+:= <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">split_idem_retract</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">split_idem_split'</span> `{<span class="id" title="var">fs</span> : <span class="id" title="var">Funext</span>} {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">QuasiIdempotent</span> <span class="id" title="var">X</span>)<br/>
+: <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span><br/>
+:= <span class="id" title="var">split_idem_split</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab67"></a><h2 class="section">Splitting already-split idempotents</h2>
+
+<div class="paragraph"> </div>
+
+ In the other direction, suppose we are given a retract, we deduce from this a quasi-idempotent, and then split it by the above construction.  We will show that the resulting retract is equivalent to the original one, so that <span class="inlinecode"><span class="id" title="var">RetractOf</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is itelf a retract of <span class="inlinecode"><span class="id" title="var">QuasiIdempotent</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">AlreadySplit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">fs</span> : <span class="id" title="var">Funext</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">R</span> : <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">A</span> := <span class="id" title="var">retract_type</span> <span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">r</span> := <span class="id" title="var">retract_retr</span> <span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">s</span> := <span class="id" title="var">retract_sect</span> <span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">H</span> := <span class="id" title="var">retract_issect</span> <span class="id" title="var">R</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We begin by constructing an equivalence between <span class="inlinecode"><span class="id" title="var">split_idem</span></span> <span class="inlinecode">(<span class="id" title="var">s</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">r</span>)</span> and <span class="inlinecode"><span class="id" title="var">A</span></span>.  We want to make this equivalence transparent so that we can reason about it later.  In fact, we want to reason not only about the equivalence function and its inverse, but the section and retraction homotopies!  Therefore, instead of using <span class="inlinecode"><span class="id" title="var">equiv_adjointify</span></span> we will give the coherence proof explicitly, so that we can control these homotopies.  However, we can (and should) make the coherence proof itself opaque.  Thus, we prove it first, and end it with <span class="inlinecode"><span class="id" title="keyword">Qed</span></span>.  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equiv_split_idem_retract_isadj</span> (<span class="id" title="var">a</span> : <span class="id" title="var">split_idem</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">s</span> (<span class="id" title="var">r</span> (<span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">a</span>)))) @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">a</span>)) =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap</span> (<span class="id" title="var">split_idem_retr</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(1 @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> (<span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">a</span>)) @<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>)) (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">r</span> (<span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">split_idem_issect</span>, <span class="id" title="var">nudge_eq</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, ?<span class="id" title="var">ap_V</span>, !<span class="id" title="var">sect_path_split_idem</span>; <span class="id" title="tactic">simpl</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">isidem</span>; <span class="id" title="tactic">fold</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_p_Vp</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">a</span>.2 0))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rewrite_moveL_Vp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) (<span class="id" title="var">a</span>.2 0)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_A1p</span> <span class="id" title="var">H</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">a</span>.2 0))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">r</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) (<span class="id" title="var">a</span>.2 0)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA1_p</span> <span class="id" title="var">H</span> (<span class="id" title="var">ap</span> <span class="id" title="var">r</span> (<span class="id" title="var">a</span>.2 0))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerR</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cancelR</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">a</span>.1 1%<span class="id" title="var">nat</span>))) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA1_p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">a</span> 1%<span class="id" title="var">nat</span>)))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">concat_pp_p</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_A1p</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">s</span> <span class="id" title="var">x</span>)) @ <span class="id" title="var">H</span> <span class="id" title="var">x</span>) (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">a</span> 1%<span class="id" title="var">nat</span>)))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we can construct the desired equivalence. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_split_idem_retract</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">split_idem</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) &lt;~&gt; <span class="id" title="var">A</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Build_IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">split_idem_retr</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">H</span> <span class="id" title="var">_</span> @ <span class="id" title="var">H</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">split_idem_splits</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">split_idem_issect</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_split_idem_retract_isadj</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+It is easy to show that this equivalence respects the section and the retraction. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_split_idem_retract_retr</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">equiv_split_idem_retract</span> (<span class="id" title="var">split_idem_retr</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">x</span>) = <span class="id" title="var">r</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">H</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_split_idem_retract_sect</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">equiv_split_idem_retract</span>^-1 <span class="id" title="var">a</span>) = <span class="id" title="var">s</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">ap</span> <span class="id" title="var">s</span> (<span class="id" title="var">H</span> <span class="id" title="var">a</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Less trivial is to show that it respects the retract homotopy. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_split_idem_retract_issect</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">equiv_split_idem_retract</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">split_idem_issect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">equiv_split_idem_retract</span>^-1 <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">eisretr</span> <span class="id" title="var">equiv_split_idem_retract</span> <span class="id" title="var">a</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">equiv_split_idem_retract_retr</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) (<span class="id" title="var">equiv_split_idem_retract</span>^-1 <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> <span class="id" title="var">r</span> (<span class="id" title="var">equiv_split_idem_retract_sect</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">H</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv_split_idem_retract_retr</span>, <span class="id" title="var">equiv_split_idem_retract_sect</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">split_idem_issect</span>, <span class="id" title="var">nudge_eq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, ?<span class="id" title="var">ap_V</span>, !<span class="id" title="var">sect_path_split_idem</span>; <span class="id" title="tactic">simpl</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">isidem</span>; <span class="id" title="tactic">fold</span> <span class="id" title="var">A</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>; <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">do</span> 4 <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+</div>
+
+<div class="doc">
+For some reason this last one needs help. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">r</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">s</span> <span class="id" title="var">a</span>)))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_pp</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">concat_A1p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">s</span> <span class="id" title="var">a</span>)))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>; <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_A1p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">s</span> <span class="id" title="var">a</span>)))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_A1p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We will also show that it respects the homotopy to the split map.  It's unclear whether this has any use. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_split_idem_retract_splits</span> (<span class="id" title="var">x</span> : <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">split_idem_splits</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">ap</span> (<span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">eissect</span> <span class="id" title="var">equiv_split_idem_retract</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">split_idem_retr</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">x</span>))^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">equiv_split_idem_retract_sect</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_split_idem_retract</span> (<span class="id" title="var">split_idem_retr</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>) <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> <span class="id" title="var">s</span> (<span class="id" title="var">equiv_split_idem_retract_retr</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">equiv_split_idem_retract_retr</span>, <span class="id" title="var">equiv_split_idem_retract_sect</span>, <span class="id" title="var">split_idem_splits</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_1p</span>, <span class="id" title="var">concat_pp_p</span>, <span class="id" title="var">ap_V</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_Vp</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p1</span>.<br/>
+</div>
+
+<div class="doc">
+Brace yourself. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">split_idem_issect</span>, <span class="id" title="var">nudge_eq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, ?<span class="id" title="var">ap_V</span>, !<span class="id" title="var">sect_path_split_idem</span>; <span class="id" title="tactic">simpl</span>).<br/>
+</div>
+
+<div class="doc">
+Whew, that's not so bad. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">isidem</span>; <span class="id" title="tactic">fold</span> <span class="id" title="var">A</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_compose</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerR</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>)); <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerR</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_pV</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_1p</span>, <span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) (<span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">s</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">s</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span> <span class="id" title="var">o</span> <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">s</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_pp</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cancelR</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA1_p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA1_p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">concat_A1p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> (<span class="id" title="var">s</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>)))) @@ 1) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_A1p</span> <span class="id" title="var">H</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">s</span>) (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>)))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_A1p</span> <span class="id" title="var">H</span> (<span class="id" title="var">H</span> (<span class="id" title="var">r</span> <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">AlreadySplit</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Using these facts, we can show that <span class="inlinecode"><span class="id" title="var">RetractOf</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is a retract of <span class="inlinecode"><span class="id" title="var">QuasiIdempotent</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">RetractOfRetracts</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">ua</span> : <span class="id" title="var">Univalence</span>} {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">retract_retractof_qidem</span> : <span class="id" title="var">RetractOf</span> (<span class="id" title="var">QuasiIdempotent</span> <span class="id" title="var">X</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_RetractOf</span> (<span class="id" title="var">QuasiIdempotent</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">split_idem_retract'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">qidem_retract</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (@<span class="id" title="var">path_retractof</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">split_idem_retract'</span> (<span class="id" title="var">qidem_retract</span> <span class="id" title="var">R</span>)) <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_split_idem_retract</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_split_idem_retract_retr</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_split_idem_retract_sect</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_split_idem_retract_issect</span> <span class="id" title="var">R</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We have a similar result for splittings of a fixed map <span class="inlinecode"><span class="id" title="var">f</span></span>.  
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">splitting_retractof_isqidem</span> (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RetractOf</span> { <span class="id" title="var">I</span> : <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">f</span> &amp; <span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">f</span> }.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (@<span class="id" title="var">equiv_retractof'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> (@<span class="id" title="var">retractof_equiv'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">hfiber</span> <span class="id" title="var">quasiidempotent_pr1</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">retractof_hfiber</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">retract_retractof_qidem</span> <span class="id" title="var">quasiidempotent_pr1</span> <span class="id" title="var">retract_idem</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1) <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Splitting</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> ((<span class="id" title="var">hfiber_fibration</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; { <span class="id" title="var">I</span> : <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">g</span> &amp; @<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">g</span> <span class="id" title="var">I</span> }))^-1 <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">hfiber</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_sigma'</span> (<span class="id" title="var">equiv_sigma_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">_</span>)); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">g</span> <span class="id" title="var">I</span>] <span class="id" title="var">J</span>]; <span class="id" title="tactic">unfold</span> <span class="id" title="var">quasiidempotent_pr1</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">hfiber</span>, <span class="id" title="var">Splitting</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_sigma_id</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">R</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_ap10</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And also for splittings of a fixed map that also induce a given witness of pre-idempotency. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Splitting_PreIdempotent</span> (<span class="id" title="var">f</span> : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;:= { <span class="id" title="var">S</span> : <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span> &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">S</span>.2 <span class="id" title="var">x</span>)^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ (<span class="id" title="var">S</span>.2 (<span class="id" title="var">retract_idem</span> <span class="id" title="var">S</span>.1 <span class="id" title="var">x</span>))^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> (<span class="id" title="var">retract_sect</span> <span class="id" title="var">S</span>.1) (<span class="id" title="var">retract_issect</span> <span class="id" title="var">S</span>.1 (<span class="id" title="var">retract_retr</span> <span class="id" title="var">S</span>.1 <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">S</span>.2 <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= (<span class="id" title="var">isidem</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>) }.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">splitting_preidem_retractof_qidem</span> (<span class="id" title="var">f</span> : <span class="id" title="var">PreIdempotent</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RetractOf</span> (<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (@<span class="id" title="var">equiv_retractof'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> (@<span class="id" title="var">retractof_equiv'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">hfiber</span> (@<span class="id" title="var">pr1</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">fi</span> =&gt; @<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">fi</span>.1 <span class="id" title="var">fi</span>.2)) <span class="id" title="var">f</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">retractof_hfiber</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">retract_retractof_qidem</span> <span class="id" title="var">pr1</span> <span class="id" title="var">preidem_retract</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Splitting_PreIdempotent</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">refine</span> (<span class="id" title="var">hfiber_fibration</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [[<span class="id" title="var">g</span> <span class="id" title="var">I</span>] <span class="id" title="var">J</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">path_sigma'</span> <span class="id" title="var">_</span> 1 <span class="id" title="var">_</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">split_idem_preidem</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">hfiber</span>, <span class="id" title="var">Splitting</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_sigma_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">R</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_path_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_sigma'</span> (<span class="id" title="var">equiv_ap10</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">f</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">f</span> <span class="id" title="var">I</span>]; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">pointwise_paths</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_forall_id</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">isidem</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_concat_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span> @ <span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">RetractOfRetracts</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab68"></a><h2 class="section">Fully coherent idempotents</h2>
+
+<div class="paragraph"> </div>
+
+ This gives us a way to define fully coherent idempotents.  By Corollary 4.4.5.14 of *Higher Topos Theory*, if we assume univalence then <span class="inlinecode"><span class="id" title="var">RetractOf</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> has the correct homotopy type of the type of fully coherent idempotents on <span class="inlinecode"><span class="id" title="var">X</span></span>.  However, its defect is that it raises the universe level.  But now that we've shown that <span class="inlinecode"><span class="id" title="var">RetractOf</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is a retract of the type <span class="inlinecode"><span class="id" title="var">QuasiIdempotent</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>, which is of the same size as <span class="inlinecode"><span class="id" title="var">X</span></span>, we can obtain an equivalent type by splitting the resulting idempotent on <span class="inlinecode"><span class="id" title="var">QuasiIdempotent</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>.
+
+<div class="paragraph"> </div>
+
+For convenience, we instead split the idempotent on splittings of a fixed map <span class="inlinecode"><span class="id" title="var">f</span></span>, and then sum them up to obtain the type of idempotents. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">CoherentIdempotents</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">ua</span> : <span class="id" title="var">Univalence</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsIdempotent</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">is_coherent_idem</span> : <span class="id" title="var">split_idem</span> (<span class="id" title="var">retract_idem</span> (<span class="id" title="var">splitting_retractof_isqidem</span> <span class="id" title="var">f</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_IsIdempotent</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">IsIdempotent</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">equiv_split_idem_retract</span> (<span class="id" title="var">splitting_retractof_isqidem</span> <span class="id" title="var">f</span>))^-1.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isidem_isqidem</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) `{<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsIdempotent</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_IsIdempotent</span> <span class="id" title="var">f</span> (<span class="id" title="var">split_idem_split</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispreidem_isidem</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} : <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">retract_idem</span> (<span class="id" title="var">splitting_retractof_isqidem</span> <span class="id" title="var">f</span>)) <span class="id" title="var">_</span>).1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isqidem_isidem</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} : @<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">X</span> <span class="id" title="var">f</span> (<span class="id" title="var">ispreidem_isidem</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">split_idem_sect</span> (<span class="id" title="var">retract_idem</span> (<span class="id" title="var">splitting_retractof_isqidem</span> <span class="id" title="var">f</span>)) <span class="id" title="var">_</span>).2.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Idempotent</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) := { <span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span> &amp; <span class="id" title="var">IsIdempotent</span> <span class="id" title="var">f</span> }.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">idempotent_pr1</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} : <span class="id" title="var">Idempotent</span> <span class="id" title="var">X</span> -&gt; (<span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span>) := <span class="id" title="var">pr1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Coercion</span> <span class="id" title="var">idempotent_pr1</span> : <span class="id" title="var">Idempotent</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isidem_idem</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">Idempotent</span> <span class="id" title="var">X</span>) : <span class="id" title="var">IsIdempotent</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">f</span>.2.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The above definitions depend on <span class="inlinecode"><span class="id" title="var">Univalence</span></span>.  Technically this is the case by their construction, since they are a splitting of a map that we only know to be idempotent in the presence of univalence.  This map could be defined, and hence "split", without univalence; but also only with univalence do we know that they have the right homotopy type.  Thus univalence is used in two places: concluding (meta-theoretically) from HTT 4.4.5.14 that <span class="inlinecode"><span class="id" title="var">RetractOf</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> has the right homotopy type, and showing (in the next lemma) that it is equivalent to <span class="inlinecode"><span class="id" title="var">Idempotent</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>.  In the absence of univalence, we don't currently have *any* provably-correct definition of the type of coherent idempotents; it ought to involve an infinite tower of coherences as defined in HTT section 4.4.5.   However, there may be some Yoneda-like meta-theoretic argument which would imply that the above-defined types do have the correct homotopy type without univalence (though almost certainly not without funext). 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_idempotent_retractof</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Idempotent</span> <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">RetractOf</span> <span class="id" title="var">X</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> ({ <span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">X</span> &amp; <span class="id" title="var">Splitting</span> <span class="id" title="var">f</span> }).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">unfold</span> <span class="id" title="var">Idempotent</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_sigma'</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_split_idem_retract</span> (<span class="id" title="var">splitting_retractof_isqidem</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">unfold</span> <span class="id" title="var">Splitting</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_symm</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_sigma_contr</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">contr_basedhomotopy</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For instance, here is the standard coherent idempotent structure on the identity map. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isidem_idmap</span> (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>})<br/>
+&nbsp;&nbsp;: @<span class="id" title="var">IsIdempotent@</span>{<span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span> <span class="id" title="var">idmap</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_IsIdempotent</span> <span class="id" title="var">idmap</span> (<span class="id" title="var">splitting_idmap</span> <span class="id" title="var">X</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">idem_idmap</span> (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) : <span class="id" title="var">Idempotent@</span>{<span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">idmap</span> ; <span class="id" title="var">isidem_idmap</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">CoherentIdempotents</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab69"></a><h2 class="section">Quasi-idempotents need not be fully coherent</h2>
+
+<div class="paragraph"> </div>
+
+ We have shown that every quasi-idempotent can be "coherentified" into a fully coherent idempotent, analogously to how every quasi-inverse can be coherentified into an equivalence.  However, just as for quasi-inverses, not every witness to quasi-idempotency *is itself* coherent.  This is in contrast to a witness of pre-idempotency, which (if it extends to a quasi-idempotent) can itself be extended to a coherent idempotent; this is roughly the content of <span class="inlinecode"><span class="id" title="var">split_idem_preidem</span></span> and <span class="inlinecode"><span class="id" title="var">splitting_preidem_retractof_qidem</span></span>.
+
+<div class="paragraph"> </div>
+
+  The key step in showing this is to observe that when <span class="inlinecode"><span class="id" title="var">f</span></span> is the identity, the retract type <span class="inlinecode"><span class="id" title="var">Splitting_PreIdempotent</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> of <span class="inlinecode"><span class="id" title="var">splitting_preidem_retractof_qidem</span></span> is equivalent to the type of types-equivalent-to-<span class="inlinecode"><span class="id" title="var">X</span></span>, and hence contractible. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">contr_splitting_preidem_idmap</span> {<span class="id" title="var">ua</span> : <span class="id" title="var">Univalence</span>} (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>)<br/>
+: <span class="id" title="var">Contr</span> (<span class="id" title="var">Splitting_PreIdempotent</span> (<span class="id" title="var">preidem_idmap</span> <span class="id" title="var">X</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">contr_equiv'</span> {<span class="id" title="var">Y</span> : <span class="id" title="keyword">Type</span> &amp; <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">Y</span>} <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> { <span class="id" title="var">S</span> : <span class="id" title="var">Splitting</span> (<span class="id" title="var">preidem_idmap</span> <span class="id" title="var">X</span>) &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">X</span>, (<span class="id" title="var">retract_issect</span> <span class="id" title="var">S</span>.1) (<span class="id" title="var">retract_retr</span> <span class="id" title="var">S</span>.1 <span class="id" title="var">x</span>) = <span class="id" title="var">ap</span> (<span class="id" title="var">retract_retr</span> <span class="id" title="var">S</span>.1) (<span class="id" title="var">S</span>.2 <span class="id" title="var">x</span>) }.<br/>
+&nbsp;&nbsp;1:<span class="id" title="var">make_equiv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intros</span> [[<span class="id" title="var">Y</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">eta</span>] <span class="id" title="var">ep</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_forall_id</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">ispreidem_idmap</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_idmap</span>, !<span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_moveR_Vp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p1</span>, <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_concat_r</span> (<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_whiskerR</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_moveR_Vp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">s</span> <span class="id" title="var">r</span> <span class="id" title="var">ep</span> <span class="id" title="var">eta</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_ap</span> (<span class="id" title="var">ap</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_concat_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cancelR</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ep</span> <span class="id" title="var">x</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">concat_A1p</span> <span class="id" title="var">ep</span> (<span class="id" title="var">ep</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Therefore, there is a unique coherentification of the canonical witness <span class="inlinecode"><span class="id" title="var">preidem_idmap</span></span> of pre-idempotency for the identity.  Hence, to show that not every quasi-idempotent is coherent, it suffices to give a witness of quasi-idempotency extending <span class="inlinecode"><span class="id" title="var">preidem_idmap</span></span> which is nontrivial (i.e. not equal to <span class="inlinecode"><span class="id" title="var">qidem_idmap</span></span>).  Such a witness is exactly an element of the 2-center, and we know that some types such as <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode">(<span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">Bool</span>)</span> have nontrivial 2-centers.  In <span class="inlinecode"><span class="id" title="var">Spaces.BAut.Bool.IncoherentIdempotent</span></span> we use this to construct an explicit counterexample. 
+<div class="paragraph"> </div>
+
+<a id="lab70"></a><h2 class="section">A pre-idempotent that is not quasi-idempotent</h2>
+
+<div class="paragraph"> </div>
+
+ We can also give a specific example of a pre-idempotent that does not split, hence is not coherentifiable and not even quasi-idempotent.  The construction is inspired by Warning 1.2.4.8 in *Higher Algebra*, and can be found in <span class="inlinecode"><span class="id" title="var">Spaces.BAut.Cantor</span></span>. 
+</div>
+<div class="code">
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

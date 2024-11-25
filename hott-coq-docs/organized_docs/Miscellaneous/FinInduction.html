@@ -1,0 +1,119 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>FinInduction</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library FinInduction</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Basics</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Types</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Universes.HSet</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Spaces.Nat.Core</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Spaces.Finite.FinNat</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Spaces.Finite.Fin</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fin_ind</span> (<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">Fin</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">P</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">fin_zero</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">s</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>), <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> -&gt; <span class="id" title="var">P</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">fsucc</span> <span class="id" title="var">k</span>))<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">k</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">P</span> <span class="id" title="var">n</span>) (<span class="id" title="var">path_fin_to_finnat_to_fin</span> <span class="id" title="var">k</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">finnat_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">u</span> =&gt; <span class="id" title="var">P</span> <span class="id" title="var">n</span> (<span class="id" title="var">finnat_to_fin</span> <span class="id" title="var">u</span>)) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">n'</span> <span class="id" title="var">u</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">path_finnat_to_fin_succ</span> <span class="id" title="var">_</span>)^ # <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">s</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fin_ind_beta_zero</span> (<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">Fin</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">P</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">fin_zero</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">s</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>), <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> -&gt; <span class="id" title="var">P</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">fsucc</span> <span class="id" title="var">k</span>)) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fin_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">z</span> <span class="id" title="var">s</span> <span class="id" title="var">fin_zero</span> = <span class="id" title="var">z</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">fin_ind</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">path_fin_to_finnat_to_fin</span> (@<span class="id" title="var">fin_zero</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> (<span class="id" title="var">path_fin_to_finnat_fin_zero</span> <span class="id" title="var">n</span>)^.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">hset_path2</span> 1 <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">transport_1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">finnat_ind_beta_zero</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fin_ind_beta_fsucc</span> (<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">Fin</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">P</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">fin_zero</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">s</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>), <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> -&gt; <span class="id" title="var">P</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">fsucc</span> <span class="id" title="var">k</span>))<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">k</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fin_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">z</span> <span class="id" title="var">s</span> (<span class="id" title="var">fsucc</span> <span class="id" title="var">k</span>) = <span class="id" title="var">s</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> (<span class="id" title="var">fin_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">z</span> <span class="id" title="var">s</span> <span class="id" title="var">k</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">fin_ind</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> (<span class="id" title="var">path_fin_to_finnat_to_fin</span> (<span class="id" title="var">fsucc</span> <span class="id" title="var">k</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> (<span class="id" title="var">path_fin_to_finnat_fsucc</span> <span class="id" title="var">k</span>)^.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">P</span> <span class="id" title="var">n</span>.+1) <span class="id" title="var">p</span>) (<span class="id" title="var">finnat_ind_beta_succ</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> (<span class="id" title="var">path_fin_to_finnat_to_fin</span> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> (<span class="id" title="var">path_fin_to_finnat_to_fin</span> <span class="id" title="var">k</span>)^.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> (<span class="id" title="var">hset_path2</span> <span class="id" title="var">p</span> (<span class="id" title="var">path_finnat_to_fin_succ</span> (<span class="id" title="var">fin_to_finnat</span> <span class="id" title="var">k</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_pV</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">fin_rec</span> (<span class="id" title="var">B</span> : <span class="id" title="var">nat</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">B</span> <span class="id" title="var">n</span>.+1) -&gt; (<span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>), <span class="id" title="var">Fin</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">B</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">B</span> <span class="id" title="var">n</span>.+1) -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>}, <span class="id" title="var">Fin</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">B</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">fin_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">B</span> <span class="id" title="var">n</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fin_rec_beta_zero</span> (<span class="id" title="var">B</span> : <span class="id" title="var">nat</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">B</span> <span class="id" title="var">n</span>.+1)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">s</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>), <span class="id" title="var">B</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">B</span> <span class="id" title="var">n</span>.+1) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fin_rec</span> <span class="id" title="var">B</span> <span class="id" title="var">z</span> <span class="id" title="var">s</span> <span class="id" title="var">fin_zero</span> = <span class="id" title="var">z</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">fin_ind_beta_zero</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">B</span> <span class="id" title="var">n</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">fin_rec_beta_fsucc</span> (<span class="id" title="var">B</span> : <span class="id" title="var">nat</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">B</span> <span class="id" title="var">n</span>.+1)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">s</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>), <span class="id" title="var">B</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">B</span> <span class="id" title="var">n</span>.+1)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">k</span> : <span class="id" title="var">Fin</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">fin_rec</span> <span class="id" title="var">B</span> <span class="id" title="var">z</span> <span class="id" title="var">s</span> (<span class="id" title="var">fsucc</span> <span class="id" title="var">k</span>) = <span class="id" title="var">s</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> (<span class="id" title="var">fin_rec</span> <span class="id" title="var">B</span> <span class="id" title="var">z</span> <span class="id" title="var">s</span> <span class="id" title="var">k</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">fin_ind_beta_fsucc</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">B</span> <span class="id" title="var">n</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

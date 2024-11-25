@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Vector</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Vector</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Trunc</span> <span class="id" title="var">Basics.Tactics</span> <span class="id" title="var">Basics.PathGroupoids</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Sigma</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.AbGroups.AbelianGroup</span> <span class="id" title="var">Algebra.Rings.Ring</span> <span class="id" title="var">Algebra.Rings.Module</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.List.Core</span> <span class="id" title="var">Spaces.List.Theory</span> <span class="id" title="var">Spaces.List.Paths</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">abstract_algebra</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Polymorphic</span> <span class="id" title="keyword">Inductive</span> <span class="id" title="var">Cumulativity</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab308"></a><h1 class="section">Vectors</h1>
+
+<div class="paragraph"> </div>
+
+ A vector is simply a list with a specified length. This data structure has many uses, but here we will focus on lists of left module elements. 
+<div class="paragraph"> </div>
+
+<a id="lab309"></a><h2 class="section">Definition</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Vector@</span>{<span class="id" title="var">i</span>|} (<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}<br/>
+&nbsp;&nbsp;:= { <span class="id" title="var">l</span> : <span class="id" title="var">list</span> <span class="id" title="var">A</span> &amp; <span class="id" title="var">length</span> <span class="id" title="var">l</span> = <span class="id" title="var">n</span> }.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab310"></a><h3 class="section">Constructors</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_Vector</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">i</span> : <span class="id" title="var">nat</span>), (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">list_map</span> (<span class="id" title="keyword">fun</span> '(<span class="id" title="var">i</span>; <span class="id" title="var">Hi</span>) =&gt; <span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>) (<span class="id" title="var">seq'</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">length_list_map</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">length_seq'</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab311"></a><h3 class="section">Projections</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">entry</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">v</span> : <span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) <span class="id" title="var">i</span> {<span class="id" title="var">Hi</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>} : <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">nth'</span> (<span class="id" title="var">pr1</span> <span class="id" title="var">v</span>) <span class="id" title="var">i</span> ((<span class="id" title="var">pr2</span> <span class="id" title="var">v</span>)^ # <span class="id" title="var">Hi</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab312"></a><h3 class="section">Basic properties</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">entry_Build_Vector</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">n</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">i</span> : <span class="id" title="var">nat</span>), (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">A</span>) <span class="id" title="var">i</span> {<span class="id" title="var">Hi</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">entry</span> (<span class="id" title="var">Build_Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span>) <span class="id" title="var">i</span> = <span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">nth'_list_map</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">_</span>^ # <span class="id" title="var">Hi</span>) <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">length_seq'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">ap011D</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">nrapply</span> <span class="id" title="var">nth'_seq'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">istrunc_vector@</span>{<span class="id" title="var">i</span>} (<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) <span class="id" title="var">k</span> `{<span class="id" title="var">IsTrunc</span> <span class="id" title="var">k</span>.+2 <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">k</span>.+2 (<span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">istrunc_sigma@</span>{<span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span>}.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_vector@</span>{<span class="id" title="var">i</span>} (<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}) {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">v1</span> <span class="id" title="var">v2</span> : <span class="id" title="var">Vector@</span>{<span class="id" title="var">i</span>} <span class="id" title="var">A</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> (<span class="id" title="var">H</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>), <span class="id" title="var">entry</span> <span class="id" title="var">v1</span> <span class="id" title="var">i</span> = <span class="id" title="var">entry</span> <span class="id" title="var">v2</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">v1</span> = <span class="id" title="var">v2</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_sigma_hprop@</span>{<span class="id" title="var">i</span> <span class="id" title="var">i</span> <span class="id" title="var">i</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">path_list_nth'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">pr2</span> <span class="id" title="var">v1</span> @ (<span class="id" title="var">pr2</span> <span class="id" title="var">v2</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">H</span> <span class="id" title="var">i</span> (<span class="id" title="var">pr2</span> <span class="id" title="var">v1</span> # <span class="id" title="var">Hi</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;1, 2: <span class="id" title="tactic">apply</span> <span class="id" title="var">nth'_nth'</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_entry_vector</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>} (<span class="id" title="var">v</span> : <span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">nat</span>) (<span class="id" title="var">Hi</span> : (<span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>) (<span class="id" title="var">Hj</span> : (<span class="id" title="var">j</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">i</span> = <span class="id" title="var">j</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">entry</span> <span class="id" title="var">v</span> <span class="id" title="var">i</span> = <span class="id" title="var">entry</span> <span class="id" title="var">v</span> <span class="id" title="var">j</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">nth'_nth'</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab313"></a><h2 class="section">Operations</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">vector_map</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">n</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">Vector</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">v</span> =&gt; <span class="id" title="var">Build_Vector</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">f</span> (<span class="id" title="var">entry</span> <span class="id" title="var">v</span> <span class="id" title="var">i</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">vector_map2</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">n</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">Vector</span> <span class="id" title="var">B</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">Vector</span> <span class="id" title="var">C</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">v1</span> <span class="id" title="var">v2</span> =&gt; <span class="id" title="var">Build_Vector</span> <span class="id" title="var">C</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">f</span> (<span class="id" title="var">entry</span> <span class="id" title="var">v1</span> <span class="id" title="var">i</span>) (<span class="id" title="var">entry</span> <span class="id" title="var">v2</span> <span class="id" title="var">i</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab314"></a><h2 class="section">Abelian group structure</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">VectorAddition</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">vector_plus</span> : <span class="id" title="var">Plus</span> (<span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) := <span class="id" title="var">vector_map2</span> (+).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">vector_zero</span> : <span class="id" title="var">Zero</span> (<span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; 0).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">vector_neg</span> : <span class="id" title="var">Negate</span> (<span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>) := <span class="id" title="var">vector_map</span> (-).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">associative_vector_plus</span> : <span class="id" title="var">Associative</span> <span class="id" title="var">vector_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">v1</span> <span class="id" title="var">v2</span> <span class="id" title="var">v3</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 4 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">commutative_vector_plus</span> : <span class="id" title="var">Commutative</span> <span class="id" title="var">vector_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">v1</span> <span class="id" title="var">v2</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">left_identity_vector_plus</span> : <span class="id" title="var">LeftIdentity</span> <span class="id" title="var">vector_plus</span> <span class="id" title="var">vector_zero</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">v</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">left_identity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">right_identity_vector_plus</span> : <span class="id" title="var">RightIdentity</span> <span class="id" title="var">vector_plus</span> <span class="id" title="var">vector_zero</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">v</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">right_identity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">left_inverse_vector_plus</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">LeftInverse</span> <span class="id" title="var">vector_plus</span> <span class="id" title="var">vector_neg</span> <span class="id" title="var">vector_zero</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">v</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 3 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">left_inverse</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">right_inverse_vector_plus</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">RightInverse</span> <span class="id" title="var">vector_plus</span> <span class="id" title="var">vector_neg</span> <span class="id" title="var">vector_zero</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">v</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 3 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">right_inverse</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">abgroup_vector</span> : <span class="id" title="var">AbGroup</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_AbGroup</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Group</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;5: <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">Vector</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">vector_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">vector_zero</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">vector_neg</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">associative_vector_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">left_identity_vector_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">right_identity_vector_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">left_inverse_vector_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">right_inverse_vector_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">commutative_vector_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">VectorAddition</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">vector_plus</span> {<span class="id" title="var">A</span> <span class="id" title="var">n</span>} <span class="id" title="var">v1</span> <span class="id" title="var">v2</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab315"></a><h2 class="section">Module structure</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">VectorScale</span>.<br/>
+</div>
+
+<div class="doc">
+A vector of elements of an R-module is itself an R-module. A special case is when the R-module is the ring R itself. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">M</span> : <span class="id" title="var">AbGroup</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} `{<span class="id" title="var">IsLeftModule</span> <span class="id" title="var">R</span> <span class="id" title="var">M</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">vector_lact</span> (<span class="id" title="var">r</span> : <span class="id" title="var">R</span>) : <span class="id" title="var">Vector</span> <span class="id" title="var">M</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">Vector</span> <span class="id" title="var">M</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">vector_map</span> (<span class="id" title="var">lact</span> <span class="id" title="var">r</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">left_heterodistribute_vector_lact_plus</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">LeftHeteroDistribute</span> <span class="id" title="var">vector_lact</span> <span class="id" title="var">vector_plus</span> <span class="id" title="var">vector_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">v1</span> <span class="id" title="var">v2</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 5 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">distribute_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">right_heterodistribute_vector_lact_plus</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">RightHeteroDistribute</span> <span class="id" title="var">vector_lact</span> (+) <span class="id" title="var">vector_plus</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">r1</span> <span class="id" title="var">r2</span> <span class="id" title="var">v</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 4 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">distribute_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">heteroassociative_vector_lact_plus</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">HeteroAssociative</span> <span class="id" title="var">vector_lact</span> <span class="id" title="var">vector_lact</span> <span class="id" title="var">vector_lact</span> (.*.).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">v</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 3 <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">left_identity_vector_lact</span> : <span class="id" title="var">LeftIdentity</span> <span class="id" title="var">vector_lact</span> 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">v</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_vector</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">i</span> <span class="id" title="var">Hi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">entry_Build_Vector</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">left_identity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isleftmodule_isleftmodule_vector</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsLeftModule</span> <span class="id" title="var">R</span> (<span class="id" title="var">abgroup_vector</span> <span class="id" title="var">M</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsLeftModule</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">vector_lact</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">left_heterodistribute_vector_lact_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">right_heterodistribute_vector_lact_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">heteroassociative_vector_lact_plus</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">left_identity_vector_lact</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">VectorScale</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">vector_lact</span> {<span class="id" title="var">M</span> <span class="id" title="var">n</span> <span class="id" title="var">R</span> <span class="id" title="var">_</span>} <span class="id" title="var">r</span> <span class="id" title="var">v</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

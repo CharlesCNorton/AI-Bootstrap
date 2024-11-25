@@ -1,0 +1,325 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Cantor</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Cantor</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Idempotents</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Truncations.Core</span> <span class="id" title="var">Universes.BAut</span> <span class="id" title="var">Spaces.Cantor</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">equiv_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1385"></a><h1 class="section">BAut(Cantor)</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab1386"></a><h2 class="section">A pre-idempotent on <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">Cantor</span></span> that does not split</h2>
+
+<div class="paragraph"> </div>
+
+ We go into a non-exported module so that we can use short names for definitions without polluting the global namespace. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="var">BAut_Cantor_Idempotent</span>.<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="keyword">Assumptions</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Univalence</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">f</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span> -&gt; <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Z</span>.<br/>
+</div>
+
+<div class="doc">
+Here is the important part of this definition. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">Z</span> + <span class="id" title="var">Cantor</span>).<br/>
+</div>
+
+<div class="doc">
+The rest is just a proof that <span class="inlinecode"><span class="id" title="var">Z</span>+<span class="id" title="var">Cantor</span></span> is again equivalent to <span class="inlinecode"><span class="id" title="var">Cantor</span></span>, using <span class="inlinecode"><span class="id" title="var">cantor_fold</span></span> and the assumption that <span class="inlinecode"><span class="id" title="var">Z</span></span> is equivalent to <span class="inlinecode"><span class="id" title="var">Cantor</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">e</span> := <span class="id" title="var">Z</span>.2); <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">e</span>; <span class="id" title="var">clearbody</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_universe_uncurried</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_cantor_fold</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">e</span> +<span class="id" title="var">E</span> 1).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+For the pre-idempotence of <span class="inlinecode"><span class="id" title="var">f</span></span>, the main point is again the existence of the equivalence <span class="inlinecode"><span class="id" title="var">fold_cantor</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">preidem_f</span> : <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_baut</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sum_assoc</span> <span class="id" title="var">Z</span> <span class="id" title="var">Cantor</span> <span class="id" title="var">Cantor</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (1 +<span class="id" title="var">E</span> <span class="id" title="var">equiv_cantor_fold</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We record how the action of <span class="inlinecode"><span class="id" title="var">f</span></span> and <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> on paths corresponds to an action on equivalences. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_f</span> {<span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">Z</span> = <span class="id" title="var">Z'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">equiv_path</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">p</span>)..1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">equiv_path</span> <span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> <span class="id" title="var">p</span>..1 +<span class="id" title="var">E</span> 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path_equiv</span>, <span class="id" title="var">path_arrow</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">z</span>|<span class="id" title="var">a</span>]; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_ff</span> {<span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">Z</span> = <span class="id" title="var">Z'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">equiv_path</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">p</span>)..1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">equiv_path</span> <span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> <span class="id" title="var">p</span>..1 +<span class="id" title="var">E</span> 1 +<span class="id" title="var">E</span> 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">path_equiv</span>, <span class="id" title="var">path_arrow</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [[<span class="id" title="var">z</span>|<span class="id" title="var">a</span>]|<span class="id" title="var">a</span>]; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now let's assume <span class="inlinecode"><span class="id" title="var">f</span></span> is quasi-idempotent, but not necessarily using the same witness of pre-idempotency. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">Ip</span> : <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">f</span>) (<span class="id" title="var">Jp</span> : @<span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">Ip</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">I</span> (<span class="id" title="var">Z</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Z</span> + <span class="id" title="var">Cantor</span>) + <span class="id" title="var">Cantor</span> &lt;~&gt; <span class="id" title="var">Z</span> + <span class="id" title="var">Cantor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">equiv_path</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Ip</span> <span class="id" title="var">Z</span>)..1.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">I0</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> &lt;~&gt; <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">I</span> (<span class="id" title="var">f</span> (<span class="id" title="var">point</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>))).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We don't know much about <span class="inlinecode"><span class="id" title="var">I0</span></span>, but we can show that it maps the rightmost two summands to the rightmost one, using the naturality of <span class="inlinecode"><span class="id" title="var">I</span></span>.  Here is the naturality. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Inat</span> (<span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>) (<span class="id" title="var">e</span> : <span class="id" title="var">Z</span> &lt;~&gt; <span class="id" title="var">Z'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">I</span> <span class="id" title="var">Z'</span> <span class="id" title="var">oE</span> (<span class="id" title="var">e</span> +<span class="id" title="var">E</span> 1 +<span class="id" title="var">E</span> 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= (<span class="id" title="var">e</span> +<span class="id" title="var">E</span> 1) <span class="id" title="var">oE</span> <span class="id" title="var">I</span> <span class="id" title="var">Z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">e</span>; <span class="id" title="var">equiv_intro</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">Z</span> <span class="id" title="var">Z'</span>) <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">q</span>; <span class="id" title="var">equiv_intro</span> ((<span class="id" title="var">equiv_path_sigma_hprop</span> <span class="id" title="var">Z</span> <span class="id" title="var">Z'</span>)^-1) <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>. <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">ap_ff</span>, &lt;- <span class="id" title="var">ap_f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">I</span>. <span class="id" title="tactic">refine</span> ((<span class="id" title="var">equiv_path_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span> @ (<span class="id" title="var">equiv_path_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">pr1_path_pp</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">p</span>) (<span class="id" title="var">Ip</span> <span class="id" title="var">Z'</span>))^ @ <span class="id" title="var">_</span> @ <span class="id" title="var">pr1_path_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">concat_Ap</span> <span class="id" title="var">Ip</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+To show our claim about the action of <span class="inlinecode"><span class="id" title="var">I0</span></span>, we will apply this naturality to the flip automorphism of <span class="inlinecode"><span class="id" title="var">Cantor</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">Cantor</span></span>.  Here are the images of that automorphism under <span class="inlinecode"><span class="id" title="var">f</span></span> and <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">o</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">f_flip</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_sum_symm</span> <span class="id" title="var">Cantor</span> <span class="id" title="var">Cantor</span> +<span class="id" title="var">E</span> <span class="id" title="var">equiv_idmap</span> <span class="id" title="var">Cantor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ff_flip</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_sum_symm</span> <span class="id" title="var">Cantor</span> <span class="id" title="var">Cantor</span> +<span class="id" title="var">E</span> <span class="id" title="var">equiv_idmap</span> <span class="id" title="var">Cantor</span>) +<span class="id" title="var">E</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">Cantor</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The naturality of <span class="inlinecode"><span class="id" title="var">I</span></span> implies that <span class="inlinecode"><span class="id" title="var">I0</span></span> commutes with these images of the flip. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">I0nat_flip</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x</span> : ((<span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span>) + <span class="id" title="var">Cantor</span>) + <span class="id" title="var">Cantor</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">I0</span> (<span class="id" title="var">ff_flip</span> <span class="id" title="var">x</span>) = <span class="id" title="var">f_flip</span> (<span class="id" title="var">I0</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">ap10_equiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Inat</span> (<span class="id" title="var">f</span> (<span class="id" title="var">point</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>))) (<span class="id" title="var">f</span> (<span class="id" title="var">point</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_sum_symm</span> <span class="id" title="var">Cantor</span> <span class="id" title="var">Cantor</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The value of this is that we can detect which summand an element is in depending on whether or not it is fixed by <span class="inlinecode"><span class="id" title="var">f_flip</span></span> or <span class="inlinecode"><span class="id" title="var">ff_flip</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">f_flip_fixed_iff_inr</span> (<span class="id" title="var">x</span> : <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">f_flip</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) &lt;-&gt; <span class="id" title="var">is_inr</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">c</span>|<span class="id" title="var">c</span>]|<span class="id" title="var">c</span>]; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sum_inl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> (<span class="id" title="var">inl_ne_inr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sum_inl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> (<span class="id" title="var">inl_ne_inr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">tt</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">elim</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">elim</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">ff_flip_fixed_iff_inr</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">ff_flip</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) &lt;-&gt; (<span class="id" title="var">is_inr</span> <span class="id" title="var">x</span> + <span class="id" title="var">is_inl_and</span> <span class="id" title="var">is_inr</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [[[<span class="id" title="var">c</span>|<span class="id" title="var">c</span>]|<span class="id" title="var">c</span>]|<span class="id" title="var">c</span>]; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sum_inl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> (<span class="id" title="var">inl_ne_inr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sum_inl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">elim</span> (<span class="id" title="var">inl_ne_inr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">inl</span> <span class="id" title="var">tt</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">e</span>|<span class="id" title="var">e</span>]; <span class="id" title="tactic">elim</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">e</span>|<span class="id" title="var">e</span>]; <span class="id" title="tactic">elim</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">e</span>|<span class="id" title="var">_</span>]; [ <span class="id" title="tactic">elim</span> <span class="id" title="var">e</span> | <span class="id" title="tactic">reflexivity</span> ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">_</span>|<span class="id" title="var">e</span>]; [ <span class="id" title="tactic">reflexivity</span> | <span class="id" title="tactic">elim</span> <span class="id" title="var">e</span> ].<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And the naturality guarantees that <span class="inlinecode"><span class="id" title="var">I0</span></span> preserves fixed points. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">I0_fixed_iff_fixed</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">ff_flip</span> <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) &lt;-&gt; (<span class="id" title="var">f_flip</span> (<span class="id" title="var">I0</span> <span class="id" title="var">x</span>) = <span class="id" title="var">I0</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> ((<span class="id" title="var">I0nat_flip</span> <span class="id" title="var">x</span>)^ @ <span class="id" title="var">ap</span> <span class="id" title="var">I0</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">I0</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">I0nat_flip</span> <span class="id" title="var">x</span> @ <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Putting it all together, here is the proof of our claim about <span class="inlinecode"><span class="id" title="var">I0</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">I0_preserves_inr</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span> + <span class="id" title="var">Cantor</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">is_inr</span> <span class="id" title="var">x</span> + <span class="id" title="var">is_inl_and</span> <span class="id" title="var">is_inr</span> <span class="id" title="var">x</span>) &lt;-&gt; <span class="id" title="var">is_inr</span> (<span class="id" title="var">I0</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">iff_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">f_flip_fixed_iff_inr</span> (<span class="id" title="var">I0</span> <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">iff_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">I0_fixed_iff_fixed</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">iff_inverse</span>, <span class="id" title="var">ff_flip_fixed_iff_inr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now we bring quasi-idempotence into play. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">J</span> (<span class="id" title="var">Z</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">I</span> <span class="id" title="var">Z</span> +<span class="id" title="var">E</span> 1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">I</span> (<span class="id" title="var">f</span> <span class="id" title="var">Z</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">I</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ap_f</span> (<span class="id" title="var">Ip</span> <span class="id" title="var">Z</span>))^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Jp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We reach a contradiction by showing that the two maps which <span class="inlinecode"><span class="id" title="var">J</span></span> claims are equal send elements of the third summand of the domain into different summands of the codomain. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">impossible</span> : <span class="id" title="var">Empty</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">x</span> := <span class="id" title="var">inl</span> (<span class="id" title="var">inr</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">true</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ((<span class="id" title="var">f</span> (<span class="id" title="var">point</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>))) + <span class="id" title="var">Cantor</span>) + <span class="id" title="var">Cantor</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">not_is_inl_and_inr'</span> (<span class="id" title="var">I</span> (<span class="id" title="var">f</span> (<span class="id" title="var">point</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>))) <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">transport</span> <span class="id" title="var">is_inl</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ap10_equiv</span> (<span class="id" title="var">J</span> (<span class="id" title="var">point</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span>))) <span class="id" title="var">x</span>) <span class="id" title="var">tt</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">fst</span> (<span class="id" title="var">I0_preserves_inr</span> <span class="id" title="var">x</span>) (<span class="id" title="var">inr</span> <span class="id" title="var">tt</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="keyword">Assumptions</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">BAut_Cantor_Idempotent</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Let's make the important conclusions available globally. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">baut_cantor_idem</span> `{<span class="id" title="var">Univalence</span>}<br/>
+: <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span> -&gt; <span class="id" title="var">BAut</span> <span class="id" title="var">Cantor</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">BAut_Cantor_Idempotent.f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">preidem_baut_cantor_idem</span> `{<span class="id" title="var">Univalence</span>}<br/>
+: <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">baut_cantor_idem</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">BAut_Cantor_Idempotent.preidem_f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">not_qidem_baut_cantor_idem</span> `{<span class="id" title="var">Univalence</span>}<br/>
+: ~ { <span class="id" title="var">I</span> : <span class="id" title="var">IsPreIdempotent</span> <span class="id" title="var">baut_cantor_idem</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp; <span class="id" title="var">IsQuasiIdempotent</span> <span class="id" title="var">baut_cantor_idem</span> }<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">IJ</span> =&gt; <span class="id" title="var">BAut_Cantor_Idempotent.impossible</span> <span class="id" title="var">IJ</span>.1 <span class="id" title="var">IJ</span>.2.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

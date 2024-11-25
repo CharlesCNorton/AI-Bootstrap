@@ -1,0 +1,446 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Arithmetic</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Arithmetic</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">trunc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">nat_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: The results in this file are in the process of being moved over to Core.v 
+<div class="paragraph"> </div>
+
+ TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">nataddsub_comm_ineq_lemma</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">n</span>.+1 - <span class="id" title="var">m</span> &lt;= (<span class="id" title="var">n</span> - <span class="id" title="var">m</span>).+1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">simple_induction</span> <span class="id" title="var">m</span> <span class="id" title="var">m</span> <span class="id" title="var">IHm</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">m</span>; <span class="id" title="var">simple_induction</span> <span class="id" title="var">m</span> <span class="id" title="var">m</span> <span class="id" title="var">IHm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_refl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">nataddsub_comm_ineq</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">n</span> + <span class="id" title="var">k</span>) - <span class="id" title="var">m</span> &lt;= (<span class="id" title="var">n</span> - <span class="id" title="var">m</span>) + <span class="id" title="var">k</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">k</span> <span class="id" title="var">k</span> <span class="id" title="var">IHk</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">nat_add_zero_r</span> <span class="id" title="var">n</span>)^, (<span class="id" title="var">nat_add_zero_r</span> (<span class="id" title="var">n</span> - <span class="id" title="var">m</span>))^; <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">nat_add_succ_r</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">leq_trans</span> (<span class="id" title="var">nataddsub_comm_ineq_lemma</span> (<span class="id" title="var">n</span>+<span class="id" title="var">k</span>) <span class="id" title="var">m</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">nat_add_succ_r</span> (<span class="id" title="var">n</span> - <span class="id" title="var">m</span>) <span class="id" title="var">k</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_succ</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">nat_sub_add_ineq</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">n</span> &lt;= <span class="id" title="var">n</span> - <span class="id" title="var">m</span> + <span class="id" title="var">m</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (@<span class="id" title="var">leq_dichotomy</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">l</span> | <span class="id" title="var">gt</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">nat_sub_l_add_l</span>; <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">nat_add_sub_cancel_r</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">leq_refl</span>; <span class="id" title="var">done</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_lt</span> <span class="id" title="tactic">in</span> <span class="id" title="var">gt</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">equiv_nat_sub_leq</span> <span class="id" title="var">_</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">i_lt_n_sum_m</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">i</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span> - <span class="id" title="var">m</span> -&gt; <span class="id" title="var">m</span> &lt;= <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">m</span> <span class="id" title="var">i</span>; <span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">i</span> <span class="id" title="var">l</span>. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">l</span>. <span class="id" title="var">contradiction</span> (<span class="id" title="var">not_lt_zero_r</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">i</span> <span class="id" title="var">l</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_zero_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_succ</span>. <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">l</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">IHn</span> <span class="id" title="var">m</span> <span class="id" title="var">i</span> <span class="id" title="var">l</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">predeqminus1</span> { <span class="id" title="var">n</span> : <span class="id" title="var">nat</span> } : <span class="id" title="var">n</span> - 1 = <span class="id" title="var">nat_pred</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction'</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_sub_zero_r</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">predn_leq_n</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">nat_pred</span> <span class="id" title="var">n</span> &lt;= <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">pred_equiv</span> (<span class="id" title="var">k</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span> -&gt; <span class="id" title="var">k</span> &lt; <span class="id" title="var">S</span> (<span class="id" title="var">nat_pred</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">ineq</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">contradiction</span> (<span class="id" title="var">not_lt_zero_r</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">n_leq_pred_Sn</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">n</span> &lt;= <span class="id" title="var">S</span> (<span class="id" title="var">nat_pred</span> <span class="id" title="var">n</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">leq_implies_pred_lt</span> (<span class="id" title="var">i</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">n</span> &gt; <span class="id" title="var">i</span>) -&gt; <span class="id" title="var">n</span> &lt;= <span class="id" title="var">k</span> -&gt; <span class="id" title="var">nat_pred</span> <span class="id" title="var">n</span> &lt; <span class="id" title="var">k</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">ineq</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">contradiction</span> (<span class="id" title="var">not_lt_zero_r</span> <span class="id" title="var">i</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">pred_lt_implies_leq</span> (<span class="id" title="var">n</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">nat_pred</span> <span class="id" title="var">n</span> &lt; <span class="id" title="var">k</span> -&gt; <span class="id" title="var">n</span> &lt;= <span class="id" title="var">k</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">l</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_zero_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">lt_implies_pred_geq</span> (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">i</span> &lt; <span class="id" title="var">j</span> -&gt; <span class="id" title="var">i</span> &lt;= <span class="id" title="var">nat_pred</span> <span class="id" title="var">j</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">l</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_pred</span> <span class="id" title="tactic">in</span> <span class="id" title="var">l</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">j_geq_0_lt_implies_pred_geq</span> (<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">i</span> &lt; <span class="id" title="var">j</span> -&gt; <span class="id" title="var">k</span>.+1 &lt;= <span class="id" title="var">j</span> -&gt; <span class="id" title="var">k</span> &lt;= <span class="id" title="var">nat_pred</span> <span class="id" title="var">j</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">l</span> <span class="id" title="var">ineq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">j</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">contradiction</span> (<span class="id" title="var">not_lt_zero_r</span> <span class="id" title="var">i</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_pred'</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">pred_gt_implies_lt</span> (<span class="id" title="var">i</span> <span class="id" title="var">j</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">i</span> &lt; <span class="id" title="var">nat_pred</span> <span class="id" title="var">j</span> -&gt; <span class="id" title="var">i</span>.+1 &lt; <span class="id" title="var">j</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">ineq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">H</span> := <span class="id" title="var">leq_succ</span> <span class="id" title="var">ineq</span>). <span class="id" title="tactic">assert</span> (<span class="id" title="var">i</span> &lt; <span class="id" title="var">j</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">X</span>. {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (@<span class="id" title="var">lt_lt_leq_trans</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_pred</span> <span class="id" title="var">j</span>) <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[<span class="id" title="tactic">assumption</span>  | <span class="id" title="tactic">apply</span> <span class="id" title="var">predn_leq_n</span>].<br/>
+&nbsp;&nbsp;}<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">nat_succ_pred'</span> <span class="id" title="var">j</span> <span class="id" title="var">i</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">pred_preserves_lt</span> {<span class="id" title="var">i</span> <span class="id" title="var">n</span>: <span class="id" title="var">nat</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">i</span> &lt; <span class="id" title="var">n</span>) <span class="id" title="var">m</span><br/>
+&nbsp;&nbsp;: (<span class="id" title="var">n</span> &lt; <span class="id" title="var">m</span>) -&gt; (<span class="id" title="var">nat_pred</span> <span class="id" title="var">n</span> &lt; <span class="id" title="var">nat_pred</span> <span class="id" title="var">m</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">leq_pred'</span>. <span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_succ_pred'</span> <span class="id" title="var">n</span> <span class="id" title="var">i</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">k</span> :=  <span class="id" title="var">transitive_lt</span> <span class="id" title="var">i</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">p</span> <span class="id" title="var">l</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_succ_pred'</span> <span class="id" title="var">m</span> <span class="id" title="var">i</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">sub_less</span> { <span class="id" title="var">n</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span> } : <span class="id" title="var">n</span> - <span class="id" title="var">k</span> &lt;= <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_zero_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_refl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">apply</span> (@<span class="id" title="var">leq_trans</span> <span class="id" title="var">_</span> <span class="id" title="var">n</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span> | <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_succ_r</span>, <span class="id" title="var">leq_refl</span>].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">sub_less_strict</span> { <span class="id" title="var">n</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span> }<br/>
+&nbsp;&nbsp;: 0 &lt; <span class="id" title="var">n</span> -&gt; 0 &lt; <span class="id" title="var">k</span> -&gt; <span class="id" title="var">n</span> - <span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">l</span> <span class="id" title="var">l'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> "&lt;".<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">k</span>, <span class="id" title="var">n</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">try</span> (<span class="id" title="var">contradiction</span> (<span class="id" title="var">not_lt_zero_r</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_succ</span>, <span class="id" title="var">sub_less</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: move, rename 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">n_leq_m_n_leq_plus_m_k</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">n</span> &lt;= <span class="id" title="var">m</span> -&gt; <span class="id" title="var">n</span> &lt;= <span class="id" title="var">m</span> + <span class="id" title="var">k</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">l</span>; <span class="id" title="tactic">apply</span> (<span class="id" title="var">leq_trans</span> <span class="id" title="var">l</span>); <span class="id" title="tactic">exact</span> (<span class="id" title="var">leq_add_r</span> <span class="id" title="var">m</span> <span class="id" title="var">k</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This inductive type is defined because it lets you loop from <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0</span> up to <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">n</span></span> by structural induction on a proof of <span class="inlinecode"><span class="id" title="var">increasing_geq</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">0</span>. With the existing <span class="inlinecode"><span class="id" title="var">leq</span></span> type and the inductive structure of <span class="inlinecode"><span class="id" title="var">n</span></span>, it is easier and more natural to loop downwards from <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">n</span></span> to <span class="inlinecode"><span class="id" title="var">i</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0</span>, but harder to find the least natural number in the interval  satisfying a given property. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Unset</span> <span class="id" title="var">Elimination</span> <span class="id" title="var">Schemes</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Inductive</span> <span class="id" title="var">increasing_geq</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">nat</span> -&gt; <span class="id" title="var">Type0</span> :=<br/>
+| <span class="id" title="var">increasing_geq_n</span> : <span class="id" title="var">increasing_geq</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span><br/>
+| <span class="id" title="var">increasing_geq_S</span> (<span class="id" title="var">m</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">increasing_geq</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>.+1 -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">increasing_geq</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Scheme</span> <span class="id" title="var">increasing_geq_ind</span> := <span class="id" title="keyword">Induction</span> <span class="id" title="keyword">for</span> <span class="id" title="var">increasing_geq</span> <span class="id" title="keyword">Sort</span> <span class="id" title="keyword">Type</span>.<br/>
+<span class="id" title="keyword">Scheme</span> <span class="id" title="var">increasing_geq_rec</span> := <span class="id" title="var">Minimality</span> <span class="id" title="keyword">for</span> <span class="id" title="var">increasing_geq</span> <span class="id" title="keyword">Sort</span> <span class="id" title="keyword">Type</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">increasing_geq_rect</span> := <span class="id" title="var">increasing_geq_rec</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Elimination</span> <span class="id" title="var">Schemes</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">increasing_geq_S_n</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">increasing_geq</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> -&gt; <span class="id" title="var">increasing_geq</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">m</span>.+1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">increasing_geq_n_0</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">increasing_geq</span> <span class="id" title="var">n</span> 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">induction</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">by</span> <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">increasing_geq_minus</span> (<span class="id" title="var">n</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">increasing_geq</span> <span class="id" title="var">n</span> (<span class="id" title="var">n</span> - <span class="id" title="var">k</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">simple_induction</span> <span class="id" title="var">k</span> <span class="id" title="var">k</span> <span class="id" title="var">IHk</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_sub_zero_r</span> <span class="id" title="var">n</span>)); <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> (@<span class="id" title="var">leq_dichotomy</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">l</span> | <span class="id" title="var">g</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">destruct</span> (<span class="id" title="var">equiv_nat_sub_leq</span> <span class="id" title="var">_</span>)^ <span class="id" title="tactic">in</span> <span class="id" title="var">IHk</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">leq_succ_r</span> <span class="id" title="tactic">in</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">equiv_nat_sub_leq</span> <span class="id" title="var">_</span>)^. <span class="id" title="tactic">exact</span> <span class="id" title="var">IHk</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">change</span> <span class="id" title="var">k</span>.+1 <span class="id" title="keyword">with</span> (1 + <span class="id" title="var">k</span>). <span class="id" title="tactic">destruct</span> (<span class="id" title="var">nat_add_comm</span> <span class="id" title="var">k</span> 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_sub_r_add</span> <span class="id" title="var">n</span> <span class="id" title="var">k</span> 1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (@<span class="id" title="var">predeqminus1</span> (<span class="id" title="var">n</span> - <span class="id" title="var">k</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">increasing_geq_S</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> "&gt;", "&lt;" <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_lt_lt_sub</span> <span class="id" title="tactic">in</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> (<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_succ_pred</span> (<span class="id" title="var">n</span> - <span class="id" title="var">k</span>) <span class="id" title="var">_</span>))).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ineq_sub'</span> (<span class="id" title="var">n</span> <span class="id" title="var">k</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span> -&gt; <span class="id" title="var">n</span> - <span class="id" title="var">k</span> = (<span class="id" title="var">n</span> - <span class="id" title="var">k</span>.+1).+1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">ineq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">contradiction</span> (<span class="id" title="var">not_lt_zero_r</span> <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (<span class="id" title="var">n</span>.+1 - <span class="id" title="var">k</span>.+1) <span class="id" title="keyword">with</span> (<span class="id" title="var">n</span> - <span class="id" title="var">k</span>). <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_pred'</span> <span class="id" title="tactic">in</span> <span class="id" title="var">ineq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">nat_sub_succ_l</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ineq_sub</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">n</span> &lt;= <span class="id" title="var">m</span> -&gt; <span class="id" title="var">m</span> - (<span class="id" title="var">m</span> - <span class="id" title="var">n</span>) = <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">m</span>; <span class="id" title="var">simple_induction</span> <span class="id" title="var">n</span> <span class="id" title="var">n</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>. <span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_sub_zero_r</span> <span class="id" title="var">m</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_sub_cancel</span> <span class="id" title="var">m</span>));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span> <span class="id" title="var">ineq</span>. <span class="id" title="tactic">change</span> (<span class="id" title="var">m</span> - <span class="id" title="var">n</span>.+1) <span class="id" title="keyword">with</span> (<span class="id" title="var">m</span> - (1 + <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="tactic">destruct</span> (<span class="id" title="var">nat_add_comm</span> <span class="id" title="var">n</span> 1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_sub_r_add</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span> 1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">nat_succ_pred</span> (<span class="id" title="var">m</span> - <span class="id" title="var">n</span>) (<span class="id" title="var">equiv_lt_lt_sub</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">ineq</span>)); <span class="id" title="tactic">simpl</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_sub_zero_r</span> (<span class="id" title="var">nat_pred</span> (<span class="id" title="var">m</span> - <span class="id" title="var">n</span>)))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (0 &lt; <span class="id" title="var">m</span> - <span class="id" title="var">n</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">dp</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_lt_lt_sub</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">ineq</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">nat_pred</span> (<span class="id" title="var">m</span> - <span class="id" title="var">n</span>) &lt; <span class="id" title="var">m</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">sh</span> <span class="id" title="tactic">by</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;( <span class="id" title="tactic">unfold</span> "&lt;";<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_succ_pred</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">sub_less</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ineq_sub'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">symmetric_paths</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">nat_succ_pred</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">S</span>), <span class="id" title="var">IHn</span>, <span class="id" title="var">leq_succ_l</span>, <span class="id" title="var">ineq</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">leq_equivalent</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">n</span> &lt;= <span class="id" title="var">m</span> &lt;-&gt; <span class="id" title="var">increasing_geq</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">ineq</span>. <span class="id" title="tactic">induction</span> <span class="id" title="var">ineq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">increasing_geq_S_n</span> <span class="id" title="tactic">in</span> <span class="id" title="var">IHineq</span>; <span class="id" title="tactic">constructor</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">leq_succ_l</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: remove  This tautology accepts a (potentially opaqued or QED'ed) proof of <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">&lt;=</span> <span class="inlinecode"><span class="id" title="var">m</span></span>, and returns a transparent proof which can be computed with (i.e., one can loop from n to m) 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">leq_wrapper</span> {<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>} : <span class="id" title="var">n</span> &lt;= <span class="id" title="var">m</span> -&gt; <span class="id" title="var">n</span> &lt;= <span class="id" title="var">m</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">ineq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (@<span class="id" title="var">leq_dichotomy</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">l</span> | <span class="id" title="var">g</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">contradiction</span> (<span class="id" title="var">lt_irrefl</span> <span class="id" title="var">m</span> (<span class="id" title="var">lt_lt_leq_trans</span> <span class="id" title="var">g</span> <span class="id" title="var">ineq</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">symmetric_rel_total_order</span> (<span class="id" title="var">R</span> : <span class="id" title="var">nat</span> -&gt; <span class="id" title="var">nat</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">p</span> : <span class="id" title="var">Symmetric</span> <span class="id" title="var">R</span>} {<span class="id" title="var">p'</span> : <span class="id" title="var">Reflexive</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">n</span> &lt; <span class="id" title="var">m</span> -&gt; <span class="id" title="var">R</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>) -&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">R</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (@<span class="id" title="var">leq_dichotomy</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">m_leq_n</span> | <span class="id" title="var">m_gt_n</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">m_leq_n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">A</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">leq_succ</span>. <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">A</span>, <span class="id" title="var">m_gt_n</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

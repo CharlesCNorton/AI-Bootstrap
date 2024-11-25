@@ -1,0 +1,700 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Coeq</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Coeq</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Paths</span> <span class="id" title="var">Types.Arrow</span> <span class="id" title="var">Types.Sigma</span> <span class="id" title="var">Types.Forall</span> <span class="id" title="var">Types.Universe</span> <span class="id" title="var">Types.Prod</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Colimits.GraphQuotient</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1007"></a><h1 class="section">Homotopy coequalizers</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab1008"></a><h2 class="section">Definition</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">u</span>} {<span class="id" title="var">B</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}} {<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>) : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">GraphQuotient@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">u</span>} (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; {<span class="id" title="var">x</span> : <span class="id" title="var">B</span> &amp; (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">a</span>) * (<span class="id" title="var">g</span> <span class="id" title="var">x</span> = <span class="id" title="var">b</span>)}).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">coeq</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> := <span class="id" title="var">gq</span> <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cglue</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} <span class="id" title="var">b</span> : @<span class="id" title="var">coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) = <span class="id" title="var">coeq</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">gqglue</span> (<span class="id" title="var">b</span>; (<span class="id" title="var">idpath</span>,<span class="id" title="var">idpath</span>)).<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Coeq</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">coeq</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">cglue</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} (<span class="id" title="var">P</span> : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">coeq'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cglue'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) # (<span class="id" title="var">coeq'</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)) = <span class="id" title="var">coeq'</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">w</span>, <span class="id" title="var">P</span> <span class="id" title="var">w</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">GraphQuotient_ind</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> [<span class="id" title="var">x</span> [[] []]].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cglue'</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Coeq_ind_beta_cglue</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} (<span class="id" title="var">P</span> : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">coeq'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cglue'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) # (<span class="id" title="var">coeq'</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)) = <span class="id" title="var">coeq'</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">b</span>:<span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">apD</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">coeq'</span> <span class="id" title="var">cglue'</span>) (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) = <span class="id" title="var">cglue'</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">GraphQuotient_ind_beta_gqglue</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_rec</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} (<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">coeq'</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cglue'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">coeq'</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) = <span class="id" title="var">coeq'</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;: @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">P</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">GraphQuotient_rec</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> [<span class="id" title="var">x</span> [[] []]].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cglue'</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_rec_beta_cglue</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} (<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">coeq'</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cglue'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>:<span class="id" title="var">B</span>, <span class="id" title="var">coeq'</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) = <span class="id" title="var">coeq'</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">b</span>:<span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">Coeq_rec</span> <span class="id" title="var">P</span> <span class="id" title="var">coeq'</span> <span class="id" title="var">cglue'</span>) (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) = <span class="id" title="var">cglue'</span> <span class="id" title="var">b</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">GraphQuotient_rec_beta_gqglue</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind_hprop</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} (<span class="id" title="var">P</span> : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">i</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Coeq_ind</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind_eta_homotopic</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} {<span class="id" title="var">P</span> : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">w</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>, <span class="id" title="var">P</span> <span class="id" title="var">w</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">h</span> == <span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> (<span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">apD</span> <span class="id" title="var">h</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">pointwise_paths</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FlFr_D</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">Coeq_ind_beta_cglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">concat_Vp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_rec_eta_homotopic</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">h</span> : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">h</span> == <span class="id" title="var">Coeq_rec</span> <span class="id" title="var">P</span> (<span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">h</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">pointwise_paths</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">transport_paths_FlFr'</span>, <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">Coeq_rec_beta_cglue</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind_eta</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} {<span class="id" title="var">P</span> : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="keyword">Type</span>} (<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">w</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>, <span class="id" title="var">P</span> <span class="id" title="var">w</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">h</span> = <span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> (<span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">apD</span> <span class="id" title="var">h</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Coeq_ind_eta_homotopic</span> <span class="id" title="var">h</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_rec_eta</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} {<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">h</span> : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">h</span> = <span class="id" title="var">Coeq_rec</span> <span class="id" title="var">P</span> (<span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">h</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">Coeq_rec_eta_homotopic</span> <span class="id" title="var">h</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind_homotopy</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>} (<span class="id" title="var">P</span> : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>)} (<span class="id" title="var">u</span> : <span class="id" title="var">m</span> == <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">r</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) # (<span class="id" title="var">m</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)) = <span class="id" title="var">m</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">s</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) # (<span class="id" title="var">n</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)) = <span class="id" title="var">n</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> <span class="id" title="var">P</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">u</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)) @ (<span class="id" title="var">s</span> <span class="id" title="var">b</span>) = <span class="id" title="var">r</span> <span class="id" title="var">b</span> @ <span class="id" title="var">u</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span> == <span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">s</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">pointwise_paths</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Coeq_ind</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">transport_paths_FlFr_D</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span>) (<span class="id" title="var">g</span>:=<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">s</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerL</span> <span class="id" title="var">_</span> (<span class="id" title="var">Coeq_ind_beta_cglue</span> <span class="id" title="var">P</span> <span class="id" title="var">n</span> <span class="id" title="var">s</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">ap</span> <span class="id" title="var">inverse</span> (<span class="id" title="var">Coeq_ind_beta_cglue</span> <span class="id" title="var">P</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span> <span class="id" title="var">b</span>)) <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_pp_p</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">moveR_Mp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">whiskerR</span> (<span class="id" title="var">inv_V</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1009"></a><h2 class="section">Universal property</h2>
+ See Colimits/CoeqUnivProp.v for a similar universal property without <span class="inlinecode"><span class="id" title="var">Funext</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_unrec</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>) {<span class="id" title="var">P</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;: {<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span> &amp; <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>}.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">coeq</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">h</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isequiv_Coeq_rec</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">B</span> <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>) <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> : {<span class="id" title="var">h</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span> &amp; <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>} =&gt; <span class="id" title="var">Coeq_rec</span> <span class="id" title="var">P</span> <span class="id" title="var">p</span>.1 <span class="id" title="var">p</span>.2).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">_</span> (<span class="id" title="var">Coeq_unrec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_arrow</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Coeq_ind</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">cbn</span>;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FlFr'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Coeq_rec_beta_cglue</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">h</span> <span class="id" title="var">q</span>]; <span class="id" title="var">srapply</span> <span class="id" title="var">path_sigma'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Coeq_rec_beta_cglue</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_Coeq_rec</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">B</span> <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>) <span class="id" title="var">P</span><br/>
+&nbsp;&nbsp;: {<span class="id" title="var">h</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">P</span> &amp; <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>} &lt;~&gt; (<span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">isequiv_Coeq_rec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">P</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1010"></a><h2 class="section">Functoriality</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_coeq</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+: @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; @<span class="id" title="var">Coeq</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Coeq_rec</span> <span class="id" title="var">_</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">o</span> <span class="id" title="var">k</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">coeq</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">coeq</span> (<span class="id" title="var">q</span> <span class="id" title="var">b</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cglue</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_coeq_beta_cglue</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">B</span>)<br/>
+: <span class="id" title="var">ap</span> (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;= <span class="id" title="var">ap</span> <span class="id" title="var">coeq</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">cglue</span> (<span class="id" title="var">h</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">ap</span> <span class="id" title="var">coeq</span> (<span class="id" title="var">q</span> <span class="id" title="var">b</span>)^<br/>
+:= (<span class="id" title="var">Coeq_rec_beta_cglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_coeq_compose</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span> <span class="id" title="var">B''</span> <span class="id" title="var">A''</span> <span class="id" title="var">f''</span> <span class="id" title="var">g''</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h'</span> : <span class="id" title="var">B'</span> -&gt; <span class="id" title="var">B''</span>) (<span class="id" title="var">k'</span> : <span class="id" title="var">A'</span> -&gt; <span class="id" title="var">A''</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p'</span> : <span class="id" title="var">k'</span> <span class="id" title="var">o</span> <span class="id" title="var">f'</span> == <span class="id" title="var">f''</span> <span class="id" title="var">o</span> <span class="id" title="var">h'</span>) (<span class="id" title="var">q'</span> : <span class="id" title="var">k'</span> <span class="id" title="var">o</span> <span class="id" title="var">g'</span> == <span class="id" title="var">g''</span> <span class="id" title="var">o</span> <span class="id" title="var">h'</span>)<br/>
+: <span class="id" title="var">functor_coeq</span> (<span class="id" title="var">h'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">k'</span> <span class="id" title="var">o</span> <span class="id" title="var">k</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">k'</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">p'</span> (<span class="id" title="var">h</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">k'</span> (<span class="id" title="var">q</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">q'</span> (<span class="id" title="var">h</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;== <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h'</span> <span class="id" title="var">k'</span> <span class="id" title="var">p'</span> <span class="id" title="var">q'</span> <span class="id" title="var">o</span> <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; 1) <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_paths_FlFr'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_p1_1q</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">functor_coeq_beta_cglue</span>, !<span class="id" title="var">ap_pp</span>, <span class="id" title="var">functor_coeq_beta_cglue</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_compose</span>. <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_V</span>, <span class="id" title="var">ap_pp</span>, <span class="id" title="var">inv_pp</span>, &lt;- <span class="id" title="var">ap_compose</span>, !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_coeq_homotopy</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h'</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k'</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p'</span> : <span class="id" title="var">k'</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h'</span>) (<span class="id" title="var">q'</span> : <span class="id" title="var">k'</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">h</span> == <span class="id" title="var">h'</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">k</span> == <span class="id" title="var">k'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">u</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">s</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">p'</span> <span class="id" title="var">b</span> = <span class="id" title="var">p</span> <span class="id" title="var">b</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">f'</span> (<span class="id" title="var">r</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">v</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">s</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">q'</span> <span class="id" title="var">b</span> = <span class="id" title="var">q</span> <span class="id" title="var">b</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">g'</span> (<span class="id" title="var">r</span> <span class="id" title="var">b</span>))<br/>
+: <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> == <span class="id" title="var">functor_coeq</span> <span class="id" title="var">h'</span> <span class="id" title="var">k'</span> <span class="id" title="var">p'</span> <span class="id" title="var">q'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">coeq</span> (<span class="id" title="var">s</span> <span class="id" title="var">a</span>)) <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_paths_FlFr</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">functor_coeq_beta_cglue</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_pp</span> (@<span class="id" title="var">coeq</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>) (<span class="id" title="var">s</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">p'</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">u</span>, <span class="id" title="var">ap_pp</span>, !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>; <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_V</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_pV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>, &lt;- (<span class="id" title="var">ap_pp</span> (@<span class="id" title="var">coeq</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>) (<span class="id" title="var">s</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)) (<span class="id" title="var">q'</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">v</span>, <span class="id" title="var">ap_pp</span>, <span class="id" title="var">ap_V</span>, <span class="id" title="var">concat_V_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_Ap</span> (@<span class="id" title="var">cglue</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>) (<span class="id" title="var">r</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_coeq_sect</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h'</span> : <span class="id" title="var">B'</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">k'</span> : <span class="id" title="var">A'</span> -&gt; <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p'</span> : <span class="id" title="var">k'</span> <span class="id" title="var">o</span> <span class="id" title="var">f'</span> == <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">h'</span>) (<span class="id" title="var">q'</span> : <span class="id" title="var">k'</span> <span class="id" title="var">o</span> <span class="id" title="var">g'</span> == <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">h'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">r</span> : <span class="id" title="var">h'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span> == <span class="id" title="var">idmap</span>) (<span class="id" title="var">s</span> : <span class="id" title="var">k'</span> <span class="id" title="var">o</span> <span class="id" title="var">k</span> == <span class="id" title="var">idmap</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">u</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">ap</span> <span class="id" title="var">k'</span> (<span class="id" title="var">p</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">p'</span> (<span class="id" title="var">h</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">r</span> <span class="id" title="var">b</span>) = <span class="id" title="var">s</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">v</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">ap</span> <span class="id" title="var">k'</span> (<span class="id" title="var">q</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">q'</span> (<span class="id" title="var">h</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">r</span> <span class="id" title="var">b</span>) = <span class="id" title="var">s</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>))<br/>
+: (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h'</span> <span class="id" title="var">k'</span> <span class="id" title="var">p'</span> <span class="id" title="var">q'</span>) <span class="id" title="var">o</span> (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) == <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">coeq</span> (<span class="id" title="var">s</span> <span class="id" title="var">a</span>)) <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_paths_FFlr</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">functor_coeq_beta_cglue</span>, !<span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_compose</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">functor_coeq_beta_cglue</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">u</span>, !<span class="id" title="var">ap_pp</span>, !(<span class="id" title="var">ap_compose</span> <span class="id" title="var">k'</span> <span class="id" title="var">coeq</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">v</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, !<span class="id" title="var">ap_V</span>, !<span class="id" title="var">concat_p_pp</span>, !<span class="id" title="var">concat_pV_p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_Ap</span> <span class="id" title="var">cglue</span> (<span class="id" title="var">r</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">IsEquivFunctorCoeq</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">h</span>} `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">k</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_coeq_inverse</span><br/>
+&nbsp;&nbsp;: @<span class="id" title="var">Coeq</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span> -&gt; @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span>^-1 <span class="id" title="var">k</span>^-1 <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">k</span>^-1 <span class="id" title="var">o</span> <span class="id" title="var">f'</span>) (<span class="id" title="var">eisretr</span> <span class="id" title="var">h</span> <span class="id" title="var">b</span>)^ @ <span class="id" title="var">_</span> @ <span class="id" title="var">eissect</span> <span class="id" title="var">k</span> (<span class="id" title="var">f</span> (<span class="id" title="var">h</span>^-1 <span class="id" title="var">b</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">inverse</span>, <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">k</span>^-1 <span class="id" title="var">o</span> <span class="id" title="var">g'</span>) (<span class="id" title="var">eisretr</span> <span class="id" title="var">h</span> <span class="id" title="var">b</span>)^ @ <span class="id" title="var">_</span> @ <span class="id" title="var">eissect</span> <span class="id" title="var">k</span> (<span class="id" title="var">g</span> (<span class="id" title="var">h</span>^-1 <span class="id" title="var">b</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>, <span class="id" title="var">inverse</span>, <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_coeq_eissect</span><br/>
+&nbsp;&nbsp;: (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) <span class="id" title="var">o</span> <span class="id" title="var">functor_coeq_inverse</span> == <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">functor_coeq_sect</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">eisretr</span> <span class="id" title="var">h</span>) (<span class="id" title="var">eisretr</span> <span class="id" title="var">k</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+</div>
+
+<div class="doc">
+The two proofs are identical modulo replacing <span class="inlinecode"><span class="id" title="var">f</span></span> by <span class="inlinecode"><span class="id" title="var">g</span></span>, <span class="inlinecode"><span class="id" title="var">f'</span></span> by <span class="inlinecode"><span class="id" title="var">g'</span></span>, and <span class="inlinecode"><span class="id" title="var">p</span></span> by <span class="inlinecode"><span class="id" title="var">q</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">ap_pp</span>, &lt;- <span class="id" title="var">eisadj</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_pA1_p</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">k</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_pV_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">k</span>^-1 <span class="id" title="var">o</span> <span class="id" title="var">_</span>) <span class="id" title="var">k</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">k</span>^-1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_A1p</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">k</span>) (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">h</span> <span class="id" title="var">b</span>)^)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_V</span>, <span class="id" title="var">concat_pV_p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_coeq_eisretr</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">functor_coeq_inverse</span> <span class="id" title="var">o</span> (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) == <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">functor_coeq_sect</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">eissect</span> <span class="id" title="var">h</span>) (<span class="id" title="var">eissect</span> <span class="id" title="var">k</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>, <span class="id" title="var">eisadj</span>, &lt;- <span class="id" title="var">ap_V</span>, &lt;- !<span class="id" title="var">ap_compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) <span class="id" title="var">k</span>^-1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> &lt;- !(<span class="id" title="var">ap_pp</span> <span class="id" title="var">k</span>^-1), !<span class="id" title="var">concat_pp_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1:<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_Ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; (<span class="id" title="var">p</span> <span class="id" title="var">b</span>)^) (<span class="id" title="var">eissect</span> <span class="id" title="var">h</span> <span class="id" title="var">b</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2:<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_Ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> =&gt; (<span class="id" title="var">q</span> <span class="id" title="var">b</span>)^) (<span class="id" title="var">eissect</span> <span class="id" title="var">h</span> <span class="id" title="var">b</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p_Vp</span>, <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">_</span>) <span class="id" title="var">k</span>^-1), (<span class="id" title="var">ap_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">k</span>^-1 <span class="id" title="var">o</span> <span class="id" title="var">k</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">concat_A1p</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">k</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>:<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_V</span>, <span class="id" title="var">concat_pV_p</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_functor_coeq</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">_</span> <span class="id" title="var">functor_coeq_inverse</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">functor_coeq_eissect</span> <span class="id" title="var">functor_coeq_eisretr</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_functor_coeq</span><br/>
+&nbsp;&nbsp;: @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> &lt;~&gt; @<span class="id" title="var">Coeq</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">IsEquivFunctorCoeq</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_functor_coeq'</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">B</span> &lt;~&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">k</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> == <span class="id" title="var">g'</span> <span class="id" title="var">o</span> <span class="id" title="var">h</span>)<br/>
+: @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> &lt;~&gt; @<span class="id" title="var">Coeq</span> <span class="id" title="var">B'</span> <span class="id" title="var">A'</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_functor_coeq</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1011"></a><h2 class="section">A double recursion principle</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">CoeqRec2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>} {<span class="id" title="var">B'</span> <span class="id" title="var">A'</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">f'</span> <span class="id" title="var">g'</span> : <span class="id" title="var">B'</span> -&gt; <span class="id" title="var">A'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">coeq'</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span> -&gt; <span class="id" title="var">P</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cgluel</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> <span class="id" title="var">a'</span>, <span class="id" title="var">coeq'</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) <span class="id" title="var">a'</span> = <span class="id" title="var">coeq'</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>) <span class="id" title="var">a'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cgluer</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b'</span>, <span class="id" title="var">coeq'</span> <span class="id" title="var">a</span> (<span class="id" title="var">f'</span> <span class="id" title="var">b'</span>) = <span class="id" title="var">coeq'</span> <span class="id" title="var">a</span> (<span class="id" title="var">g'</span> <span class="id" title="var">b'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cgluelr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>, <span class="id" title="var">cgluel</span> <span class="id" title="var">b</span> (<span class="id" title="var">f'</span> <span class="id" title="var">b'</span>) @ <span class="id" title="var">cgluer</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>) <span class="id" title="var">b'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">cgluer</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) <span class="id" title="var">b'</span> @ <span class="id" title="var">cgluel</span> <span class="id" title="var">b</span> (<span class="id" title="var">g'</span> <span class="id" title="var">b'</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_rec2</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">Coeq</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span> -&gt; <span class="id" title="var">P</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="var">revert</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Coeq_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Coeq_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">coeq'</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">b'</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cgluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Coeq_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cgluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">b'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">transport_paths_FlFr'</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b'</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">_</span> @@ 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Coeq_rec_beta_cglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> (1 @@ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">apply</span> <span class="id" title="var">Coeq_rec_beta_cglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cgluelr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_rec2_beta</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">a'</span> : <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Coeq_rec2</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>) (<span class="id" title="var">coeq</span> <span class="id" title="var">a'</span>) = <span class="id" title="var">coeq'</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= 1.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_rec2_beta_cgluel</span> (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">b'</span> : <span class="id" title="var">B'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">Coeq_rec2</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>)) (<span class="id" title="var">cglue</span> <span class="id" title="var">b'</span>) = <span class="id" title="var">cgluer</span> <span class="id" title="var">a</span> <span class="id" title="var">b'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Coeq_rec_beta_cglue</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_rec2_beta_cgluer</span> (<span class="id" title="var">b</span> : <span class="id" title="var">B</span>) (<span class="id" title="var">a'</span> : <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">Coeq_rec2</span> <span class="id" title="var">x</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a'</span>)) (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) = <span class="id" title="var">cgluel</span> <span class="id" title="var">b</span> <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">Coeq_rec_beta_cglue</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: <span class="inlinecode"><span class="id" title="var">Coeq_rec2_beta_cgluelr</span></span> 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">CoeqRec2</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1012"></a><h2 class="section">A double induction principle</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">CoeqInd2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>} {<span class="id" title="var">B'</span> <span class="id" title="var">A'</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">f'</span> <span class="id" title="var">g'</span> : <span class="id" title="var">B'</span> -&gt; <span class="id" title="var">A'</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">Coeq</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">coeq'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>, <span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>) (<span class="id" title="var">coeq</span> <span class="id" title="var">a'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cgluel</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> <span class="id" title="var">a'</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">P</span> <span class="id" title="var">x</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a'</span>)) (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">coeq'</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) <span class="id" title="var">a'</span>) = <span class="id" title="var">coeq'</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>) <span class="id" title="var">a'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cgluer</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b'</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> <span class="id" title="var">a</span>) <span class="id" title="var">y</span>) (<span class="id" title="var">cglue</span> <span class="id" title="var">b'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">coeq'</span> <span class="id" title="var">a</span> (<span class="id" title="var">f'</span> <span class="id" title="var">b'</span>)) = <span class="id" title="var">coeq'</span> <span class="id" title="var">a</span> (<span class="id" title="var">g'</span> <span class="id" title="var">b'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Perhaps this should really be written using <span class="inlinecode"><span class="id" title="var">concatD</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cgluelr</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span> <span class="id" title="var">b'</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>))) (<span class="id" title="var">cglue</span> <span class="id" title="var">b'</span>)) (<span class="id" title="var">cgluel</span> <span class="id" title="var">b</span> (<span class="id" title="var">f'</span> <span class="id" title="var">b'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">cgluer</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>) <span class="id" title="var">b'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">transport_transport</span> <span class="id" title="var">P</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) (<span class="id" title="var">cglue</span> <span class="id" title="var">b'</span>) (<span class="id" title="var">coeq'</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) (<span class="id" title="var">f'</span> <span class="id" title="var">b'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> (<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">P</span> <span class="id" title="var">x</span> (<span class="id" title="var">coeq</span> (<span class="id" title="var">g'</span> <span class="id" title="var">b'</span>))) (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cgluer</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) <span class="id" title="var">b'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">cgluel</span> <span class="id" title="var">b</span> (<span class="id" title="var">g'</span> <span class="id" title="var">b'</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_ind2</span><br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">coeq'</span> <span class="id" title="var">a</span> <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">b'</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cgluer</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">a</span>; <span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">Coeq_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">a'</span>. <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_forall_constant</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cgluel</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">b'</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_paths_FlFr_D</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b'</span>) <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Coeq_ind_beta_cglue</span>.<br/>
+</div>
+
+<div class="doc">
+Now begins the long haul. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+</div>
+
+<div class="doc">
+Our first order of business is to get rid of the <span class="inlinecode"><span class="id" title="var">Coeq_ind</span></span>s, which only occur in the following incarnation. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">G</span> := (<span class="id" title="var">Coeq_ind</span> (<span class="id" title="var">P</span> (<span class="id" title="var">coeq</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a'</span> : <span class="id" title="var">A'</span> =&gt; <span class="id" title="var">coeq'</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) <span class="id" title="var">a'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">b'0</span> : <span class="id" title="var">B'</span> =&gt; <span class="id" title="var">cgluer</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) <span class="id" title="var">b'0</span>))).<br/>
+</div>
+
+<div class="doc">
+Let's reduce the <span class="inlinecode"><span class="id" title="var">apD</span></span> <span class="inlinecode">(<span class="id" title="var">loop</span></span> <span class="inlinecode">#</span> <span class="inlinecode"><span class="id" title="var">G</span>)</span> first. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">apD_transport_forall_constant</span> <span class="id" title="var">P</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>) <span class="id" title="var">G</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b'</span>)); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">inv_pp</span>, !<span class="id" title="var">inv_V</span>.<br/>
+</div>
+
+<div class="doc">
+Now we can cancel a <span class="inlinecode"><span class="id" title="var">transport_forall_constant</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">whiskerL</span>.<br/>
+</div>
+
+<div class="doc">
+And a path-inverse pair.  This removes all the <span class="inlinecode"><span class="id" title="var">transport_forall_constant</span></span>s. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>, <span class="id" title="var">concat_pV_p</span>.<br/>
+</div>
+
+<div class="doc">
+Now we can beta-reduce the last remaining <span class="inlinecode"><span class="id" title="var">G</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">subst</span> <span class="id" title="var">G</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Coeq_ind_beta_cglue</span>; <span class="id" title="tactic">simpl</span>.<br/>
+</div>
+
+<div class="doc">
+Now we just have to rearrange it a bit. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_Vp</span>; <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cgluelr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">long_path_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">CoeqInd2</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1013"></a><h2 class="section">Symmetry</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Coeq_sym_map</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>) : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">Coeq</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="var">Coeq_rec</span> (<span class="id" title="var">Coeq</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>) <span class="id" title="var">coeq</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> : <span class="id" title="var">B</span> =&gt; (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)^).<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">sect_Coeq_sym_map</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">Coeq_sym_map</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>) <span class="id" title="var">o</span> (<span class="id" title="var">Coeq_sym_map</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>) == <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> @<span class="id" title="var">Coeq_ind</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">abstract</span> (<span class="id" title="tactic">rewrite</span> <span class="id" title="var">transport_paths_FFlr</span>, <span class="id" title="var">Coeq_rec_beta_cglue</span>, <span class="id" title="var">ap_V</span>, <span class="id" title="var">Coeq_rec_beta_cglue</span>; <span class="id" title="var">hott_simpl</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">Coeq_sym</span> {<span class="id" title="var">B</span> <span class="id" title="var">A</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>} : @<span class="id" title="var">Coeq</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> &lt;~&gt; <span class="id" title="var">Coeq</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_adjointify</span> (<span class="id" title="var">Coeq_sym_map</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>) (<span class="id" title="var">Coeq_sym_map</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>) <span class="id" title="var">sect_Coeq_sym_map</span> <span class="id" title="var">sect_Coeq_sym_map</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1014"></a><h2 class="section">Flattening</h2>
+
+<div class="paragraph"> </div>
+
+ The flattening lemma for coequalizers follows from the flattening lemma for graph quotients. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Flattening</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">B</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">e</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">F</span> (<span class="id" title="var">f</span> <span class="id" title="var">b</span>) &lt;~&gt; <span class="id" title="var">F</span> (<span class="id" title="var">g</span> <span class="id" title="var">b</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">coeq_flatten_fam</span> : <span class="id" title="var">Coeq</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Coeq_rec</span> <span class="id" title="keyword">Type</span> <span class="id" title="var">F</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">path_universe</span> (<span class="id" title="var">e</span> <span class="id" title="var">x</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">R</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) := {<span class="id" title="var">x</span> : <span class="id" title="var">B</span> &amp; (<span class="id" title="var">f</span> <span class="id" title="var">x</span> = <span class="id" title="var">a</span>) * (<span class="id" title="var">g</span> <span class="id" title="var">x</span> = <span class="id" title="var">b</span>)}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">e'</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">A</span>) : <span class="id" title="var">R</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> -&gt; (<span class="id" title="var">F</span> <span class="id" title="var">a</span> &lt;~&gt; <span class="id" title="var">F</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> [[] []]]; <span class="id" title="tactic">exact</span> (<span class="id" title="var">e</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_coeq_flatten</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">sig</span> <span class="id" title="var">coeq_flatten_fam</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; <span class="id" title="var">Coeq</span> (<span class="id" title="var">functor_sigma</span> <span class="id" title="var">f</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idmap</span>)) (<span class="id" title="var">functor_sigma</span> <span class="id" title="var">g</span> <span class="id" title="var">e</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_gq_flatten</span> <span class="id" title="var">F</span> <span class="id" title="var">e'</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">equiv_functor_gq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">x</span>] [<span class="id" title="var">b</span> <span class="id" title="var">y</span>]; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">functor_sigma</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;use&nbsp;<span class="inlinecode"><span class="id" title="var">equiv_path_sigma</span></span>&nbsp;twice&nbsp;on&nbsp;the&nbsp;RHS:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_via</span> {<span class="id" title="var">x0</span> : {<span class="id" title="var">H0</span> : <span class="id" title="var">B</span> &amp; <span class="id" title="var">F</span> (<span class="id" title="var">f</span> <span class="id" title="var">H0</span>)} &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">p</span> : <span class="id" title="var">f</span> <span class="id" title="var">x0</span>.1 = <span class="id" title="var">a</span> &amp; <span class="id" title="var">p</span> # <span class="id" title="var">x0</span>.2 = <span class="id" title="var">x</span>} * {<span class="id" title="var">q</span> : <span class="id" title="var">g</span> <span class="id" title="var">x0</span>.1 = <span class="id" title="var">b</span> &amp; <span class="id" title="var">q</span> # <span class="id" title="var">e</span> <span class="id" title="var">x0</span>.1 <span class="id" title="var">x0</span>.2 = <span class="id" title="var">y</span>}}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: { <span class="id" title="var">nrapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">c</span> <span class="id" title="var">z</span>]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">equiv_functor_prod'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_path_sigma</span> <span class="id" title="var">_</span> (<span class="id" title="var">_</span>; <span class="id" title="var">_</span>) (<span class="id" title="var">_</span>; <span class="id" title="var">_</span>)). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">make_equiv_contr_basedpaths</span>.</span>&nbsp;handles&nbsp;the&nbsp;rest,&nbsp;but&nbsp;is&nbsp;slow,&nbsp;so&nbsp;we&nbsp;do&nbsp;some&nbsp;steps&nbsp;manually.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;The&nbsp;RHS&nbsp;can&nbsp;be&nbsp;shuffled&nbsp;to&nbsp;this&nbsp;form:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_via</span> {<span class="id" title="var">r</span> : <span class="id" title="var">R</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> &amp; { <span class="id" title="var">x02</span> : <span class="id" title="var">F</span> (<span class="id" title="var">f</span> <span class="id" title="var">r</span>.1) &amp; (<span class="id" title="var">transport</span> <span class="id" title="var">F</span> (<span class="id" title="var">fst</span> <span class="id" title="var">r</span>.2) <span class="id" title="var">x02</span> = <span class="id" title="var">x</span>) *<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">transport</span> <span class="id" title="var">F</span> (<span class="id" title="var">snd</span> <span class="id" title="var">r</span>.2) (<span class="id" title="var">e</span> <span class="id" title="var">r</span>.1 <span class="id" title="var">x02</span>) = <span class="id" title="var">y</span>)}}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="var">make_equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Three&nbsp;path&nbsp;contractions&nbsp;handle&nbsp;the&nbsp;rest.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">c</span> [<span class="id" title="var">p</span> <span class="id" title="var">q</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">e'</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">make_equiv_contr_basedpaths</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">x</span>; <span class="id" title="var">snrapply</span> <span class="id" title="var">Coeq_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">dpath_path_FlFr</span> (<span class="id" title="var">cglue</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_1p_q1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">Coeq_rec_beta_cglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">GraphQuotient_rec_beta_gqglue</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">s</span> =&gt; <span class="id" title="var">path_universe</span> (<span class="id" title="var">e'</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">s</span>)) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Flattening</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

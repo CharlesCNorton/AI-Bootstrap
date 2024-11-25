@@ -1,0 +1,1264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Int</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Int</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Nat</span> <span class="id" title="var">Basics.Tactics</span> <span class="id" title="var">Basics.Decidable</span> <span class="id" title="var">Basics.Equivalences</span> <span class="id" title="var">Basics.PathGroupoids</span> <span class="id" title="var">Types.Paths</span> <span class="id" title="var">Types.Universe</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="var">Basics.Numerals.Decimal</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Unset</span> <span class="id" title="var">Elimination</span> <span class="id" title="var">Schemes</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Minimization</span> <span class="id" title="var">ToSet</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">int_scope</span>.<br/>
+<span class="id" title="keyword">Delimit</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">int_scope</span> <span class="id" title="keyword">with</span> <span class="id" title="var">int</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">int_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1347"></a><h1 class="section">The Integers</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab1348"></a><h2 class="section">Definition</h2>
+
+<div class="paragraph"> </div>
+
+ We define the integers as two copies of <span class="inlinecode"><span class="id" title="var">nat</span></span> stuck together around a <span class="inlinecode"><span class="id" title="var">zero</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Inductive</span> <span class="id" title="var">Int</span> : <span class="id" title="var">Type0</span> :=<br/>
+| <span class="id" title="var">negS</span> : <span class="id" title="var">nat</span> -&gt; <span class="id" title="var">Int</span><br/>
+| <span class="id" title="var">zero</span> : <span class="id" title="var">Int</span><br/>
+| <span class="id" title="var">posS</span> : <span class="id" title="var">nat</span> -&gt; <span class="id" title="var">Int</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can convert a <span class="inlinecode"><span class="id" title="var">nat</span></span> to an <span class="inlinecode"><span class="id" title="var">Int</span></span> by mapping <span class="inlinecode">0</span> to <span class="inlinecode"><span class="id" title="var">zero</span></span> and <span class="inlinecode"><span class="id" title="var">S</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> to <span class="inlinecode"><span class="id" title="var">posS</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span>. Various operations on <span class="inlinecode"><span class="id" title="var">nat</span></span> are preserved by this function. See the section on conversion functions starting with <span class="inlinecode"><span class="id" title="var">int_nat_succ</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_of_nat</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">O</span> =&gt; <span class="id" title="var">zero</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">S</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">posS</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We declare this conversion as a coercion so we can freely use <span class="inlinecode"><span class="id" title="var">nat</span></span>s in statements about integers. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">int_of_nat</span> : <span class="id" title="var">nat</span> &gt;-&gt; <span class="id" title="var">Int</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1349"></a><h2 class="section">Number Notations</h2>
+
+<div class="paragraph"> </div>
+
+ Here we define some printing and parsing functions that convert the integers between numeral representations so that we can use notations such as <span class="inlinecode">123</span> for <span class="inlinecode"><span class="id" title="var">posS</span></span> <span class="inlinecode">122</span> and <span class="inlinecode">-123</span> for <span class="inlinecode"><span class="id" title="var">negS</span></span> <span class="inlinecode">122</span>. 
+<div class="paragraph"> </div>
+
+ Printing 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_to_number_int</span> (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">Numeral.int</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">posS</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">Numeral.IntDec</span> (<span class="id" title="var">Decimal.Pos</span> (<span class="id" title="var">Nat.to_uint</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>)))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">zero</span> =&gt; <span class="id" title="var">Numeral.IntDec</span> (<span class="id" title="var">Decimal.Pos</span> (<span class="id" title="var">Nat.to_uint</span> 0))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">negS</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">Numeral.IntDec</span> (<span class="id" title="var">Decimal.Neg</span> (<span class="id" title="var">Nat.to_uint</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>)))<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Parsing 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_of_number_int</span> (<span class="id" title="var">d</span> : <span class="id" title="var">Numeral.int</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">d</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">Numeral.IntDec</span> (<span class="id" title="var">Decimal.Pos</span> <span class="id" title="var">d</span>) =&gt; <span class="id" title="var">int_of_nat</span> (<span class="id" title="var">Nat.of_uint</span> <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;| <span class="id" title="var">Numeral.IntDec</span> (<span class="id" title="var">Decimal.Neg</span> <span class="id" title="var">d</span>) =&gt; <span class="id" title="var">negS</span> (<span class="id" title="var">nat_pred</span> (<span class="id" title="var">Nat.of_uint</span> <span class="id" title="var">d</span>))<br/>
+&nbsp;&nbsp;| <span class="id" title="var">Numeral.IntHex</span> (<span class="id" title="var">Hexadecimal.Pos</span> <span class="id" title="var">u</span>) =&gt; <span class="id" title="var">int_of_nat</span> (<span class="id" title="var">Nat.of_hex_uint</span> <span class="id" title="var">u</span>)<br/>
+&nbsp;&nbsp;| <span class="id" title="var">Numeral.IntHex</span> (<span class="id" title="var">Hexadecimal.Neg</span> <span class="id" title="var">u</span>) =&gt; <span class="id" title="var">negS</span> (<span class="id" title="var">nat_pred</span> (<span class="id" title="var">Nat.of_hex_uint</span> <span class="id" title="var">u</span>))<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Number Notation</span> <span class="id" title="var">Int</span> <span class="id" title="var">int_of_number_int</span> <span class="id" title="var">int_to_number_int</span> : <span class="id" title="var">int_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1350"></a><h2 class="section">Successor, Predecessor and Negation</h2>
+
+<div class="paragraph"> </div>
+
+ These operations will be used in the induction principle we derive for <span class="inlinecode"><span class="id" title="var">Int</span></span> so we need to define them early on. 
+<div class="paragraph"> </div>
+
+<a id="lab1351"></a><h3 class="section">Successor and Predecessor</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_succ</span> (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">Int</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">posS</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">posS</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;| 0 =&gt; 1<br/>
+&nbsp;&nbsp;| -1 =&gt; 0<br/>
+&nbsp;&nbsp;| <span class="id" title="var">negS</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>) =&gt; <span class="id" title="var">negS</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;n .+1" := (<span class="id" title="var">int_succ</span> <span class="id" title="var">n</span>) : <span class="id" title="var">int_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_pred</span> (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">Int</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">posS</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>) =&gt; <span class="id" title="var">posS</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;| 1 =&gt; 0 <br/>
+&nbsp;&nbsp;| 0 =&gt; -1<br/>
+&nbsp;&nbsp;| <span class="id" title="var">negS</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="var">negS</span> (<span class="id" title="var">S</span> <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;n .-1" := (<span class="id" title="var">int_pred</span> <span class="id" title="var">n</span>) : <span class="id" title="var">int_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1352"></a><h3 class="section">Negation</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_neg@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">Int</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">x</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">posS</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">negS</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">zero</span> =&gt; <span class="id" title="var">zero</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">negS</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">posS</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Notation</span> &quot;- x" := (<span class="id" title="var">int_neg</span> <span class="id" title="var">x</span>) : <span class="id" title="var">int_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1353"></a><h2 class="section">Basic Properties</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab1354"></a><h3 class="section">Integer induction</h3>
+
+<div class="paragraph"> </div>
+
+ The induction principle for integers is similar to the induction principle for natural numbers. However we have two induction hypotheses going in either direction starting from 0. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Int_ind@</span>{<span class="id" title="var">i</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">Int</span> -&gt; <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>})<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H0</span> : <span class="id" title="var">P</span> 0)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">HP</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">P</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">P</span> (<span class="id" title="var">int_succ</span> <span class="id" title="var">n</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">HN</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">P</span> (- <span class="id" title="var">n</span>) -&gt; <span class="id" title="var">P</span> (<span class="id" title="var">int_pred</span> (-<span class="id" title="var">n</span>)))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span>[<span class="id" title="var">x</span> | | <span class="id" title="var">x</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> (<span class="id" title="var">HN</span> 0%<span class="id" title="var">nat</span>), <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> (<span class="id" title="var">HN</span> <span class="id" title="var">x</span>.+1%<span class="id" title="var">nat</span>), <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> (<span class="id" title="var">HP</span> 0%<span class="id" title="var">nat</span>), <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> (<span class="id" title="var">HP</span> <span class="id" title="var">x</span>.+1%<span class="id" title="var">nat</span>), <span class="id" title="var">IHx</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We record these so that they can be used with the <span class="inlinecode"><span class="id" title="tactic">induction</span></span> tactic. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Int_rect</span> := <span class="id" title="var">Int_ind</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Int_rec</span> := <span class="id" title="var">Int_ind</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1355"></a><h3 class="section">Decidable Equality</h3>
+
+<div class="paragraph"> </div>
+
+ The integers have decidable equality. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">decidable_paths_int@</span>{} : <span class="id" title="var">DecidablePaths</span> <span class="id" title="var">Int</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> | | <span class="id" title="var">x</span>], <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">y</span> |  | <span class="id" title="var">y</span>].<br/>
+&nbsp;&nbsp;2-4,6-8: <span class="id" title="tactic">right</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">discriminate</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">by</span> <span class="id" title="tactic">left</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="var">nrapply</span> <span class="id" title="var">decidable_iff</span>.<br/>
+&nbsp;&nbsp;1,3: <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;1,3: <span class="id" title="var">nrapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>; <span class="id" title="tactic">by</span> <span class="id" title="tactic">injection</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+By Hedberg's theorem, we have that the integers are a set. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishset_int@</span>{} : <span class="id" title="var">IsHSet</span> <span class="id" title="var">Int</span> := <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1356"></a><h3 class="section">Pointedness</h3>
+
+<div class="paragraph"> </div>
+
+ We sometimes want to treat the integers as a pointed type with basepoint given by 0. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispointed_int</span> : <span class="id" title="var">IsPointed</span> <span class="id" title="var">Int</span> := 0.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1357"></a><h2 class="section">Operations</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab1358"></a><h3 class="section">Addition</h3>
+
+<div class="paragraph"> </div>
+
+ Addition for integers is defined by integer inductionn on the first argument. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">Int</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode">0</span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">y</span></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">y</span>.<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">x</span>.+1</span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">=</span> <span class="inlinecode">(<span class="id" title="var">x</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">y</span>).+1</span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">int_succ</span> (<span class="id" title="var">IHx</span> <span class="id" title="var">y</span>)).<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">x</span>.-1</span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">=</span> <span class="inlinecode">(<span class="id" title="var">x</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">y</span>).-1</span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">int_pred</span> (<span class="id" title="var">IHx</span> <span class="id" title="var">y</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span> &quot;+" := <span class="id" title="var">int_add</span> : <span class="id" title="var">int_scope</span>.<br/>
+<span class="id" title="keyword">Infix</span> &quot;-" := (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">x</span> + -<span class="id" title="var">y</span>) : <span class="id" title="var">int_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1359"></a><h3 class="section">Multiplication</h3>
+
+<div class="paragraph"> </div>
+
+ Multiplication for integers is defined by integer induction on the first argument. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">Int</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode">0</span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">=</span> <span class="inlinecode">0</span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> 0.<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">x</span>.+1</span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">y</span></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">y</span> + <span class="id" title="var">IHx</span> <span class="id" title="var">y</span>).<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">x</span>.-1</span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">y</span></span> <span class="inlinecode">=</span> <span class="inlinecode">-<span class="id" title="var">y</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">x</span></span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">y</span></span> 
+</div>
+<div class="code">
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (-<span class="id" title="var">y</span> + <span class="id" title="var">IHx</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span> &quot;*" := <span class="id" title="var">int_mul</span> : <span class="id" title="var">int_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1360"></a><h2 class="section">Properties of Operations</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab1361"></a><h3 class="section">Negation</h3>
+
+<div class="paragraph"> </div>
+
+ Negation is involutive. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_neg_neg@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : - - <span class="id" title="var">x</span> = <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Negation is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_int_neg@</span>{} : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">int_neg</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">int_neg</span> <span class="id" title="var">int_neg</span>).<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="var">nrapply</span> <span class="id" title="var">int_neg_neg</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Negation is injective. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isinj_int_neg@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : - <span class="id" title="var">x</span> = - <span class="id" title="var">y</span> -&gt; <span class="id" title="var">x</span> = <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_inj</span> <span class="id" title="var">int_neg</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The negation of a successor is the predecessor of the negation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_neg_succ</span> (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : - <span class="id" title="var">x</span>.+1 = (- <span class="id" title="var">x</span>).-1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [[] | | ].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The negation of a predecessor is the successor of the negation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_neg_pred</span> (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : - <span class="id" title="var">x</span>.-1 = (- <span class="id" title="var">x</span>).+1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [ | | []].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The successor of a predecessor is the identity. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_pred_succ@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span>.-1.+1 = <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [ | | []].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The predecessor of a successor is the identity. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_succ_pred@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span>.+1.-1 = <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [[] | | ].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The successor is an equivalence on <span class="inlinecode"><span class="id" title="var">Int</span></span> 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_int_succ@</span>{} : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">int_succ</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">int_succ</span> <span class="id" title="var">int_pred</span> <span class="id" title="var">int_pred_succ</span> <span class="id" title="var">int_succ_pred</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The predecessor is an equivalence on <span class="inlinecode"><span class="id" title="var">Int</span></span> 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_int_pred@</span>{} : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">int_pred</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isequiv_inverse</span> <span class="id" title="var">int_succ</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1362"></a><h3 class="section">Addition</h3>
+
+<div class="paragraph"> </div>
+
+ Integer addition with zero on the left is the identity by definition. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_0_l@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : 0 + <span class="id" title="var">x</span> = <span class="id" title="var">x</span> := 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Integer addition with zero on the right is the identity. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_0_r@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> + 0 = <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|[|<span class="id" title="var">x</span>] <span class="id" title="var">IHx</span>|[|<span class="id" title="var">x</span>] <span class="id" title="var">IHx</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (?<span class="id" title="var">z</span>.+1 + 0) <span class="id" title="keyword">with</span> (<span class="id" title="var">z</span> + 0).+1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">IHx</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">change</span> (?<span class="id" title="var">z</span>.-1 + 0) <span class="id" title="keyword">with</span> (<span class="id" title="var">z</span> + 0).-1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">IHx</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Adding a successor on the left is the successor of the sum. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_succ_l@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span>.+1 + <span class="id" title="var">y</span> = (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>).+1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|[|<span class="id" title="var">x</span>] <span class="id" title="var">IHx</span>|[|<span class="id" title="var">x</span>] <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;1-3: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">int_pred_succ</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Adding a predecessor on the left is the predecessor of the sum. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_pred_l@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span>.-1 + <span class="id" title="var">y</span> = (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>).-1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|[|<span class="id" title="var">x</span>] <span class="id" title="var">IHx</span>|[|<span class="id" title="var">x</span>] <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;1,4,5: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">int_succ_pred</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Adding a successor on the right is the successor of the sum. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_succ_r@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> + <span class="id" title="var">y</span>.+1 = (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>).+1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|[] <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_add_succ_l</span>, <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>; <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_succ_pred</span>, <span class="id" title="var">int_pred_succ</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">change</span> ((- (<span class="id" title="var">n</span>.+1%<span class="id" title="var">nat</span>)).-1 + <span class="id" title="var">y</span>.+1 = ((- (<span class="id" title="var">n</span>.+1%<span class="id" title="var">nat</span>)).-1 + <span class="id" title="var">y</span>).+1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- 2 <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_pred_succ</span>, <span class="id" title="var">int_succ_pred</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Adding a predecessor on the right is the predecessor of the sum. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_pred_r</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> + <span class="id" title="var">y</span>.-1 = (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>).-1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|[] <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_pred_succ</span>, <span class="id" title="var">int_succ_pred</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Integer addition is commutative. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_comm@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> + <span class="id" title="var">y</span> = <span class="id" title="var">y</span> + <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">y</span> <span class="id" title="var">IHy</span>|<span class="id" title="var">y</span> <span class="id" title="var">IHy</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">x</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">int_add_0_r</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">IHy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_r</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_pred_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Integer addition is associative. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_assoc@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> + (<span class="id" title="var">y</span> + <span class="id" title="var">z</span>) = <span class="id" title="var">x</span> + <span class="id" title="var">y</span> + <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span>, <span class="id" title="var">z</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">int_add_succ_l</span>, <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">int_add_pred_l</span>, <span class="id" title="var">IHx</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Negation is a left inverse with respect to integer addition. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_neg_l@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : - <span class="id" title="var">x</span> + <span class="id" title="var">x</span> = 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_succ</span>, <span class="id" title="var">int_add_pred_l</span>, <span class="id" title="var">int_add_succ_r</span>, <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>, <span class="id" title="var">int_add_succ_l</span>, <span class="id" title="var">int_add_pred_r</span>, <span class="id" title="var">IHx</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Negation is a right inverse with respect to integer addition. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_add_neg_r@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> - <span class="id" title="var">x</span> = 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> "-"; <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_comm</span>, <span class="id" title="var">int_add_neg_l</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Negation distributes over addition. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_neg_add@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : - (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>) = - <span class="id" title="var">x</span> - <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_neg_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1363"></a><h3 class="section">Multiplication</h3>
+
+<div class="paragraph"> </div>
+
+ Multiplication with a successor on the left is the sum of the multplication without the sucesseor and the multiplicand which was not a successor. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_succ_l@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span>.+1 * <span class="id" title="var">y</span> = <span class="id" title="var">y</span> + <span class="id" title="var">x</span> * <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|[|<span class="id" title="var">x</span>] <span class="id" title="var">IHx</span>|[] <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_0_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_neg_r</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_pred_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_neg_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_0_l</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Similarly, multiplication with a predecessor on the left is the sum of the multiplication without the predecessor and the negation of the multiplicand which was not a predecessor. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_pred_l@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span>.-1 * <span class="id" title="var">y</span> = -<span class="id" title="var">y</span> + <span class="id" title="var">x</span> * <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|[] <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_succ_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_neg_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Integer multiplication with zero on the left is zero by definition. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_0_l@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : 0 * <span class="id" title="var">x</span> = 0 := 1.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Integer multiplication with zero on the right is zero. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_0_r@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> * 0 = 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_succ_l</span>, <span class="id" title="var">int_add_0_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_pred_l</span>, <span class="id" title="var">int_add_0_l</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Integer multiplication with one on the left is the identity. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_1_l@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : 1 * <span class="id" title="var">x</span> = <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">int_add_0_r</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Integer multiplication with one on the right is the identity. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_1_r@</span>{} (<span class="id" title="var">x</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> * 1 = <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_succ_l</span>, <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_pred_l</span>, <span class="id" title="var">IHx</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Multiplying with a negation on the left is the same as negating the product. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_neg_l@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : - <span class="id" title="var">x</span> * <span class="id" title="var">y</span> = - (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_add</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_add</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_neg</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Multiplying with a successor on the right is the sum of the multiplication without the successor and the product of the multiplicand which was not a successor and the multiplicand. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_succ_r@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> * <span class="id" title="var">y</span>.+1 = <span class="id" title="var">x</span> + <span class="id" title="var">x</span> * <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">int_add_assoc</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_comm</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_mul_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_neg_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">int_mul_neg_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">int_add_assoc</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Multiplying with a predecessor on the right is the sum of the multiplication without the predecessor and the product of the multiplicand which was not a predecessor and the negation of the multiplicand which was not a predecessor. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_pred_r@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> * <span class="id" title="var">y</span>.-1 = -<span class="id" title="var">x</span> + <span class="id" title="var">x</span> * <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">int_add_assoc</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">int_neg_neg</span> <span class="id" title="var">y</span>.-1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">int_neg_add</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_comm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_add</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_neg</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_neg</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_mul_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">int_add_assoc</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_neg</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_add_succ_l</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Integer multiplication is commutative. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_comm@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> * <span class="id" title="var">y</span> = <span class="id" title="var">y</span> * <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">y</span> <span class="id" title="var">IHy</span>|<span class="id" title="var">y</span> <span class="id" title="var">IHy</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">x</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">int_mul_0_r</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_succ_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHy</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_pred_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHy</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Multiplying with a negation on the right is the same as negating the product. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_neg_r@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> * - <span class="id" title="var">y</span> = - (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !(<span class="id" title="var">int_mul_comm</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">int_mul_neg_l</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Multiplication distributes over addition on the left. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_dist_l@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> * (<span class="id" title="var">y</span> + <span class="id" title="var">z</span>) = <span class="id" title="var">x</span> * <span class="id" title="var">y</span> + <span class="id" title="var">x</span> * <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span>, <span class="id" title="var">z</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 3 <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">int_add_assoc</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">int_add_assoc</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_comm</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 3 <span class="id" title="var">int_mul_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">int_add_assoc</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_add</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- !<span class="id" title="var">int_add_assoc</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_comm</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Multiplication distributes over addition on the right. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_dist_r@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">Int</span>) : (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>) * <span class="id" title="var">z</span> = <span class="id" title="var">x</span> * <span class="id" title="var">z</span> + <span class="id" title="var">y</span> * <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_comm</span>, <span class="id" title="var">int_dist_l</span>, !(<span class="id" title="var">int_mul_comm</span> <span class="id" title="var">z</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Multiplication is associative. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_mul_assoc@</span>{} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">x</span> * (<span class="id" title="var">y</span> * <span class="id" title="var">z</span>) = <span class="id" title="var">x</span> * <span class="id" title="var">y</span> * <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>|<span class="id" title="var">x</span> <span class="id" title="var">IHx</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">y</span>, <span class="id" title="var">z</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_dist_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_mul_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_dist_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">int_mul_neg_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHx</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1364"></a><h2 class="section">Iteration of equivalences</h2>
+
+<div class="paragraph"> </div>
+
+<a id="lab1365"></a><h3 class="section">Iteration by arbitrary integers</h3>
+
+<div class="paragraph"> </div>
+
+ Iteration by arbitrary integers requires the endofunction to be an equivalence, so that we can define a negative iteration by using its inverse. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{!<span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">n</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">negS</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">nat_iter</span> <span class="id" title="var">n</span>.+1%<span class="id" title="var">nat</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">zero</span> =&gt; <span class="id" title="var">idmap</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">posS</span> <span class="id" title="var">n</span> =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">nat_iter</span> <span class="id" title="var">n</span>.+1%<span class="id" title="var">nat</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_neg</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> (- <span class="id" title="var">n</span>) <span class="id" title="var">a</span> = <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">n</span> <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_succ_l</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> (<span class="id" title="var">int_succ</span> <span class="id" title="var">n</span>) <span class="id" title="var">a</span> = <span class="id" title="var">f</span> (<span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span>|<span class="id" title="var">n</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_pred_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_succ_r</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> (<span class="id" title="var">int_succ</span> <span class="id" title="var">n</span>) <span class="id" title="var">a</span> = <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> (<span class="id" title="var">f</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span>|<span class="id" title="var">n</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_pred_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>^-1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_pred_l</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> (<span class="id" title="var">int_pred</span> <span class="id" title="var">n</span>) <span class="id" title="var">a</span> = <span class="id" title="var">f</span>^-1 (<span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Convert&nbsp;the&nbsp;problem&nbsp;to&nbsp;be&nbsp;a&nbsp;problem&nbsp;about&nbsp;<span class="inlinecode"><span class="id" title="var">f</span>^-1</span>&nbsp;and&nbsp;<span class="inlinecode">-<span class="id" title="var">n</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="tactic">exact</span> (<span class="id" title="var">int_iter_neg</span> <span class="id" title="var">f</span>^-1 (<span class="id" title="var">n</span>.-1) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>^-1 (<span class="id" title="var">int_iter_neg</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">n</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Then&nbsp;<span class="inlinecode"><span class="id" title="var">int_iter_succ_l</span></span>&nbsp;applies,&nbsp;after&nbsp;changing&nbsp;<span class="inlinecode">-</span> <span class="inlinecode"><span class="id" title="var">n</span>.-1</span>&nbsp;to&nbsp;<span class="inlinecode">(-<span class="id" title="var">n</span>).+1</span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">int_iter_succ_l</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_pred_r</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> (<span class="id" title="var">int_pred</span> <span class="id" title="var">n</span>) <span class="id" title="var">a</span> = <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Convert&nbsp;the&nbsp;problem&nbsp;to&nbsp;be&nbsp;a&nbsp;problem&nbsp;about&nbsp;<span class="inlinecode"><span class="id" title="var">f</span>^-1</span>&nbsp;and&nbsp;<span class="inlinecode">-<span class="id" title="var">n</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="tactic">exact</span> (<span class="id" title="var">int_iter_neg</span> <span class="id" title="var">f</span>^-1 (<span class="id" title="var">n</span>.-1) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="tactic">exact</span> (<span class="id" title="var">int_iter_neg</span> <span class="id" title="var">f</span>^-1 <span class="id" title="var">n</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Then&nbsp;<span class="inlinecode"><span class="id" title="var">int_iter_succ_r</span></span>&nbsp;applies,&nbsp;after&nbsp;changing&nbsp;<span class="inlinecode">-</span> <span class="inlinecode"><span class="id" title="var">n</span>.-1</span>&nbsp;to&nbsp;<span class="inlinecode">(-<span class="id" title="var">n</span>).+1</span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_neg_pred</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">int_iter_succ_r</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_add</span> {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">IsEquiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>} (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">Int</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> (<span class="id" title="var">m</span> + <span class="id" title="var">n</span>) == <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">m</span> <span class="id" title="var">o</span> <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">m</span>|<span class="id" title="var">m</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_iter_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_iter_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">A'</span></span> commutes with automorphisms of <span class="inlinecode"><span class="id" title="var">A</span></span> and <span class="inlinecode"><span class="id" title="var">A'</span></span>, then it commutes with iteration. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_commute_map</span> {<span class="id" title="var">A</span> <span class="id" title="var">A'</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{!<span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f'</span> : <span class="id" title="var">A'</span> -&gt; <span class="id" title="var">A'</span>) `{!<span class="id" title="var">IsEquiv</span> <span class="id" title="var">f'</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A'</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">g</span> (<span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> <span class="id" title="var">a</span>) = <span class="id" title="var">int_iter</span> <span class="id" title="var">f'</span> <span class="id" title="var">n</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>] <span class="id" title="tactic">in</span> <span class="id" title="var">a</span> |- *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_iter_succ_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">int_iter_pred_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_equiv_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In particular, homotopic maps have homotopic iterations. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_homotopic</span> (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> <span class="id" title="var">f'</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{!<span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>} `{!<span class="id" title="var">IsEquiv</span> <span class="id" title="var">f'</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="var">f</span> == <span class="id" title="var">f'</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> == <span class="id" title="var">int_iter</span> <span class="id" title="var">f'</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">int_iter_commute_map</span> <span class="id" title="var">f</span> <span class="id" title="var">f'</span> <span class="id" title="var">idmap</span> <span class="id" title="var">h</span> <span class="id" title="var">n</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">int_iter</span></span> <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">x</span></span> doesn't depend on the proof that <span class="inlinecode"><span class="id" title="var">f</span></span> is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_agree</span> (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) {<span class="id" title="var">ief</span> <span class="id" title="var">ief'</span> : <span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, @<span class="id" title="var">int_iter</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">ief</span> <span class="id" title="var">n</span> <span class="id" title="var">x</span> = @<span class="id" title="var">int_iter</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">ief'</span> <span class="id" title="var">n</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">int_iter_homotopic</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> <span class="id" title="var">f</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">idpath</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_iter_invariant</span> (<span class="id" title="var">n</span> : <span class="id" title="var">Int</span>) {<span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">A</span>) `{!<span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Psucc</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">P</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">Ppred</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">P</span> (<span class="id" title="var">f</span>^-1 <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">P</span> (<span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>]; <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">idmap</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_iter_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Psucc</span>, <span class="id" title="var">IHn</span>, <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_iter_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Ppred</span>, <span class="id" title="var">IHn</span>, <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1366"></a><h2 class="section">Exponentiation of loops</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">loopexp</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">Int</span>) : (<span class="id" title="var">x</span> = <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">int_iter</span> (<span class="id" title="var">equiv_concat_r</span> <span class="id" title="var">p</span> <span class="id" title="var">x</span>) <span class="id" title="var">z</span> <span class="id" title="var">idpath</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">loopexp_succ_r</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">Int</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span>.+1 = <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span> @ <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">int_iter_succ_l</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">loopexp_pred_r</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">Int</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span>.-1 = <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span> @ <span class="id" title="var">p</span>^<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">int_iter_pred_l</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">loopexp_succ_l</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">Int</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span>.+1 = <span class="id" title="var">p</span> @ <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">loopexp_succ_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">z</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">z</span>|<span class="id" title="var">z</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_1p_p1</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">loopexp_succ_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">loopexp_pred_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_pV_p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_pV</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">loopexp_pred_l</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">Int</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span>.-1 = <span class="id" title="var">p</span>^ @ <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">loopexp_pred_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">z</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">z</span>|<span class="id" title="var">z</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">concat_1p</span> <span class="id" title="var">_</span> @ (<span class="id" title="var">concat_p1</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">loopexp_succ_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_pp_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_pM</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">loopexp_pred_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_loopexp</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">Int</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> <span class="id" title="var">f</span> (<span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span>) = <span class="id" title="var">loopexp</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">p</span>) <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">int_iter_commute_map</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">q</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap_pp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">loopexp_add</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">x</span> = <span class="id" title="var">x</span>) <span class="id" title="var">m</span> <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> (<span class="id" title="var">m</span> + <span class="id" title="var">n</span>) = <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">m</span> @ <span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">m</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">m</span>|<span class="id" title="var">m</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat_1p</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">loopexp_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>, <span class="id" title="var">concat_p_pp</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">loopexp_pred_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">IHm</span>, <span class="id" title="var">concat_p_pp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Under univalence, exponentiation of loops corresponds to iteration of autoequivalences. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_loopexp</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">A</span> = <span class="id" title="var">A</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">Int</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">equiv_path</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> (<span class="id" title="var">loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span>) <span class="id" title="var">a</span> = <span class="id" title="var">int_iter</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> <span class="id" title="var">p</span>) <span class="id" title="var">z</span> <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">int_iter_commute_map</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">p</span> =&gt; <span class="id" title="var">equiv_path</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> <span class="id" title="var">p</span> <span class="id" title="var">a</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">q</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">transport_pp</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">loopexp_path_universe</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> &lt;~&gt; <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="var">Int</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">transport</span> <span class="id" title="var">idmap</span> (<span class="id" title="var">loopexp</span> (<span class="id" title="var">path_universe</span> <span class="id" title="var">f</span>) <span class="id" title="var">z</span>) <span class="id" title="var">a</span> = <span class="id" title="var">int_iter</span> <span class="id" title="var">f</span> <span class="id" title="var">z</span> <span class="id" title="var">a</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">f</span>. <span class="id" title="var">equiv_intro</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span>) <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">equiv_path_loopexp</span> <span class="id" title="var">p</span> <span class="id" title="var">z</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">q</span> =&gt; <span class="id" title="var">equiv_path</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> (<span class="id" title="var">loopexp</span> <span class="id" title="var">q</span> <span class="id" title="var">z</span>) <span class="id" title="var">a</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1367"></a><h2 class="section">Converting between integers and naturals</h2>
+
+<div class="paragraph"> </div>
+
+ <span class="inlinecode"><span class="id" title="var">int_of_nat</span></span> preserves successors. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_nat_succ</span> (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">n</span>.+1)%<span class="id" title="var">int</span> = (<span class="id" title="var">n</span>.+1)%<span class="id" title="var">nat</span> :&gt; <span class="id" title="var">Int</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">induction</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">int_of_nat</span></span> preserves addition. Hence is a monoid homomorphism. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_nat_add</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">n</span> + <span class="id" title="var">m</span>)%<span class="id" title="var">int</span> = (<span class="id" title="var">n</span> + <span class="id" title="var">m</span>)%<span class="id" title="var">nat</span> :&gt; <span class="id" title="var">Int</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> &lt;- 2 <span class="id" title="var">int_nat_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">IHn</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">int_of_nat</span></span> preserves subtraction when not truncated. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_nat_sub</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">m</span> &lt;= <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; (<span class="id" title="var">n</span> - <span class="id" title="var">m</span>)%<span class="id" title="var">int</span> = (<span class="id" title="var">n</span> - <span class="id" title="var">m</span>)%<span class="id" title="var">nat</span> :&gt; <span class="id" title="var">Int</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">H</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">int_add_neg_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">nat_sub_cancel</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">nat_sub_succ_l</span>; <span class="id" title="var">only</span> 2: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- 2 <span class="id" title="var">int_nat_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_add_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">IHn</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">int_of_nat</span></span> preserves multiplication. This makes <span class="inlinecode"><span class="id" title="var">int_of_nat</span></span> a semiring homomorphism. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">int_nat_mul</span> (<span class="id" title="var">n</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;:  (<span class="id" title="var">n</span> * <span class="id" title="var">m</span>)%<span class="id" title="var">int</span> = (<span class="id" title="var">n</span> * <span class="id" title="var">m</span>)%<span class="id" title="var">nat</span> :&gt; <span class="id" title="var">Int</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">int_nat_succ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">int_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">nat_mul_succ_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">int_nat_add</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">IHn</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

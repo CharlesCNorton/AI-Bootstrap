@@ -1,0 +1,745 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>IWType</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library IWType</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Forall</span> <span class="id" title="var">Types.Sigma</span> <span class="id" title="var">Types.Prod</span> <span class="id" title="var">Types.WType</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In this file we define indexed W-types. We show that indexed W-types can be reduced to W-types whilst still having definitional computation rules. We also characterize the path space of indexed W-types. This allows us to derive sufficient conditions for an indexed W-type to be truncated. 
+<div class="paragraph"> </div>
+
+ This is mostly adapted from Jasper Hugunin's formalization in coq: https://github.com/jashug/IWTypes 
+<div class="paragraph"> </div>
+
+ On a more meta-theoretic note, this partly justifies the use of indexed inductive types in Coq with respect to homotopy type theory. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Inductive</span> <span class="id" title="var">IW</span><br/>
+&nbsp;&nbsp;(<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) </div>
+
+<div class="doc">
+The indexing type 
+</div>
+<div class="code">
+&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) </div>
+
+<div class="doc">
+The type of labels / constructors / data 
+</div>
+<div class="code">
+&nbsp;&nbsp;(<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) </div>
+
+<div class="doc">
+The the type of arities / arguments / children 
+</div>
+<div class="code">
+&nbsp;&nbsp;(<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">I</span>) </div>
+
+<div class="doc">
+The index map (for labels) 
+</div>
+<div class="code">
+&nbsp;&nbsp;(<span class="id" title="var">j</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">I</span>) </div>
+
+<div class="doc">
+The index map for arguments 
+</div>
+<div class="code">
+&nbsp;&nbsp;: <span class="id" title="var">I</span> -&gt; <span class="id" title="keyword">Type</span> :=<br/>
+| <span class="id" title="var">iw_sup</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> (<span class="id" title="var">y</span> : <span class="id" title="var">B</span> <span class="id" title="var">x</span>), <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)) -&gt; <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iw_label</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">I</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>} {<span class="id" title="var">l</span> : <span class="id" title="var">I</span>} (<span class="id" title="var">w</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>) : <span class="id" title="var">A</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">w</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">iw_sup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iw_arity</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">I</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">l</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">w</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">y</span> : <span class="id" title="var">B</span> (<span class="id" title="var">iw_label</span> <span class="id" title="var">w</span>)), <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">j</span> (<span class="id" title="var">iw_label</span> <span class="id" title="var">w</span>) <span class="id" title="var">y</span>) :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">w</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;| <span class="id" title="var">iw_sup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_index_iw_label</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">I</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">l</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">w</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">i</span> (<span class="id" title="var">iw_label</span> <span class="id" title="var">w</span>) = <span class="id" title="var">l</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">w</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iw_eta</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">I</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">l</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">w</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">path_index_iw_label</span> <span class="id" title="var">l</span> <span class="id" title="var">w</span> # <span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">iw_label</span> <span class="id" title="var">w</span>) (<span class="id" title="var">iw_arity</span> <span class="id" title="var">l</span> <span class="id" title="var">w</span>) = <span class="id" title="var">w</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">w</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We have a canonical map from the IW-type to the fiber of the index map 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">iw_to_hfiber_index</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">I</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>} (<span class="id" title="var">l</span> : <span class="id" title="var">I</span>) : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span> -&gt; <span class="id" title="var">hfiber</span> <span class="id" title="var">i</span> <span class="id" title="var">l</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">w</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">iw_label</span> <span class="id" title="var">w</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_index_iw_label</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pointwise_paths_ind</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">a</span> == <span class="id" title="var">b</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">P</span> <span class="id" title="var">a</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; 1%<span class="id" title="var">path</span>))<br/>
+&nbsp;&nbsp;{<span class="id" title="var">b</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span>} (<span class="id" title="var">p</span> : <span class="id" title="var">a</span> == <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">P</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_ind</span> <span class="id" title="var">apD10</span> (<span class="id" title="var">P</span> <span class="id" title="var">b</span>) <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1682"></a><h1 class="section">Reduction of indexed W-types to W-types</h1>
+
+<div class="paragraph"> </div>
+
+ Jasper Hugunin found this construction (typecheck unindexed trees) in "Indexed Containers by Thorsten Altenkirch and Peter Morris". http://www.cs.nott.ac.uk/~psztxa/publ/ICont.pdf
+This references the following:
+<a id="lab1683"></a><h1 class="section">M. Abbott, T. Altenkirch, and N. Ghani. Containers - constructing strictly positive types. Theoretical Computer Science, 342:327, September 2005. Applied Semantics: Selected Topics.</h1>
+
+<a id="lab1684"></a><h1 class="section">N. Gambino and M. Hyland. Wellfounded trees and dependent polynomial functors. In S. Berardi, M. Coppo, and F. Damiani, editors, types for Proofs and Programs (TYPES 2003), Lecture Notes in Computer Science, 2004</h1>
+
+as previous examples of the technique. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Reduction</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">I</span>) (<span class="id" title="var">j</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">I</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">IsIndexedBy</span> (<span class="id" title="var">x</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">w</span> : <span class="id" title="var">W</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>) : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">w</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">w_sup</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; (<span class="id" title="var">i</span> <span class="id" title="var">a</span> = <span class="id" title="var">x</span>) * (<span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">IsIndexedBy</span> (<span class="id" title="var">j</span> <span class="id" title="var">a</span> <span class="id" title="var">c</span>) (<span class="id" title="var">b</span> <span class="id" title="var">c</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">IW'</span> (<span class="id" title="var">x</span> : <span class="id" title="var">I</span>) := <span class="id" title="var">sig</span> (<span class="id" title="var">IsIndexedBy</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iw_sup'</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">y</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">z</span> : <span class="id" title="var">B</span> <span class="id" title="var">x</span>, <span class="id" title="var">IW'</span> (<span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">z</span>)) : <span class="id" title="var">IW'</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">w_sup</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">x</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">pr1</span> (<span class="id" title="var">y</span> <span class="id" title="var">a</span>)); (<span class="id" title="var">idpath</span>, (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">pr2</span> (<span class="id" title="var">y</span> <span class="id" title="var">a</span>)))).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can derive the induction principle for IW-types 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">IW'_ind</span> (<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">IW'</span> <span class="id" title="var">i</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">S</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, (<span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">P</span> <span class="id" title="var">_</span> (<span class="id" title="var">y</span> <span class="id" title="var">c</span>)) -&gt; <span class="id" title="var">P</span> <span class="id" title="var">_</span> (<span class="id" title="var">iw_sup'</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">w</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">w</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> [<span class="id" title="var">w</span> <span class="id" title="var">r</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">w</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">k</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> [<span class="id" title="var">p</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; (<span class="id" title="var">b</span> <span class="id" title="var">c</span>; <span class="id" title="var">IH</span> <span class="id" title="var">c</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We have definitional computation rules for this eliminator. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">IW'_ind_beta_iw_sup'</span> (<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">IW'</span> <span class="id" title="var">i</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">S</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, (<span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">P</span> <span class="id" title="var">_</span> (<span class="id" title="var">y</span> <span class="id" title="var">c</span>)) -&gt; <span class="id" title="var">P</span> <span class="id" title="var">_</span> (<span class="id" title="var">iw_sup'</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)) <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IW'_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">S</span> <span class="id" title="var">_</span> (<span class="id" title="var">iw_sup'</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) = <span class="id" title="var">S</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">IW'_ind</span> <span class="id" title="var">P</span> <span class="id" title="var">S</span> <span class="id" title="var">_</span> (<span class="id" title="var">y</span> <span class="id" title="var">c</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">idpath</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Showing that IW-types are equivalent to W-types requries funext. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_wtype_iwtype</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">I</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IW'</span> <span class="id" title="var">x</span> &lt;~&gt; <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">equiv_adjointify</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">rapply</span> (<span class="id" title="var">IW'_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">l</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">iw_sup</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">c</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">rapply</span> (<span class="id" title="var">IW_rect</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">l</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">IW'</span> <span class="id" title="var">l</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">iw_sup'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">c</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">rapply</span> (<span class="id" title="var">IW_rect</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">IW'_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">_</span> = <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">c</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">IW'_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">IW_rect</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">_</span> = <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">d</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Reduction</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1685"></a><h1 class="section">Characterization of path types of IW-types. Argument due to Jasper Hugunin.</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Paths</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">I</span>) (<span class="id" title="var">j</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">I</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We wish to show that path types of IW-types are IW-types themselves. We do this by showing the path type satisfies the same induction principle as the IW-type hence they are equivalent. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">I'</span> : <span class="id" title="keyword">Type</span> := {<span class="id" title="var">k</span> : <span class="id" title="var">I</span> &amp; <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> * <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">A'</span> : <span class="id" title="keyword">Type</span> := {<span class="id" title="var">e</span> : <span class="id" title="var">A</span> &amp; (<span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">j</span> <span class="id" title="var">e</span> <span class="id" title="var">c</span>)) * (<span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">j</span> <span class="id" title="var">e</span> <span class="id" title="var">c</span>))}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">B'</span> : <span class="id" title="var">A'</span> -&gt; <span class="id" title="keyword">Type</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">X</span> =&gt; <span class="id" title="var">B</span> <span class="id" title="var">X</span>.1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">i'</span> : <span class="id" title="var">A'</span> -&gt; <span class="id" title="var">I'</span> := <span class="id" title="var">functor_sigma</span> <span class="id" title="var">i</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> : <span class="id" title="var">A</span> =&gt; <span class="id" title="var">functor_prod</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">a</span>) (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">j'</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, <span class="id" title="var">B'</span> <span class="id" title="var">k</span> -&gt; <span class="id" title="var">I'</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">c</span> =&gt; (<span class="id" title="var">j</span> <span class="id" title="var">k</span>.1 <span class="id" title="var">c</span>; (<span class="id" title="var">fst</span> <span class="id" title="var">k</span>.2 <span class="id" title="var">c</span>, <span class="id" title="var">snd</span> <span class="id" title="var">k</span>.2 <span class="id" title="var">c</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">IWPath</span> : <span class="id" title="var">I'</span> -&gt; <span class="id" title="keyword">Type</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">fst</span> (<span class="id" title="var">pr2</span> <span class="id" title="var">x</span>) = <span class="id" title="var">snd</span> (<span class="id" title="var">pr2</span> <span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iwpath_sup</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">y</span> : <span class="id" title="var">B'</span> <span class="id" title="var">x</span>, <span class="id" title="var">IWPath</span> (<span class="id" title="var">j'</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)) -&gt; <span class="id" title="var">IWPath</span> (<span class="id" title="var">i'</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> [<span class="id" title="var">c1</span> <span class="id" title="var">c2</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">IWPath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">iwpath_sup_refl</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">a</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">c</span> : <span class="id" title="var">B</span> <span class="id" title="var">x</span>, <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">c</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">iwpath_sup</span> (<span class="id" title="var">x</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">a</span>)) (<span class="id" title="var">apD10</span> 1) = <span class="id" title="var">idpath</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">iwpath_sup</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">path_forall_1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">Ind</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">xab</span>, <span class="id" title="var">IWPath</span> <span class="id" title="var">xab</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">S</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, (<span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">P</span> <span class="id" title="var">_</span> (<span class="id" title="var">b</span> <span class="id" title="var">c</span>)) -&gt; <span class="id" title="var">P</span> (<span class="id" title="var">i'</span> <span class="id" title="var">a</span>) (<span class="id" title="var">iwpath_sup</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">IWPath_ind_refl</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span>, <span class="id" title="var">P</span> (<span class="id" title="var">l</span> ; (<span class="id" title="var">a</span>, <span class="id" title="var">a</span>)) <span class="id" title="var">idpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">IW_rect</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> =&gt; <span class="id" title="var">P</span> (<span class="id" title="var">l</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">a</span>)) <span class="id" title="var">idpath</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">S</span> (<span class="id" title="var">x</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">a</span>)) <span class="id" title="var">_</span> <span class="id" title="var">q</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">iwpath_sup</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">P</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>; (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span>, <span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span>))) <span class="id" title="var">_</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>) (<span class="id" title="var">path_forall</span> <span class="id" title="var">a</span> <span class="id" title="var">a</span> (<span class="id" title="var">apD10</span> <span class="id" title="var">idpath</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">ap</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>) 1%<span class="id" title="var">path</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">IWPath_ind</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">p</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">IWPath</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IWPath_ind_refl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The computation rule for the induction principle. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">IWPath_ind_beta_iwpath_sup</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A'</span>) (<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span> : <span class="id" title="var">B'</span> <span class="id" title="var">x</span>, <span class="id" title="var">IWPath</span> (<span class="id" title="var">j'</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IWPath_ind</span> <span class="id" title="var">_</span> (<span class="id" title="var">iwpath_sup</span> <span class="id" title="var">x</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">S</span> <span class="id" title="var">x</span> <span class="id" title="var">h</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">IWPath_ind</span> <span class="id" title="var">_</span> (<span class="id" title="var">h</span> <span class="id" title="var">c</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">cbv</span> <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">eisadj</span> (<span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">h</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">paths_ind</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> <span class="id" title="var">p'</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">paths_ind</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">r</span> <span class="id" title="var">p''</span> =&gt; <span class="id" title="var">P</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span> ; (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> , <span class="id" title="var">r</span>)) <span class="id" title="var">p''</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">IWPath_ind_refl</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>) <span class="id" title="var">p'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">paths_rec</span> (<span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">apD10</span> <span class="id" title="var">p'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">p''</span> =&gt; <span class="id" title="var">P</span> (<span class="id" title="var">_</span> ; (<span class="id" title="var">_</span>, <span class="id" title="var">_</span>)) (<span class="id" title="var">ap</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>) <span class="id" title="var">p''</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">S</span> (<span class="id" title="var">x</span> ; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)) (<span class="id" title="var">apD10</span> <span class="id" title="var">p'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">IWPath_ind</span> (<span class="id" title="var">_</span> ; (<span class="id" title="var">_</span>, <span class="id" title="var">_</span>)) (<span class="id" title="var">apD10</span> <span class="id" title="var">p'</span> <span class="id" title="var">c</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">p'</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">apD10</span> <span class="id" title="var">p'</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">transport_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">cbn</span>; <span class="id" title="tactic">destruct</span> (<span class="id" title="var">eisretr</span> <span class="id" title="var">apD10</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">Ind</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The path type of an IW-type is again an IW-type. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_iwtype</span> (<span class="id" title="var">x</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IW</span> <span class="id" title="var">I'</span> <span class="id" title="var">A'</span> <span class="id" title="var">B'</span> <span class="id" title="var">i'</span> <span class="id" title="var">j'</span> (<span class="id" title="var">x</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)) &lt;~&gt; <span class="id" title="var">a</span> = <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">IW</span> <span class="id" title="var">I'</span> <span class="id" title="var">A'</span> <span class="id" title="var">B'</span> <span class="id" title="var">i'</span> <span class="id" title="var">j'</span> (<span class="id" title="var">x</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)) &lt;~&gt; <span class="id" title="var">IWPath</span> (<span class="id" title="var">x</span>; (<span class="id" title="var">a</span>,<span class="id" title="var">b</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">equiv_adjointify</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">e</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">iwpath_sup</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">g</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">e</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>] <span class="id" title="keyword">using</span> <span class="id" title="var">IWPath_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">iw_sup</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">g</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a'</span> <span class="id" title="var">b'</span> <span class="id" title="var">IH</span>] <span class="id" title="keyword">using</span> <span class="id" title="var">IWPath_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IWPath_ind_beta_iwpath_sup</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">y</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">e</span> <span class="id" title="var">f</span> <span class="id" title="var">IH</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">IWPath_ind_beta_iwpath_sup</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>; <span class="id" title="var">funext</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IH</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1686"></a><h2 class="section">Characterization of fiber</h2>
+
+<div class="paragraph"> </div>
+
+ We begin with two auxillary lemmas that will be explained shortly. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">adjust_hfiber</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>} {<span class="id" title="var">y</span> <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">y</span> = <span class="id" title="var">z</span> -&gt; <span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> '(<span class="id" title="var">x</span> ; <span class="id" title="var">p</span>) =&gt; <span class="id" title="keyword">match</span> <span class="id" title="var">p</span> <span class="id" title="keyword">with</span> <span class="id" title="var">idpath</span> =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">q</span> =&gt; (<span class="id" title="var">x</span> ; <span class="id" title="var">q</span>) <span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">adjust_hfiber_idpath</span> {<span class="id" title="var">X</span> <span class="id" title="var">Y</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">X</span> -&gt; <span class="id" title="var">Y</span>} {<span class="id" title="var">y</span> <span class="id" title="var">xp</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">adjust_hfiber</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>) <span class="id" title="var">xp</span> (<span class="id" title="var">idpath</span> : <span class="id" title="var">y</span> = <span class="id" title="var">y</span>) = <span class="id" title="var">xp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">xp</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> []].<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We wish to show an induction principle coming from the path type of the fiber. However to do this we need to be a bit more general by allowing the elements of the IW-type to differ in label upto equality. This allows us to do prove this induction principle easily, and later we will derive the induction principle where the labels are the same. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">path_iw_to_hfiber_ind'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">la</span> <span class="id" title="var">lb</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">le</span> : <span class="id" title="var">lb</span> = <span class="id" title="var">la</span>) (<span class="id" title="var">a</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">la</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">lb</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">la</span> <span class="id" title="var">a</span> = <span class="id" title="var">adjust_hfiber</span> (<span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">lb</span> <span class="id" title="var">b</span>) <span class="id" title="var">le</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">P</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) <span class="id" title="var">idpath</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span>) (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span>) <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">la</span> <span class="id" title="var">lb</span> <span class="id" title="var">le</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>, <span class="id" title="var">P</span> <span class="id" title="var">la</span> <span class="id" title="var">lb</span> <span class="id" title="var">le</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">la</span> <span class="id" title="var">lb</span> <span class="id" title="var">le</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">xa</span> <span class="id" title="var">cha</span>], <span class="id" title="var">b</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">xb</span> <span class="id" title="var">chb</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">paths_ind</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">q</span> =&gt; <span class="id" title="keyword">forall</span> <span class="id" title="var">chb</span>, <span class="id" title="var">P</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">chb</span>) <span class="id" title="var">q</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span> <span class="id" title="var">chb</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Induction principle for paths in the fiber. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">path_iw_to_hfiber_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">l</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> = <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">P</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span>) (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span>) <span class="id" title="var">idpath</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>, <span class="id" title="var">P</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transparent</span> <span class="id" title="tactic">assert</span> (<span class="id" title="var">Q</span> : (<span class="id" title="keyword">forall</span> (<span class="id" title="var">la</span> <span class="id" title="var">lb</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">le</span> : <span class="id" title="var">lb</span> = <span class="id" title="var">la</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">la</span>) (<span class="id" title="var">b</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">lb</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">la</span> <span class="id" title="var">a</span> = <span class="id" title="var">adjust_hfiber</span> (<span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">lb</span> <span class="id" title="var">b</span>) <span class="id" title="var">le</span> -&gt; <span class="id" title="keyword">Type</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">la</span> <span class="id" title="var">lb</span> <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">le</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span> <span class="id" title="var">p'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">P</span> <span class="id" title="var">lb</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p'</span> @ <span class="id" title="var">adjust_hfiber_idpath</span>). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transparent</span> <span class="id" title="tactic">assert</span> (<span class="id" title="var">h'</span> : ((<span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span> : <span class="id" title="var">B</span> <span class="id" title="var">x</span>, <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Q</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) <span class="id" title="var">idpath</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span>) (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span>) <span class="id" title="var">idpath</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">h</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">path_iw_to_hfiber_ind'</span> <span class="id" title="var">Q</span> <span class="id" title="var">h'</span> <span class="id" title="var">l</span> <span class="id" title="var">l</span> <span class="id" title="var">idpath</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="var">p</span> @ <span class="id" title="var">adjust_hfiber_idpath</span>^)) <span class="id" title="keyword">as</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport</span> (<span class="id" title="var">P</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>) <span class="id" title="var">_</span> <span class="id" title="var">q</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">concat_pV_p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Induction principle for families over hfiber of i' 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">hfiber_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">hfiber</span> <span class="id" title="var">i'</span> (<span class="id" title="var">l</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)) -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">P</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">b</span>) ((<span class="id" title="var">x</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)); <span class="id" title="var">idpath</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>, <span class="id" title="var">P</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> [[<span class="id" title="var">x</span> [<span class="id" title="var">y</span> <span class="id" title="var">z</span>]] <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">i'</span>, <span class="id" title="var">functor_sigma</span>, <span class="id" title="var">functor_prod</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_ind</span> (<span class="id" title="var">equiv_path_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">p</span> <span class="id" title="var">q</span>]; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">q</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_ind</span> (<span class="id" title="var">equiv_path_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">p</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">path_iw_to_hfiber</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> = <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">b</span> -&gt; <span class="id" title="var">hfiber</span> <span class="id" title="var">i'</span> (<span class="id" title="var">l</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">path_iw_to_hfiber_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">hfiber</span> <span class="id" title="var">i'</span> (<span class="id" title="var">l</span> ; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; ((<span class="id" title="var">x</span> ; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)); <span class="id" title="var">idpath</span>)) <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">hfiber_to_path_iw</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">hfiber</span> <span class="id" title="var">i'</span> (<span class="id" title="var">l</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)) -&gt; <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> = <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">b</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">hfiber_ind</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> = <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">idpath</span>) <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">path_iw_to_hfiber_to_path_iw</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>, <span class="id" title="var">path_iw_to_hfiber</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="var">hfiber_to_path_iw</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>) = <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">hfiber_ind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="var">path_iw_to_hfiber</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="var">hfiber_to_path_iw</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>) = <span class="id" title="var">p</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">hfiber_to_path_iw_to_hfiber</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>, <span class="id" title="var">hfiber_to_path_iw</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="var">path_iw_to_hfiber</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">p</span>) = <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_iw_to_hfiber_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The path type of the fibers of <span class="inlinecode"><span class="id" title="var">i</span></span> is equivalent to the fibers of <span class="inlinecode"><span class="id" title="var">i'</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_path_hfiber_index</span> (<span class="id" title="var">l</span> : <span class="id" title="var">I</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">a</span> = <span class="id" title="var">iw_to_hfiber_index</span> <span class="id" title="var">l</span> <span class="id" title="var">b</span> &lt;~&gt; <span class="id" title="var">hfiber</span> <span class="id" title="var">i'</span> (<span class="id" title="var">l</span>; (<span class="id" title="var">a</span>, <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_adjointify</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">path_iw_to_hfiber</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">hfiber_to_path_iw</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">rapply</span> <span class="id" title="var">path_iw_to_hfiber_to_path_iw</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">rapply</span> <span class="id" title="var">hfiber_to_path_iw_to_hfiber</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Paths</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Some properties of the (fibers of the) index map <span class="inlinecode"><span class="id" title="var">i</span></span> hold for the IW-type as well. For example, if <span class="inlinecode"><span class="id" title="var">i</span></span> is an embedding then the corresponding IW-type is a hprop. 
+<div class="paragraph"> </div>
+
+<a id="lab1687"></a><h2 class="section">IW-types preserve truncation</h2>
+
+<div class="paragraph"> </div>
+
+ We can show that if the index map is an embedding then the IW-type is a hprop. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_iwtype</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">I</span>) (<span class="id" title="var">j</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">I</span>) {<span class="id" title="var">h</span> : <span class="id" title="var">IsEmbedding</span> <span class="id" title="var">i</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_allpath</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">x</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">IHx</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">y</span>.<br/>
+</div>
+
+<div class="doc">
+We need to induct on y and at the same time generalize the goal to become a dependent equality. This can be difficult to do with tactics so we just refine the corresponding match statement. All we have done is turn the RHS into a transport over an equality allowing the induction on y to go through. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">y</span> <span class="id" title="tactic">in</span> (<span class="id" title="var">IW</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">l</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">return</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">q</span> : <span class="id" title="var">l</span> = <span class="id" title="var">i</span> <span class="id" title="var">x</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span> = <span class="id" title="var">q</span> # <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">iw_sup</span> <span class="id" title="var">y</span> <span class="id" title="var">y'</span> =&gt; <span class="id" title="var">_</span> <span class="id" title="keyword">end</span> <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">r</span> := @<span class="id" title="var">path_ishprop</span> <span class="id" title="var">_</span> (<span class="id" title="var">h</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">x</span>; <span class="id" title="var">idpath</span>) (<span class="id" title="var">y</span>; <span class="id" title="var">q</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">r2</span> := <span class="id" title="var">r</span>..2); <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">r2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">r1</span> := <span class="id" title="var">r</span>..1) <span class="id" title="tactic">in</span> <span class="id" title="var">r2</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">r1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">r1</span> <span class="id" title="var">r2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">r1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> <span class="id" title="var">r2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">r2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">funext</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHx</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Now by induction on truncation indices we show that IW-types are n.+1 truncated if the index maps are also n.+1 truncated. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">istrunc_iwtype</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">I</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">j</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">I</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">trunc_index</span>) {<span class="id" title="var">h</span> : <span class="id" title="var">IsTruncMap</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">i</span>} (<span class="id" title="var">l</span> : <span class="id" title="var">I</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span>.+1 (<span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+</div>
+
+<div class="doc">
+We need a general induction hypothesis 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">n</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">h</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">ishprop_iwtype</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">h</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_path_iwtype</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="var">n</span> := <span class="id" title="var">n</span>.+1)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">IHn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">k</span> [<span class="id" title="var">a</span> <span class="id" title="var">b</span>]].<br/>
+</div>
+
+<div class="doc">
+The crucial step is to characterize the fiber of <span class="inlinecode"><span class="id" title="var">i'</span></span> which was done previously. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_path_hfiber_index</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">k</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1688"></a><h2 class="section">Decidable equality for IW-types</h2>
+
+<div class="paragraph"> </div>
+
+ If A has decidable paths then it is a hset and therefore equality of sigma types over it are determined by the second component. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">inj_right_pair_on</span><br/>
+&nbsp;&nbsp;{<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">A_dec</span> : <span class="id" title="var">DecidablePaths</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">y</span> <span class="id" title="var">y'</span> : <span class="id" title="var">P</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">H</span> : (<span class="id" title="var">x</span>; <span class="id" title="var">y</span>) = (<span class="id" title="var">x</span>; <span class="id" title="var">y'</span>)) : <span class="id" title="var">y</span> = <span class="id" title="var">y'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_path_sigma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">p</span> <span class="id" title="var">q</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">r</span> : <span class="id" title="var">idpath</span> = <span class="id" title="var">p</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">path_ishprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+IW-types have decidable equality if liftP holds and the fibers of the indexing map have decidable paths. Notably, if B x is finitely enumerable, then liftP holds. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">DecidablePaths</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) (<span class="id" title="var">B</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">i</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">I</span>) (<span class="id" title="var">j</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">I</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">liftP</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">B</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="keyword">Type</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">P</span> <span class="id" title="var">c</span>)) -&gt; <span class="id" title="var">Decidable</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">P</span> <span class="id" title="var">c</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fibers_dec</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">DecidablePaths</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">children_for</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) : <span class="id" title="keyword">Type</span> := <span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">c</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">getfib</span> {<span class="id" title="var">x</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>) : <span class="id" title="var">hfiber</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">a</span> <span class="id" title="keyword">with</span> <span class="id" title="var">iw_sup</span> <span class="id" title="var">x</span> <span class="id" title="var">_</span> =&gt; (<span class="id" title="var">x</span> ; <span class="id" title="var">idpath</span>) <span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">getfib_computes</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">children</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">getfib</span> (<span class="id" title="var">paths_rec</span> (<span class="id" title="var">i</span> <span class="id" title="var">y</span>) <span class="id" title="var">_</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span> <span class="id" title="var">children</span>) (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) <span class="id" title="var">p</span>) = <span class="id" title="var">exist</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">return</span> <span class="id" title="var">getfib</span> (<span class="id" title="var">paths_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span> <span class="id" title="var">children</span>) <span class="id" title="var">_</span> <span class="id" title="var">p</span>) = <span class="id" title="var">exist</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">idpath</span> =&gt; <span class="id" title="var">idpath</span> <span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">getfib_plus</span> {<span class="id" title="var">x</span>} (<span class="id" title="var">a</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: {<span class="id" title="var">f</span> : <span class="id" title="var">hfiber</span> <span class="id" title="var">i</span> <span class="id" title="var">x</span> &amp; <span class="id" title="var">children_for</span> (<span class="id" title="var">pr1</span> <span class="id" title="var">f</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">match</span> <span class="id" title="var">a</span> <span class="id" title="keyword">with</span> <span class="id" title="var">iw_sup</span> <span class="id" title="var">x</span> <span class="id" title="var">c</span> =&gt; ((<span class="id" title="var">x</span>; <span class="id" title="var">idpath</span>); <span class="id" title="var">c</span>) <span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">children_eq</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">c1</span> <span class="id" title="var">c2</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">c</span>, <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> (<span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">c</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">c1</span> = <span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">c2</span> -&gt; <span class="id" title="var">c1</span> = <span class="id" title="var">c2</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">r</span> =&gt; <span class="id" title="var">inj_right_pair_on</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">children_for</span> (<span class="id" title="var">pr1</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">x</span>; <span class="id" title="var">idpath</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> <span class="id" title="var">getfib_plus</span> <span class="id" title="var">r</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Fixpoint</span> <span class="id" title="var">decide_eq</span> <span class="id" title="var">l</span> (<span class="id" title="var">a</span> : <span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">l</span>) : <span class="id" title="keyword">forall</span> <span class="id" title="var">b</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">a</span> = <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> <span class="id" title="var">c1</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transparent</span> <span class="id" title="tactic">assert</span> (<span class="id" title="var">decide_children</span> : (<span class="id" title="keyword">forall</span> <span class="id" title="var">c2</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">c1</span> = <span class="id" title="var">c2</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">c2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">liftP</span> <span class="id" title="var">x</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">c1</span> <span class="id" title="var">c</span> = <span class="id" title="var">c2</span> <span class="id" title="var">c</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">decide_eq</span> <span class="id" title="var">_</span> (<span class="id" title="var">c1</span> <span class="id" title="var">c</span>) (<span class="id" title="var">c2</span> <span class="id" title="var">c</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">as</span> [<span class="id" title="var">p</span>|<span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">left</span>; <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">right</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">p</span>, <span class="id" title="var">apD10</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">b</span> <span class="id" title="tactic">in</span> (<span class="id" title="var">IW</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">l</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">return</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">iy</span> : <span class="id" title="var">l</span> = <span class="id" title="var">i</span> <span class="id" title="var">x</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Decidable</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span> <span class="id" title="var">c1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">paths_rec</span> <span class="id" title="var">l</span> (<span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) <span class="id" title="var">b</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) <span class="id" title="var">iy</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">iw_sup</span> <span class="id" title="var">y</span> <span class="id" title="var">c2</span> =&gt; <span class="id" title="keyword">fun</span> <span class="id" title="var">iy</span> : <span class="id" title="var">i</span> <span class="id" title="var">y</span> = <span class="id" title="var">i</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">_</span> <span class="id" title="keyword">end</span> <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">fibers_dec</span> (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) (<span class="id" title="var">x</span> ; <span class="id" title="var">idpath</span>) (<span class="id" title="var">y</span> ; <span class="id" title="var">iy</span>)) <span class="id" title="keyword">as</span> [<span class="id" title="var">feq</span>|<span class="id" title="var">fneq</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">feq</span> <span class="id" title="tactic">in</span> (<span class="id" title="var">_</span> = (<span class="id" title="var">y</span> ; <span class="id" title="var">iy</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">return</span> <span class="id" title="keyword">forall</span> <span class="id" title="var">c2</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Decidable</span> (<span class="id" title="var">iw_sup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">c1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">paths_rec</span> (<span class="id" title="var">i</span> <span class="id" title="var">y</span>) (<span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span>) (<span class="id" title="var">iw_sup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span> <span class="id" title="var">c2</span>) (<span class="id" title="var">i</span> <span class="id" title="var">x</span>) <span class="id" title="var">iy</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span> <span class="id" title="var">idpath</span> =&gt; <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> <span class="id" title="var">c2</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">c3</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">decide_children</span> <span class="id" title="var">c3</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">ceq</span> | <span class="id" title="var">cneq</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">left</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">ceq</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">right</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">cneq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">children_eq</span> <span class="id" title="var">x</span> <span class="id" title="var">c1</span> <span class="id" title="var">c3</span> <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">right</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">fneq</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">getfib</span> <span class="id" title="var">r</span> @ <span class="id" title="var">getfib_computes</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">c2</span> <span class="id" title="var">iy</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">decidablepaths_iwtype</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">DecidablePaths</span> (<span class="id" title="var">IW</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">i</span> <span class="id" title="var">j</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">decide_eq</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">DecidablePaths</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>AbPushout</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library AbPushout</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">Truncations.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span> <span class="id" title="var">HSet</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Algebra.Groups.Image</span> <span class="id" title="var">Algebra.Groups.QuotientGroup</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">AbGroups.AbelianGroup</span> <span class="id" title="var">AbGroups.Biproduct</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_add_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab107"></a><h1 class="section">Pushouts of abelian groups.</h1>
+
+<div class="paragraph"> </div>
+
+ The pushout of two morphisms <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">B</span></span> and <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">C</span></span> is constructed as the quotient of the biproduct <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">C</span></span> by the image of <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">-</span> <span class="inlinecode"><span class="id" title="var">g</span></span>. Since this image comes up repeatedly, we name it. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_pushout_subgroup</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Subgroup</span> (<span class="id" title="var">ab_biprod</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">grp_image</span> (<span class="id" title="var">ab_biprod_corec</span> (<span class="id" title="var">ab_homo_negation</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_pushout</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>) : <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">QuotientAbGroup</span> (<span class="id" title="var">ab_biprod</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>) (<span class="id" title="var">ab_pushout_subgroup</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Recursion principle. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">ab_pushout_rec</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">Y</span> : <span class="id" title="var">AbGroup</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">b</span> : <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">c</span> : <span class="id" title="var">C</span> $-&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">b</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">c</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_pushout</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $-&gt; <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">grp_quotient_rec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_biprod_rec</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">y</span>] <span class="id" title="var">q</span>; <span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">q</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span> <span class="id" title="var">q</span>]. <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">uncurry</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">b</span> <span class="id" title="var">x</span> + <span class="id" title="var">c</span> <span class="id" title="var">y</span>)) <span class="id" title="var">q</span>^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap011</span> <span class="id" title="var">sg_op</span> (<span class="id" title="var">preserves_negate</span> <span class="id" title="var">_</span>) (<span class="id" title="var">p</span> <span class="id" title="var">a</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">left_inverse</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Corollary</span> <span class="id" title="var">ab_pushout_rec_uncurried</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">Y</span> : <span class="id" title="var">AbGroup</span>)<br/>
+&nbsp;&nbsp;: {<span class="id" title="var">b</span> : <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">Y</span> &amp; {<span class="id" title="var">c</span> : <span class="id" title="var">C</span> $-&gt; <span class="id" title="var">Y</span> &amp; <span class="id" title="var">b</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">c</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>}}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; (<span class="id" title="var">ab_pushout</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $-&gt; <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">b</span> [<span class="id" title="var">c</span> <span class="id" title="var">p</span>]]; <span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_pushout_rec</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_pushout_inl</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">ab_pushout</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> := <span class="id" title="var">grp_quotient_map</span> $<span class="id" title="var">o</span> <span class="id" title="var">grp_prod_inl</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_pushout_inr</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">C</span> $-&gt; <span class="id" title="var">ab_pushout</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> := <span class="id" title="var">grp_quotient_map</span> $<span class="id" title="var">o</span> <span class="id" title="var">grp_prod_inr</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">ab_pushout_commsq</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;: (@<span class="id" title="var">ab_pushout_inl</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>) $<span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">ab_pushout_inr</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">qglue</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">right_identity</span> <span class="id" title="var">_</span>)^.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">negate_mon_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">left_identity</span> <span class="id" title="var">_</span>)^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A map out of the pushout induces itself after restricting along the inclusions. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">ab_pushout_rec_beta</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">Y</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">phi</span> : <span class="id" title="var">ab_pushout</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $-&gt; <span class="id" title="var">Y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_pushout_rec</span> (<span class="id" title="var">phi</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_pushout_inl</span>) (<span class="id" title="var">phi</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_pushout_inr</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span>:<span class="id" title="var">A</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">phi</span> (<span class="id" title="var">ab_pushout_commsq</span> <span class="id" title="var">a</span>)) = <span class="id" title="var">phi</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">equiv_ap'</span> (<span class="id" title="var">equiv_quotient_abgroup_ump</span> (<span class="id" title="var">G</span>:=<span class="id" title="var">ab_biprod</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>) <span class="id" title="var">_</span> <span class="id" title="var">Y</span>)^-1%<span class="id" title="var">equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_quotient_rec_beta</span> <span class="id" title="var">_</span> <span class="id" title="var">Y</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">bc</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_biprod_rec_eta</span> (<span class="id" title="var">phi</span> $<span class="id" title="var">o</span> <span class="id" title="var">grp_quotient_map</span>) <span class="id" title="var">bc</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Restricting <span class="inlinecode"><span class="id" title="var">ab_pushout_rec</span></span> along <span class="inlinecode"><span class="id" title="var">ab_pushout_inl</span></span> recovers the left inducing map. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ab_pushout_rec_beta_left</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">Y</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">l</span> : <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">r</span> : <span class="id" title="var">C</span> $-&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">l</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_pushout_rec</span> <span class="id" title="var">l</span> <span class="id" title="var">r</span> <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_pushout_inl</span> == <span class="id" title="var">l</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">right_identity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ab_pushout_rec_beta_right</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">Y</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">l</span> : <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">r</span> : <span class="id" title="var">C</span> $-&gt; <span class="id" title="var">Y</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">l</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">r</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_pushout_rec</span> <span class="id" title="var">l</span> <span class="id" title="var">r</span> <span class="id" title="var">p</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_pushout_inr</span> == <span class="id" title="var">r</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">l</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">left_identity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">isequiv_ab_pushout_rec</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">Y</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">ab_pushout_rec_uncurried</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">Y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_adjointify</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">phi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">phi</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_pushout_inl</span>; <span class="id" title="var">phi</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_pushout_inr</span>; <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">phi</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_pushout_commsq</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">phi</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_pushout_rec_beta</span> <span class="id" title="var">phi</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">b</span> [<span class="id" title="var">c</span> <span class="id" title="var">p</span>]].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_sigma</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">b</span> <span class="id" title="var">x</span> + <span class="id" title="var">k</span>) (<span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">c</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">right_identity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_sigma'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> =&gt; <span class="id" title="var">k</span> + <span class="id" title="var">c</span> <span class="id" title="var">y</span>) (<span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">b</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">left_identity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_ab_pushout</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">bc0</span> <span class="id" title="var">bc1</span> : <span class="id" title="var">ab_biprod</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>)<br/>
+&nbsp;&nbsp;: @<span class="id" title="var">in_cosetL</span> (<span class="id" title="var">ab_biprod</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>) (<span class="id" title="var">ab_pushout_subgroup</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>) <span class="id" title="var">bc0</span> <span class="id" title="var">bc1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; (<span class="id" title="var">grp_quotient_map</span> <span class="id" title="var">bc0</span> = <span class="id" title="var">grp_quotient_map</span> <span class="id" title="var">bc1</span> :&gt; <span class="id" title="var">ab_pushout</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">path_quotient</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The pushout of an embedding is an embedding. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ab_pushout_embedding_inl</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>) `{<span class="id" title="var">IsEmbedding</span> <span class="id" title="var">g</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">ab_pushout_inl</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>) (<span class="id" title="var">g</span>:=<span class="id" title="var">g</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isembedding_isinj_hset</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c0</span> <span class="id" title="var">c1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> (<span class="id" title="var">path_ab_pushout</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> (<span class="id" title="var">grp_prod_inl</span> <span class="id" title="var">c0</span>) (<span class="id" title="var">grp_prod_inl</span> <span class="id" title="var">c1</span>))^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_ind</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">a</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">z</span> : <span class="id" title="var">a</span> = <span class="id" title="var">mon_unit</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">rapply</span> (<span class="id" title="var">isinj_embedding</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">snd</span> <span class="id" title="var">p</span> @ <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">left_inverse</span> <span class="id" title="var">mon_unit</span> @ (<span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">g</span>)^).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">grp_moveR_M1</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">fst</span> <span class="id" title="var">p</span>); <span class="id" title="var">cbn</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">negate_mon_unit</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">z</span> @ <span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Functoriality of pushouts 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_ab_pushout</span> {<span class="id" title="var">A</span> <span class="id" title="var">A'</span> <span class="id" title="var">B</span> <span class="id" title="var">B'</span> <span class="id" title="var">C</span> <span class="id" title="var">C'</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">f'</span> : <span class="id" title="var">A'</span> $-&gt; <span class="id" title="var">B'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>) (<span class="id" title="var">g'</span> : <span class="id" title="var">A'</span> $-&gt; <span class="id" title="var">C'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">alpha</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">A'</span>) (<span class="id" title="keyword">beta</span> : <span class="id" title="var">B</span> $-&gt; <span class="id" title="var">B'</span>) (<span class="id" title="var">gamma</span> : <span class="id" title="var">C</span> $-&gt; <span class="id" title="var">C'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">h</span> : <span class="id" title="keyword">beta</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f'</span> $<span class="id" title="var">o</span> <span class="id" title="var">alpha</span>) (<span class="id" title="var">k</span> : <span class="id" title="var">g'</span> $<span class="id" title="var">o</span> <span class="id" title="var">alpha</span> == <span class="id" title="var">gamma</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_pushout</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $-&gt; <span class="id" title="var">ab_pushout</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">ab_pushout_rec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_pushout_inl</span> $<span class="id" title="var">o</span> <span class="id" title="keyword">beta</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_pushout_inr</span> $<span class="id" title="var">o</span> <span class="id" title="var">gamma</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">ab_pushout_inl</span> (<span class="id" title="var">h</span> <span class="id" title="var">a</span>) @ <span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">ab_pushout_inr</span> (<span class="id" title="var">k</span> <span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_pushout_commsq</span> (<span class="id" title="var">alpha</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab108"></a><h2 class="section">Properties of pushouts of maps</h2>
+
+<div class="paragraph"> </div>
+
+ The pushout of an epimorphism is an epimorphism. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ab_pushout_surjection_inr</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">AbGroup</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">C</span>) `{<span class="id" title="var">S</span> : <span class="id" title="var">IsSurjection</span> <span class="id" title="var">f</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSurjection</span> (<span class="id" title="var">ab_pushout_inr</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>) (<span class="id" title="var">g</span>:=<span class="id" title="var">g</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;To&nbsp;find&nbsp;a&nbsp;preimage&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">x</span></span>,&nbsp;we&nbsp;may&nbsp;first&nbsp;choose&nbsp;a&nbsp;representative&nbsp;<span class="inlinecode"><span class="id" title="var">x'</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">x'</span> : <span class="id" title="var">merely</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">grp_quotient_map</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">center</span>, <span class="id" title="var">issurj_class_of</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">x'</span> <span class="id" title="keyword">as</span> [[<span class="id" title="var">b</span> <span class="id" title="var">c</span>] <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;Now&nbsp;<span class="inlinecode"><span class="id" title="var">x</span></span>&nbsp;=&nbsp;<span class="inlinecode"><span class="id" title="var">b</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">c</span></span>&nbsp;in&nbsp;the&nbsp;quotient.&nbsp;We&nbsp;find&nbsp;a&nbsp;preimage&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">a</span></span>.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">a</span> : <span class="id" title="var">merely</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">f</span> <span class="id" title="var">b</span>)).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">center</span>, <span class="id" title="var">S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span> <span class="id" title="var">q</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">g</span> <span class="id" title="var">a</span> + <span class="id" title="var">c</span>; <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_homo_op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; <span class="id" title="var">sg_op</span> <span class="id" title="var">z</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span>^ @ <span class="id" title="var">ab_pushout_commsq</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">q</span>). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">grp_quotient_map</span> <span class="id" title="var">_</span> @ <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod'</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">right_identity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">left_identity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

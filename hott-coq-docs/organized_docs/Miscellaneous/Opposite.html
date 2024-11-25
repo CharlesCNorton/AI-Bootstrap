@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Opposite</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Opposite</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1899"></a><h2 class="section">Opposite categories</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">op</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) := <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Notation</span> &quot;A ^op" := (<span class="id" title="var">op</span> <span class="id" title="var">A</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This stops typeclass search from trying to unfold op. 
+</div>
+<div class="code">
+#[<span class="id" title="var">global</span>] <span class="id" title="keyword">Typeclasses</span> <span class="id" title="keyword">Opaque</span> <span class="id" title="var">op</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isgraph_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_IsGraph</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">op</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">a</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>} : <span class="id" title="var">Is01Cat</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is01Cat</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">cbv</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">Id</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">cbv</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We don't invert 2-cells as this is op on the first level. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is2graph_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is2Graph</span> <span class="id" title="var">A</span>} : <span class="id" title="var">Is2Graph</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">op</span> <span class="id" title="tactic">in</span> *; <span class="id" title="var">cbn</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} : <span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Cat</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">op</span> <span class="id" title="tactic">in</span> *; <span class="id" title="tactic">cbv</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">is01cat_hom</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">is0gpd_hom</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> $@<span class="id" title="var">R</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">h</span> $@<span class="id" title="var">L</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_assoc_opp</span> <span class="id" title="var">h</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_assoc</span> <span class="id" title="var">h</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_idr</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_idl</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_strong_op</span> <span class="id" title="var">A</span> `{<span class="id" title="var">Is1Cat_Strong</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Cat_Strong</span> (<span class="id" title="var">A</span> ^<span class="id" title="var">op</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Cat_Strong</span>.<br/>
+&nbsp;&nbsp;1-4: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_assoc_opp_strong</span> <span class="id" title="var">h</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_assoc_strong</span> <span class="id" title="var">h</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_idr_strong</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_idl_strong</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Opposite groupoids 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0gpd_op</span> <span class="id" title="var">A</span> `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>} : <span class="id" title="var">Is0Gpd</span> (<span class="id" title="var">A</span>^<span class="id" title="var">op</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is0Gpd</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">op</span> <span class="id" title="tactic">in</span> *; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">gpd_rev</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">op0gpd_fun</span> <span class="id" title="var">A</span> `{<span class="id" title="var">Is0Gpd</span> <span class="id" title="var">A</span>} :<br/>
+&nbsp;&nbsp;<span class="id" title="var">Is0Functor</span>( (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span>) : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_Is0Functor</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">op</span> <span class="id" title="tactic">in</span> *; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">f</span>^$).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1900"></a><h2 class="section">Opposite functors</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_op</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">IsGraph</span> <span class="id" title="var">B</span>, <span class="id" title="var">x</span> : !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">fmap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_op</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">Is0Functor</span> <span class="id" title="var">F</span>, !<span class="id" title="var">Is1Functor</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Build_Is1Functor</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">fmap2</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap_id</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap_comp</span> <span class="id" title="var">F</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Since <span class="inlinecode"><span class="id" title="var">Is01Cat</span></span> structures are definitionally involutive (see test/WildCat/Opposite.v), we can use <span class="inlinecode"><span class="id" title="var">is0functor_op</span></span> to transform in the reverse direction as well.  This result makes that much easier to use in practice. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_op'</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">IsGraph</span> <span class="id" title="var">A</span>, <span class="id" title="var">IsGraph</span> <span class="id" title="var">B</span>, <span class="id" title="var">Fop</span> : !<span class="id" title="var">Is0Functor</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is0functor_op</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">B</span>^<span class="id" title="var">op</span> <span class="id" title="var">F</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">Is1Cat</span></span> structures are also definitionally involutive. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_op'</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, <span class="id" title="var">Is1Cat</span> <span class="id" title="var">B</span>, !<span class="id" title="var">Is0Functor</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>), <span class="id" title="var">Fop2</span> : !<span class="id" title="var">Is1Functor</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">B</span>^<span class="id" title="var">op</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="var">F</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is1functor_op</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">B</span>^<span class="id" title="var">op</span> <span class="id" title="var">F</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasmorext_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">H0</span> : <span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasMorExt</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_HasMorExt</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (@<span class="id" title="var">isequiv_Htpy_path</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">H0</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isinitial_op_isterminal</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">t</span> : <span class="id" title="var">IsTerminal</span> <span class="id" title="var">x</span>} : <span class="id" title="var">IsInitial</span> (<span class="id" title="var">A</span> := <span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">t</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isterminal_op_isinitial</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">i</span> : <span class="id" title="var">IsInitial</span> <span class="id" title="var">x</span>} : <span class="id" title="var">IsTerminal</span> (<span class="id" title="var">A</span> := <span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">i</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

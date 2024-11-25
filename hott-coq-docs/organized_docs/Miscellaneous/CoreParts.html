@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>CoreParts</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library CoreParts</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Core</span> <span class="id" title="var">Functor.Core</span> <span class="id" title="var">NaturalTransformation.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Composition.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">NaturalTransformation.Paths</span> <span class="id" title="var">NaturalTransformation.Composition.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Morphisms</span> <span class="id" title="var">FunctorCategory.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Pseudofunctor.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">NaturalTransformation.Composition.Laws</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Trunc</span> <span class="id" title="var">Types.Sigma</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Tactics</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Identity.FunctorIdentityNotations</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Polymorphism</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Asymmetric</span> <span class="id" title="var">Patterns</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">morphism_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">category_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">type_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Quoting David Spivak:
+
+<div class="paragraph"> </div>
+
+    David: ok
+       so an object of <span class="inlinecode"><span class="id" title="var">FC</span></span> <span class="inlinecode">⇓</span> <span class="inlinecode"><span class="id" title="var">D</span></span> is a pair <span class="inlinecode">(<span class="id" title="var">X</span>,</span> <span class="inlinecode"><span class="id" title="var">G</span>)</span>, where <span class="inlinecode"><span class="id" title="var">X</span></span> is a
+       finite category (or a small category or whatever you wanted)
+       and <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">--&gt;</span> <span class="inlinecode"><span class="id" title="var">D</span></span> is a functor.
+       a morphism in <span class="inlinecode"><span class="id" title="var">FC</span></span> <span class="inlinecode">⇓</span> <span class="inlinecode"><span class="id" title="var">D</span></span> is a ``natural transformation diagram''
+       (as opposed to a commutative diagram, in which the natural
+       transformation would be ``identity'')
+       so a map in <span class="inlinecode"><span class="id" title="var">FC</span></span> <span class="inlinecode">⇓</span> <span class="inlinecode"><span class="id" title="var">D</span></span> from <span class="inlinecode">(<span class="id" title="var">X</span>,</span> <span class="inlinecode"><span class="id" title="var">G</span>)</span> to <span class="inlinecode">(<span class="id" title="var">X'</span>,</span> <span class="inlinecode"><span class="id" title="var">G'</span>)</span> is a pair
+       <span class="inlinecode">(<span class="id" title="var">F</span>,</span> <span class="inlinecode"><span class="id" title="var">α</span>)</span> where <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">--&gt;</span> <span class="inlinecode"><span class="id" title="var">X'</span></span> is a functor and
+       <span class="inlinecode"><span class="id" title="var">α</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">--&gt;</span> <span class="inlinecode"><span class="id" title="var">G'</span></span> <span class="inlinecode">∘</span> <span class="inlinecode"><span class="id" title="var">F</span></span> is a natural transformation
+       and the punchline is that there is a functor
+       <span class="inlinecode"><span class="id" title="var">colim</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">FC</span></span> <span class="inlinecode">⇓</span> <span class="inlinecode"><span class="id" title="var">D</span></span> <span class="inlinecode">--&gt;</span> <span class="inlinecode"><span class="id" title="var">D</span></span>
+
+<div class="paragraph"> </div>
+
+     David: consider for yourself the case where <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">--&gt;</span> <span class="inlinecode"><span class="id" title="var">X'</span></span> is
+       identity (<span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">X'</span></span>) and (separately) the case where
+       <span class="inlinecode"><span class="id" title="var">α</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">--&gt;</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">∘</span> <span class="inlinecode"><span class="id" title="var">F</span></span> is identity.
+       the point is, you've already done the work to get this colim
+       functor.
+       because every map in <span class="inlinecode"><span class="id" title="var">FC</span></span> <span class="inlinecode">⇓</span> <span class="inlinecode"><span class="id" title="var">D</span></span> can be written as a composition
+       of two maps, one where the <span class="inlinecode"><span class="id" title="var">F</span></span>-part is identity and one where
+       the <span class="inlinecode"><span class="id" title="var">α</span></span>-part is identity.
+       and you've worked both of those cases out already.
+       
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">LaxCommaCategoryParts</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">lax_comma_category_parts</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variables</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">PreCategory</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">S</span> : <span class="id" title="var">Pseudofunctor</span> <span class="id" title="var">A</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span> : <span class="id" title="var">Pseudofunctor</span> <span class="id" title="var">B</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="keyword">forall</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>, <span class="id" title="var">IsHSet</span> (<span class="id" title="var">Functor</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) (<span class="id" title="var">T</span> <span class="id" title="var">b</span>))}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Record</span> <span class="id" title="var">object</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">a</span> : <span class="id" title="var">A</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">b</span> : <span class="id" title="var">B</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f</span> : <span class="id" title="var">Functor</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) (<span class="id" title="var">T</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Notation</span> <span class="id" title="var">object_sig_T</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;({ <span class="id" title="var">a</span> : <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| { <span class="id" title="var">b</span> : <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">Functor</span> (<span class="id" title="var">S</span> <span class="id" title="var">a</span>) (<span class="id" title="var">T</span> <span class="id" title="var">b</span>) }}).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">issig_object</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">object_sig_T</span> &lt;~&gt; <span class="id" title="var">object</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">issig</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">trunc_object</span> `{<span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> <span class="id" title="var">A</span>, <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span>, <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> (<span class="id" title="var">Functor</span> (<span class="id" title="var">S</span> <span class="id" title="var">s</span>) (<span class="id" title="var">T</span> <span class="id" title="var">d</span>))}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> <span class="id" title="var">object</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">istrunc_equiv_istrunc</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">exact</span> <span class="id" title="var">issig_object</span> | ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_object</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">object</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">Ha</span> : <span class="id" title="var">x</span>.(<span class="id" title="var">a</span>) = <span class="id" title="var">y</span>.(<span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hb</span> : <span class="id" title="var">x</span>.(<span class="id" title="var">b</span>) = <span class="id" title="var">y</span>.(<span class="id" title="var">b</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">Ha</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">X</span>, <span class="id" title="var">Hb</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">Y</span> <span class="id" title="keyword">return</span> <span class="id" title="var">Functor</span> (<span class="id" title="var">S</span> <span class="id" title="var">X</span>) (<span class="id" title="var">T</span> <span class="id" title="var">Y</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">idpath</span>, <span class="id" title="var">idpath</span> =&gt; <span class="id" title="var">x</span>.(<span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> = <span class="id" title="var">y</span>.(<span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">x</span> = <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span>, <span class="id" title="var">y</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>; <span class="id" title="var">path_induction</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_object_uncurried</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">H</span> : { <span class="id" title="var">HaHb</span> : (<span class="id" title="var">x</span>.(<span class="id" title="var">a</span>) = <span class="id" title="var">y</span>.(<span class="id" title="var">a</span>)) * (<span class="id" title="var">x</span>.(<span class="id" title="var">b</span>) = <span class="id" title="var">y</span>.(<span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="keyword">match</span> <span class="id" title="var">fst</span> <span class="id" title="var">HaHb</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">X</span>, <span class="id" title="var">snd</span> <span class="id" title="var">HaHb</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">Y</span> <span class="id" title="keyword">return</span> <span class="id" title="var">Functor</span> (<span class="id" title="var">S</span> <span class="id" title="var">X</span>) (<span class="id" title="var">T</span> <span class="id" title="var">Y</span>) <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">idpath</span>, <span class="id" title="var">idpath</span> =&gt; <span class="id" title="var">x</span>.(<span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> = <span class="id" title="var">y</span>.(<span class="id" title="var">f</span>) })<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">x</span> = <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">path_object</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> (<span class="id" title="var">fst</span> <span class="id" title="var">H</span>.1) (<span class="id" title="var">snd</span> <span class="id" title="var">H</span>.1) <span class="id" title="var">H</span>.2.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ap_a_path_object</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">Ha</span> <span class="id" title="var">Hb</span> <span class="id" title="var">Hf</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (@<span class="id" title="var">a</span>) (@<span class="id" title="var">path_object</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">Ha</span> <span class="id" title="var">Hb</span> <span class="id" title="var">Hf</span>) = <span class="id" title="var">Ha</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span>, <span class="id" title="var">y</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Ha</span>, <span class="id" title="var">Hb</span>, <span class="id" title="var">Hf</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">ap_b_path_object</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">Ha</span> <span class="id" title="var">Hb</span> <span class="id" title="var">Hf</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap</span> (@<span class="id" title="var">b</span>) (@<span class="id" title="var">path_object</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">Ha</span> <span class="id" title="var">Hb</span> <span class="id" title="var">Hf</span>) = <span class="id" title="var">Hb</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">x</span>, <span class="id" title="var">y</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Ha</span>, <span class="id" title="var">Hb</span>, <span class="id" title="var">Hf</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Global Opaque</span> <span class="id" title="var">path_object</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Record</span> <span class="id" title="var">morphism</span> (<span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span> : <span class="id" title="var">object</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">g</span> : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">A</span> (<span class="id" title="var">abf</span>.(<span class="id" title="var">a</span>)) (<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">a</span>));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">h</span> : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">B</span> (<span class="id" title="var">abf</span>.(<span class="id" title="var">b</span>)) (<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">b</span>));<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">p</span> : <span class="id" title="var">NaturalTransformation</span> (<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">T</span> <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">abf</span>.(<span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">f</span>) <span class="id" title="var">o</span> <span class="id" title="var">p_morphism_of</span> <span class="id" title="var">S</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Notation</span> <span class="id" title="var">morphism_sig_T</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;({ <span class="id" title="var">g</span> : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">A</span> (<span class="id" title="var">abf</span>.(<span class="id" title="var">a</span>)) (<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">a</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| { <span class="id" title="var">h</span> : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">B</span> (<span class="id" title="var">abf</span>.(<span class="id" title="var">b</span>)) (<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">b</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">NaturalTransformation</span> (<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">T</span> <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">abf</span>.(<span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">f</span>) <span class="id" title="var">o</span> <span class="id" title="var">p_morphism_of</span> <span class="id" title="var">S</span> <span class="id" title="var">g</span>) }}).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">issig_morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">morphism_sig_T</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; <span class="id" title="var">morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">issig</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">trunc_morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> (<span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">A</span> (<span class="id" title="var">abf</span>.(<span class="id" title="var">a</span>)) (<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">a</span>)))}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> (<span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">B</span> (<span class="id" title="var">abf</span>.(<span class="id" title="var">b</span>)) (<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">b</span>)))}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">m1</span> <span class="id" title="var">m2</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> (<span class="id" title="var">NaturalTransformation</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">T</span> <span class="id" title="var">m2</span> <span class="id" title="var">o</span> <span class="id" title="var">abf</span>.(<span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">f</span>) <span class="id" title="var">o</span> <span class="id" title="var">p_morphism_of</span> <span class="id" title="var">S</span> <span class="id" title="var">m1</span>))}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> (<span class="id" title="var">morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> <span class="id" title="var">istrunc_equiv_istrunc</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[ <span class="id" title="tactic">exact</span> (<span class="id" title="var">issig_morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) | ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">typeclasses</span> <span class="id" title="tactic">eauto</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hg</span> : <span class="id" title="var">gh</span>.(<span class="id" title="var">g</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hh</span> : <span class="id" title="var">gh</span>.(<span class="id" title="var">h</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">h</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="var">Hg</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">g</span>, <span class="id" title="var">Hh</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">h</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">return</span> <span class="id" title="var">NaturalTransformation</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">T</span> <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">abf</span>.(<span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">f</span>) <span class="id" title="var">o</span> <span class="id" title="var">p_morphism_of</span> <span class="id" title="var">S</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">idpath</span>, <span class="id" title="var">idpath</span> =&gt; <span class="id" title="var">gh</span>.(<span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">gh</span> = <span class="id" title="var">g'h'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Hg</span> <span class="id" title="var">Hh</span> <span class="id" title="var">Hp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">gh</span>, <span class="id" title="var">g'h'</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hg</span>, <span class="id" title="var">Hh</span>, <span class="id" title="var">Hp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_morphism_uncurried</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span> <span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">H</span> : { <span class="id" title="var">HgHh</span> : (<span class="id" title="var">gh</span>.(<span class="id" title="var">g</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">g</span>)) * (<span class="id" title="var">gh</span>.(<span class="id" title="var">h</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">h</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="keyword">match</span> <span class="id" title="var">fst</span> <span class="id" title="var">HgHh</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">g</span>, <span class="id" title="var">snd</span> <span class="id" title="var">HgHh</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">h</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">return</span> <span class="id" title="var">NaturalTransformation</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">T</span> <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">abf</span>.(<span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">f</span>) <span class="id" title="var">o</span> <span class="id" title="var">p_morphism_of</span> <span class="id" title="var">S</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">idpath</span>, <span class="id" title="var">idpath</span> =&gt; <span class="id" title="var">gh</span>.(<span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">p</span>) })<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">gh</span> = <span class="id" title="var">g'h'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">path_morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span> <span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span> (<span class="id" title="var">fst</span> <span class="id" title="var">H</span>.1) (<span class="id" title="var">snd</span> <span class="id" title="var">H</span>.1) <span class="id" title="var">H</span>.2.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_morphism'_helper</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hg</span> : <span class="id" title="var">gh</span>.(<span class="id" title="var">g</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hh</span> : <span class="id" title="var">gh</span>.(<span class="id" title="var">h</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">h</span>)),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="var">_</span> <span class="id" title="var">oL</span> (<span class="id" title="var">Category.Morphisms.idtoiso</span> (<span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span>) (<span class="id" title="var">ap</span> (@<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">S</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">Hg</span>) : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">gh</span>.(<span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> ((<span class="id" title="var">Category.Morphisms.idtoiso</span> (<span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span>) (<span class="id" title="var">ap</span> (@<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">T</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">Hh</span>) : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 <span class="id" title="var">oR</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">g'h'</span>.(<span class="id" title="var">p</span>))%<span class="id" title="var">natural_transformation</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="keyword">match</span> <span class="id" title="var">Hg</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">g</span>, <span class="id" title="var">Hh</span> <span class="id" title="tactic">in</span> <span class="id" title="var">_</span> = <span class="id" title="var">h</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">return</span> <span class="id" title="var">NaturalTransformation</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">T</span> <span class="id" title="var">h</span> <span class="id" title="var">o</span> <span class="id" title="var">abf</span>.(<span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">a'b'f'</span>.(<span class="id" title="var">f</span>) <span class="id" title="var">o</span> <span class="id" title="var">p_morphism_of</span> <span class="id" title="var">S</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| <span class="id" title="var">idpath</span>, <span class="id" title="var">idpath</span> =&gt; <span class="id" title="var">gh</span>.(<span class="id" title="var">p</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span> = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">Hg</span> <span class="id" title="var">Hh</span> <span class="id" title="var">Hp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">g'h'</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Hg</span>, <span class="id" title="var">Hh</span>, <span class="id" title="var">Hp</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_natural_transformation</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">autorewrite</span> <span class="id" title="keyword">with</span> <span class="id" title="var">functor</span> <span class="id" title="var">morphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_morphism'</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hg</span> : <span class="id" title="var">gh</span>.(<span class="id" title="var">g</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hh</span> : <span class="id" title="var">gh</span>.(<span class="id" title="var">h</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">h</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Hp</span> : ((<span class="id" title="var">_</span> <span class="id" title="var">oL</span> (<span class="id" title="var">Category.Morphisms.idtoiso</span> (<span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span>) (<span class="id" title="var">ap</span> (@<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">S</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">Hg</span>) : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">gh</span>.(<span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> ((<span class="id" title="var">Category.Morphisms.idtoiso</span> (<span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span>) (<span class="id" title="var">ap</span> (@<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">T</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">Hh</span>) : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 <span class="id" title="var">oR</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">g'h'</span>.(<span class="id" title="var">p</span>))%<span class="id" title="var">natural_transformation</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">gh</span> = <span class="id" title="var">g'h'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">path_morphism</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span> <span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span> <span class="id" title="var">Hg</span> <span class="id" title="var">Hh</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(@<span class="id" title="var">path_morphism'_helper</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span> <span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span> <span class="id" title="var">Hg</span> <span class="id" title="var">Hh</span> <span class="id" title="var">Hp</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_morphism'_uncurried</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span> <span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">H</span> : { <span class="id" title="var">HgHh</span> : (<span class="id" title="var">gh</span>.(<span class="id" title="var">g</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">g</span>)) * (<span class="id" title="var">gh</span>.(<span class="id" title="var">h</span>) = <span class="id" title="var">g'h'</span>.(<span class="id" title="var">h</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| ((<span class="id" title="var">_</span> <span class="id" title="var">oL</span> (<span class="id" title="var">Category.Morphisms.idtoiso</span> (<span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span>) (<span class="id" title="var">ap</span> (@<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">S</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">fst</span> <span class="id" title="var">HgHh</span>)) : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">gh</span>.(<span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> ((<span class="id" title="var">Category.Morphisms.idtoiso</span> (<span class="id" title="var">_</span> -&gt; <span class="id" title="var">_</span>) (<span class="id" title="var">ap</span> (@<span class="id" title="var">p_morphism_of</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">T</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">HgHh</span>)) : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 <span class="id" title="var">oR</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">g'h'</span>.(<span class="id" title="var">p</span>))%<span class="id" title="var">natural_transformation</span> })<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">gh</span> = <span class="id" title="var">g'h'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">path_morphism'</span> <span class="id" title="var">abf</span> <span class="id" title="var">a'b'f'</span> <span class="id" title="var">gh</span> <span class="id" title="var">g'h'</span> (<span class="id" title="var">fst</span> <span class="id" title="var">H</span>.1) (<span class="id" title="var">snd</span> <span class="id" title="var">H</span>.1) <span class="id" title="var">H</span>.2.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">compose</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">gh</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span>) (<span class="id" title="var">g'h'</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">morphism</span> <span class="id" title="var">s</span> <span class="id" title="var">d'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">gh</span>.(<span class="id" title="var">g</span>) <span class="id" title="var">o</span> <span class="id" title="var">g'h'</span>.(<span class="id" title="var">g</span>)) (<span class="id" title="var">gh</span>.(<span class="id" title="var">h</span>) <span class="id" title="var">o</span> <span class="id" title="var">g'h'</span>.(<span class="id" title="var">h</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">_</span> <span class="id" title="var">oL</span> (<span class="id" title="var">p_composition_of</span> <span class="id" title="var">S</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">associator_1</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">gh</span>.(<span class="id" title="var">p</span>) <span class="id" title="var">oR</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">associator_2</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">_</span> <span class="id" title="var">oL</span> <span class="id" title="var">g'h'</span>.(<span class="id" title="var">p</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">associator_1</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> ((<span class="id" title="var">p_composition_of</span> <span class="id" title="var">T</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">oR</span> <span class="id" title="var">_</span>))%<span class="id" title="var">natural_transformation</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Global Arguments</span> <span class="id" title="var">compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> / .<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">identity</span> <span class="id" title="var">x</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">identity</span> (<span class="id" title="var">x</span>.(<span class="id" title="var">a</span>))) (<span class="id" title="var">identity</span> (<span class="id" title="var">x</span>.(<span class="id" title="var">b</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> ((<span class="id" title="var">_</span> <span class="id" title="var">oL</span> (<span class="id" title="var">p_identity_of</span> <span class="id" title="var">S</span> <span class="id" title="var">_</span> : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">right_identity_natural_transformation_2</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">left_identity_natural_transformation_1</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> ((<span class="id" title="var">p_identity_of</span> <span class="id" title="var">T</span> <span class="id" title="var">_</span> : <span class="id" title="var">Category.Core.morphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">oR</span> <span class="id" title="var">_</span>))%<span class="id" title="var">natural_transformation</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Global Arguments</span> <span class="id" title="var">identity</span> <span class="id" title="var">_</span> / .<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">lax_comma_category_parts</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">LaxCommaCategoryParts</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

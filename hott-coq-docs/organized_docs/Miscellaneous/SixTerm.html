@@ -1,0 +1,347 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>SixTerm</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library SixTerm</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">WildCat</span> <span class="id" title="var">HSet</span> <span class="id" title="var">Pointed.Core</span> <span class="id" title="var">Pointed.pTrunc</span> <span class="id" title="var">Pointed.pEquiv</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Modalities.ReflectiveSubuniverse</span> <span class="id" title="var">Truncations.Core</span> <span class="id" title="var">Truncations.SeparatedTrunc</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">AbGroups</span> <span class="id" title="var">Homotopy.ExactSequence</span> <span class="id" title="var">Spaces.Int</span> <span class="id" title="var">Spaces.FreeInt</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">AbSES.Core</span> <span class="id" title="var">AbSES.Pullback</span> <span class="id" title="var">AbSES.Pushout</span> <span class="id" title="var">BaerSum</span> <span class="id" title="var">Ext</span> <span class="id" title="var">PullbackFiberSequence</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab160"></a><h1 class="section">The contravariant six-term sequence of Ext</h1>
+
+<div class="paragraph"> </div>
+
+ We construct the contravariant six-term exact sequence of Ext groups associated to any short exact sequence <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">B</span></span> and coefficient group <span class="inlinecode"><span class="id" title="var">G</span></span>. The existence of this exact sequence follows from the final result in <span class="inlinecode"><span class="id" title="var">PullbackFiberSequence</span></span>. However, with that definition it becomes a bit tricky to show that the connecting map is given by pushing out <span class="inlinecode"><span class="id" title="var">E</span></span>. Instead, we give a direct proof.
+
+<div class="paragraph"> </div>
+
+  As an application, we use the six-term exact sequence to show that <span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">Z</span>/<span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> is isomorphic to <span class="inlinecode"><span class="id" title="var">A</span>/<span class="id" title="var">n</span></span>, for nonzero natural numbers <span class="inlinecode"><span class="id" title="var">n</span></span>. (See <span class="inlinecode"><span class="id" title="var">ext_cyclic_ab</span></span>.) 
+<div class="paragraph"> </div>
+
+ Exactness of <span class="inlinecode">0</span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> follows from the rightmost map being an embedding. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isexact_abses_sixterm_i</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pconst</span> : <span class="id" title="var">pUnit</span> -&gt;* <span class="id" title="var">ab_hom</span> <span class="id" title="var">B</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap10</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">Group</span>^<span class="id" title="var">op</span>) <span class="id" title="var">ab_hom</span> (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>) <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isexact_purely_O</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isexact_homotopic_i</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">apply</span> <span class="id" title="var">iff_grp_isexact_isembedding</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">phomotopy_homotopy_hset</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>. <span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="var">isembedding_precompose_surjection_ab</span></span>&nbsp;*)</span><br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Exactness of <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span>. One can also deduce this from <span class="inlinecode"><span class="id" title="var">isexact_abses_pullback</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isexact_ext_contra_sixterm_ii</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap10</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">Group</span>^<span class="id" title="var">op</span>) <span class="id" title="var">ab_hom</span> (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>) <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap10</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">Group</span>^<span class="id" title="var">op</span>) <span class="id" title="var">ab_hom</span> (<span class="id" title="var">inclusion</span> <span class="id" title="var">E</span>) <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsExact</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> <span class="id" title="var">phomotopy_homotopy_hset</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">b</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> @ <span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isexact_inclusion_projection</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>. <span class="id" title="tactic">intros</span> [<span class="id" title="var">f</span> <span class="id" title="var">q</span>]; <span class="id" title="var">rapply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">_</span>; <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_homo_compose</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_cokernel_iso</span> (<span class="id" title="var">inclusion</span> <span class="id" title="var">E</span>) (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>))^-1$).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">quotient_abgroup_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">b</span> <span class="id" title="var">r</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">r</span>^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_path_grouphomomorphism</span>^-1 <span class="id" title="var">q</span> <span class="id" title="var">_</span>). }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">lazy</span> <span class="id" title="keyword">beta</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">pr1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">quotient_abgroup_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_cokernel_iso_inv_beta</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab161"></a><h3 class="section">Exactness of <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span></h3>
+
+<div class="paragraph"> </div>
+
+ If a pushout <span class="inlinecode"><span class="id" title="var">abses_pushout</span></span> <span class="inlinecode"><span class="id" title="var">alpha</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> is trivial, then <span class="inlinecode"><span class="id" title="var">alpha</span></span> factors through <span class="inlinecode"><span class="id" title="var">inclusion</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">abses_pushout_trivial_factors_inclusion</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">A'</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">alpha</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">A'</span>) (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">abses_pushout</span> <span class="id" title="var">alpha</span> <span class="id" title="var">E</span> = <span class="id" title="var">pt</span> -&gt; <span class="id" title="tactic">exists</span> <span class="id" title="var">phi</span>, <span class="id" title="var">alpha</span> = <span class="id" title="var">phi</span> $<span class="id" title="var">o</span> <span class="id" title="var">inclusion</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">equiv_intros</span> (<span class="id" title="var">equiv_path_abses</span> (<span class="id" title="var">E</span>:=<span class="id" title="var">abses_pushout</span> <span class="id" title="var">alpha</span> <span class="id" title="var">E</span>) (<span class="id" title="var">F</span>:=<span class="id" title="var">pt</span>)) <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">phi</span> [<span class="id" title="var">p</span> <span class="id" title="var">q</span>]].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">ab_biprod_pr1</span> $<span class="id" title="var">o</span> <span class="id" title="var">phi</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_pushout_inr</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_grouphomomorphism</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;embed&nbsp;into&nbsp;the&nbsp;biproduct&nbsp;and&nbsp;prove&nbsp;equality&nbsp;there.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">isinj_embedding</span> (@<span class="id" title="var">ab_biprod_inl</span> <span class="id" title="var">A'</span> <span class="id" title="var">B</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">p</span> (<span class="id" title="var">alpha</span> <span class="id" title="var">a</span>))^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">phi</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">left_square</span> (<span class="id" title="var">abses_pushout_morphism</span> <span class="id" title="var">E</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">path_prod'</span> <span class="id" title="var">idpath</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">q</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">right_square</span> (<span class="id" title="var">abses_pushout_morphism</span> <span class="id" title="var">E</span> <span class="id" title="var">alpha</span>) <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isexact_inclusion_projection</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isexact_ext_contra_sixterm_iii@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> +} `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">G</span> : <span class="id" title="var">AbGroup@</span>{<span class="id" title="var">u</span>}} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap10</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">Group</span>^<span class="id" title="var">op</span>) <span class="id" title="var">ab_hom</span> (<span class="id" title="var">inclusion</span> <span class="id" title="var">E</span>) <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_pushout_ext</span> <span class="id" title="var">E</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsExact</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">phomotopy_homotopy_hset</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;this&nbsp;equation&nbsp;holds&nbsp;purely&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">tr@</span>{<span class="id" title="var">v</span>}).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">abses_pushout_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">abses_pushout_inclusion</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">abses_pushout_point</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">F</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;since&nbsp;we&nbsp;are&nbsp;proving&nbsp;a&nbsp;proposition,&nbsp;we&nbsp;may&nbsp;convert&nbsp;<span class="inlinecode"><span class="id" title="var">p</span></span>&nbsp;to&nbsp;an&nbsp;actual&nbsp;path&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">p'</span> := (<span class="id" title="var">equiv_path_Tr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1 <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;slightly&nbsp;faster&nbsp;than&nbsp;<span class="inlinecode"><span class="id" title="var">strip_truncations</span></span>:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">p'</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Trunc_rec</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">p'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">contr_inhabited_hprop</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;now&nbsp;we&nbsp;construct&nbsp;a&nbsp;preimage&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">g</span> := <span class="id" title="var">abses_pushout_trivial_factors_inclusion</span> <span class="id" title="var">_</span> <span class="id" title="var">E</span> <span class="id" title="var">p'</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">g</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">g</span> <span class="id" title="var">k</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">k</span>^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab162"></a><h3 class="section">Exactness of <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Ext1</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Ext1</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span>.</h3>
+
+<div class="paragraph"> </div>
+
+ We construct a morphism which witnesses exactness. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isexact_ext_contra_sixterm_iv_mor</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">F</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">G</span>) (<span class="id" title="var">p</span> : <span class="id" title="var">abses_pullback</span> (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>) <span class="id" title="var">F</span> = <span class="id" title="var">pt</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbSESMorphism</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">p'</span> := <span class="id" title="var">equiv_path_abses</span>^-1 <span class="id" title="var">p</span>^);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">p'</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">p'</span> [<span class="id" title="var">pl</span> <span class="id" title="var">pr</span>]].<br/>
+&nbsp;&nbsp;<span class="id" title="var">srefine</span> (<span class="id" title="var">Build_AbSESMorphism</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">grp_homo_id</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_homo_compose</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">grp_iso_inverse</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_kernel_iso</span> (<span class="id" title="var">inclusion</span> <span class="id" title="var">F</span>) (<span class="id" title="var">projection</span> <span class="id" title="var">F</span>))) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;now&nbsp;it's&nbsp;easy&nbsp;to&nbsp;construct&nbsp;map&nbsp;into&nbsp;the&nbsp;kernel&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">grp_kernel_corec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">grp_pullback_pr1</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $<span class="id" title="var">o</span> <span class="id" title="var">p'</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_biprod_inr</span> $<span class="id" title="var">o</span> <span class="id" title="var">inclusion</span> <span class="id" title="var">E</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">right_square</span> (<span class="id" title="var">abses_pullback_morphism</span> <span class="id" title="var">F</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>) (<span class="id" title="var">pr</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isexact_inclusion_projection</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">grp_pullback_pr1</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> $<span class="id" title="var">o</span> <span class="id" title="var">p'</span> $<span class="id" title="var">o</span> <span class="id" title="var">ab_biprod_inr</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">abses_kernel_iso_inv_beta</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">e</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">right_square</span> (<span class="id" title="var">abses_pullback_morphism</span> <span class="id" title="var">F</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">pr</span> <span class="id" title="var">_</span>)^.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isexact_ext_contra_sixterm_iv</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">G</span> : <span class="id" title="var">AbGroup@</span>{<span class="id" title="var">u</span>}} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1)) (<span class="id" title="var">abses_pushout_ext</span> <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap</span> (<span class="id" title="var">pTr</span> 0) (<span class="id" title="var">abses_pullback_pmap</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">G</span>) (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsExact</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">phomotopy_homotopy_hset</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;this&nbsp;equation&nbsp;holds&nbsp;purely&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">tr@</span>{<span class="id" title="var">v</span>}).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">abses_pushout_pullback_reorder</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">abses_pullback_projection</span> <span class="id" title="var">_</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">abses_pushout_point</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;since&nbsp;we&nbsp;are&nbsp;proving&nbsp;a&nbsp;proposition,&nbsp;we&nbsp;may&nbsp;convert&nbsp;<span class="inlinecode"><span class="id" title="var">p</span></span>&nbsp;to&nbsp;an&nbsp;actual&nbsp;path&nbsp;*)</span><br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">F</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">F</span>; <span class="id" title="var">nrapply</span> (<span class="id" title="var">Trunc_ind</span> (<span class="id" title="var">n</span>:=0) (<span class="id" title="var">A</span>:=<span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">G</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;<span class="inlinecode"><span class="id" title="tactic">exact</span></span> <span class="inlinecode"><span class="id" title="var">_</span>.</span>&nbsp;works&nbsp;here,&nbsp;but&nbsp;is&nbsp;slow.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="var">nrapply</span> <span class="id" title="var">istrunc_forall</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>; <span class="id" title="var">rapply</span> (<span class="id" title="var">istrunc_leq</span> (<span class="id" title="var">trunc_index_leq_succ</span> <span class="id" title="var">_</span>)). }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">F</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">equiv_intros</span> (<span class="id" title="var">equiv_path_Tr</span> (<span class="id" title="var">n</span>:=-1) (<span class="id" title="var">abses_pullback</span> (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>) <span class="id" title="var">F</span>) <span class="id" title="var">pt</span>) <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">contr_inhabited_hprop</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">g</span> := <span class="id" title="var">isexact_ext_contra_sixterm_iv_mor</span> <span class="id" title="var">E</span> <span class="id" title="var">F</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">component1</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>, (<span class="id" title="var">ap</span> <span class="id" title="var">tr</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">rapply</span> (<span class="id" title="var">abses_pushout_component3_id</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab163"></a><h3 class="section">Exactness of <span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">E</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode"><span class="id" title="var">G</span></span></h3>
+
+<div class="paragraph"> </div>
+
+ This is an immediate consequence of <span class="inlinecode"><span class="id" title="var">isexact_abses_pullback</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isexact_ext_contra_sixterm_v</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">B</span> <span class="id" title="var">A</span> <span class="id" title="var">G</span> : <span class="id" title="var">AbGroup</span>} (<span class="id" title="var">E</span> : <span class="id" title="var">AbSES</span> <span class="id" title="var">B</span> <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap</span> (<span class="id" title="var">pTr</span> 0) (<span class="id" title="var">abses_pullback_pmap</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">G</span>) (<span class="id" title="var">projection</span> <span class="id" title="var">E</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap</span> (<span class="id" title="var">pTr</span> 0) (<span class="id" title="var">abses_pullback_pmap</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">G</span>) (<span class="id" title="var">inclusion</span> <span class="id" title="var">E</span>))).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isexact_ptr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">isexact_purely_O</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab164"></a><h3 class="section"><span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">Z</span>/<span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> is isomorphic to <span class="inlinecode"><span class="id" title="var">A</span>/<span class="id" title="var">n</span></span></h3>
+
+<div class="paragraph"> </div>
+
+ An easy consequence of the contravariant six-term exact sequence is that <span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">Z</span>/<span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> is isomorphic to the cokernel of the multiplication-by-n endomorphism <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">A</span></span>, for any abelian group <span class="inlinecode"><span class="id" title="var">A</span></span>. This falls out of the six-term exact sequence associated to <span class="inlinecode"><span class="id" title="var">Z</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Z</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Z</span>/<span class="id" title="var">n</span></span> and projectivity of <span class="inlinecode"><span class="id" title="var">Z</span></span>. A minor point is that the library does not currently contain a proof that multiplication by a nonzero natural number is a self-injection of <span class="inlinecode"><span class="id" title="var">Z</span></span>. Thus we work directly with the assumption that <span class="inlinecode"><span class="id" title="var">Z1_mul_nat</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> is an embedding. 
+<div class="paragraph"> </div>
+
+ We define our own cyclic groups using <span class="inlinecode"><span class="id" title="var">ab_cokernel_embedding</span></span> under the assumption that <span class="inlinecode"><span class="id" title="var">Z1_mul_nat</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span> is an embedding. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cyclic'</span> `{<span class="id" title="var">Funext</span>} (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `{<span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AbGroup</span> := <span class="id" title="var">ab_cokernel_embedding</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We first show that <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">Z</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">ab_hom</span></span> <span class="inlinecode"><span class="id" title="var">Z</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode">(<span class="id" title="var">cyclic</span></span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode"><span class="id" title="var">A</span></span> is exact. We could inline the proof below, but factoring it out is faster. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">isexact_ext_cyclic_ab_iii@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">w</span> | <span class="id" title="var">u</span> &lt; <span class="id" title="var">v</span>, <span class="id" title="var">v</span> &lt; <span class="id" title="var">w</span>} `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `{<span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>)} {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsExact</span> (<span class="id" title="var">Tr</span> (-1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap10</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">Group</span>^<span class="id" title="var">op</span>) <span class="id" title="var">ab_hom</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>) <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_pushout_ext</span> (<span class="id" title="var">abses_from_inclusion</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>)))<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isexact_ext_contra_sixterm_iii</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_from_inclusion</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We show exactness of <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">Z</span>/<span class="id" title="var">n</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span> where the first map is multiplication by <span class="inlinecode"><span class="id" title="var">n</span></span>, but considered in universe <span class="inlinecode"><span class="id" title="var">v</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Local Definition</span> <span class="id" title="var">ext_cyclic_exact@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">w</span>} `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `{<span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>)} {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsExact@</span>{<span class="id" title="var">v</span> <span class="id" title="var">v</span> <span class="id" title="var">v</span> <span class="id" title="var">v</span> <span class="id" title="var">v</span>} (<span class="id" title="var">Tr</span> (-1))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ab_mul</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>) <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_pushout_ext@</span>{<span class="id" title="var">u</span> <span class="id" title="var">w</span> <span class="id" title="var">v</span>} (<span class="id" title="var">abses_from_inclusion</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span>* (<span class="id" title="var">pequiv_groupisomorphism</span> (<span class="id" title="var">equiv_Z1_hom</span> <span class="id" title="var">A</span>))^-1*).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;we&nbsp;first&nbsp;move&nbsp;<span class="inlinecode"><span class="id" title="var">equiv_Z1_hom</span></span>&nbsp;across&nbsp;the&nbsp;total&nbsp;space&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_isexact_equiv</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;now&nbsp;we&nbsp;change&nbsp;the&nbsp;left&nbsp;map&nbsp;so&nbsp;as&nbsp;to&nbsp;apply&nbsp;exactness&nbsp;at&nbsp;iii&nbsp;from&nbsp;above&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">isexact_homotopic_i</span> (<span class="id" title="var">Tr</span> (-1))).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">fmap10</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">Group</span>^<span class="id" title="var">op</span>) <span class="id" title="var">ab_hom</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>) <span class="id" title="var">A</span> <span class="id" title="var">o</span>*<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pequiv_inverse</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">pequiv_groupisomorphism</span> (<span class="id" title="var">equiv_Z1_hom</span> <span class="id" title="var">A</span>)))).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">phomotopy_homotopy_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">equiv_ind</span> (<span class="id" title="var">equiv_Z1_hom</span> <span class="id" title="var">A</span>)); <span class="id" title="tactic">intro</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> <span class="id" title="var">_</span> (<span class="id" title="var">eissect</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_V</span>; <span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">Z1_rec_beta</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ab_mul_natural</span> <span class="id" title="var">f</span> <span class="id" title="var">n</span> <span class="id" title="var">Z1_gen</span>).<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;we&nbsp;get&nbsp;rid&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">equiv_Z1_hom</span></span>&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isexact_equiv_fiber</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isexact_ext_cyclic_ab_iii</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The main result of this section. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Theorem</span> <span class="id" title="var">ext_cyclic_ab@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> <span class="id" title="var">w</span> | <span class="id" title="var">u</span> &lt; <span class="id" title="var">v</span>, <span class="id" title="var">v</span> &lt; <span class="id" title="var">w</span>} `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>) `{<span class="id" title="var">emb</span> : <span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>)} {<span class="id" title="var">A</span> : <span class="id" title="var">AbGroup@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_cokernel@</span>{<span class="id" title="var">v</span> <span class="id" title="var">w</span>} (<span class="id" title="var">ab_mul</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>) <span class="id" title="var">n</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$&lt;~&gt; <span class="id" title="var">ab_ext@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} (<span class="id" title="var">cyclic'@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">n</span>) <span class="id" title="var">A</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;take&nbsp;a&nbsp;large&nbsp;cokernel&nbsp;in&nbsp;order&nbsp;to&nbsp;apply&nbsp;<span class="inlinecode"><span class="id" title="var">abses_cokernel_iso</span></span>.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">E</span> := <span class="id" title="var">abses_from_inclusion</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">abses_cokernel_iso</span> (<span class="id" title="var">ab_mul</span> <span class="id" title="var">n</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">grp_homo_compose</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_pushout_ext</span> <span class="id" title="var">E</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">grp_iso_inverse</span> (<span class="id" title="var">equiv_Z1_hom</span> <span class="id" title="var">A</span>))).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">conn_map_compose</span> <span class="id" title="var">_</span> (<span class="id" title="var">grp_iso_inverse</span> (<span class="id" title="var">equiv_Z1_hom</span> <span class="id" title="var">A</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="var">rapply</span> <span class="id" title="var">conn_map_isequiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Coq&nbsp;knows&nbsp;that&nbsp;<span class="inlinecode"><span class="id" title="var">Ext</span></span> <span class="inlinecode"><span class="id" title="var">Z1</span></span> <span class="inlinecode"><span class="id" title="var">A</span></span>&nbsp;is&nbsp;contractible&nbsp;since&nbsp;<span class="inlinecode"><span class="id" title="var">Z1</span></span>&nbsp;is&nbsp;projective,&nbsp;so&nbsp;exactness&nbsp;at&nbsp;spot&nbsp;iv&nbsp;gives&nbsp;us&nbsp;this:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isconnmap_O_isexact_base_contr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">fmap</span> (<span class="id" title="var">pTr</span> 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">abses_pullback_pmap</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">projection</span> <span class="id" title="var">E</span>)))).<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;we&nbsp;change&nbsp;<span class="inlinecode"><span class="id" title="var">grp_homo_compose</span></span>&nbsp;to&nbsp;<span class="inlinecode"><span class="id" title="var">o</span>*</span>&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isexact_homotopic_f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="var">abses_pushout_ext</span> (<span class="id" title="var">abses_from_inclusion</span> (<span class="id" title="var">Z1_mul_nat</span> <span class="id" title="var">n</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span>* (<span class="id" title="var">pequiv_groupisomorphism</span> (<span class="id" title="var">equiv_Z1_hom</span> <span class="id" title="var">A</span>))^-1*).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">phomotopy_homotopy_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ext_cyclic_exact</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

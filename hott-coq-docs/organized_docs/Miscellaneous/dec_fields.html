@@ -1,0 +1,354 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>dec_fields</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library dec_fields</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.interfaces.abstract_algebra</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.fields</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.apartness</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HoTT.Classes.theory.rings</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">F</span> <span class="id" title="var">f</span> <span class="id" title="var">R</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">contents</span>.<br/>
+<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsDecField</span> <span class="id" title="var">F</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>: <span class="id" title="var">F</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>)}.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Add&nbsp;Ring&nbsp;F&nbsp;:&nbsp;(stdlib_ring_theory&nbsp;F).&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">decfield_zero_product</span> : <span class="id" title="var">ZeroProduct</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span> = 0)) <span class="id" title="keyword">as</span> [? | <span class="id" title="var">Ex</span>];<span class="id" title="tactic">auto</span>.<br/>
+<span class="id" title="tactic">right</span>.<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">mult_1_r</span> <span class="id" title="var">y</span>), &lt;-(<span class="id" title="var">dec_recip_inverse</span> <span class="id" title="var">x</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="keyword">associativity</span>, (<span class="id" title="var">commutativity</span> <span class="id" title="var">y</span>), <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">mult_0_l</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">decfield_integral_domain</span> : <span class="id" title="var">IsIntegralDomain</span> <span class="id" title="var">F</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_1</span>: / 1 = 1.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">rings.mult_1_l</span> (/1)).<br/>
+<span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_inverse</span>.<br/>
+<span class="id" title="var">solve_propholds</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_distr</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span>: <span class="id" title="var">F</span>): / (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) = / <span class="id" title="var">x</span> * / <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span> = 0)) <span class="id" title="keyword">as</span> [<span class="id" title="var">Ex</span>|<span class="id" title="var">Ex</span>].<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Ex</span>, <span class="id" title="var">left_absorb</span>, <span class="id" title="var">dec_recip_0</span>. <span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>,<span class="id" title="var">mult_0_l</span>.<br/>
+- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">y</span> = 0)) <span class="id" title="keyword">as</span> [<span class="id" title="var">Ey</span>|<span class="id" title="var">Ey</span>].<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Ey</span>, <span class="id" title="var">dec_recip_0</span>, !<span class="id" title="var">mult_0_r</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_0</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">assert</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span> &lt;&gt; 0) <span class="id" title="keyword">as</span> <span class="id" title="var">Exy</span> <span class="id" title="tactic">by</span> (<span class="id" title="tactic">apply</span> <span class="id" title="var">mult_ne_0</span>;<span class="id" title="tactic">trivial</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation_ne_0</span> (.*.) (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>)); <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">x</span> / <span class="id" title="var">x</span> * (<span class="id" title="var">y</span> / <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">dec_recip_inverse</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_l</span>;<span class="id" title="tactic">apply</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">rewrite</span> !<span class="id" title="var">dec_recip_inverse</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_assoc</span>, (<span class="id" title="var">mult_comm</span> <span class="id" title="var">x</span>), &lt;-(<span class="id" title="var">mult_assoc</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_inverse</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> <span class="id" title="var">y</span>), &lt;-<span class="id" title="var">mult_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_inverse</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_zero</span> <span class="id" title="var">x</span> : / <span class="id" title="var">x</span> = 0 &lt;-&gt; <span class="id" title="var">x</span> = 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span>.<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="var">stable</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">Ex</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">is_ne_0</span> 1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">dec_recip_inverse</span> <span class="id" title="var">x</span>), <span class="id" title="var">E</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">mult_0_r</span>.<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_0</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_ne_0_iff</span> <span class="id" title="var">x</span> : / <span class="id" title="var">x</span> &lt;&gt; 0 &lt;-&gt; <span class="id" title="var">x</span> &lt;&gt; 0.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">E1</span> <span class="id" title="var">E2</span>; <span class="id" title="tactic">destruct</span> <span class="id" title="var">E1</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_zero</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="tactic">do</span> 2 <span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">dec_recip_zero</span> <span class="id" title="var">_</span>)). <span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">dec_recip_ne_0</span> <span class="id" title="var">x</span> : <span class="id" title="var">PropHolds</span> (<span class="id" title="var">x</span> &lt;&gt; 0) -&gt; <span class="id" title="var">PropHolds</span> (/<span class="id" title="var">x</span> &lt;&gt; 0).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intro</span>.<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">dec_recip_ne_0_iff</span> <span class="id" title="var">_</span>)).<br/>
+<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equal_by_one_quotient</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">F</span>) : <span class="id" title="var">x</span> / <span class="id" title="var">y</span> = 1 -&gt; <span class="id" title="var">x</span> = <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intro</span> <span class="id" title="var">Exy</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">y</span> = 0)) <span class="id" title="keyword">as</span> [<span class="id" title="var">Ey</span>|<span class="id" title="var">Ey</span>].<br/>
+- <span class="id" title="tactic">destruct</span> (<span class="id" title="var">is_ne_0</span> 1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">Exy</span>, <span class="id" title="var">Ey</span>, <span class="id" title="var">dec_recip_0</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">mult_0_r</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">right_cancellation_ne_0</span> (.*.) (/<span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_ne_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_inverse</span>;<span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">dec_recip_inj</span>: <span class="id" title="var">IsInjective</span> (/).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">E</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">y</span> = 0)) <span class="id" title="keyword">as</span> [<span class="id" title="var">Ey</span>|<span class="id" title="var">Ey</span>].<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Ey</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_0</span> <span class="id" title="tactic">in</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_zero</span>. <span class="id" title="tactic">trivial</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">right_cancellation_ne_0</span> (.*.) (/<span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_ne_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_inverse</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-<span class="id" title="var">E</span>, <span class="id" title="var">dec_recip_inverse</span>;<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_ne_0_iff</span>. <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_ne_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">dec_recip_involutive</span>: <span class="id" title="var">Involutive</span> (/).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span>. <span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span> = 0)) <span class="id" title="keyword">as</span> [<span class="id" title="var">Ex</span>|<span class="id" title="var">Ex</span>].<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Ex</span>, !<span class="id" title="var">dec_recip_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">right_cancellation_ne_0</span> (.*.) (/<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_ne_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_inverse</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_comm</span>, <span class="id" title="var">dec_recip_inverse</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_ne_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equal_dec_quotients</span> (<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> : <span class="id" title="var">F</span>) : <span class="id" title="var">b</span> &lt;&gt; 0 -&gt; <span class="id" title="var">d</span> &lt;&gt; 0 -&gt;<br/>
+&nbsp;&nbsp;(<span class="id" title="var">a</span> * <span class="id" title="var">d</span> = <span class="id" title="var">c</span> * <span class="id" title="var">b</span> &lt;-&gt; <span class="id" title="var">a</span> / <span class="id" title="var">b</span> = <span class="id" title="var">c</span> / <span class="id" title="var">d</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">split</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">E</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">right_cancellation_ne_0</span> (.*.) <span class="id" title="var">b</span>);<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">right_cancellation_ne_0</span> (.*.) <span class="id" title="var">d</span>);<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">a</span> * <span class="id" title="var">d</span> * (<span class="id" title="var">b</span> * /<span class="id" title="var">b</span>));[|<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">c</span> * <span class="id" title="var">b</span> * (<span class="id" title="var">d</span> * /<span class="id" title="var">d</span>))].<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> &lt;-!(<span class="id" title="var">mult_assoc</span> <span class="id" title="var">a</span>). <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> <span class="id" title="var">d</span>), (<span class="id" title="var">mult_comm</span> <span class="id" title="var">_</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E</span>, <span class="id" title="var">dec_recip_inverse</span>, <span class="id" title="var">dec_recip_inverse</span>;<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> &lt;-!(<span class="id" title="var">mult_assoc</span> <span class="id" title="var">c</span>). <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> <span class="id" title="var">d</span>), <span class="id" title="var">mult_assoc</span>, (<span class="id" title="var">mult_comm</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">transitivity</span> (<span class="id" title="var">a</span> * <span class="id" title="var">d</span> * 1);[<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>;<span class="id" title="tactic">reflexivity</span>|].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">dec_recip_inverse</span> <span class="id" title="var">b</span>);<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">transitivity</span> (<span class="id" title="var">c</span> * <span class="id" title="var">b</span> * 1);[|<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_1_r</span>;<span class="id" title="tactic">reflexivity</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">dec_recip_inverse</span> <span class="id" title="var">d</span>);<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_comm</span>, &lt;-<span class="id" title="var">mult_assoc</span>, (<span class="id" title="var">mult_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>), (<span class="id" title="var">mult_comm</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>), <span class="id" title="var">E</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-<span class="id" title="var">mult_assoc</span>. <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> <span class="id" title="var">_</span> <span class="id" title="var">d</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_assoc</span>, (<span class="id" title="var">mult_comm</span> <span class="id" title="var">c</span>). <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_quotients</span> (<span class="id" title="var">a</span> <span class="id" title="var">c</span> <span class="id" title="var">b</span> <span class="id" title="var">d</span> : <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">b</span> &lt;&gt; 0 -&gt; <span class="id" title="var">d</span> &lt;&gt; 0 -&gt; <span class="id" title="var">a</span> / <span class="id" title="var">b</span> + <span class="id" title="var">c</span> / <span class="id" title="var">d</span> = (<span class="id" title="var">a</span> * <span class="id" title="var">d</span> + <span class="id" title="var">c</span> * <span class="id" title="var">b</span>) / (<span class="id" title="var">b</span> * <span class="id" title="var">d</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span>.<br/>
+<span class="id" title="tactic">assert</span> (<span class="id" title="var">a</span> / <span class="id" title="var">b</span> = (<span class="id" title="var">a</span> * <span class="id" title="var">d</span>) / (<span class="id" title="var">b</span> * <span class="id" title="var">d</span>)) <span class="id" title="keyword">as</span> <span class="id" title="var">E1</span>.<br/>
+- <span class="id" title="tactic">apply</span> <span class="id" title="var">equal_dec_quotients</span>;<span class="id" title="tactic">auto</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="var">solve_propholds</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> <span class="id" title="var">b</span>);<span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>.<br/>
+- <span class="id" title="tactic">assert</span> (<span class="id" title="var">c</span> / <span class="id" title="var">d</span> = (<span class="id" title="var">b</span> * <span class="id" title="var">c</span>) / (<span class="id" title="var">b</span> * <span class="id" title="var">d</span>)) <span class="id" title="keyword">as</span> <span class="id" title="var">E2</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">equal_dec_quotients</span>;<span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="var">solve_propholds</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">rewrite</span> <span class="id" title="var">mult_assoc</span>, (<span class="id" title="var">mult_comm</span> <span class="id" title="var">c</span>). <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E1</span>, <span class="id" title="var">E2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">mult_comm</span> <span class="id" title="var">c</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="tactic">symmetry</span>, <span class="id" title="var">simple_distribute_r</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_swap_l</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>: <span class="id" title="var">x</span> / <span class="id" title="var">y</span> = / (/ <span class="id" title="var">x</span> * <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_distr</span>, <span class="id" title="var">involutive</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_swap_r</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>: / <span class="id" title="var">x</span> * <span class="id" title="var">y</span> = / (<span class="id" title="var">x</span> / <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_distr</span>, <span class="id" title="var">involutive</span>.<br/>
+<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_negate</span> <span class="id" title="var">x</span> : -(/ <span class="id" title="var">x</span>) = / (-<span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span> = 0)) <span class="id" title="keyword">as</span> [<span class="id" title="var">Ex</span>|<span class="id" title="var">Ex</span>].<br/>
+- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">Ex</span>, <span class="id" title="var">negate_0</span>, <span class="id" title="var">dec_recip_0</span>, <span class="id" title="var">negate_0</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation_ne_0</span> (.*.) (-<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">flip_negate_ne_0</span> <span class="id" title="var">_</span>)). <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_inverse</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">rewrite</span> <span class="id" title="var">negate_mult_negate</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">dec_recip_inverse</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> (<span class="id" title="var">snd</span> (<span class="id" title="var">flip_negate_ne_0</span> <span class="id" title="var">_</span>)). <span class="id" title="tactic">trivial</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">contents</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Due&nbsp;to&nbsp;bug&nbsp;2528 *)</span><br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 7 (<span class="id" title="var">PropHolds</span> (/ <span class="id" title="var">_</span> &lt;&gt; 0)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> @<span class="id" title="var">dec_recip_ne_0</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Given&nbsp;a&nbsp;decidable&nbsp;field&nbsp;we&nbsp;can&nbsp;easily&nbsp;construct&nbsp;a&nbsp;constructive&nbsp;field.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">is_field</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">IsDecField</span> <span class="id" title="var">F</span>} `{<span class="id" title="var">Apart</span> <span class="id" title="var">F</span>} `{!<span class="id" title="var">TrivialApart</span> <span class="id" title="var">F</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Decidable.DecidablePaths</span> <span class="id" title="var">F</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">recip_dec_field</span>: <span class="id" title="var">Recip</span> <span class="id" title="var">F</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; / <span class="id" title="var">x</span>.1.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Existing Instance</span> <span class="id" title="var">dec_strong_setoid</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">decfield_field</span> : <span class="id" title="var">IsField</span> <span class="id" title="var">F</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">dec_strong_binary_morphism</span> (+)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">dec_strong_binary_morphism</span> (.*.)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">Px</span>]. <span class="id" title="var">rapply</span> (<span class="id" title="var">dec_recip_inverse</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_correct</span> (<span class="id" title="var">x</span> : <span class="id" title="var">F</span>) <span class="id" title="var">Px</span> : / <span class="id" title="var">x</span> = // (<span class="id" title="var">x</span>;<span class="id" title="var">Px</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation_ne_0</span> (.*.) <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">dec_recip_inverse</span>, <span class="id" title="var">reciperse_alt</span> <span class="id" title="tactic">by</span> (<span class="id" title="tactic">apply</span> <span class="id" title="var">trivial_apart</span>;<span class="id" title="tactic">trivial</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">is_field</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Definition&nbsp;stdlib_field_theory&nbsp;F&nbsp;`{DecField&nbsp;F}&nbsp;:<br/>
+&nbsp;&nbsp;Field_theory.field_theory&nbsp;0&nbsp;1&nbsp;(+)&nbsp;(.*.)&nbsp;(fun&nbsp;x&nbsp;y&nbsp;=&gt;&nbsp;x&nbsp;-&nbsp;y)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(-)&nbsp;(fun&nbsp;x&nbsp;y&nbsp;=&gt;&nbsp;x&nbsp;/&nbsp;y)&nbsp;(/)&nbsp;(=).<br/>
+Proof&nbsp;with&nbsp;auto.<br/>
+&nbsp;&nbsp;intros.<br/>
+&nbsp;&nbsp;constructor.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;apply&nbsp;(theory.rings.stdlib_ring_theory&nbsp;_).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;apply&nbsp;(is_ne_0&nbsp;1).<br/>
+&nbsp;&nbsp;&nbsp;reflexivity.<br/>
+&nbsp;&nbsp;intros.<br/>
+&nbsp;&nbsp;rewrite&nbsp;commutativity.&nbsp;by&nbsp;apply&nbsp;dec_recip_inverse.<br/>
+Qed.&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;Section&nbsp;from_stdlib_field_theory.<br/>
+&nbsp;&nbsp;Context&nbsp;`(ftheory&nbsp;:&nbsp;@field_theory&nbsp;F&nbsp;Fzero&nbsp;Fone&nbsp;Fplus&nbsp;Fmult&nbsp;Fminus&nbsp;Fnegate<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Fdiv&nbsp;Frecip&nbsp;Fe)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(rinv_0&nbsp;:&nbsp;Fe&nbsp;(Frecip&nbsp;Fzero)&nbsp;Fzero)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!@Setoid&nbsp;F&nbsp;Fe}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!Proper&nbsp;(Fe&nbsp;==&gt;&nbsp;Fe&nbsp;==&gt;&nbsp;Fe)&nbsp;Fplus}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!Proper&nbsp;(Fe&nbsp;==&gt;&nbsp;Fe&nbsp;==&gt;&nbsp;Fe)&nbsp;Fmult}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!Proper&nbsp;(Fe&nbsp;==&gt;&nbsp;Fe)&nbsp;Fnegate}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!Proper&nbsp;(Fe&nbsp;==&gt;&nbsp;Fe)&nbsp;Frecip}.<br/>
+<br/>
+&nbsp;&nbsp;Add&nbsp;Field&nbsp;F2&nbsp;:&nbsp;ftheory.<br/>
+<br/>
+&nbsp;&nbsp;Definition&nbsp;from_stdlib_field_theory:&nbsp;@DecField&nbsp;F&nbsp;Fe&nbsp;Fplus&nbsp;Fmult<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;Fzero&nbsp;Fone&nbsp;Fnegate&nbsp;Frecip.<br/>
+&nbsp;&nbsp;Proof&nbsp;with&nbsp;auto.<br/>
+&nbsp;&nbsp;&nbsp;destruct&nbsp;ftheory.<br/>
+&nbsp;&nbsp;&nbsp;repeat&nbsp;(constructor;&nbsp;try&nbsp;assumption);&nbsp;repeat&nbsp;intro<br/>
+&nbsp;&nbsp;&nbsp;;&nbsp;unfold&nbsp;equiv,&nbsp;mon_unit,&nbsp;sg_op,&nbsp;zero_is_mon_unit,&nbsp;plus_is_sg_op,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;one_is_mon_unit,&nbsp;mult_is_sg_op,&nbsp;plus,&nbsp;mult,&nbsp;recip,&nbsp;negate;&nbsp;try&nbsp;field.<br/>
+&nbsp;&nbsp;&nbsp;unfold&nbsp;recip,&nbsp;mult.<br/>
+&nbsp;&nbsp;&nbsp;simpl.<br/>
+&nbsp;&nbsp;&nbsp;assert&nbsp;(Fe&nbsp;(Fmult&nbsp;x&nbsp;(Frecip&nbsp;x))&nbsp;(Fmult&nbsp;(Frecip&nbsp;x)&nbsp;x))&nbsp;as&nbsp;E&nbsp;by&nbsp;ring.<br/>
+&nbsp;&nbsp;&nbsp;rewrite&nbsp;E.<br/>
+&nbsp;&nbsp;Qed.<br/>
+End&nbsp;from_stdlib_field_theory.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">morphisms</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span>  `{<span class="id" title="var">IsDecField</span> <span class="id" title="var">F</span>} `{<span class="id" title="var">TrivialApart</span> <span class="id" title="var">F</span>} `{<span class="id" title="var">Decidable.DecidablePaths</span> <span class="id" title="var">F</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">dec_field_to_domain_inj</span> `{<span class="id" title="var">IsIntegralDomain</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsSemiRingPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">F</span> -&gt; <span class="id" title="var">R</span>)} : <span class="id" title="var">IsInjective</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">injective_preserves_0</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">Efx</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">stable</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">Ex</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">is_ne_0</span> (1:<span class="id" title="var">R</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">rings.preserves_1</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;-(<span class="id" title="var">dec_recip_inverse</span> <span class="id" title="var">x</span>) <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">rings.preserves_mult</span>, <span class="id" title="var">Efx</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">left_absorb</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">preserves_dec_recip</span> `{<span class="id" title="var">IsDecField</span> <span class="id" title="var">F2</span>} `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>: <span class="id" title="var">F2</span>, <span class="id" title="var">Decidable</span> (<span class="id" title="var">x</span> = <span class="id" title="var">y</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{!<span class="id" title="var">IsSemiRingPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">F</span> -&gt; <span class="id" title="var">F2</span>)} <span class="id" title="var">x</span> : <span class="id" title="var">f</span> (/ <span class="id" title="var">x</span>) = / <span class="id" title="var">f</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">case</span> (<span class="id" title="var">dec</span> (<span class="id" title="var">x</span> = 0)) <span class="id" title="keyword">as</span> [<span class="id" title="var">E</span> | <span class="id" title="var">E</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">E</span>, <span class="id" title="var">dec_recip_0</span>, <span class="id" title="var">preserves_0</span>, <span class="id" title="var">dec_recip_0</span>. <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation_ne_0</span> (.*.) (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">isinjective_ne_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> &lt;-<span class="id" title="var">preserves_mult</span>, 2!<span class="id" title="var">dec_recip_inverse</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">preserves_1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">apply</span> <span class="id" title="var">isinjective_ne_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">dec_recip_to_recip</span> `{<span class="id" title="var">IsField</span> <span class="id" title="var">F2</span>} `{!<span class="id" title="var">IsSemiRingStrongPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">F</span> -&gt; <span class="id" title="var">F2</span>)}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">x</span> <span class="id" title="var">Pfx</span> : <span class="id" title="var">f</span> (/ <span class="id" title="var">x</span>) = // (<span class="id" title="var">f</span> <span class="id" title="var">x</span>;<span class="id" title="var">Pfx</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">x</span> &lt;&gt; 0).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">Ex</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">apart_ne</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>) 0 <span class="id" title="var">Pfx</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">Ex</span>, (<span class="id" title="var">preserves_0</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">f</span>)). <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">left_cancellation_ne_0</span> (.*.) (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">isinjective_ne_0</span>. <span class="id" title="tactic">trivial</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">rewrite</span> &lt;-<span class="id" title="var">preserves_mult</span>, <span class="id" title="var">dec_recip_inverse</span>, <span class="id" title="var">reciperse_alt</span> <span class="id" title="tactic">by</span> <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">preserves_1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">morphisms</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

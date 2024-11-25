@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Centralizer</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Centralizer</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">Truncations.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HFiber</span> <span class="id" title="var">AbelianGroup</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Given&nbsp;a&nbsp;group&nbsp;<span class="inlinecode"><span class="id" title="var">G</span></span>,&nbsp;we&nbsp;define&nbsp;the&nbsp;centralizer&nbsp;of&nbsp;an&nbsp;element&nbsp;<span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">G</span></span>&nbsp;as&nbsp;a&nbsp;subgroup&nbsp;and&nbsp;use&nbsp;this&nbsp;to&nbsp;show&nbsp;that&nbsp;the&nbsp;cyclic&nbsp;subgroup&nbsp;generated&nbsp;by&nbsp;<span class="inlinecode"><span class="id" title="var">g</span></span>&nbsp;is&nbsp;abelian.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_mult_scope</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;First&nbsp;we&nbsp;show&nbsp;that&nbsp;the&nbsp;collection&nbsp;of&nbsp;elements&nbsp;that&nbsp;commute&nbsp;with&nbsp;a&nbsp;fixed&nbsp;element&nbsp;<span class="inlinecode"><span class="id" title="var">g</span></span>&nbsp;is&nbsp;a&nbsp;subgroup.&nbsp;*)</span><br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">centralizer</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">h</span> =&gt; <span class="id" title="var">g</span> * <span class="id" title="var">h</span> = <span class="id" title="var">h</span> * <span class="id" title="var">g</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">centralizer_unit</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span>) : <span class="id" title="var">centralizer</span> <span class="id" title="var">g</span> <span class="id" title="var">mon_unit</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">grp_unit_r</span> <span class="id" title="var">_</span> @ (<span class="id" title="var">grp_unit_l</span> <span class="id" title="var">_</span>)^).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">centralizer_sgop</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">centralizer</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>) (<span class="id" title="var">q</span> : <span class="id" title="var">centralizer</span> <span class="id" title="var">g</span> <span class="id" title="var">k</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">centralizer</span> <span class="id" title="var">g</span> (<span class="id" title="var">h</span> * <span class="id" title="var">k</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> * <span class="id" title="var">k</span>) <span class="id" title="var">p</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">h</span> * <span class="id" title="var">x</span>) <span class="id" title="var">q</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_assoc</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">centralizer_inverse</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">g</span> <span class="id" title="var">h</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">p</span> : <span class="id" title="var">centralizer</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">centralizer</span> <span class="id" title="var">g</span> (-<span class="id" title="var">h</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">centralizer</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">grp_unit_r</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span> @ <span class="id" title="var">grp_unit_l</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (-<span class="id" title="var">h</span> * <span class="id" title="var">g</span> * <span class="id" title="var">x</span>)) (<span class="id" title="var">grp_inv_r</span> <span class="id" title="var">h</span>)^ @ <span class="id" title="var">_</span> @ <span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> * (<span class="id" title="var">g</span> * -<span class="id" title="var">h</span>)) (<span class="id" title="var">grp_inv_l</span> <span class="id" title="var">h</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span> @ (<span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> * (-<span class="id" title="var">h</span>)) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ @ <span class="id" title="var">_</span> @ <span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; (-<span class="id" title="var">h</span>) * <span class="id" title="var">x</span>) <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">issubgroup_centralizer</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSubgroup</span> (<span class="id" title="var">centralizer</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_IsSubgroup</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">centralizer_unit</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">centralizer_sgop</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">centralizer_inverse</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">centralizer_subgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Subgroup</span> <span class="id" title="var">G</span> (<span class="id" title="var">centralizer</span> <span class="id" title="var">g</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Now&nbsp;we&nbsp;define&nbsp;cyclic&nbsp;subgroups.&nbsp;&nbsp;We&nbsp;allow&nbsp;any&nbsp;map&nbsp;<span class="inlinecode"><span class="id" title="var">Unit</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">G</span></span>&nbsp;in&nbsp;this&nbsp;definition,&nbsp;because&nbsp;in&nbsp;applications&nbsp;(such&nbsp;as&nbsp;<span class="inlinecode"><span class="id" title="var">Z_commutative</span></span>)&nbsp;we&nbsp;have&nbsp;no&nbsp;control&nbsp;over&nbsp;the&nbsp;map.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cyclic_subgroup_from_unit</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">gen</span> : <span class="id" title="var">Unit</span> -&gt; <span class="id" title="var">G</span>) := <span class="id" title="var">subgroup_generated</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">gen</span>).<br/>
+
+<br/>
+<span class="comment">(*&nbsp;When&nbsp;we&nbsp;have&nbsp;a&nbsp;particular&nbsp;element&nbsp;<span class="inlinecode"><span class="id" title="var">g</span></span>&nbsp;of&nbsp;<span class="inlinecode"><span class="id" title="var">G</span></span>,&nbsp;we&nbsp;could&nbsp;choose&nbsp;the&nbsp;predicate&nbsp;to&nbsp;be&nbsp;<span class="inlinecode"><span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">g</span></span>,&nbsp;but&nbsp;to&nbsp;fit&nbsp;into&nbsp;the&nbsp;above&nbsp;definition,&nbsp;we&nbsp;use&nbsp;<span class="inlinecode"><span class="id" title="var">unit_name</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span>,&nbsp;which&nbsp;gives&nbsp;the&nbsp;predicate&nbsp;<span class="inlinecode"><span class="id" title="keyword">fun</span></span> <span class="inlinecode"><span class="id" title="var">h</span></span> <span class="inlinecode">=&gt;</span> <span class="inlinecode"><span class="id" title="var">hfiber</span></span> <span class="inlinecode">(<span class="id" title="var">unit_name</span></span> <span class="inlinecode"><span class="id" title="var">g</span>)</span> <span class="inlinecode"><span class="id" title="var">h</span></span>.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cyclic_subgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span>) := <span class="id" title="var">cyclic_subgroup_from_unit</span> (<span class="id" title="var">unit_name</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Any&nbsp;cyclic&nbsp;subgroup&nbsp;is&nbsp;commutative.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">commutative_cyclic_subgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">gen</span> : <span class="id" title="var">Unit</span> -&gt; <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Commutative</span> (@<span class="id" title="var">group_sgop</span> (<span class="id" title="var">cyclic_subgroup_from_unit</span> <span class="id" title="var">gen</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">h</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">h</span> <span class="id" title="var">H</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">k</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">k</span> <span class="id" title="var">K</span>]; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">K</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;It's&nbsp;enough&nbsp;to&nbsp;check&nbsp;equality&nbsp;after&nbsp;including&nbsp;into&nbsp;G:&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_ap_isembedding</span> (<span class="id" title="var">subgroup_incl</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1. <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">H</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">h</span> [[] <span class="id" title="var">p</span>]| |<span class="id" title="var">h1</span> <span class="id" title="var">h2</span> <span class="id" title="var">H1</span> <span class="id" title="var">H2</span> <span class="id" title="var">IHH1</span> <span class="id" title="var">IHH2</span>].<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;The&nbsp;case&nbsp;when&nbsp;h&nbsp;=&nbsp;g:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">K</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">k</span> [[] <span class="id" title="var">q</span>]| |<span class="id" title="var">k1</span> <span class="id" title="var">k2</span> <span class="id" title="var">K1</span> <span class="id" title="var">K2</span> <span class="id" title="var">IHK1</span> <span class="id" title="var">IHK2</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="comment">(*&nbsp;The&nbsp;case&nbsp;when&nbsp;k&nbsp;=&nbsp;g:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="comment">(*&nbsp;The&nbsp;case&nbsp;when&nbsp;k&nbsp;=&nbsp;mon_unit:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">centralizer_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="comment">(*&nbsp;The&nbsp;case&nbsp;when&nbsp;k&nbsp;=&nbsp;k1&nbsp;(-k2):&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">issubgroup_in_op_inv</span> (<span class="id" title="var">H</span>:=<span class="id" title="var">centralizer</span> (<span class="id" title="var">gen</span> <span class="id" title="var">tt</span>))); <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;The&nbsp;case&nbsp;when&nbsp;h&nbsp;=&nbsp;mon_unit:&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">centralizer_unit</span>.<br/>
+&nbsp;&nbsp;- <span class="comment">(*&nbsp;The&nbsp;case&nbsp;when&nbsp;h&nbsp;=&nbsp;h1&nbsp;(-h2):&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">issubgroup_in_op_inv</span> (<span class="id" title="var">H</span>:=<span class="id" title="var">centralizer</span> <span class="id" title="var">k</span>)); <span class="id" title="tactic">unfold</span> <span class="id" title="var">centralizer</span>; <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">abgroup_cyclic_subgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span>) : <span class="id" title="var">AbGroup</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_AbGroup</span> (<span class="id" title="var">cyclic_subgroup</span> <span class="id" title="var">g</span>) <span class="id" title="var">_</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>SimplicialSets</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library SimplicialSets</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab543"></a><h1 class="section">The simplex category Δ, and the precategory of simplicial sets, <span class="inlinecode"><span class="id" title="var">Δ</span>ᵒᵖ</span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="tactic">set</span></span></h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Core</span> <span class="id" title="var">Functor.Core</span> <span class="id" title="var">Functor.Paths</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">SetCategory.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">ChainCategory</span> <span class="id" title="var">FunctorCategory.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Dual</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Identity</span> <span class="id" title="var">Functor.Composition.Core</span> <span class="id" title="var">Functor.Composition.Laws</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Polymorphism</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Asymmetric</span> <span class="id" title="var">Patterns</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">functor_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">category_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We define the precategory Δ of simplexes, or finite non-empty linear
+    orders 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Core</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">simplicial_sets</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We say that the objects of Δ are natural numbers, where a
+        number <span class="inlinecode"><span class="id" title="var">n</span></span> is morally considered as the canonical <span class="inlinecode"><span class="id" title="var">n</span></span>-simplex,
+        a finite linear order on <span class="inlinecode"><span class="id" title="var">n</span></span> <span class="inlinecode">+</span> <span class="inlinecode">1</span> elements.  By declaring
+        <span class="inlinecode"><span class="id" title="var">chain</span></span> to be a local coercion from <span class="inlinecode"><span class="id" title="var">nat</span></span> to <span class="inlinecode"><span class="id" title="var">PreCategory</span></span>, we
+        can rely on on-the-fly eta-expansion to make this moral
+        consideration a reality, telling Coq that it can unify, for
+        example, <span class="inlinecode"><span class="id" title="var">nat</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">nat</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">Type</span></span> with <span class="inlinecode"><span class="id" title="var">PreCategory</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">PreCategory</span></span>
+        <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">Type</span></span> by silently inserting <span class="inlinecode"><span class="id" title="var">chain</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Local Coercion</span> <span class="id" title="var">chain</span> : <span class="id" title="var">nat</span> &gt;-&gt; <span class="id" title="var">PreCategory</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">simplex_category</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">Build_PreCategory</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Functor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">identity</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">compose</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">associativity</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">left_identity</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">right_identity</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">simplicial_category</span> (<span class="id" title="var">C</span> : <span class="id" title="var">PreCategory</span>) : <span class="id" title="var">PreCategory</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">simplex_category</span>^<span class="id" title="var">op</span> -&gt; <span class="id" title="var">C</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">simplicial_set</span> := <span class="id" title="var">simplicial_category</span> <span class="id" title="var">set_cat</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">simplicial_prop</span> := <span class="id" title="var">simplicial_category</span> <span class="id" title="var">prop_cat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">simplicial_sets</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">simplicial_of</span> <span class="id" title="var">obj</span> := (<span class="id" title="var">simplicial_category</span> (<span class="id" title="var">cat_of</span> <span class="id" title="var">obj</span>)).<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Module</span> <span class="id" title="var">Utf8</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Notation</span> <span class="id" title="var">Δ</span> := <span class="id" title="var">simplex_category</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Utf8</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

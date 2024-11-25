@@ -1,0 +1,964 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Subgroup</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Subgroup</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics</span> <span class="id" title="keyword">Types</span> <span class="id" title="var">HFiber</span> <span class="id" title="var">WildCat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Truncations.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.Groups.Group</span> <span class="id" title="var">TruncType</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_mult_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab204"></a><h1 class="section">Subgroups</h1>
+
+<div class="paragraph"> </div>
+
+ A subgroup H of a group G is a predicate (i.e. an hProp-valued type family) on G which is closed under the group operations. The group underlying H is given by the total space { g : G &amp; H g }, defined in <span class="inlinecode"><span class="id" title="var">subgroup_group</span></span> below. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsSubgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">issubgroup_predicate</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">H</span> <span class="id" title="var">x</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">issubgroup_in_unit</span> : <span class="id" title="var">H</span> <span class="id" title="var">mon_unit</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">issubgroup_in_op</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">issubgroup_in_inv</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> (- <span class="id" title="var">x</span>) ;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">issubgroup_predicate</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Smart constructor for subgroups.  
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_IsSubgroup'</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">H</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">unit</span> : <span class="id" title="var">H</span> <span class="id" title="var">mon_unit</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * -<span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSubgroup</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_IsSubgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> <span class="id" title="var">_</span> <span class="id" title="var">unit</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">hx</span> <span class="id" title="var">hy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">c'</span> := <span class="id" title="var">c</span> <span class="id" title="var">mon_unit</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">c'</span> <span class="id" title="var">unit</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">c</span> <span class="id" title="var">x</span> (-<span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">y</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">left_identity</span> <span class="id" title="tactic">in</span> <span class="id" title="var">c'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">c'</span> <span class="id" title="var">hy</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">c</span> <span class="id" title="var">_</span> <span class="id" title="var">g</span> <span class="id" title="var">unit</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">left_identity</span> <span class="id" title="tactic">in</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Additional lemmas about being elements in a subgroup 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">IsSubgroupElements</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span>  {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">H</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsSubgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">issubgroup_in_op_inv</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>) : <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * -<span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_op</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">issubgroup_in_inv'</span> (<span class="id" title="var">x</span> : <span class="id" title="var">G</span>) : <span class="id" title="var">H</span> (- <span class="id" title="var">x</span>) -&gt; <span class="id" title="var">H</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>; <span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">x</span>); <span class="id" title="var">revert</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">issubgroup_in_inv_op</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>) : <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> (-<span class="id" title="var">x</span> * <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_op_inv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1,2: <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">issubgroup_in_op_l</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>) : <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">grp_unit_r</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">grp_inv_r</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">grp_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_op_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">issubgroup_in_op_r</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>) : <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) -&gt; <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">grp_unit_l</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">q</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">grp_inv_l</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">grp_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_inv_op</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">IsSubgroupElements</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_issubgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) : <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">IsSubgroup</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Given a predicate H on a group G, being a subgroup is a property. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_issubgroup</span> `{<span class="id" title="var">F</span> : <span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">H</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">IsSubgroup</span> <span class="id" title="var">H</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">issig_issubgroup</span> <span class="id" title="var">H</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The type (set) of subgroups of a group G. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Record</span> <span class="id" title="var">Subgroup</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">subgroup_pred</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">subgroup_issubgroup</span> : <span class="id" title="var">IsSubgroup</span> <span class="id" title="var">subgroup_pred</span> ;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">subgroup_pred</span> : <span class="id" title="var">Subgroup</span> &gt;-&gt; <span class="id" title="var">Funclass</span>.<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">subgroup_issubgroup</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_Subgroup'</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">H</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">unit</span> : <span class="id" title="var">H</span> <span class="id" title="var">mon_unit</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * -<span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Subgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">H</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Build_IsSubgroup'</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">SubgroupElements</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_in_unit</span> : <span class="id" title="var">H</span> <span class="id" title="var">mon_unit</span> := <span class="id" title="var">issubgroup_in_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_in_inv</span> : <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> (- <span class="id" title="var">x</span>) := <span class="id" title="var">issubgroup_in_inv</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_in_inv'</span> : <span class="id" title="var">H</span> (- <span class="id" title="var">x</span>) -&gt; <span class="id" title="var">H</span> <span class="id" title="var">x</span> := <span class="id" title="var">issubgroup_in_inv'</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_in_op</span> : <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) := <span class="id" title="var">issubgroup_in_op</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_in_op_inv</span> : <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * -<span class="id" title="var">y</span>) := <span class="id" title="var">issubgroup_in_op_inv</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_in_inv_op</span> : <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> (-<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) := <span class="id" title="var">issubgroup_in_inv_op</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_in_op_l</span> : <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">x</span> := <span class="id" title="var">issubgroup_in_op_l</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_in_op_r</span> : <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) -&gt; <span class="id" title="var">H</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">y</span> := <span class="id" title="var">issubgroup_in_op_r</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">SubgroupElements</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isequiv_subgroup_in_inv</span> `(<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEquiv</span> (<span class="id" title="var">subgroup_in_inv</span> <span class="id" title="var">H</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">isequiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">subgroup_in_inv'</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_subgroup_inverse</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">H</span> <span class="id" title="var">x</span> &lt;~&gt; <span class="id" title="var">H</span> (-<span class="id" title="var">x</span>) := <span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">subgroup_in_inv</span> <span class="id" title="var">H</span> <span class="id" title="var">x</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The group given by a subgroup 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_group</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) : <span class="id" title="var">Group</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">Build_Group</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The underlying type is the sigma type of the predicate. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">sig</span> <span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The operation is the group operation on the first projection with the proof  of being in the subgroup given by the subgroup data. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> '(<span class="id" title="var">x</span> ; <span class="id" title="var">p</span>) '(<span class="id" title="var">y</span> ; <span class="id" title="var">q</span>) =&gt; (<span class="id" title="var">x</span> * <span class="id" title="var">y</span> ; <span class="id" title="var">issubgroup_in_op</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+The unit 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">mon_unit</span> ; <span class="id" title="var">issubgroup_in_unit</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+Inverse 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> '(<span class="id" title="var">x</span> ; <span class="id" title="var">p</span>) =&gt; (- <span class="id" title="var">x</span> ; <span class="id" title="var">issubgroup_in_inv</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span>))).<br/>
+</div>
+
+<div class="doc">
+Finally we need to prove our group laws. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">grp_auto</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">subgroup_group</span> : <span class="id" title="var">Subgroup</span> &gt;-&gt; <span class="id" title="var">Group</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_incl</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">subgroup_group</span> <span class="id" title="var">H</span> $-&gt; <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupHomomorphism</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">pr1</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isembedding_subgroup_incl</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">subgroup_incl</span> <span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">hfiber_fibration</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_subgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} : <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Trivial subgroup 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">trivial_subgroup</span> {<span class="id" title="var">G</span>} : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">Build_Subgroup'</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">x</span> = <span class="id" title="var">mon_unit</span>)).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">p</span>, <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">left_identity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">negate_mon_unit</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The preimage of a subgroup under a group homomorphism is a subgroup. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_preimage</span> {<span class="id" title="var">G</span> <span class="id" title="var">H</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">G</span> $-&gt; <span class="id" title="var">H</span>) (<span class="id" title="var">S</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">H</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Subgroup'</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">S</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> <span class="id" title="var">S</span> (<span class="id" title="var">grp_homo_unit</span> <span class="id" title="var">f</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">subgroup_in_unit</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">Sfx</span> <span class="id" title="var">Sfy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> <span class="id" title="var">S</span> (<span class="id" title="var">grp_homo_op</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">subgroup_in_op</span>; <span class="id" title="var">only</span> 1: <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> <span class="id" title="var">S</span> (<span class="id" title="var">grp_homo_inv</span> <span class="id" title="var">f</span> <span class="id" title="var">_</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">subgroup_in_inv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Every group is a (maximal) subgroup of itself 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">maximal_subgroup</span> {<span class="id" title="var">G</span>} : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">Build_Subgroup</span> <span class="id" title="var">G</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">Unit</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">auto</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Paths between subgroups correspond to homotopies between the underlying predicates. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">equiv_path_subgroup</span> `{<span class="id" title="var">F</span> : <span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> <span class="id" title="var">K</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="var">H</span> == <span class="id" title="var">K</span>) &lt;~&gt; (<span class="id" title="var">H</span> = <span class="id" title="var">K</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">equiv_ap'</span> <span class="id" title="var">issig_subgroup</span>^-1%<span class="id" title="var">equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_path_sigma_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_path_arrow</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Proposition</span> <span class="id" title="var">equiv_path_subgroup'</span> `{<span class="id" title="var">U</span> : <span class="id" title="var">Univalence</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> <span class="id" title="var">K</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>:<span class="id" title="var">G</span>, <span class="id" title="var">H</span> <span class="id" title="var">g</span> &lt;-&gt; <span class="id" title="var">K</span> <span class="id" title="var">g</span>) &lt;~&gt; (<span class="id" title="var">H</span> = <span class="id" title="var">K</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_path_subgroup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_forall_id</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">equiv_path_iff_ishprop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishset_subgroup</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} : <span class="id" title="var">IsHSet</span> (<span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">issig_subgroup</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_functor_sigma_id</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">P</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">issig_issubgroup</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">nrefine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_sigma_assoc'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">istrunc_sigma</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">intros</span> []; <span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">istrunc_equiv_istrunc</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> (<span class="id" title="var">equiv_sig_coind</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span>:<span class="id" title="var">G</span> =&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">IsHProp</span> <span class="id" title="var">x</span>))^-1%<span class="id" title="var">equiv</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_forall</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Cosets</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Left and right cosets give equivalence relations. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The relation of being in a left coset represented by an element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_cosetL</span> : <span class="id" title="var">Relation</span> <span class="id" title="var">G</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">H</span> (-<span class="id" title="var">x</span> * <span class="id" title="var">y</span>).<br/>
+</div>
+
+<div class="doc">
+The relation of being in a right coset represented by an element. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_cosetR</span> : <span class="id" title="var">Relation</span> <span class="id" title="var">G</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">H</span> (<span class="id" title="var">x</span> * -<span class="id" title="var">y</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Extern</span> 4 =&gt; <span class="id" title="tactic">progress</span> <span class="id" title="tactic">unfold</span> <span class="id" title="var">in_cosetL</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hint Extern</span> 4 =&gt; <span class="id" title="tactic">progress</span> <span class="id" title="tactic">unfold</span> <span class="id" title="var">in_cosetR</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Arguments</span> <span class="id" title="var">in_cosetL</span> /.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Arguments</span> <span class="id" title="var">in_cosetR</span> /.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+These are props 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_in_cosetL</span> : <span class="id" title="var">is_mere_relation</span> <span class="id" title="var">G</span> <span class="id" title="var">in_cosetL</span> := <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_in_cosetR</span> : <span class="id" title="var">is_mere_relation</span> <span class="id" title="var">G</span> <span class="id" title="var">in_cosetR</span> := <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In fact, they are both equivalence relations. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">reflexive_in_cosetL</span> : <span class="id" title="var">Reflexive</span> <span class="id" title="var">in_cosetL</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">hnf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">left_inverse</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">reflexive_in_cosetR</span> : <span class="id" title="var">Reflexive</span> <span class="id" title="var">in_cosetR</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>; <span class="id" title="tactic">hnf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">right_inverse</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">symmetric_in_cosetL</span> : <span class="id" title="var">Symmetric</span> <span class="id" title="var">in_cosetL</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">h</span>; <span class="id" title="var">cbn</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">negate_sg_op</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_inv</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">symmetric_in_cosetR</span> : <span class="id" title="var">Symmetric</span> <span class="id" title="var">in_cosetR</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">h</span>; <span class="id" title="var">cbn</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">negate_sg_op</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_inv</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">transitive_in_cosetL</span> : <span class="id" title="var">Transitive</span> <span class="id" title="var">in_cosetL</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>; <span class="id" title="var">cbn</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">right_identity</span> (-<span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">right_inverse</span> <span class="id" title="var">y</span> : <span class="id" title="var">y</span> * -<span class="id" title="var">y</span> = <span class="id" title="var">mon_unit</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="keyword">associativity</span> (-<span class="id" title="var">x</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">simple_associativity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_op</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">transitive_in_cosetR</span> : <span class="id" title="var">Transitive</span> <span class="id" title="var">in_cosetR</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>; <span class="id" title="var">cbn</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">h</span>; <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> <span class="id" title="var">k</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">right_identity</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">left_inverse</span> <span class="id" title="var">y</span> : -<span class="id" title="var">y</span> * <span class="id" title="var">y</span> = <span class="id" title="var">mon_unit</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">simple_associativity</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="keyword">associativity</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (-<span class="id" title="var">z</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_op</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Cosets</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Identities related to the left and right cosets. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_cosetL_unit</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> (-<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) <span class="id" title="var">mon_unit</span> &lt;~&gt; <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">right_identity</span> (- <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">negate_sg_op</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_iff_hprop</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">symmetric_in_cosetL</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_cosetR_unit</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> (<span class="id" title="var">x</span> * -<span class="id" title="var">y</span>) <span class="id" title="var">mon_unit</span> &lt;~&gt; <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">negate_mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> (<span class="id" title="var">right_identity</span> (<span class="id" title="var">x</span> * -<span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Symmetry is an equivalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_in_cosetL_symm</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> &lt;~&gt; <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">by</span> <span class="id" title="tactic">intro</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_in_cosetR_symm</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> &lt;~&gt; <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">by</span> <span class="id" title="tactic">intro</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A normal subgroup is a subgroup closed under conjugation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsNormalSubgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isnormal</span> : <span class="id" title="keyword">forall</span> {<span class="id" title="var">x</span> <span class="id" title="var">y</span>}, <span class="id" title="var">N</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) -&gt; <span class="id" title="var">N</span> (<span class="id" title="var">y</span> * <span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">NormalSubgroup</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">normalsubgroup_subgroup</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">normalsubgroup_isnormal</span> : <span class="id" title="var">IsNormalSubgroup</span> <span class="id" title="var">normalsubgroup_subgroup</span> ;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">Build_NormalSubgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">N</span> <span class="id" title="var">_</span> : <span class="id" title="tactic">rename</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">normalsubgroup_subgroup</span> : <span class="id" title="var">NormalSubgroup</span> &gt;-&gt; <span class="id" title="var">Subgroup</span>.<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">normalsubgroup_isnormal</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_symmetric_in_normalsubgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">N</span> : <span class="id" title="var">NormalSubgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">N</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) &lt;~&gt; <span class="id" title="var">N</span> (<span class="id" title="var">y</span> * <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="tactic">apply</span> <span class="id" title="var">isnormal</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Our definiiton of normal subgroup implies the usual definition of invariance under conjugation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isnormal_conjugate</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">NormalSubgroup</span> <span class="id" title="var">G</span>) {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">N</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">N</span> (<span class="id" title="var">y</span> * <span class="id" title="var">x</span> * -<span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isnormal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> <span class="id" title="var">N</span> (<span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">N</span> (<span class="id" title="var">y</span> * <span class="id" title="var">x</span>)) (<span class="id" title="var">grp_inv_l</span> <span class="id" title="var">_</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> <span class="id" title="var">N</span> (<span class="id" title="var">grp_unit_l</span> <span class="id" title="var">_</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can show a subgroup is normal if it is invariant under conjugation. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_IsNormalSubgroup'</span> (<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>) (<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">isnormal</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">N</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">N</span> (<span class="id" title="var">y</span> * <span class="id" title="var">x</span> * -<span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsNormalSubgroup</span> <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> <span class="id" title="var">N</span> (<span class="id" title="var">grp_unit_r</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; <span class="id" title="var">N</span> (<span class="id" title="var">_</span> * <span class="id" title="var">z</span>)) (<span class="id" title="var">grp_inv_r</span> <span class="id" title="var">y</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> <span class="id" title="var">N</span> (<span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; <span class="id" title="var">N</span> (<span class="id" title="var">z</span> * <span class="id" title="var">_</span>)) (<span class="id" title="var">grp_assoc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">isnormal</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Under funext, being a normal subgroup is a hprop. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_isnormalsubgroup</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">IsNormalSubgroup</span> <span class="id" title="var">N</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">IsNormalSubgroup</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Our definition of normal subgroup and the usual definition are therefore equivalent. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_isnormal_conjugate</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsNormalSubgroup</span> <span class="id" title="var">N</span> &lt;~&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">N</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">N</span> (<span class="id" title="var">y</span> * <span class="id" title="var">x</span> * -<span class="id" title="var">y</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_iff_hprop</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">is_normal</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isnormal_conjugate</span> (<span class="id" title="var">Build_NormalSubgroup</span> <span class="id" title="var">G</span> <span class="id" title="var">N</span> <span class="id" title="var">is_normal</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">is_normal'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsNormalSubgroup'</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Left and right cosets are equivalent in normal subgroups. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_in_cosetL_in_cosetR_normalsubgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">N</span> : <span class="id" title="var">NormalSubgroup</span> <span class="id" title="var">G</span>) (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> &lt;~&gt; <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_in_cosetR_symm</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_symmetric_in_normalsubgroup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Inverses are then respected 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_cosetL_inverse</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">N</span> : <span class="id" title="var">NormalSubgroup</span> <span class="id" title="var">G</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> (-<span class="id" title="var">x</span>) (-<span class="id" title="var">y</span>) &lt;~&gt; <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_in_cosetL_in_cosetR_normalsubgroup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">negate_involutive</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_cosetR_inverse</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">N</span> : <span class="id" title="var">NormalSubgroup</span> <span class="id" title="var">G</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> (-<span class="id" title="var">x</span>) (-<span class="id" title="var">y</span>) &lt;~&gt; <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_in_cosetL_in_cosetR_normalsubgroup</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">grp_inv_inv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This lets us prove that left and right coset relations are congruences. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_cosetL_cong</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">N</span> : <span class="id" title="var">NormalSubgroup</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">y</span> <span class="id" title="var">y'</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> <span class="id" title="var">x'</span> <span class="id" title="var">y'</span> -&gt; <span class="id" title="var">in_cosetL</span> <span class="id" title="var">N</span> (<span class="id" title="var">x</span> * <span class="id" title="var">x'</span>) (<span class="id" title="var">y</span> * <span class="id" title="var">y'</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+</div>
+
+<div class="doc">
+rewrite goal before applying subgroup_op 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">negate_sg_op</span>, &lt;- <span class="id" title="var">simple_associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isnormal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">simple_associativity</span>, &lt;- <span class="id" title="var">simple_associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">subgroup_in_op</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isnormal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_cosetR_cong</span>  {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">N</span> : <span class="id" title="var">NormalSubgroup</span> <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">y</span> <span class="id" title="var">y'</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> <span class="id" title="var">x'</span> <span class="id" title="var">y'</span> -&gt; <span class="id" title="var">in_cosetR</span> <span class="id" title="var">N</span> (<span class="id" title="var">x</span> * <span class="id" title="var">x'</span>) (<span class="id" title="var">y</span> * <span class="id" title="var">y'</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+</div>
+
+<div class="doc">
+rewrite goal before applying subgroup_op 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">negate_sg_op</span>, <span class="id" title="var">simple_associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isnormal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">simple_associativity</span>, <span class="id" title="var">simple_associativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">subgroup_in_op</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">exact</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isnormal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The property of being the trivial subgroup is useful. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">IsTrivialSubgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">H</span> <span class="id" title="var">x</span> &lt;-&gt; <span class="id" title="var">trivial_subgroup</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Existing Class</span> <span class="id" title="var">IsTrivialSubgroup</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">istrivialsubgroup_trivial_subgroup</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsTrivialSubgroup</span> (@<span class="id" title="var">trivial_subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="tactic">hnf</span>; <span class="id" title="tactic">reflexivity</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Intersection of two subgroups 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_intersection</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> <span class="id" title="var">K</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Subgroup'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">H</span> <span class="id" title="var">g</span> /\ <span class="id" title="var">K</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">split</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">subgroup_in_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> [] [].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">subgroup_in_op_inv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab205"></a><h3 class="section">The subgroup generated by a subset</h3>
+
+<div class="paragraph"> </div>
+
+ Underlying type family of a subgroup generated by subset 
+</div>
+<div class="code">
+<span class="id" title="keyword">Inductive</span> <span class="id" title="var">subgroup_generated_type</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span> :=<br/>
+</div>
+
+<div class="doc">
+The subgroup should contain all elements of the original family. 
+</div>
+<div class="code">
+| <span class="id" title="var">sgt_in</span> (<span class="id" title="var">g</span> : <span class="id" title="var">G</span>) : <span class="id" title="var">X</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span><br/>
+</div>
+
+<div class="doc">
+It should contain the unit. 
+</div>
+<div class="code">
+| <span class="id" title="var">sgt_unit</span> : <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">mon_unit</span><br/>
+</div>
+
+<div class="doc">
+Finally, it should be closed under inverses and operation. 
+</div>
+<div class="code">
+| <span class="id" title="var">sgt_op</span> (<span class="id" title="var">g</span> <span class="id" title="var">h</span> : <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;-&gt; <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">h</span><br/>
+&nbsp;&nbsp;-&gt; <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> (<span class="id" title="var">g</span> * - <span class="id" title="var">h</span>)<br/>
+.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">sgt_in</span> {<span class="id" title="var">G</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span>}.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">sgt_unit</span> {<span class="id" title="var">G</span> <span class="id" title="var">X</span>}.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">sgt_op</span> {<span class="id" title="var">G</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Note that <span class="inlinecode"><span class="id" title="var">subgroup_generated_type</span></span> will not automatically land in <span class="inlinecode"><span class="id" title="var">HProp</span></span>. For example, if <span class="inlinecode"><span class="id" title="var">X</span></span> already "contains" the unit of the group, then there are at least two different inhabitants of this family at the unit (given by <span class="inlinecode"><span class="id" title="var">sgt_unit</span></span> and <span class="inlinecode"><span class="id" title="var">sgt_in</span></span> <span class="inlinecode"><span class="id" title="var">group_unit</span></span> <span class="inlinecode"><span class="id" title="var">_</span></span>). Therefore, we propositionally truncate in <span class="inlinecode"><span class="id" title="var">subgroup_generated</span></span> below. 
+<div class="paragraph"> </div>
+
+ Subgroups are closed under inverses. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sgt_inv</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">X</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> (- <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">left_identity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">sgt_op</span> <span class="id" title="var">sgt_unit</span> <span class="id" title="var">p</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sgt_inv'</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">X</span>} {<span class="id" title="var">g</span> : <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> (- <span class="id" title="var">g</span>) -&gt; <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">grp_inv_inv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">sgt_inv</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">sgt_op'</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">X</span>} {<span class="id" title="var">g</span> <span class="id" title="var">h</span> : <span class="id" title="var">G</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">h</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> (<span class="id" title="var">g</span> * <span class="id" title="var">h</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">negate_involutive</span> <span class="id" title="var">h</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">sgt_op</span> <span class="id" title="var">p</span> (<span class="id" title="var">sgt_inv</span> <span class="id" title="var">q</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The subgroup generated by a subset 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_generated</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Build_Subgroup'</span> (<span class="id" title="var">merely</span> <span class="id" title="var">o</span> <span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">tr</span> <span class="id" title="var">sgt_unit</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>; <span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">sgt_op</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The inclusion of generators into the generated subgroup. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_generated_gen_incl</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} {<span class="id" title="var">X</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>} (<span class="id" title="var">g</span> : <span class="id" title="var">G</span>) (<span class="id" title="var">H</span> : <span class="id" title="var">X</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">subgroup_generated</span> <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;:= (<span class="id" title="var">g</span>; <span class="id" title="var">tr</span> (<span class="id" title="var">sgt_in</span> <span class="id" title="var">H</span>)).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">$-&gt;</span> <span class="inlinecode"><span class="id" title="var">H</span></span> is a group homomorphism and <span class="inlinecode"><span class="id" title="var">X</span></span> and <span class="inlinecode"><span class="id" title="var">Y</span></span> are subsets of <span class="inlinecode"><span class="id" title="var">G</span></span> and <span class="inlinecode"><span class="id" title="var">H</span></span> such that <span class="inlinecode"><span class="id" title="var">f</span></span> maps <span class="inlinecode"><span class="id" title="var">X</span></span> into <span class="inlinecode"><span class="id" title="var">Y</span></span>, then <span class="inlinecode"><span class="id" title="var">f</span></span> sends the subgroup generated by <span class="inlinecode"><span class="id" title="var">X</span></span> into the subgroup generated by <span class="inlinecode"><span class="id" title="var">Y</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">functor_subgroup_generated</span> {<span class="id" title="var">G</span> <span class="id" title="var">H</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">X</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">Y</span> : <span class="id" title="var">H</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">G</span> $-&gt; <span class="id" title="var">H</span>) (<span class="id" title="var">preserves</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>, <span class="id" title="var">X</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">Y</span> (<span class="id" title="var">f</span> <span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>, <span class="id" title="var">subgroup_generated</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span> -&gt; <span class="id" title="var">subgroup_generated</span> <span class="id" title="var">Y</span> (<span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">Trunc_functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">p</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">g</span> <span class="id" title="var">i</span> | | <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">p1</span> <span class="id" title="var">IHp1</span> <span class="id" title="var">p2</span> <span class="id" title="var">IHp2</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">sgt_in</span>, <span class="id" title="var">preserves</span>, <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">grp_homo_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">sgt_unit</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">rewrite</span> <span class="id" title="var">grp_homo_op</span>, <span class="id" title="var">grp_homo_inv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">sgt_op</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The product of two subgroups. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_product</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> <span class="id" title="var">K</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>) : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">subgroup_generated</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; ((<span class="id" title="var">H</span> <span class="id" title="var">x</span>) + (<span class="id" title="var">K</span> <span class="id" title="var">x</span>))%<span class="id" title="keyword">type</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The induction principle for the product. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_product_ind</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H</span> <span class="id" title="var">K</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">subgroup_product</span> <span class="id" title="var">H</span> <span class="id" title="var">K</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P_H_in</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">sgt_in</span> (<span class="id" title="var">inl</span> <span class="id" title="var">y</span>))))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P_K_in</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">sgt_in</span> (<span class="id" title="var">inr</span> <span class="id" title="var">y</span>))))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P_unit</span> : <span class="id" title="var">P</span> <span class="id" title="var">mon_unit</span> (<span class="id" title="var">tr</span> <span class="id" title="var">sgt_unit</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">P_op</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>, <span class="id" title="var">P</span> <span class="id" title="var">x</span> (<span class="id" title="var">tr</span> <span class="id" title="var">h</span>) -&gt; <span class="id" title="var">P</span> <span class="id" title="var">y</span> (<span class="id" title="var">tr</span> <span class="id" title="var">k</span>) -&gt; <span class="id" title="var">P</span> (<span class="id" title="var">x</span> * - <span class="id" title="var">y</span>) (<span class="id" title="var">tr</span> (<span class="id" title="var">sgt_op</span> <span class="id" title="var">h</span> <span class="id" title="var">k</span>)))<br/>
+&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> (<span class="id" title="var">p</span> : <span class="id" title="var">subgroup_product</span> <span class="id" title="var">H</span> <span class="id" title="var">K</span> <span class="id" title="var">x</span>), <span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">p</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> <span class="id" title="var">s</span> | | <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">h</span> <span class="id" title="var">IHh</span> <span class="id" title="var">k</span> <span class="id" title="var">IHk</span>].<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">destruct</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">P_H_in</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">P_K_in</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">P_unit</span>.<br/>
+&nbsp;&nbsp;+ <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">P_op</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;****&nbsp;Paths&nbsp;between&nbsp;generated&nbsp;subgroups&nbsp;*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;This&nbsp;gets&nbsp;used&nbsp;twice&nbsp;in&nbsp;<span class="inlinecode"><span class="id" title="var">path_subgroup_generated</span></span>,&nbsp;so&nbsp;we&nbsp;factor&nbsp;it&nbsp;out&nbsp;here.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Local Lemma</span> <span class="id" title="var">path_subgroup_generated_helper</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">K</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>, <span class="id" title="var">merely</span> (<span class="id" title="var">X</span> <span class="id" title="var">g</span>) -&gt; <span class="id" title="var">merely</span> (<span class="id" title="var">Y</span> <span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>, <span class="id" title="var">Trunc</span> (-1) (<span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">X</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&gt; <span class="id" title="var">Trunc</span> (-1) (<span class="id" title="var">subgroup_generated_type</span> <span class="id" title="var">Y</span> <span class="id" title="var">g</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Trunc_rec</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">ing</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">ing</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">g</span> <span class="id" title="var">x</span>| |<span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">Xg</span> <span class="id" title="var">IHYg</span> <span class="id" title="var">Xh</span> <span class="id" title="var">IHYh</span>].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">Trunc_functor</span> (-1) <span class="id" title="var">sgt_in</span> (<span class="id" title="var">K</span> <span class="id" title="var">g</span> (<span class="id" title="var">tr</span> <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">tr</span> <span class="id" title="var">sgt_unit</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>, <span class="id" title="var">sgt_op</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;If&nbsp;the&nbsp;predicates&nbsp;selecting&nbsp;the&nbsp;generators&nbsp;are&nbsp;merely&nbsp;equivalent,&nbsp;then&nbsp;the&nbsp;generated&nbsp;subgroups&nbsp;are&nbsp;equal.&nbsp;(One&nbsp;could&nbsp;probably&nbsp;prove&nbsp;that&nbsp;the&nbsp;generated&nbsp;subgroup&nbsp;are&nbsp;isomorphic&nbsp;without&nbsp;using&nbsp;univalence.)&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_subgroup_generated</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">X</span> <span class="id" title="var">Y</span> : <span class="id" title="var">G</span> -&gt; <span class="id" title="keyword">Type</span>) (<span class="id" title="var">K</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>, <span class="id" title="var">Trunc</span> (-1) (<span class="id" title="var">X</span> <span class="id" title="var">g</span>) &lt;-&gt; <span class="id" title="var">Trunc</span> (-1) (<span class="id" title="var">Y</span> <span class="id" title="var">g</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">subgroup_generated</span> <span class="id" title="var">X</span> = <span class="id" title="var">subgroup_generated</span> <span class="id" title="var">Y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_path_subgroup'</span>. <span class="comment">(*&nbsp;Uses&nbsp;Univalence.&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_subgroup_generated_helper</span>, (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">fst</span> (<span class="id" title="var">K</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_subgroup_generated_helper</span>, (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">snd</span> (<span class="id" title="var">K</span> <span class="id" title="var">x</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Equal&nbsp;subgroups&nbsp;have&nbsp;isomorphic&nbsp;underlying&nbsp;groups.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_subgroup_group</span> {<span class="id" title="var">G</span> : <span class="id" title="var">Group</span>} (<span class="id" title="var">H1</span> <span class="id" title="var">H2</span> : <span class="id" title="var">Subgroup</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">H1</span> = <span class="id" title="var">H2</span> -&gt; <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">H1</span> <span class="id" title="var">H2</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="tactic">intros</span> []; <span class="id" title="tactic">exact</span> <span class="id" title="var">grp_iso_id</span>).<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

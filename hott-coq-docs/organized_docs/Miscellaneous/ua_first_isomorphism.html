@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>ua_first_isomorphism</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library ua_first_isomorphism</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+This file defines the kernel of a homomorphism <span class="inlinecode"><span class="id" title="var">cong_ker</span></span>, the
+    image of a homomorphism <span class="inlinecode"><span class="id" title="var">in_image_hom</span></span>, and it proves the first
+    isomorphism theorem <span class="inlinecode"><span class="id" title="var">isomorphic_first_isomorphism</span></span>. The first
+    identification theorem <span class="inlinecode"><span class="id" title="var">id_first_isomorphism</span></span> follows. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Basics.Notations</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">HSet</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Colimits.Quotient</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Classes.interfaces.canonical_names</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Classes.theory.ua_isomorphic</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Classes.theory.ua_subalgebra</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">Classes.theory.ua_quotient_algebra</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Import</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">algebra_notations</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">quotient_algebra_notations</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">subalgebra_notations</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">isomorphic_notations</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The following section defines the kernel of a homomorphism
+    <span class="inlinecode"><span class="id" title="var">cong_ker</span></span>, and shows that it is a congruence.
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">cong_ker</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{σ : <span class="id" title="var">Signature</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ} `{<span class="id" title="var">IsHSetAlgebra</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">A</span> <span class="id" title="var">s</span> → <span class="id" title="var">B</span> <span class="id" title="var">s</span>) `{!<span class="id" title="var">IsHomomorphism</span> <span class="id" title="var">f</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cong_ker</span> (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ) : <span class="id" title="var">Relation</span> (<span class="id" title="var">A</span> <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">λ</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span> <span class="id" title="var">s</span>), <span class="id" title="var">f</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span> = <span class="id" title="var">f</span> <span class="id" title="var">s</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Leave&nbsp;the&nbsp;following&nbsp;results&nbsp;about&nbsp;<span class="inlinecode"><span class="id" title="var">cong_ker</span></span>&nbsp;opaque&nbsp;because&nbsp;they<br/>
+&nbsp;&nbsp;&nbsp;are&nbsp;h-props.&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">equiv_rel_ker</span> (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">EquivRel</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">inverse</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>. <span class="id" title="tactic">exact</span> <span class="id" title="var">concat</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">path_ap_operation_ker_related</span> {<span class="id" title="var">w</span> : <span class="id" title="var">SymbolType</span> σ}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">β</span> : <span class="id" title="var">Operation</span> <span class="id" title="var">B</span> <span class="id" title="var">w</span>) (<span class="id" title="var">a</span> <span class="id" title="var">b</span> : <span class="id" title="var">FamilyProd</span> <span class="id" title="var">A</span> (<span class="id" title="var">dom_symboltype</span> <span class="id" title="var">w</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">R</span> : <span class="id" title="var">for_all_2_family_prod</span> <span class="id" title="var">A</span> <span class="id" title="var">A</span> <span class="id" title="var">cong_ker</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ap_operation</span> <span class="id" title="var">β</span> (<span class="id" title="var">map_family_prod</span> <span class="id" title="var">f</span> <span class="id" title="var">a</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">ap_operation</span> <span class="id" title="var">β</span> (<span class="id" title="var">map_family_prod</span> <span class="id" title="var">f</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">w</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">x</span> <span class="id" title="var">a</span>], <span class="id" title="var">b</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">y</span> <span class="id" title="var">b</span>], <span class="id" title="var">R</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">r</span> <span class="id" title="var">R</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>. <span class="id" title="tactic">destruct</span> <span class="id" title="var">r</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">IHw</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ops_compatible_ker</span> : <span class="id" title="var">OpsCompatible</span> <span class="id" title="var">A</span> <span class="id" title="var">cong_ker</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">u</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">R</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">cong_ker</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">path_homomorphism_ap_operation</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span> <span class="id" title="var">a</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">path_homomorphism_ap_operation</span> <span class="id" title="var">f</span> <span class="id" title="var">u</span> <span class="id" title="var">b</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">path_ap_operation_ker_related</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is_congruence_ker</span> : <span class="id" title="var">IsCongruence</span> <span class="id" title="var">A</span> <span class="id" title="var">cong_ker</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">BuildIsCongruence</span> <span class="id" title="var">A</span> <span class="id" title="var">cong_ker</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">cong_ker</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The next section defines an "in image predicate", <span class="inlinecode"><span class="id" title="var">in_image_hom</span></span>.
+    It gives rise to the homomorphic image of a homomorphism. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">in_image_hom</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Funext</span>} {σ : <span class="id" title="var">Signature</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">A</span> <span class="id" title="var">s</span> → <span class="id" title="var">B</span> <span class="id" title="var">s</span>) {<span class="id" title="var">hom</span> : <span class="id" title="var">IsHomomorphism</span> <span class="id" title="var">f</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">in_image_hom</span> (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ) (<span class="id" title="var">y</span> : <span class="id" title="var">B</span> <span class="id" title="var">s</span>) : <span class="id" title="var">HProp</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">merely</span> (<span class="id" title="var">hfiber</span> (<span class="id" title="var">f</span> <span class="id" title="var">s</span>) <span class="id" title="var">y</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">closed_under_op_in_image_hom</span> {<span class="id" title="var">w</span> : <span class="id" title="var">SymbolType</span> σ}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">α</span> : <span class="id" title="var">Operation</span> <span class="id" title="var">A</span> <span class="id" title="var">w</span>) (<span class="id" title="var">β</span> : <span class="id" title="var">Operation</span> <span class="id" title="var">B</span> <span class="id" title="var">w</span>) (<span class="id" title="var">P</span> : <span class="id" title="var">OpPreserving</span> <span class="id" title="var">f</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">ClosedUnderOp</span> <span class="id" title="var">B</span> <span class="id" title="var">in_image_hom</span> <span class="id" title="var">β</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">w</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">α</span>; <span class="id" title="var">P</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Trunc_rec</span> <span class="id" title="var">_</span>). <span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">IHw</span> (<span class="id" title="var">α</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">is_closed_under_ops_in_image_hom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsClosedUnderOps</span> <span class="id" title="var">B</span> <span class="id" title="var">in_image_hom</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">u</span>. <span class="id" title="tactic">eapply</span> <span class="id" title="var">closed_under_op_in_image_hom</span>, <span class="id" title="var">hom</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is_subalgebra_predicate_in_image_hom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSubalgebraPredicate</span> <span class="id" title="var">B</span> <span class="id" title="var">in_image_hom</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">BuildIsSubalgebraPredicate</span> <span class="id" title="var">is_closed_under_ops_in_image_hom</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">in_image_hom</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The folowing section proves the first isomorphism theorem,
+    <span class="inlinecode"><span class="id" title="var">isomorphic_first_isomorphism</span></span> and the first identification
+    theorem <span class="inlinecode"><span class="id" title="var">id_first_isomorphism</span></span>. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">first_isomorphism</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Univalence</span>} {σ} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ} `{<span class="id" title="var">IsHSetAlgebra</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">A</span> <span class="id" title="var">s</span> → <span class="id" title="var">B</span> <span class="id" title="var">s</span>) {<span class="id" title="var">hom</span> : <span class="id" title="var">IsHomomorphism</span> <span class="id" title="var">f</span>}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The homomorphism <span class="inlinecode"><span class="id" title="var">def_first_isomorphism</span></span> is informally given by
+
+<div class="paragraph"> </div>
+
+<pre>
+      def_first_isomorphism s (class_of _ x) := f s x.
+</pre>
+
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">def_first_isomorphism</span> (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">A</span> / <span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span>) <span class="id" title="var">s</span> → (<span class="id" title="var">B</span> &amp;&amp; <span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>) <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_rec</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span> (<span class="id" title="var">λ</span> <span class="id" title="var">x</span>, (<span class="id" title="var">f</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span>; <span class="id" title="var">tr</span> (<span class="id" title="var">x</span>; <span class="id" title="var">idpath</span>))) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">oppreserving_first_isomorphism</span> {<span class="id" title="var">w</span> : <span class="id" title="var">SymbolType</span> σ}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">α</span> : <span class="id" title="var">Operation</span> <span class="id" title="var">A</span> <span class="id" title="var">w</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">β</span> : <span class="id" title="var">Operation</span> <span class="id" title="var">B</span> <span class="id" title="var">w</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">γ</span> : <span class="id" title="var">Operation</span> (<span class="id" title="var">A</span> / <span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span>) <span class="id" title="var">w</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">C</span> : <span class="id" title="var">ClosedUnderOp</span> <span class="id" title="var">B</span> (<span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>) <span class="id" title="var">β</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="var">OpPreserving</span> <span class="id" title="var">f</span> <span class="id" title="var">α</span> <span class="id" title="var">β</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">G</span> : <span class="id" title="var">ComputeOpQuotient</span> <span class="id" title="var">A</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span>) <span class="id" title="var">α</span> <span class="id" title="var">γ</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">OpPreserving</span> <span class="id" title="var">def_first_isomorphism</span> <span class="id" title="var">γ</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">op_subalgebra</span> <span class="id" title="var">B</span> (<span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>) <span class="id" title="var">β</span> <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">w</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">generalize</span> <span class="id" title="tactic">dependent</span> <span class="id" title="var">γ</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> <span class="id" title="var">t</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>). <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">P</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">related_quotient_paths</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> <span class="id" title="var">t</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">G</span> <span class="id" title="var">tt</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> <span class="id" title="var">t</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>). <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">IHw</span> (<span class="id" title="var">α</span> <span class="id" title="var">x</span>) (<span class="id" title="var">β</span> (<span class="id" title="var">f</span> <span class="id" title="var">t</span> <span class="id" title="var">x</span>)) (<span class="id" title="var">γ</span> (<span class="id" title="var">class_of</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intro</span> <span class="id" title="var">a</span>. <span class="id" title="tactic">exact</span> (<span class="id" title="var">G</span> (<span class="id" title="var">x</span>,<span class="id" title="var">a</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Leave&nbsp;<span class="inlinecode"><span class="id" title="var">is_homomorphism_first_isomorphism</span></span>&nbsp;opaque&nbsp;because<br/>
+&nbsp;&nbsp;&nbsp;<span class="inlinecode"><span class="id" title="var">IsHomomorphism</span></span>&nbsp;is&nbsp;an&nbsp;hprop&nbsp;when&nbsp;<span class="inlinecode"><span class="id" title="var">B</span></span>&nbsp;is&nbsp;a&nbsp;set&nbsp;algebra.&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is_homomorphism_first_isomorphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsHomomorphism</span> <span class="id" title="var">def_first_isomorphism</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">u</span>. <span class="id" title="tactic">apply</span> (<span class="id" title="var">oppreserving_first_isomorphism</span> <span class="id" title="var">u</span>.#<span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">hom</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">compute_op_quotient</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hom_first_isomorphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Homomorphism</span> (<span class="id" title="var">A</span> / <span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span>) (<span class="id" title="var">B</span> &amp;&amp; <span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">BuildHomomorphism</span> <span class="id" title="var">def_first_isomorphism</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">embedding_first_isomorphism</span> (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsEmbedding</span> (<span class="id" title="var">hom_first_isomorphism</span> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">isembedding_isinj_hset</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>). <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Quotient_ind_hprop</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> <span class="id" title="var">s</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>). <span class="id" title="tactic">intros</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">qglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span>..1).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">surjection_first_isomorphism</span> (<span class="id" title="var">s</span> : <span class="id" title="keyword">Sort</span> σ)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsSurjection</span> (<span class="id" title="var">hom_first_isomorphism</span> <span class="id" title="var">s</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">BuildIsSurjection</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">x</span> <span class="id" title="var">M</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">Trunc_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">M</span>). <span class="id" title="tactic">intros</span> [<span class="id" title="var">y</span> <span class="id" title="var">Y</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">tr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">class_of</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is_isomorphism_first_isomorphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsIsomorphism</span> <span class="id" title="var">hom_first_isomorphism</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">s</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">isequiv_surj_emb</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Theorem</span> <span class="id" title="var">isomorphic_first_isomorphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">A</span> / <span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> ≅ <span class="id" title="var">B</span> &amp;&amp; <span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">BuildIsomorphic</span> <span class="id" title="var">def_first_isomorphism</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;The&nbsp;first&nbsp;identification&nbsp;theorem&nbsp;<span class="inlinecode"><span class="id" title="var">id_first_isomorphism</span></span>&nbsp;is&nbsp;an<br/>
+&nbsp;&nbsp;&nbsp;h-prop,&nbsp;so&nbsp;we&nbsp;can&nbsp;leave&nbsp;it&nbsp;opaque.&nbsp;*)</span><br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Corollary</span> <span class="id" title="var">id_first_isomorphism</span> : <span class="id" title="var">A</span> / <span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> = <span class="id" title="var">B</span> &amp;&amp; <span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">id_isomorphic</span> <span class="id" title="var">isomorphic_first_isomorphism</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">first_isomorphism</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The next section gives a specialization of the first isomorphism
+    theorem, where the homomorphism is surjective. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">first_isomorphism_surjection</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Univalence</span>} {σ} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ} `{<span class="id" title="var">IsHSetAlgebra</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">A</span> <span class="id" title="var">s</span> → <span class="id" title="var">B</span> <span class="id" title="var">s</span>) `{!<span class="id" title="var">IsHomomorphism</span> <span class="id" title="var">f</span>} {<span class="id" title="var">S</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">IsSurjection</span> (<span class="id" title="var">f</span> <span class="id" title="var">s</span>)}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is_isomorphism_inc_first_isomorphism_surjection</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsIsomorphism</span> (<span class="id" title="var">hom_inc_subalgebra</span> <span class="id" title="var">B</span> (<span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">is_isomorphism_inc_improper_subalgebra</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">center</span>, <span class="id" title="var">S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The homomorphism <span class="inlinecode"><span class="id" title="var">hom_first_isomorphism_surjection</span></span> is the
+    composition of two isomorphisms, so it is an isomorphism. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hom_first_isomorphism_surjection</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Homomorphism</span> (<span class="id" title="var">A</span> / <span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span>) <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">hom_compose</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">hom_inc_subalgebra</span> <span class="id" title="var">B</span> (<span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">hom_first_isomorphism</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Theorem</span> <span class="id" title="var">isomorphic_first_isomorphism_surjection</span> : <span class="id" title="var">A</span> / <span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span> ≅ <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">BuildIsomorphic</span> <span class="id" title="var">hom_first_isomorphism_surjection</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Corollary</span> <span class="id" title="var">id_first_isomorphism_surjection</span> : (<span class="id" title="var">A</span> / <span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span>) = <span class="id" title="var">B</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">id_isomorphic</span> <span class="id" title="var">isomorphic_first_isomorphism_surjection</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">first_isomorphism_surjection</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The next section specializes the first isomorphism theorem to the
+    case where the homomorphism is injective. It proves that an
+    injective homomorphism is an isomorphism between its domain
+    and its image. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">first_isomorphism_inj</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">Univalence</span>} {σ} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Algebra</span> σ} `{<span class="id" title="var">IsHSetAlgebra</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">A</span> <span class="id" title="var">s</span> → <span class="id" title="var">B</span> <span class="id" title="var">s</span>) `{!<span class="id" title="var">IsHomomorphism</span> <span class="id" title="var">f</span>} (<span class="id" title="var">inj</span> : ∀ <span class="id" title="var">s</span>, <span class="id" title="var">IsInjective</span> (<span class="id" title="var">f</span> <span class="id" title="var">s</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is_isomorphism_quotient_first_isomorphism_inj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">IsIsomorphism</span> (<span class="id" title="var">hom_quotient</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">is_isomorphism_quotient</span>. <span class="id" title="tactic">intros</span> <span class="id" title="var">s</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">inj</span>, <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The homomorphism <span class="inlinecode"><span class="id" title="var">hom_first_isomorphism_inj</span></span> is the
+    composition of two isomorphisms, so it is an isomorphism. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">hom_first_isomorphism_inj</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">Homomorphism</span> <span class="id" title="var">A</span> (<span class="id" title="var">B</span> &amp;&amp; <span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">hom_compose</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">hom_first_isomorphism</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">hom_quotient</span> (<span class="id" title="var">cong_ker</span> <span class="id" title="var">f</span>)).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">isomorphic_first_isomorphism_inj</span> : <span class="id" title="var">A</span> ≅ <span class="id" title="var">B</span> &amp;&amp; <span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">BuildIsomorphic</span> <span class="id" title="var">hom_first_isomorphism_inj</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">id_first_isomorphism_inj</span> : <span class="id" title="var">A</span> = <span class="id" title="var">B</span> &amp;&amp; <span class="id" title="var">in_image_hom</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">id_isomorphic</span> <span class="id" title="var">isomorphic_first_isomorphism_inj</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">first_isomorphism_inj</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

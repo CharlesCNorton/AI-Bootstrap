@@ -1,0 +1,288 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>QuotientRing</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library QuotientRing</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span> <span class="id" title="var">WildCat.Equiv</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.Congruence</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.AbGroups</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Classes.interfaces.abstract_algebra</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.Rings.Ring</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.Rings.Ideal</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab289"></a><h1 class="section">Quotient Rings</h1>
+
+<div class="paragraph"> </div>
+
+ In this file we define the quotient of a ring by an ideal. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Ideal.Notation</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">ring_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">wc_iso_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">QuotientRing</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>) (<span class="id" title="var">I</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">plus_quotient_group</span> : <span class="id" title="var">Plus</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">R</span> <span class="id" title="var">I</span>) := <span class="id" title="var">group_sgop</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">iscong_mult_incosetL</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: @<span class="id" title="var">IsCongruence</span> <span class="id" title="var">R</span> <span class="id" title="var">ring_mult</span> (<span class="id" title="var">in_cosetL</span> <span class="id" title="var">I</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsCongruence</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">y</span> <span class="id" title="var">y'</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">I</span> ( - (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) + (<span class="id" title="var">x'</span> * <span class="id" title="var">y'</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">rng_plus_zero_l</span> (<span class="id" title="var">x'</span> * <span class="id" title="var">y'</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">rng_plus_negate_r</span> (<span class="id" title="var">x'</span> * <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">rng_plus_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">rng_mult_negate_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">rng_dist_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">rng_plus_assoc</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">rng_mult_negate_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- <span class="id" title="var">rng_dist_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">subgroup_in_op</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="var">rapply</span> <span class="id" title="var">isrightideal</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">by</span> <span class="id" title="var">rapply</span> <span class="id" title="var">isleftideal</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">mult_quotient_group</span> : <span class="id" title="var">Mult</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">R</span> <span class="id" title="var">I</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Quotient_rec2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">class_of</span> <span class="id" title="var">_</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">x'</span> <span class="id" title="var">y</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">qglue</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">iscong</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">y'</span> <span class="id" title="var">q</span>. <span class="id" title="tactic">apply</span> <span class="id" title="var">qglue</span>. <span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">iscong</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">one_quotient_abgroup</span> : <span class="id" title="var">One</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">R</span> <span class="id" title="var">I</span>) := <span class="id" title="var">class_of</span> <span class="id" title="var">_</span> <span class="id" title="var">one</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Instance</span> <span class="id" title="var">isring_quotient_abgroup</span> : <span class="id" title="var">IsRing</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">R</span> <span class="id" title="var">I</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+</div>
+
+<div class="doc">
+Associativity follows from the underlying operation 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">srapply</span> <span class="id" title="var">Quotient_ind3_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">sg_op</span>, <span class="id" title="var">mult_is_sg_op</span>, <span class="id" title="var">mult_quotient_group</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="keyword">associativity</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;Left&nbsp;and&nbsp;right&nbsp;identity&nbsp;follow&nbsp;from&nbsp;the&nbsp;underlying&nbsp;structure&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1,2: <span class="id" title="var">snrapply</span> <span class="id" title="var">Quotient_ind_hprop</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span> | <span class="id" title="tactic">intro</span> <span class="id" title="var">x</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1-2: <span class="id" title="tactic">unfold</span> <span class="id" title="var">sg_op</span>, <span class="id" title="var">mult_is_sg_op</span>, <span class="id" title="var">mult_quotient_group</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1-2: <span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">left_identity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">right_identity</span>.<br/>
+</div>
+
+<div class="doc">
+Finally distributivity also follows 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">srapply</span> <span class="id" title="var">Quotient_ind3_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">sg_op</span>, <span class="id" title="var">mult_is_sg_op</span>, <span class="id" title="var">mult_quotient_group</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">plus</span>, <span class="id" title="var">mult</span>, <span class="id" title="var">plus_quotient_group</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">simple_distribute_l</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">srapply</span> <span class="id" title="var">Quotient_ind3_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">sg_op</span>, <span class="id" title="var">mult_is_sg_op</span>, <span class="id" title="var">mult_quotient_group</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">plus</span>, <span class="id" title="var">mult</span>, <span class="id" title="var">plus_quotient_group</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">simple_distribute_r</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuotientRing</span> : <span class="id" title="var">Ring</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Ring</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">R</span> <span class="id" title="var">I</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">QuotientRing</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span> &quot;/" := <span class="id" title="var">QuotientRing</span> : <span class="id" title="var">ring_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Quotient map 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rng_quotient_map</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">I</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RingHomomorphism</span> <span class="id" title="var">R</span> (<span class="id" title="var">R</span> / <span class="id" title="var">I</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_RingHomomorphism'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">rapply</span> <span class="id" title="var">grp_quotient_map</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">issurj_rng_quotient_map</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">I</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSurjection</span> (<span class="id" title="var">rng_quotient_map</span> <span class="id" title="var">I</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab290"></a><h3 class="section">Specialized induction principles</h3>
+
+<div class="paragraph"> </div>
+
+ We provide some specialized induction principes for <span class="inlinecode"><span class="id" title="var">QuotientRing</span></span> that require cleaner hypotheses than the ones given by <span class="inlinecode"><span class="id" title="var">Quotient_ind</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuotientRing_ind</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">I</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">R</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">R</span> / <span class="id" title="var">I</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHSet</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">R</span>), <span class="id" title="var">P</span> (<span class="id" title="var">rng_quotient_map</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">R</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">I</span> (- <span class="id" title="var">x</span> + <span class="id" title="var">y</span>)), <span class="id" title="var">qglue</span> <span class="id" title="var">h</span> # <span class="id" title="var">c</span> <span class="id" title="var">x</span> = <span class="id" title="var">c</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> : <span class="id" title="var">R</span> / <span class="id" title="var">I</span>), <span class="id" title="var">P</span> <span class="id" title="var">r</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Quotient_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">c</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+And a version eliminating into hprops. This one is especially useful. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuotientRing_ind_hprop</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">I</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">R</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">R</span> / <span class="id" title="var">I</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span>)} (<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> : <span class="id" title="var">R</span>), <span class="id" title="var">P</span> (<span class="id" title="var">rng_quotient_map</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> : <span class="id" title="var">R</span> / <span class="id" title="var">I</span>), <span class="id" title="var">P</span> <span class="id" title="var">r</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Quotient_ind_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">c</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuotientRing_ind2_hprop</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">I</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">R</span>} (<span class="id" title="var">P</span> : <span class="id" title="var">R</span> / <span class="id" title="var">I</span> -&gt; <span class="id" title="var">R</span> / <span class="id" title="var">I</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">P</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">R</span>), <span class="id" title="var">P</span> (<span class="id" title="var">rng_quotient_map</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>) (<span class="id" title="var">rng_quotient_map</span> <span class="id" title="var">I</span> <span class="id" title="var">y</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">r</span> <span class="id" title="var">s</span> : <span class="id" title="var">R</span> / <span class="id" title="var">I</span>), <span class="id" title="var">P</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Quotient_ind2_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">c</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuotientRing_rec</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">I</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">R</span>} (<span class="id" title="var">S</span> : <span class="id" title="var">Ring</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">R</span> $-&gt; <span class="id" title="var">S</span>) (<span class="id" title="var">H</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">I</span> <span class="id" title="var">x</span> -&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> = 0) <br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span> / <span class="id" title="var">I</span> $-&gt; <span class="id" title="var">S</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_RingHomomorphism'</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> (<span class="id" title="var">grp_quotient_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">srapply</span> <span class="id" title="var">QuotientRing_ind2_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">rng_homo_mult</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="var">nrapply</span> <span class="id" title="var">rng_homo_one</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab291"></a><h2 class="section">Quotient theory</h2>
+
+<div class="paragraph"> </div>
+
+ First isomorphism theorem for commutative rings 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rng_first_iso</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> / <span class="id" title="var">ideal_kernel</span> <span class="id" title="var">f</span> ≅ <span class="id" title="var">rng_image</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_RingIsomorphism''</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">rapply</span> <span class="id" title="var">abgroup_first_iso</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">srapply</span> <span class="id" title="var">QuotientRing_ind2_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">rng_homo_mult</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>). }<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">rng_homo_one</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Invariance of equal ideals 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">rng_quotient_invar</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">I</span> <span class="id" title="var">J</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">R</span>} (<span class="id" title="var">p</span> : (<span class="id" title="var">I</span> ↔ <span class="id" title="var">J</span>)%<span class="id" title="var">ideal</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">R</span> / <span class="id" title="var">I</span> ≅ <span class="id" title="var">R</span> / <span class="id" title="var">J</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_RingIsomorphism'</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">srapply</span> <span class="id" title="var">equiv_quotient_functor'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">equiv_idmap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="var">srapply</span> <span class="id" title="var">Quotient_ind2_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">qglue</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">change</span> (<span class="id" title="var">J</span> ( - (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>) + (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">change</span> (<span class="id" title="var">J</span> (- ( <span class="id" title="var">x</span> * <span class="id" title="var">y</span>) + (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">rewrite</span> <span class="id" title="var">rng_plus_negate_l</span>.<br/>
+&nbsp;&nbsp;1,2: <span class="id" title="tactic">apply</span> <span class="id" title="var">ideal_in_zero</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We phrase the first ring isomorphism theroem in a slightly differnt way so that it is easier to use. This form specifically asks for a surjective map 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rng_first_iso'</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> $-&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">issurj_f</span> : <span class="id" title="var">IsSurjection</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">I</span> : <span class="id" title="var">Ideal</span> <span class="id" title="var">A</span>) (<span class="id" title="var">p</span> : (<span class="id" title="var">I</span> ↔ <span class="id" title="var">ideal_kernel</span> <span class="id" title="var">f</span>)%<span class="id" title="var">ideal</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> / <span class="id" title="var">I</span> ≅ <span class="id" title="var">B</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> (<span class="id" title="var">rng_quotient_invar</span> <span class="id" title="var">p</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>.<br/>
+&nbsp;&nbsp;2: <span class="id" title="var">rapply</span> (<span class="id" title="var">rng_image_issurj</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">rng_first_iso</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

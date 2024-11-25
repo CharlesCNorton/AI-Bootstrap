@@ -1,0 +1,132 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Negation</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Negation</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Spaces.No.Core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">surreal_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1567"></a><h1 class="section">Negation of surreal numbers</h1>
+
+<div class="paragraph"> </div>
+
+ Negation requires the option sorts to be symmetric. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">HasNegation</span> (<span class="id" title="var">S</span> : <span class="id" title="var">OptionSort</span>) <br/>
+&nbsp;&nbsp;:= <span class="id" title="var">symmetric_options</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">L</span> <span class="id" title="var">R</span>, <span class="id" title="var">InSort</span> <span class="id" title="var">S</span> <span class="id" title="var">L</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">InSort</span> <span class="id" title="var">S</span> <span class="id" title="var">R</span> <span class="id" title="var">L</span>.<br/>
+<span class="id" title="keyword">Global Existing Instance</span> <span class="id" title="var">symmetric_options</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasnegation_maxsort</span> : <span class="id" title="var">HasNegation</span> <span class="id" title="var">MaxSort</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">tt</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasnegation_decsort</span> : <span class="id" title="var">HasNegation</span> <span class="id" title="var">DecSort</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">L</span> <span class="id" title="var">R</span> [? ?]; <span class="id" title="tactic">split</span>; <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">HasNegation</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Universe</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">S</span> : <span class="id" title="var">OptionSort@</span>{<span class="id" title="var">i</span>}} `{<span class="id" title="var">HasNegation</span> <span class="id" title="var">S</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">No</span> := <span class="id" title="var">GenNo</span> <span class="id" title="var">S</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">negate</span> : <span class="id" title="var">No</span> -&gt; <span class="id" title="var">No</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">No_rec</span> <span class="id" title="var">No</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">y</span> &lt;= <span class="id" title="var">x</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">y</span> &lt; <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> {{ <span class="id" title="var">fxR</span> | <span class="id" title="var">fxL</span> // <span class="id" title="keyword">fun</span> <span class="id" title="var">r</span> <span class="id" title="var">l</span> =&gt; <span class="id" title="var">fxcut</span> <span class="id" title="var">l</span> <span class="id" title="var">r</span> }}.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_No</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">apply</span> <span class="id" title="var">le_lr</span>; <span class="id" title="tactic">intros</span>; [ <span class="id" title="tactic">apply</span> <span class="id" title="var">dq</span> | <span class="id" title="tactic">apply</span> <span class="id" title="var">dp</span> ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">apply</span> <span class="id" title="var">lt_r</span> <span class="id" title="keyword">with</span> <span class="id" title="var">l</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="var">cbn</span> <span class="id" title="tactic">in</span> *. <span class="id" title="tactic">apply</span> <span class="id" title="var">lt_l</span> <span class="id" title="keyword">with</span> <span class="id" title="var">r</span>; <span class="id" title="tactic">intros</span>; <span class="id" title="tactic">assumption</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+More useful is the following rewriting lemma. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">negate_cut</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">L</span> <span class="id" title="var">R</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>} } {<span class="id" title="var">Sx</span> : <span class="id" title="var">InSort</span> <span class="id" title="var">S</span> <span class="id" title="var">L</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">xL</span> : <span class="id" title="var">L</span> -&gt; <span class="id" title="var">No</span>) (<span class="id" title="var">xR</span> : <span class="id" title="var">R</span> -&gt; <span class="id" title="var">No</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">xcut</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">l</span> : <span class="id" title="var">L</span>) (<span class="id" title="var">r</span> : <span class="id" title="var">R</span>), <span class="id" title="var">xL</span> <span class="id" title="var">l</span> &lt; <span class="id" title="var">xR</span> <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: { <span class="id" title="var">nxcut</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">l</span>, <span class="id" title="var">negate</span> (<span class="id" title="var">xR</span> <span class="id" title="var">r</span>) &lt; <span class="id" title="var">negate</span> (<span class="id" title="var">xL</span> <span class="id" title="var">l</span>) &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">negate</span> {{ <span class="id" title="var">xL</span> | <span class="id" title="var">xR</span> // <span class="id" title="var">xcut</span> }} =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{ (<span class="id" title="keyword">fun</span> <span class="id" title="var">r</span> =&gt; <span class="id" title="var">negate</span> (<span class="id" title="var">xR</span> <span class="id" title="var">r</span>)) | (<span class="id" title="keyword">fun</span> <span class="id" title="var">l</span> =&gt; <span class="id" title="var">negate</span> (<span class="id" title="var">xL</span> <span class="id" title="var">l</span>)) // <span class="id" title="var">nxcut</span> }} }.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">eexists</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">negate</span> <span class="id" title="tactic">at</span> 1; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">No_rec_cut</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The following proof verifies that <span class="inlinecode"><span class="id" title="var">No_rec</span></span> applied to a cut reduces definitionally to a cut with the expected options (although it does produce quite a large term). 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">InSort</span> <span class="id" title="var">S</span> <span class="id" title="var">Empty</span> <span class="id" title="var">Empty</span>} `{<span class="id" title="var">InSort</span> <span class="id" title="var">S</span> <span class="id" title="var">Unit</span> <span class="id" title="var">Empty</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Goal</span> <span class="id" title="var">negate</span> <span class="id" title="var">one</span> = <span class="id" title="var">minusone</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">one</span>; <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">negate_cut</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).2.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_No</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">le_lr</span>; <span class="id" title="tactic">intros</span>.<br/>
+</div>
+
+<div class="doc">
+Since <span class="inlinecode"><span class="id" title="var">le_lr</span></span> only proves inequality of cuts, this would not work if <span class="inlinecode"><span class="id" title="var">negate</span></span> didn't compute to a cut when applied to a cut. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">elim</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">lt_r</span> <span class="id" title="keyword">with</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">zero</span>; <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">negate_cut</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).2.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">le_lr</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Empty_ind</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">elim</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">unfold</span> <span class="id" title="var">zero</span>; <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">negate_cut</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).2.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lt_r</span> <span class="id" title="keyword">with</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">le_lr</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Empty_ind</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">HasNegation</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,689 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Coproducts</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Coproducts</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Overture</span> <span class="id" title="var">Basics.Tactics</span> <span class="id" title="var">Basics.Decidable</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Bool</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat.Core</span> <span class="id" title="var">WildCat.Equiv</span> <span class="id" title="var">WildCat.Forall</span> <span class="id" title="var">WildCat.NatTrans</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">WildCat.Opposite</span> <span class="id" title="var">WildCat.Products</span> <span class="id" title="var">WildCat.Universe</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">WildCat.Yoneda</span> <span class="id" title="var">WildCat.ZeroGroupoid</span> <span class="id" title="var">WildCat.PointedCat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">WildCat.Monoidal</span> <span class="id" title="var">WildCat.Bifunctor</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1827"></a><h1 class="section">Categories with coproducts</h1>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod_rec_inv</span> {<span class="id" title="var">I</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">coprod</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">inj</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">x</span> <span class="id" title="var">i</span> $-&gt; <span class="id" title="var">coprod</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">z</span> <span class="id" title="var">coprod</span> $-&gt; <span class="id" title="var">prod_0gpd</span> <span class="id" title="var">I</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">z</span> (<span class="id" title="var">x</span> <span class="id" title="var">i</span>))<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_prod_corec_inv</span> (<span class="id" title="var">coprod</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">x</span> <span class="id" title="var">z</span> <span class="id" title="var">inj</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">Coproduct</span> (<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">prod_co_coprod</span> :: <span class="id" title="var">Product</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">I</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod</span> (<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>) `{<span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>} : <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_prod</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">I</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_in</span> {<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>} `{<span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">i</span> : <span class="id" title="var">I</span>), <span class="id" title="var">x</span> <span class="id" title="var">i</span> $-&gt; <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_pr</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">cat_isequiv_cat_coprod_rec_inv</span> {<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>} `{<span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> (<span class="id" title="var">z</span> : <span class="id" title="var">A</span>), <span class="id" title="var">CatIsEquiv</span> (<span class="id" title="var">cat_coprod_rec_inv</span> (<span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>) <span class="id" title="var">x</span> <span class="id" title="var">z</span> <span class="id" title="var">cat_in</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_isequiv_cat_prod_corec_inv</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A convenience wrapper for building coproducts 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_Coproduct</span> (<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_coprod</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">cat_in</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> : <span class="id" title="var">I</span>, <span class="id" title="var">x</span> <span class="id" title="var">i</span> $-&gt; <span class="id" title="var">cat_coprod</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_coprod_rec</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> : <span class="id" title="var">I</span>, <span class="id" title="var">x</span> <span class="id" title="var">i</span> $-&gt; <span class="id" title="var">z</span>) -&gt; (<span class="id" title="var">cat_coprod</span> $-&gt; <span class="id" title="var">z</span>))<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_coprod_beta_in</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">z</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">x</span> <span class="id" title="var">i</span> $-&gt; <span class="id" title="var">z</span>) (<span class="id" title="var">i</span> : <span class="id" title="var">I</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_rec</span> <span class="id" title="var">z</span> <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_in</span> <span class="id" title="var">i</span> $== <span class="id" title="var">f</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_prod_eta_in</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">z</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">cat_coprod</span> $-&gt; <span class="id" title="var">z</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">forall</span> <span class="id" title="var">i</span> : <span class="id" title="var">I</span>, <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_in</span> <span class="id" title="var">i</span> $== <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_in</span> <span class="id" title="var">i</span>) -&gt; <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Product</span> <span class="id" title="var">I</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cat_coprod</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_beta_in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_prod_eta_in</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Lemmata</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>} `{<span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cate_cat_coprod_rec_inv</span> {<span class="id" title="var">z</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">z</span> (<span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>) $&lt;~&gt; <span class="id" title="var">prod_0gpd</span> <span class="id" title="var">I</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">z</span> (<span class="id" title="var">x</span> <span class="id" title="var">i</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">cate_cat_prod_corec_inv</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cate_cat_coprod_rec</span> {<span class="id" title="var">z</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">prod_0gpd</span> <span class="id" title="var">I</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">z</span> (<span class="id" title="var">x</span> <span class="id" title="var">i</span>)) $&lt;~&gt; <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">z</span> (<span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">cate_cat_prod_corec</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod_rec</span> {<span class="id" title="var">z</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">x</span> <span class="id" title="var">i</span> $-&gt; <span class="id" title="var">z</span>) -&gt; <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">cat_prod_corec</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod_beta</span> {<span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">x</span> <span class="id" title="var">i</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">cat_coprod_rec</span> <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_in</span> <span class="id" title="var">i</span> $== <span class="id" title="var">f</span> <span class="id" title="var">i</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">cat_prod_beta</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod_eta</span> {<span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cat_coprod_rec</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_in</span> <span class="id" title="var">i</span>) $== <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">cat_prod_eta</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">natequiv_cat_coprod_rec_inv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">NatEquiv</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">z</span> (<span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span> =&gt; <span class="id" title="var">prod_0gpd</span> <span class="id" title="var">I</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> =&gt; <span class="id" title="var">yon_0gpd</span> <span class="id" title="var">z</span> (<span class="id" title="var">x</span> <span class="id" title="var">i</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">natequiv_cat_prod_corec_inv</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod_rec_eta</span> {<span class="id" title="var">z</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">x</span> <span class="id" title="var">i</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">f</span> <span class="id" title="var">i</span> $== <span class="id" title="var">g</span> <span class="id" title="var">i</span>) -&gt; <span class="id" title="var">cat_coprod_rec</span> <span class="id" title="var">f</span> $== <span class="id" title="var">cat_coprod_rec</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">cat_prod_corec_eta</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod_in_eta</span> {<span class="id" title="var">z</span> : <span class="id" title="var">A</span>} {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="keyword">forall</span> <span class="id" title="var">i</span>, <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_in</span> <span class="id" title="var">i</span> $== <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_in</span> <span class="id" title="var">i</span>) -&gt; <span class="id" title="var">f</span> $== <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">cat_prod_pr_eta</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Lemmata</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1828"></a><h3 class="section">Codiagonal / fold map</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod_codiag</span> {<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) `{<span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">_</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">x</span>) $-&gt; <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_prod_diag</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1829"></a><h3 class="section">Uniqueness of coproducts</h3>
+
+<div class="paragraph"> </div>
+
+ <span class="inlinecode"><span class="id" title="var">I</span></span>-indexed coproducts are unique no matter how they are constructed. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cate_cat_coprod</span> {<span class="id" title="var">I</span> <span class="id" title="var">J</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">ie</span> : <span class="id" title="var">I</span> &lt;~&gt; <span class="id" title="var">J</span>) {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>) `{!<span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>} (<span class="id" title="var">y</span> : <span class="id" title="var">J</span> -&gt; <span class="id" title="var">A</span>) `{!<span class="id" title="var">Coproduct</span> <span class="id" title="var">J</span> <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">e</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">i</span> : <span class="id" title="var">I</span>), <span class="id" title="var">y</span> (<span class="id" title="var">ie</span> <span class="id" title="var">i</span>) $&lt;~&gt; <span class="id" title="var">x</span> <span class="id" title="var">i</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_coprod</span> <span class="id" title="var">J</span> <span class="id" title="var">y</span> $&lt;~&gt; <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cate_cat_prod</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">ie</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">e</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1830"></a><h3 class="section">Existence of coproducts</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">HasCoproducts</span> (<span class="id" title="var">I</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">has_coproducts</span> :: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>, <span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">HasAllCoproducts</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">has_all_coproducts</span> :: <span class="id" title="keyword">forall</span> <span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>, <span class="id" title="var">HasCoproducts</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1831"></a><h3 class="section">Coproduct functor</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">hasproductsop_hascoproducts</span> {<span class="id" title="var">I</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasCoproducts</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasProducts</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>^<span class="id" title="var">op</span> =&gt; @<span class="id" title="var">has_coproducts</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_cat_coprod</span> (<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">I</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">HasCoproducts</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: @<span class="id" title="var">Is0Functor</span> (<span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>) <span class="id" title="var">A</span> (<span class="id" title="var">isgraph_forall</span> <span class="id" title="var">I</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">A</span>)) <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span> =&gt; <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">is0functor_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">is0functor_cat_prod</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_cat_coprod</span> (<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">IsGraph</span> <span class="id" title="var">I</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">HasCoproducts</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: @<span class="id" title="var">Is1Functor</span> (<span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>) <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">is1cat_forall</span> <span class="id" title="var">I</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">A</span>)) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span> =&gt; <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>) <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">is1functor_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">is1functor_cat_prod</span> <span class="id" title="var">I</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1832"></a><h3 class="section">Categories with specific kinds of coproducts</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">isinitial_coprodempty</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">z</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Coproduct</span> <span class="id" title="var">Empty</span> <span class="id" title="var">A</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">z</span>)}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsInitial</span> (<span class="id" title="var">cat_coprod</span> <span class="id" title="var">Empty</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">z</span>)).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrefine</span> (<span class="id" title="var">cat_coprod_rec</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>; <span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; <span class="id" title="var">cat_coprod_in_eta</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> [].<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1833"></a><h3 class="section">Binary coproducts</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">BinaryCoproduct</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">prod_co_bincoprod</span> :: <span class="id" title="var">BinaryProduct</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}  `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) `{!<span class="id" title="var">BinaryCoproduct</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>} : <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_binprod</span> (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_inl</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">BinaryCoproduct</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_pr1</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>) (<span class="id" title="var">y</span>:=<span class="id" title="var">y</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_inr</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>} `{!<span class="id" title="var">BinaryCoproduct</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_pr2</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">x</span>:=<span class="id" title="var">x</span>) (<span class="id" title="var">y</span>:=<span class="id" title="var">y</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A category with binary coproducts is a category with a binary coproduct for each pair of objects. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">HasBinaryCoproducts</span> (<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>) `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">binary_coproducts</span> :: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">BinaryCoproduct</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasbinarycoproducts_hascoproductsbool</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">HasCoproducts</span> <span class="id" title="var">Bool</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">has_coproducts</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">b</span> : <span class="id" title="var">Bool</span> =&gt; <span class="id" title="keyword">if</span> <span class="id" title="var">b</span> <span class="id" title="keyword">then</span> <span class="id" title="var">x</span> <span class="id" title="keyword">else</span> <span class="id" title="var">y</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A convenience wrapper for building binary coproducts 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_BinaryCoproduct</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_coprod</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">cat_inl</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">cat_coprod</span>) (<span class="id" title="var">cat_inr</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">cat_coprod</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_coprod_rec</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>, (<span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>) -&gt; (<span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>) -&gt; <span class="id" title="var">cat_coprod</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_coprod_beta_inl</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">z</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_rec</span> <span class="id" title="var">z</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inl</span> $== <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_coprod_beta_inr</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">z</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_rec</span> <span class="id" title="var">z</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inr</span> $== <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">cat_coprod_in_eta</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">z</span> : <span class="id" title="var">A</span>) (<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">cat_coprod</span> $-&gt; <span class="id" title="var">z</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inl</span> $== <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inl</span> -&gt; <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inr</span> $== <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inr</span> -&gt; <span class="id" title="var">f</span> $== <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">BinaryCoproduct</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_BinaryProduct</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">cat_coprod</span> : <span class="id" title="var">A</span>^<span class="id" title="var">op</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_inl</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_inr</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_rec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_beta_inl</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_beta_inr</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cat_coprod_in_eta</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Lemmata</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} `{<span class="id" title="var">BinaryCoproduct</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_rec</span> (<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_corec</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_beta_inl</span> (<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inl</span> $== <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_beta_pr1</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_beta_inr</span> (<span class="id" title="var">f</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inr</span> $== <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_beta_pr2</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_eta</span> (<span class="id" title="var">f</span> : <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod_rec</span> (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inl</span>) (<span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inr</span>) $== <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_eta</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_eta_in</span> {<span class="id" title="var">f</span> <span class="id" title="var">g</span> : <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inl</span> $== <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inl</span> -&gt; <span class="id" title="var">f</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inr</span> $== <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_inr</span> -&gt; <span class="id" title="var">f</span> $== <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_eta_pr</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_rec_eta</span> {<span class="id" title="var">f</span> <span class="id" title="var">f'</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>} {<span class="id" title="var">g</span> <span class="id" title="var">g'</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">f</span> $== <span class="id" title="var">f'</span> -&gt; <span class="id" title="var">g</span> $== <span class="id" title="var">g'</span> -&gt; <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $== <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f'</span> <span class="id" title="var">g'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_corec_eta</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">f'</span> <span class="id" title="var">g</span> <span class="id" title="var">g'</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Lemmata</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1834"></a><h3 class="section">Binary coproduct functor</h3>
+
+<div class="paragraph"> </div>
+
+ Hint: Use <span class="inlinecode"><span class="id" title="keyword">Set</span></span> <span class="inlinecode"><span class="id" title="keyword">Printing</span></span> <span class="inlinecode"><span class="id" title="keyword">Implicit</span></span> to see the implicit arguments in the following proofs. 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_cat_bincoprod_l</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>) (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">is0functor_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">is0functor_cat_binprod_l</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">H0</span>:=<span class="id" title="var">hbc</span>) <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_cat_bincoprod_l</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">is1functor_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">is1functor_cat_binprod_l</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">H0</span>:=<span class="id" title="var">hbc</span>) <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0functor_cat_bincoprod_r</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Functor</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">is0functor_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">is0functor_cat_binprod_r</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">H0</span>:=<span class="id" title="var">hbc</span>) <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1functor_cat_bincoprod_r</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Functor</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">is1functor_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">is1functor_cat_binprod_r</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">H0</span>:=<span class="id" title="var">hbc</span>) <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is0bifunctor_cat_bincoprod</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is0Bifunctor</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">is0bifunctor_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">is0bifunctor_cat_binprod</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">H0</span>:=<span class="id" title="var">hbc</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1bifunctor_cat_bincoprod</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Is1Bifunctor</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">is1bifunctor_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">is1bifunctor_cat_binprod</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) (<span class="id" title="var">H0</span>:=<span class="id" title="var">hbc</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1835"></a><h3 class="section">Products and coproducts in the opposite category</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">hasbinarycoproducts_op_hasbinaryproducts</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">hbp</span> : <span class="id" title="var">HasBinaryProducts</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hbp</span>.<br/>
+<span class="id" title="keyword">Hint Immediate</span> <span class="id" title="var">hasbinarycoproducts_op_hasbinaryproducts</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">hasbinarycoproducts_hasbinaryproducts_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, <span class="id" title="var">hbp</span> : !<span class="id" title="var">HasBinaryProducts</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hbp</span>.<br/>
+<span class="id" title="keyword">Hint Immediate</span> <span class="id" title="var">hasbinarycoproducts_hasbinaryproducts_op</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">hasbinaryproducts_op_hasbinarycoproducts</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasBinaryProducts</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hbc</span>.<br/>
+<span class="id" title="keyword">Hint Immediate</span> <span class="id" title="var">hasbinarycoproducts_op_hasbinaryproducts</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">hasbinaryproducts_hasbinarycoproducts_op</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, <span class="id" title="var">hbc</span> : !<span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasBinaryProducts</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hbc</span>.<br/>
+<span class="id" title="keyword">Hint Immediate</span> <span class="id" title="var">hasbinaryproducts_hasbinarycoproducts_op</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1836"></a><h3 class="section">Symmetry of coproducts</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_swap</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (@<span class="id" title="var">cat_binprod_swap</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">hbc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cate_bincoprod_swap</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $&lt;~&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (@<span class="id" title="var">cate_binprod_swap</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">hbc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1837"></a><h3 class="section">Associativity of coproducts</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">cate_coprod_assoc</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> (<span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;$&lt;~&gt; <span class="id" title="var">cat_bincoprod</span> (<span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (@<span class="id" title="var">associator_cat_binprod</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">hbc</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>)^-1$.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">associator_cat_bincoprod</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Associator</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Associator</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">associator_op'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">associator_cat_binprod</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1838"></a><h3 class="section">Codiagonal</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_codiag</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">A</span>) `{!<span class="id" title="var">BinaryCoproduct</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">cat_binprod_diag</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">x</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1839"></a><h3 class="section">Lemmas about <span class="inlinecode"><span class="id" title="var">cat_bincoprod_rec</span></span></h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_fmap01_rec</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} {<span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">z</span> $-&gt; <span class="id" title="var">w</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">x</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">w</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f</span> <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap01</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">z</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;$== <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f</span> (<span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_fmap01_corec</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hasbinaryproducts_op_hasbinarycoproducts</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_fmap10_rec</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} {<span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">x</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">w</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">z</span> $-&gt; <span class="id" title="var">w</span>) <br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap10</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">f</span> <span class="id" title="var">z</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;$== <span class="id" title="var">cat_bincoprod_rec</span> (<span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>) <span class="id" title="var">h</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_fmap10_corec</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hasbinaryproducts_op_hasbinarycoproducts</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_fmap11_rec</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, !<span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} {<span class="id" title="var">v</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">w</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">z</span> $-&gt; <span class="id" title="var">x</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">w</span> $-&gt; <span class="id" title="var">v</span>) (<span class="id" title="var">i</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">v</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">h</span> <span class="id" title="var">i</span> $<span class="id" title="var">o</span> <span class="id" title="var">fmap11</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_binprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">f</span> <span class="id" title="var">g</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;$== <span class="id" title="var">cat_bincoprod_rec</span> (<span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">f</span>) (<span class="id" title="var">i</span> $<span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_fmap11_corec</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hasbinaryproducts_op_hasbinarycoproducts</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">i</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_rec_associator</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">hbc</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">w</span> $-&gt; <span class="id" title="var">z</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">z</span>) (<span class="id" title="var">h</span> : <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod_rec</span> (<span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>) <span class="id" title="var">h</span> $<span class="id" title="var">o</span> <span class="id" title="var">associator_cat_bincoprod</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;$== <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f</span> (<span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">cate_moveR_eV</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">cat_binprod_associator_corec</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">HasBinaryProducts0</span>:=<span class="id" title="var">hasbinaryproducts_op_hasbinarycoproducts</span> (<span class="id" title="var">hbc</span>:=<span class="id" title="var">hbc</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_swap_rec</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} {<span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span> : <span class="id" title="var">A</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">a</span> $-&gt; <span class="id" title="var">c</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">b</span> $-&gt; <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> $<span class="id" title="var">o</span> <span class="id" title="var">cat_bincoprod_swap</span> <span class="id" title="var">b</span> <span class="id" title="var">a</span> $== <span class="id" title="var">cat_bincoprod_rec</span> <span class="id" title="var">g</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">cat_binprod_swap_corec</span> <span class="id" title="var">A</span>^<span class="id" title="var">op</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">hasbinaryproducts_op_hasbinarycoproducts</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1840"></a><h3 class="section">Cocartesian Monoidal Structure</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ismonoidal_cat_bincoprod</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} (<span class="id" title="var">zero</span> : <span class="id" title="var">A</span>) `{!<span class="id" title="var">IsInitial</span> <span class="id" title="var">zero</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsMonoidal</span> <span class="id" title="var">A</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">zero</span> | 10.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">ismonoidal_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">ismonoidal_cat_binprod</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">zero</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">isterminal_op_isinitial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">issymmetricmonoidal_cat_bincoprod</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">HasEquivs</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{!<span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="var">A</span>} (<span class="id" title="var">zero</span> : <span class="id" title="var">A</span>) `{!<span class="id" title="var">IsInitial</span> <span class="id" title="var">zero</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsSymmetricMonoidal</span> <span class="id" title="var">A</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">zero</span> | 10.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">issymmetricmonoidal_op'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> (<span class="id" title="var">issymmetricmonoidal_cat_binprod</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">zero</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">isterminal_op_isinitial</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1841"></a><h3 class="section">Coproducts in Type</h3>
+
+<div class="paragraph"> </div>
+
+ <span class="inlinecode"><span class="id" title="keyword">Type</span></span> has all coproducts. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasallcoproducts_type</span> : <span class="id" title="var">HasAllCoproducts</span> <span class="id" title="keyword">Type</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Coproduct</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">sig</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">i</span> : <span class="id" title="var">I</span> =&gt; <span class="id" title="var">x</span> <span class="id" title="var">i</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">exist</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> [<span class="id" title="var">i</span> <span class="id" title="var">xi</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">xi</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">i</span> <span class="id" title="var">xi</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">A</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span> [<span class="id" title="var">i</span> <span class="id" title="var">xi</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> <span class="id" title="var">i</span> <span class="id" title="var">xi</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+In particular, <span class="inlinecode"><span class="id" title="keyword">Type</span></span> has all binary coproducts. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasbinarycoproducts_type</span> : <span class="id" title="var">HasBinaryCoproducts</span> <span class="id" title="keyword">Type</span><br/>
+&nbsp;&nbsp;:= {}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1842"></a><h2 class="section">Canonical coproduct-product map</h2>
+
+<div class="paragraph"> </div>
+
+ There is a canonical map from a coproduct to a product when the indexing set has decidable equality and the category is pointed. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_coprod_prod</span> {<span class="id" title="var">I</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">DecidablePaths</span> <span class="id" title="var">I</span>} {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, !<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>) `{!<span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>, !<span class="id" title="var">Product</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_coprod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span> $-&gt; <span class="id" title="var">cat_prod</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_coprod_rec</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">cat_prod_corec</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> (<span class="id" title="var">dec_paths</span> <span class="id" title="var">i</span> <span class="id" title="var">a</span>) <span class="id" title="keyword">as</span> [<span class="id" title="var">p</span>|].<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">destruct</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">Id</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">zero_morphism</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">cat_bincoprod_binprod</span> {<span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>, !<span class="id" title="var">IsPointedCat</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">A</span>) `{!<span class="id" title="var">BinaryCoproduct</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, !<span class="id" title="var">BinaryProduct</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">cat_bincoprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> $-&gt; <span class="id" title="var">cat_binprod</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrapply</span> <span class="id" title="var">cat_coprod_prod</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1843"></a><h3 class="section">Coproducts in the opposite category</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">coproduct_op</span> {<span class="id" title="var">I</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">x</span> : <span class="id" title="var">I</span> -&gt; <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Is1Cat</span> <span class="id" title="var">A</span>} {<span class="id" title="var">H'</span> : <span class="id" title="var">Product</span> <span class="id" title="var">I</span> <span class="id" title="var">x</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Coproduct</span> <span class="id" title="var">I</span> (<span class="id" title="var">A</span>:=<span class="id" title="var">A</span>^<span class="id" title="var">op</span>) <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">H'</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Hint Immediate</span> <span class="id" title="var">coproduct_op</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

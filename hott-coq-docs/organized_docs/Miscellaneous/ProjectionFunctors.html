@@ -1,0 +1,285 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>ProjectionFunctors</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library ProjectionFunctors</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab734"></a><h1 class="section">Functoriality of the comma category construction with projection functors</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Core</span> <span class="id" title="var">Functor.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Prod</span> <span class="id" title="var">Functor.Prod.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Dual</span> <span class="id" title="var">Functor.Dual</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Composition.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">InitialTerminalCategory.Core</span> <span class="id" title="var">InitialTerminalCategory.Functors</span> <span class="id" title="var">NatCategory</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">FunctorCategory.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Cat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Paths</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="var">Comma.Core</span>.<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Warnings</span> <span class="id" title="var">Append</span> "-notation-overridden". <span class="comment">(*&nbsp;work&nbsp;around&nbsp;bug&nbsp;5567, https://coq.inria.fr/bugs/show_bug.cgi?id=5567, notation-overridden,parsing should not trigger for only printing notations *)</span><br/>
+<span class="id" title="keyword">Import</span> <span class="id" title="var">Comma.Core</span>.<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Warnings</span> <span class="id" title="var">Append</span> "notation-overridden".<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Comma.InducedFunctors</span> <span class="id" title="var">Comma.Projection</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="var">ProductLaws</span> <span class="id" title="var">ExponentialLaws.Law1.Functors</span> <span class="id" title="var">ExponentialLaws.Law4.Functors</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Types.Forall</span> <span class="id" title="var">PathGroupoids</span> <span class="id" title="var">HoTT.Tactics</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Polymorphism</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Asymmetric</span> <span class="id" title="var">Patterns</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">category_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab735"></a><h2 class="section">Functor from <span class="inlinecode">(<span class="id" title="var">A</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">C</span>)ᵒᵖ</span> <span class="inlinecode">×</span> <span class="inlinecode">(<span class="id" title="var">B</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">C</span>)</span> to <span class="inlinecode"><span class="id" title="var">cat</span></span> <span class="inlinecode">/</span> <span class="inlinecode">(<span class="id" title="var">A</span></span> <span class="inlinecode">×</span> <span class="inlinecode"><span class="id" title="var">B</span>)</span></h2>
+ It sends <span class="inlinecode"><span class="id" title="var">S</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">C</span></span> <span class="inlinecode">←</span> <span class="inlinecode"><span class="id" title="var">B</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">T</span></span> to the category <span class="inlinecode">(<span class="id" title="var">S</span></span> <span class="inlinecode">/</span> <span class="inlinecode"><span class="id" title="var">T</span>)</span> and its projection functor to <span class="inlinecode"><span class="id" title="var">A</span></span> <span class="inlinecode">×</span> <span class="inlinecode"><span class="id" title="var">B</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">comma</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">type_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">P</span> : <span class="id" title="var">PreCategory</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">HF</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>, <span class="id" title="var">P</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="var">P</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="var">IsHSet</span> (<span class="id" title="var">Functor</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>)}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Notation</span> <span class="id" title="var">Cat</span> := (@<span class="id" title="var">sub_pre_cat</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">HF</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variables</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> : <span class="id" title="var">PreCategory</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <span class="id" title="var">PAB</span> : <span class="id" title="var">P</span> (<span class="id" title="var">A</span> * <span class="id" title="var">B</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <span class="id" title="var">P_comma</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">S</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">A</span> <span class="id" title="var">C</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">P</span> (<span class="id" title="var">S</span> / <span class="id" title="var">T</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">category_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">morphism_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">comma_category_projection_functor_object_of</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">ST</span> : <span class="id" title="var">object</span> ((<span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>)^<span class="id" title="var">op</span> * (<span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>)))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">Cat</span> / !((<span class="id" title="var">A</span> * <span class="id" title="var">B</span>; <span class="id" title="var">PAB</span>) : <span class="id" title="var">Cat</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">Basics.Overture.fst</span> <span class="id" title="var">ST</span> / <span class="id" title="var">Basics.Overture.snd</span> <span class="id" title="var">ST</span>; <span class="id" title="var">P_comma</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) (<span class="id" title="var">center</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">comma_category_projection</span> (<span class="id" title="var">Basics.Overture.fst</span> <span class="id" title="var">ST</span>) (<span class="id" title="var">Basics.Overture.snd</span> <span class="id" title="var">ST</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">comma_category_projection_functor_morphism_of</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">s</span> <span class="id" title="var">d</span> (<span class="id" title="var">m</span> : <span class="id" title="var">morphism</span> ((<span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>)^<span class="id" title="var">op</span> * (<span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>)) <span class="id" title="var">s</span> <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">morphism</span> (<span class="id" title="var">Cat</span> / !((<span class="id" title="var">A</span> * <span class="id" title="var">B</span>; <span class="id" title="var">PAB</span>) : <span class="id" title="var">Cat</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">comma_category_projection_functor_object_of</span> <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">comma_category_projection_functor_object_of</span> <span class="id" title="var">d</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">CommaCategory.Build_morphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">comma_category_projection_functor_object_of</span> <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">comma_category_projection_functor_object_of</span> <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">comma_category_induced_functor</span> <span class="id" title="var">m</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">center</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">destruct_head_hnf</span> <span class="id" title="var">Basics.Overture.prod</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Ltac</span> <span class="id" title="var">comma_laws_t</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> (<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span> || <span class="id" title="tactic">intro</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">transport_forall_constant</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">transport_path_forall_hammer</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">destruct_head</span> <span class="id" title="var">Basics.Overture.prod</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">CommaCategory.path_morphism</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">repeat</span> <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[?<span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">transport</span> ?<span class="id" title="var">P</span> ?<span class="id" title="var">p</span> ?<span class="id" title="var">z</span>)] ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">rewrite</span> (@<span class="id" title="var">ap_transport</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">p</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">z</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; ?<span class="id" title="var">f</span> (?<span class="id" title="var">fa</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span>) ?<span class="id" title="var">x</span>)] ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="tactic">rewrite</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; @<span class="id" title="var">transport_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">y</span> <span class="id" title="var">x</span>) (<span class="id" title="var">fa</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[<span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; ?<span class="id" title="var">f</span> ?<span class="id" title="var">x</span> (?<span class="id" title="var">fa</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">y</span>))] ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="tactic">rewrite</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> =&gt; @<span class="id" title="var">transport_compose</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">y</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) (<span class="id" title="var">fa</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">comma_category_induced_functor_object_of_identity</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">comma_category_induced_functor_object_of_compose</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> ?<span class="id" title="var">CommaCategory.ap_a_path_object'</span>, ?<span class="id" title="var">CommaCategory.ap_b_path_object'</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">try</span> <span class="id" title="tactic">reflexivity</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">comma_category_projection_functor_identity_of</span> <span class="id" title="var">x</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">comma_category_projection_functor_morphism_of</span> (<span class="id" title="var">Category.Core.identity</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">CommaCategory.path_morphism</span>; <span class="id" title="tactic">simpl</span>; [ | <span class="id" title="tactic">reflexivity</span> ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">comma_category_induced_functor_object_of_identity</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">comma_laws_t</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">comma_category_projection_functor_composition_of</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span> <span class="id" title="var">m</span> <span class="id" title="var">m'</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">comma_category_projection_functor_morphism_of</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(@<span class="id" title="var">Category.Core.compose</span> <span class="id" title="var">_</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span> <span class="id" title="var">m'</span> <span class="id" title="var">m</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= (<span class="id" title="var">comma_category_projection_functor_morphism_of</span> <span class="id" title="var">m'</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">o</span> (<span class="id" title="var">comma_category_projection_functor_morphism_of</span> <span class="id" title="var">m</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">CommaCategory.path_morphism</span>; <span class="id" title="tactic">simpl</span>; [ | <span class="id" title="tactic">reflexivity</span> ].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">path_functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">path_forall</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">comma_category_induced_functor_object_of_compose</span> <span class="id" title="var">m'</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">comma_laws_t</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">comma_category_projection_functor</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">Functor</span> ((<span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>)^<span class="id" title="var">op</span> * (<span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Cat</span> / !((<span class="id" title="var">A</span> * <span class="id" title="var">B</span>; <span class="id" title="var">PAB</span>) : <span class="id" title="var">Cat</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">Build_Functor</span> ((<span class="id" title="var">A</span> -&gt; <span class="id" title="var">C</span>)^<span class="id" title="var">op</span> * (<span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Cat</span> / !((<span class="id" title="var">A</span> * <span class="id" title="var">B</span>; <span class="id" title="var">PAB</span>) : <span class="id" title="var">Cat</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">comma_category_projection_functor_object_of</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">comma_category_projection_functor_morphism_of</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">comma_category_projection_functor_composition_of</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">comma_category_projection_functor_identity_of</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">comma</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">slice_category_projection_functor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">type_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">P</span> : <span class="id" title="var">PreCategory</span> -&gt; <span class="id" title="keyword">Type</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">HF</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>, <span class="id" title="var">P</span> <span class="id" title="var">C</span> -&gt; <span class="id" title="var">P</span> <span class="id" title="var">D</span> -&gt; <span class="id" title="var">IsHSet</span> (<span class="id" title="var">Functor</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>)}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Notation</span> <span class="id" title="var">Cat</span> := (@<span class="id" title="var">sub_pre_cat</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">HF</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variables</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="var">PreCategory</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <span class="id" title="var">P1C</span> : <span class="id" title="var">P</span> (1 * <span class="id" title="var">C</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <span class="id" title="var">PC1</span> : <span class="id" title="var">P</span> (<span class="id" title="var">C</span> * 1).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <span class="id" title="var">PC</span> : <span class="id" title="var">P</span> <span class="id" title="var">C</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <span class="id" title="var">P_comma</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">S</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">Functor</span> 1 <span class="id" title="var">D</span>), <span class="id" title="var">P</span> (<span class="id" title="var">S</span> / <span class="id" title="var">T</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Hypothesis</span> <span class="id" title="var">P_comma'</span> : <span class="id" title="keyword">forall</span> (<span class="id" title="var">S</span> : <span class="id" title="var">Functor</span> 1 <span class="id" title="var">D</span>) (<span class="id" title="var">T</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>), <span class="id" title="var">P</span> (<span class="id" title="var">S</span> / <span class="id" title="var">T</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">functor_scope</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">category_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Notation</span> <span class="id" title="var">inv</span> <span class="id" title="var">D</span> := (@<span class="id" title="var">ExponentialLaws.Law1.Functors.inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">terminal_category</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">D</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab736"></a><h2 class="section">Functor <span class="inlinecode">(<span class="id" title="var">C</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">D</span>)ᵒᵖ</span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">D</span></span> <span class="inlinecode">→</span> <span class="inlinecode">(<span class="id" title="var">cat</span></span> <span class="inlinecode">/</span> <span class="inlinecode"><span class="id" title="var">C</span>)</span></h2>
+
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">slice_category_projection_functor</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">object</span> (((<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>)^<span class="id" title="var">op</span>) -&gt; (<span class="id" title="var">D</span> -&gt; (<span class="id" title="var">Cat</span> / ((<span class="id" title="var">C</span>; <span class="id" title="var">PC</span>) : <span class="id" title="var">Cat</span>)))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ExponentialLaws.Law4.Functors.inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> (<span class="id" title="var">Functor.Identity.identity</span> (<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>)^<span class="id" title="var">op</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">inv</span> <span class="id" title="var">D</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> @<span class="id" title="var">comma_category_projection_functor</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">HF</span> <span class="id" title="var">C</span> 1 <span class="id" title="var">D</span> <span class="id" title="var">PC1</span> <span class="id" title="var">P_comma</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_over_induced_functor</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ProductLaws.Law1.functor</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">coslice_category_projection_functor</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">object</span> ((<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>)^<span class="id" title="var">op</span> -&gt; (<span class="id" title="var">D</span> -&gt; (<span class="id" title="var">Cat</span> / ((<span class="id" title="var">C</span>; <span class="id" title="var">PC</span>) : <span class="id" title="var">Cat</span>)))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ExponentialLaws.Law4.Functors.inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> (<span class="id" title="var">Functor.Identity.identity</span> (<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>)^<span class="id" title="var">op</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">inv</span> <span class="id" title="var">D</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> @<span class="id" title="var">comma_category_projection_functor</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">HF</span> <span class="id" title="var">C</span> 1 <span class="id" title="var">D</span> <span class="id" title="var">PC1</span> <span class="id" title="var">P_comma</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_over_induced_functor</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ProductLaws.Law1.functor</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab737"></a><h2 class="section">Functor <span class="inlinecode">(<span class="id" title="var">C</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">D</span>)</span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">D</span>ᵒᵖ</span> <span class="inlinecode">→</span> <span class="inlinecode">(<span class="id" title="var">cat</span></span> <span class="inlinecode">/</span> <span class="inlinecode"><span class="id" title="var">C</span>)</span></h2>
+
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">slice_category_projection_functor'</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">object</span> ((<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) -&gt; (<span class="id" title="var">D</span>^<span class="id" title="var">op</span> -&gt; (<span class="id" title="var">Cat</span> / ((<span class="id" title="var">C</span>; <span class="id" title="var">PC</span>) : <span class="id" title="var">Cat</span>)))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ExponentialLaws.Law4.Functors.inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> (<span class="id" title="var">Functor.Identity.identity</span> (<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">inv</span> <span class="id" title="var">D</span>)^<span class="id" title="var">op</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> <span class="id" title="var">ProductLaws.Swap.functor</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> @<span class="id" title="var">comma_category_projection_functor</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">HF</span> 1 <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">P1C</span> <span class="id" title="var">P_comma'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_over_induced_functor</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ProductLaws.Law1.functor'</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">coslice_category_projection_functor'</span><br/>
+&nbsp;&nbsp;: <span class="id" title="var">object</span> ((<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>) -&gt; (<span class="id" title="var">D</span>^<span class="id" title="var">op</span> -&gt; (<span class="id" title="var">Cat</span> / ((<span class="id" title="var">C</span>; <span class="id" title="var">PC</span>) : <span class="id" title="var">Cat</span>)))).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ExponentialLaws.Law4.Functors.inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> (<span class="id" title="var">Functor.Identity.identity</span> (<span class="id" title="var">C</span> -&gt; <span class="id" title="var">D</span>),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">inv</span> <span class="id" title="var">D</span>)^<span class="id" title="var">op</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> <span class="id" title="var">ProductLaws.Swap.functor</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> @<span class="id" title="var">comma_category_projection_functor</span> <span class="id" title="var">_</span> <span class="id" title="var">P</span> <span class="id" title="var">HF</span> 1 <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">P1C</span> <span class="id" title="var">P_comma'</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">cat_over_induced_functor</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">hnf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ProductLaws.Law1.functor'</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">slice_category_projection_functor</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

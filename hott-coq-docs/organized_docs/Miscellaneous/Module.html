@@ -1,0 +1,1123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>Module</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library Module</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">WildCat</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+<span class="comment">(*&nbsp;Some&nbsp;of&nbsp;the&nbsp;material&nbsp;in&nbsp;abstract_algebra&nbsp;and&nbsp;canonical&nbsp;names&nbsp;could&nbsp;be&nbsp;selectively&nbsp;exported&nbsp;to&nbsp;the&nbsp;user,&nbsp;as&nbsp;is&nbsp;done&nbsp;in&nbsp;Groups/Group.v.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Classes.interfaces.canonical_names</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.Groups.Kernel</span> <span class="id" title="var">Algebra.Groups.Image</span> <span class="id" title="var">Algebra.Groups.QuotientGroup</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Algebra.AbGroups.AbelianGroup</span> <span class="id" title="var">Algebra.AbGroups.Biproduct</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Rings.Ring</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Declare Scope</span> <span class="id" title="var">module_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">module_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab273"></a><h1 class="section">Modules over a ring.</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab274"></a><h2 class="section">Left Modules</h2>
+
+<div class="paragraph"> </div>
+
+ An abelian group <span class="inlinecode"><span class="id" title="var">M</span></span> is a left <span class="inlinecode"><span class="id" title="var">R</span></span>-module when equipped with the following data: 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsLeftModule</span> (<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>) (<span class="id" title="var">M</span> : <span class="id" title="var">AbGroup</span>) := {<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+A function <span class="inlinecode"><span class="id" title="var">lact</span></span> (left-action) that takes an element <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">R</span></span> and an element <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">M</span></span> and returns an element <span class="inlinecode"><span class="id" title="var">lact</span></span> <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">M</span></span>, which we also denote <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">lact</span> : <span class="id" title="var">R</span> -&gt; <span class="id" title="var">M</span> -&gt; <span class="id" title="var">M</span>;<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Actions distribute on the left over addition in the abelian group. That is <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode">(<span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">n</span>)</span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">n</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">lact_left_dist</span> :: <span class="id" title="var">LeftHeteroDistribute</span> <span class="id" title="var">lact</span> (+) (+);<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Actions distribute on the right over addition in the ring. That is <span class="inlinecode">(<span class="id" title="var">r</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">s</span>)</span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">+</span> <span class="inlinecode"><span class="id" title="var">s</span></span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">lact_right_dist</span> :: <span class="id" title="var">RightHeteroDistribute</span> <span class="id" title="var">lact</span> (+) (+);<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Actions are associative. That is <span class="inlinecode">(<span class="id" title="var">r</span></span> <span class="inlinecode">*</span> <span class="inlinecode"><span class="id" title="var">s</span>)</span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode">(<span class="id" title="var">s</span></span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">m</span>)</span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">lact_assoc</span> :: <span class="id" title="var">HeteroAssociative</span> <span class="id" title="var">lact</span> <span class="id" title="var">lact</span> <span class="id" title="var">lact</span> (.*.);<br/>
+&nbsp;&nbsp;</div>
+
+<div class="doc">
+Actions preserve the multiplicative identity. That is <span class="inlinecode">1</span> <span class="inlinecode">*<span class="id" title="var">L</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">m</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="var">lact_unit</span> :: <span class="id" title="var">LeftIdentity</span> <span class="id" title="var">lact</span> 1;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span> &quot;*L" := <span class="id" title="var">lact</span> : <span class="id" title="var">module_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A left R-module is an abelian group equipped with a left R-module structure. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Record</span> <span class="id" title="var">LeftModule</span> (<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">lm_carrier</span> :&gt; <span class="id" title="var">AbGroup</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">lm_lact</span> :: <span class="id" title="var">IsLeftModule</span> <span class="id" title="var">R</span> <span class="id" title="var">lm_carrier</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">LeftModuleAxioms</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">r</span> <span class="id" title="var">s</span> : <span class="id" title="var">R</span>) (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">M</span>).<br/>
+</div>
+
+<div class="doc">
+Here we state the module axioms in a readable form for direct use. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_dist_l</span> : <span class="id" title="var">r</span> *<span class="id" title="var">L</span> (<span class="id" title="var">m</span> + <span class="id" title="var">n</span>) = <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span> + <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">n</span> := <span class="id" title="var">lact_left_dist</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_dist_r</span> : (<span class="id" title="var">r</span> + <span class="id" title="var">s</span>) *<span class="id" title="var">L</span> <span class="id" title="var">m</span> = <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span> + <span class="id" title="var">s</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span> := <span class="id" title="var">lact_right_dist</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_assoc</span> : <span class="id" title="var">r</span> *<span class="id" title="var">L</span> (<span class="id" title="var">s</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span>) = (<span class="id" title="var">r</span> * <span class="id" title="var">s</span>) *<span class="id" title="var">L</span> <span class="id" title="var">m</span> := <span class="id" title="var">lact_assoc</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_unit</span> : 1 *<span class="id" title="var">L</span> <span class="id" title="var">m</span> = <span class="id" title="var">m</span> := <span class="id" title="var">lact_unit</span> <span class="id" title="var">m</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">LeftModuleAxioms</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab275"></a><h2 class="section">Facts about left modules</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">LeftModuleFacts</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">r</span> : <span class="id" title="var">R</span>) (<span class="id" title="var">m</span> : <span class="id" title="var">M</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Here are some quick facts that hold in modules. 
+<div class="paragraph"> </div>
+
+ The left action of zero is zero. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_zero_l</span> : 0 *<span class="id" title="var">L</span> <span class="id" title="var">m</span> = 0.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">grp_cancelL1</span> (<span class="id" title="var">z</span> := <span class="id" title="var">lact</span> 0 <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_dist_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">rng_plus_zero_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The left action on zero is zero. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_zero_r</span> : <span class="id" title="var">r</span> *<span class="id" title="var">L</span> (0 : <span class="id" title="var">M</span>) = 0.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">grp_cancelL1</span> (<span class="id" title="var">z</span> := <span class="id" title="var">lact</span> <span class="id" title="var">r</span> 0)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_dist_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_unit_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The left action of <span class="inlinecode">-1</span> is the additive inverse. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_minus_one</span> : -1 *<span class="id" title="var">L</span> <span class="id" title="var">m</span> = -<span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_moveL_1V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">_</span> +) (<span class="id" title="var">lm_unit</span> <span class="id" title="var">m</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_dist_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_zero_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_inv_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The left action of <span class="inlinecode"><span class="id" title="var">r</span></span> on the additive inverse of <span class="inlinecode"><span class="id" title="var">m</span></span> is the additive inverse of the left action of <span class="inlinecode"><span class="id" title="var">r</span></span> on <span class="inlinecode"><span class="id" title="var">m</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_neg</span> : <span class="id" title="var">r</span> *<span class="id" title="var">L</span> -<span class="id" title="var">m</span> = - (<span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_moveL_1V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_dist_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_zero_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_inv_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">LeftModuleFacts</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Every ring <span class="inlinecode"><span class="id" title="var">R</span></span> is a left <span class="inlinecode"><span class="id" title="var">R</span></span>-module over itself. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isleftmodule_ring</span> (<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>) : <span class="id" title="var">IsLeftModule</span> <span class="id" title="var">R</span> <span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Build_IsLeftModule</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab276"></a><h2 class="section">Right Modules</h2>
+
+<div class="paragraph"> </div>
+
+ An abelian group <span class="inlinecode"><span class="id" title="var">M</span></span> is a right <span class="inlinecode"><span class="id" title="var">R</span></span>-module when it is a left <span class="inlinecode"><span class="id" title="var">R</span>^<span class="id" title="var">op</span></span>-module. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsRightModule</span> (<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>) (<span class="id" title="var">M</span> : <span class="id" title="var">AbGroup</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isleftmodule_op_isrightmodule</span> :: <span class="id" title="var">IsLeftModule</span> (<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<span class="inlinecode"><span class="id" title="var">ract</span></span> (right-action) that takes an element <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">M</span></span> and an element <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">R</span></span> and returns an element <span class="inlinecode"><span class="id" title="var">ract</span></span> <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode"><span class="id" title="var">r</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">M</span></span> which we also denote <span class="inlinecode"><span class="id" title="var">m</span></span> <span class="inlinecode">*<span class="id" title="var">R</span></span> <span class="inlinecode"><span class="id" title="var">r</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ract</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">AbGroup</span>} `{!<span class="id" title="var">IsRightModule</span> <span class="id" title="var">R</span> <span class="id" title="var">M</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">M</span> -&gt; <span class="id" title="var">R</span> -&gt; <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span> =&gt; <span class="id" title="var">lact</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">r</span> <span class="id" title="var">m</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span> &quot;*R" := <span class="id" title="var">ract</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A right module is a left module over the opposite ring. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">RightModule</span> (<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>) := <span class="id" title="var">LeftModule</span> (<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Right modules are right modules. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">rm_ract</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} : <span class="id" title="var">IsRightModule</span> <span class="id" title="var">R</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_lact</span> (<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">RightModuleAxioms</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">m</span> <span class="id" title="var">n</span> : <span class="id" title="var">M</span>) (<span class="id" title="var">r</span> <span class="id" title="var">s</span> : <span class="id" title="var">R</span>).<br/>
+</div>
+
+<div class="doc">
+Here we state the module axioms in a readable form for direct use. 
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_dist_r</span> : (<span class="id" title="var">m</span> + <span class="id" title="var">n</span>) *<span class="id" title="var">R</span> <span class="id" title="var">r</span> = <span class="id" title="var">m</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span> + <span class="id" title="var">n</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">lm_dist_l</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">r</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_dist_l</span> : <span class="id" title="var">m</span> *<span class="id" title="var">R</span> (<span class="id" title="var">r</span> + <span class="id" title="var">s</span>) = <span class="id" title="var">m</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span> + <span class="id" title="var">m</span> *<span class="id" title="var">R</span> <span class="id" title="var">s</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">lm_dist_r</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_assoc</span> : (<span class="id" title="var">m</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span>) *<span class="id" title="var">R</span> <span class="id" title="var">s</span> = <span class="id" title="var">m</span> *<span class="id" title="var">R</span> (<span class="id" title="var">r</span> * <span class="id" title="var">s</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">lm_assoc</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">s</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_unit</span> : <span class="id" title="var">m</span> *<span class="id" title="var">R</span> 1 = <span class="id" title="var">m</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">lm_unit</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">m</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">RightModuleAxioms</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab277"></a><h2 class="section">Facts about right modules</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">RightModuleFacts</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">m</span> : <span class="id" title="var">M</span>) (<span class="id" title="var">r</span> : <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The right action on zero is zero. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_zero_l</span> : (0 : <span class="id" title="var">M</span>) *<span class="id" title="var">R</span> <span class="id" title="var">r</span> = 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">lm_zero_r</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">r</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The right adtion of zero is zero. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_zero_r</span> : <span class="id" title="var">m</span> *<span class="id" title="var">R</span> 0 = 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">lm_zero_l</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">m</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The right action of <span class="inlinecode">-1</span> is the additive inverse. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_minus_one</span> : <span class="id" title="var">m</span> *<span class="id" title="var">R</span> -1 = -<span class="id" title="var">m</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">lm_minus_one</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">m</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The right action of <span class="inlinecode"><span class="id" title="var">r</span></span> on the additive inverse of <span class="inlinecode"><span class="id" title="var">m</span></span> is the additive inverse of the right action of <span class="inlinecode"><span class="id" title="var">r</span></span> on <span class="inlinecode"><span class="id" title="var">m</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_neg</span> : -<span class="id" title="var">m</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span> = - (<span class="id" title="var">m</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">lm_neg</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">r</span> <span class="id" title="var">m</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">RightModuleFacts</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Every ring <span class="inlinecode"><span class="id" title="var">R</span></span> is a right <span class="inlinecode"><span class="id" title="var">R</span></span>-module over itself. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isrightmodule_ring</span> (<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>) : <span class="id" title="var">IsRightModule</span> <span class="id" title="var">R</span> <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isleftmodule_ring</span> (<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab278"></a><h2 class="section">Submodules</h2>
+
+<div class="paragraph"> </div>
+
+ A subgroup of a left R-module is a left submodule if it is closed under the action of R. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsLeftSubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">M</span> -&gt; <span class="id" title="keyword">Type</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">ils_issubgroup</span> :: <span class="id" title="var">IsSubgroup</span> <span class="id" title="var">N</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">is_left_submodule</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span>, <span class="id" title="var">N</span> <span class="id" title="var">m</span> -&gt; <span class="id" title="var">N</span> (<span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span>);<br/>
+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A subgroup of a right R-module is a right submodule if it is a left submodule over the opposite ring. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsRightSubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">M</span> -&gt; <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isleftsubmodule_op_isrightsubmodule</span> :: <span class="id" title="var">IsLeftSubmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">N</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A left submodule is a subgroup of the abelian group closed under the left action of R. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Record</span> <span class="id" title="var">LeftSubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">lsm_carrier</span> :&gt; <span class="id" title="var">M</span> -&gt; <span class="id" title="keyword">Type</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">lsm_submodule</span> :: <span class="id" title="var">IsLeftSubmodule</span> <span class="id" title="var">lsm_carrier</span>;<br/>
+}.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+A right submodule is a subgroup of the abelian group closed under the right action of R. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">RightSubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">LeftSubmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_leftsubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftSubmodule</span> <span class="id" title="var">M</span> -&gt; <span class="id" title="var">Subgroup</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">N</span> =&gt; <span class="id" title="var">Build_Subgroup</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">subgroup_leftsubmodule</span> : <span class="id" title="var">LeftSubmodule</span> &gt;-&gt; <span class="id" title="var">Subgroup</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">subgroup_rightsubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightSubmodule</span> <span class="id" title="var">M</span> -&gt; <span class="id" title="var">Subgroup</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">idmap</span>.<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">subgroup_rightsubmodule</span> : <span class="id" title="var">RightSubmodule</span> &gt;-&gt; <span class="id" title="var">Subgroup</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Left submodules inherit the left R-module structure of their parent. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isleftmodule_leftsubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">LeftSubmodule</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLeftModule</span> <span class="id" title="var">R</span> <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsLeftModule</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> [<span class="id" title="var">n</span> <span class="id" title="var">n_in_N</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">lsm_submodule</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> [<span class="id" title="var">n</span>] [<span class="id" title="var">m</span>]; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lact_left_dist</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> [<span class="id" title="var">n</span>]; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lact_right_dist</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> [<span class="id" title="var">n</span>]; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lact_assoc</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> [<span class="id" title="var">n</span>]; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lact_unit</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Right submodules inherit the right R-module structure of their parent. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isrightmodule_rightsubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">RightSubmodule</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsRightModule</span> <span class="id" title="var">R</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isleftmodule_leftsubmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">N</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Any left submodule of a left R-module is a left R-module. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">leftmodule_leftsubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">LeftSubmodule</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_LeftModule</span> <span class="id" title="var">R</span> <span class="id" title="var">N</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">leftmodule_leftsubmodule</span> : <span class="id" title="var">LeftSubmodule</span> &gt;-&gt; <span class="id" title="var">LeftModule</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Any right submodule of a right R-module is a right R-module. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rightmodule_rightsubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">N</span> : <span class="id" title="var">RightSubmodule</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">rightmodule_rightsubmodule</span> : <span class="id" title="var">RightSubmodule</span> &gt;-&gt; <span class="id" title="var">RightModule</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The submodule criterion. This is a convenient way to build submodules. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_IsLeftSubmodule'</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} <br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="var">M</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">H</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="var">H</span> <span class="id" title="var">zero</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>, <span class="id" title="var">H</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">m</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">n</span> + <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLeftSubmodule</span> <span class="id" title="var">H</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsLeftSubmodule</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsSubgroup'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">hx</span> <span class="id" title="var">hy</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">sg_op</span> ?<span class="id" title="var">x</span> ?<span class="id" title="var">y</span>) <span class="id" title="keyword">with</span> (<span class="id" title="var">x</span> + <span class="id" title="var">y</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">p</span> := <span class="id" title="var">c</span> (-1) <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">hx</span> <span class="id" title="var">hy</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">lm_minus_one</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span> <span class="id" title="var">hm</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">grp_unit_l</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">c</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_IsRightSubmodule'</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} <br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="var">M</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">H</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="var">H</span> <span class="id" title="var">zero</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>, <span class="id" title="var">H</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">m</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">n</span> + <span class="id" title="var">ract</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsRightSubmodule</span> <span class="id" title="var">H</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_IsLeftSubmodule'</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">H</span> <span class="id" title="var">z</span> <span class="id" title="var">c</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_LeftSubmodule'</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="var">M</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">H</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="var">H</span> <span class="id" title="var">zero</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>, <span class="id" title="var">H</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">m</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">n</span> + <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftSubmodule</span> <span class="id" title="var">M</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">p</span> := <span class="id" title="var">Build_IsLeftSubmodule'</span> <span class="id" title="var">H</span> <span class="id" title="var">z</span> <span class="id" title="var">c</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftSubmodule</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">snrapply</span> (<span class="id" title="var">Build_Subgroup</span> <span class="id" title="var">_</span> <span class="id" title="var">H</span>).<br/>
+&nbsp;&nbsp;2: <span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">ils_issubgroup</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_RightSubmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">H</span> : <span class="id" title="var">M</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">IsHProp</span> (<span class="id" title="var">H</span> <span class="id" title="var">x</span>)}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">z</span> : <span class="id" title="var">H</span> <span class="id" title="var">zero</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">n</span> <span class="id" title="var">m</span>, <span class="id" title="var">H</span> <span class="id" title="var">n</span> -&gt; <span class="id" title="var">H</span> <span class="id" title="var">m</span> -&gt; <span class="id" title="var">H</span> (<span class="id" title="var">n</span> + <span class="id" title="var">m</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightSubmodule</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_LeftSubmodule'</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">H</span> <span class="id" title="var">z</span> <span class="id" title="var">c</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab279"></a><h2 class="section">R-module homomorphisms</h2>
+
+<div class="paragraph"> </div>
+
+ A left module homomorphism is a group homomorphism that commutes with the left action of R. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Record</span> <span class="id" title="var">LeftModuleHomomorphism</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">lm_homo_map</span> :&gt; <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">lm_homo_lact</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span>, <span class="id" title="var">lm_homo_map</span> (<span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">m</span>) = <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">lm_homo_map</span> <span class="id" title="var">m</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">RightModuleHomomorphism</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">LeftModuleHomomorphism</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_homo_map</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> -&gt; <span class="id" title="var">GroupHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_homo_map</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">rm_homo_map</span> : <span class="id" title="var">RightModuleHomomorphism</span> &gt;-&gt; <span class="id" title="var">GroupHomomorphism</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_homo_ract</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">RightModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span>, <span class="id" title="var">f</span> (<span class="id" title="var">ract</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span>) = <span class="id" title="var">ract</span> (<span class="id" title="var">f</span> <span class="id" title="var">m</span>) <span class="id" title="var">r</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">m</span> <span class="id" title="var">r</span> =&gt; <span class="id" title="var">lm_homo_lact</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_homo_id</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>) : <span class="id" title="var">LeftModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">M</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleHomomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">grp_homo_id</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_homo_id</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>) : <span class="id" title="var">RightModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_homo_id</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_homo_compose</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">L</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftModuleHomomorphism</span> <span class="id" title="var">N</span> <span class="id" title="var">L</span> -&gt; <span class="id" title="var">LeftModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;-&gt; <span class="id" title="var">LeftModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">L</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleHomomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">grp_homo_compose</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_homo_lact</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lm_homo_lact</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_homo_compose</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">L</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightModuleHomomorphism</span> <span class="id" title="var">N</span> <span class="id" title="var">L</span> -&gt; <span class="id" title="var">RightModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;-&gt; <span class="id" title="var">RightModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">L</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_homo_compose</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Smart constructor for building left module homomorphisms from a map. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_LeftModuleHomomorphism'</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">M</span> -&gt; <span class="id" title="var">N</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">f</span> (<span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">x</span> + <span class="id" title="var">y</span>) = <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span> + <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleHomomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupHomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">lm_unit</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">lact</span> 1 (<span class="id" title="var">f</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">lm_unit</span> <span class="id" title="var">x</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">grp_unit_r</span> (<span class="id" title="var">lact</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_unit_r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_cancelL</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">specialize</span> (<span class="id" title="var">p</span> 1 0 0).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> 2 <span class="id" title="var">lm_unit</span> <span class="id" title="tactic">in</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">grp_cancelL1</span> (<span class="id" title="var">z</span> := <span class="id" title="var">f</span> 0)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs_V</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">grp_unit_l</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_RightModuleHomomorphism'</span> {<span class="id" title="var">R</span>  :<span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">M</span> -&gt; <span class="id" title="var">N</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">f</span> (<span class="id" title="var">x</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span> + <span class="id" title="var">y</span>) = <span class="id" title="var">f</span> <span class="id" title="var">x</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span> + <span class="id" title="var">f</span> <span class="id" title="var">y</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_LeftModuleHomomorphism'</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">f</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Record</span> <span class="id" title="var">LeftModuleIsomorphism</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>) := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">lm_iso_map</span> :&gt; <span class="id" title="var">LeftModuleHomomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>;<br/>
+&nbsp;&nbsp;<span class="id" title="var">isequiv_lm_iso_map</span> :: <span class="id" title="var">IsEquiv</span> <span class="id" title="var">lm_iso_map</span>;<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">RightModuleIsomorphism</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">LeftModuleIsomorphism</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_LeftModuleIsomorphism'</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">x</span>, <span class="id" title="var">f</span> (<span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">x</span>) = <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftModuleIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleIsomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleHomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">Build_RightModuleIsomorphism'</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">GroupIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>) (<span class="id" title="var">p</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">r</span> <span class="id" title="var">x</span>, <span class="id" title="var">f</span> (<span class="id" title="var">ract</span> <span class="id" title="var">x</span> <span class="id" title="var">r</span>) = <span class="id" title="var">ract</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>) <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightModuleIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_LeftModuleIsomorphism'</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_iso_inverse</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftModuleIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> -&gt; <span class="id" title="var">LeftModuleIsomorphism</span> <span class="id" title="var">N</span> <span class="id" title="var">M</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleIsomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleHomomorphism'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>^-1.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveR_equiv_V</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">grp_homo_op</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">symmetry</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_homo_lact</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_iso_inverse</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightModuleIsomorphism</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> -&gt; <span class="id" title="var">RightModuleIsomorphism</span> <span class="id" title="var">N</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_iso_inverse</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab280"></a><h2 class="section">Category of left and right R-modules</h2>
+
+<div class="paragraph"> </div>
+
+ TODO: define as a displayed category over Ring 
+<div class="paragraph"> </div>
+
+<a id="lab281"></a><h3 class="section">Category of left R-modules</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isgraph_leftmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">IsGraph</span> (<span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_IsGraph</span> <span class="id" title="var">_</span> <span class="id" title="var">LeftModuleHomomorphism</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_leftmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_Is01Cat</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">lm_homo_id</span> (@<span class="id" title="var">lm_homo_compose</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is2graph_leftmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">Is2Graph</span> (<span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> =&gt; <span class="id" title="var">isgraph_induced</span> (@<span class="id" title="var">lm_homo_map</span> <span class="id" title="var">R</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_leftmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">Is1Cat</span> (<span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is1Cat'</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">is01cat_induced</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>; <span class="id" title="var">rapply</span> <span class="id" title="var">is0gpd_induced</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">L</span> <span class="id" title="var">h</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> <span class="id" title="var">h</span> (<span class="id" title="var">p</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">L</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_Is0Functor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">g</span> <span class="id" title="var">h</span> <span class="id" title="var">p</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">p</span> (<span class="id" title="var">f</span> <span class="id" title="var">m</span>)).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasequivs_leftmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">HasEquivs</span> (<span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_HasEquivs</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">LeftModuleIsomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">IsEquiv</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">Build_LeftModuleIsomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">lm_iso_inverse</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">fg</span> <span class="id" title="var">gf</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">isequiv_adjointify</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">fg</span> <span class="id" title="var">gf</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab282"></a><h3 class="section">Category of right R-modules</h3>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isgraph_rightmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">IsGraph</span> (<span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isgraph_leftmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is01cat_rightmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">Is01Cat</span> (<span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is01cat_leftmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is2graph_rightmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">Is2Graph</span> (<span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is2graph_leftmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">is1cat_rightmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">Is1Cat</span> (<span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">is1cat_leftmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasequivs_rightmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">HasEquivs</span> (<span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hasequivs_leftmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab283"></a><h2 class="section">Kernel of module homomorphism</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isleftsubmodule_grp_kernel</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLeftSubmodule</span> (<span class="id" title="var">grp_kernel</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_IsLeftSubmodule</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_homo_lact</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">rhs_V</span> <span class="id" title="var">nrapply</span> (<span class="id" title="var">lm_zero_r</span> <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">n</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isrightsubmodule_grp_kernel</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsRightSubmodule</span> (<span class="id" title="var">grp_kernel</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isleftsubmodule_grp_kernel</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_kernel</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftSubmodule</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_LeftSubmodule</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">grp_kernel</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_kernel</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightSubmodule</span> <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_kernel</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab284"></a><h2 class="section">Image of module homomorphism</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isleftsubmodule_grp_image</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLeftSubmodule</span> (<span class="id" title="var">grp_image</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Build_IsLeftSubmodule</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">Trunc_functor</span>; <span class="id" title="tactic">intros</span> [<span class="id" title="var">n</span> <span class="id" title="var">p</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">n</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_homo_lact</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">p</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isrightsubmodule_grp_image</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;{<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsRightSubmodule</span> (<span class="id" title="var">grp_image</span> <span class="id" title="var">f</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isleftsubmodule_grp_image</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_image</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftSubmodule</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_LeftSubmodule</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">grp_image</span> <span class="id" title="var">f</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_image</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightSubmodule</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_image</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab285"></a><h2 class="section">Quotient Modules</h2>
+
+<div class="paragraph"> </div>
+
+ The quotient abelian group of a module and a submodule has a natural ring action. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isleftmodule_quotientabgroup</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>) (<span class="id" title="var">N</span> : <span class="id" title="var">LeftSubmodule</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsLeftModule</span> <span class="id" title="var">R</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsLeftModule</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">quotient_abgroup_rec</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">refine</span> (<span class="id" title="var">grp_quotient_map</span> $<span class="id" title="var">o</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_GroupHomomorphism</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">exact</span> (<span class="id" title="var">lact</span> <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lm_dist_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span> <span class="id" title="var">Nn</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">qglue</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_inv_op</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2: <span class="id" title="tactic">apply</span> <span class="id" title="var">issubgroup_in_unit</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">is_left_submodule</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>; <span class="id" title="var">revert</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Quotient_ind_hprop</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span> | <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span>; <span class="id" title="var">revert</span> <span class="id" title="var">n</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Quotient_ind_hprop</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span> | <span class="id" title="tactic">intros</span> <span class="id" title="var">n</span>; <span class="id" title="tactic">simpl</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lm_dist_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Quotient_ind_hprop</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>| <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">simpl</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lm_dist_r</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Quotient_ind_hprop</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>| <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">simpl</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lm_assoc</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">snrapply</span> <span class="id" title="var">Quotient_ind_hprop</span>; [<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>| <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span>; <span class="id" title="tactic">simpl</span>].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">ap</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lm_unit</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isrightmodule_quotientabgroup</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>) (<span class="id" title="var">N</span> : <span class="id" title="var">RightSubmodule</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsRightModule</span> <span class="id" title="var">R</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">isleftmodule_quotientabgroup</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We can therefore form the quotient module of a module by its submodule. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuotientLeftModule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>) (<span class="id" title="var">N</span> : <span class="id" title="var">LeftSubmodule</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">Build_LeftModule</span> <span class="id" title="var">R</span> (<span class="id" title="var">QuotientAbGroup</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>) <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">QuotientRightModule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>) (<span class="id" title="var">N</span> : <span class="id" title="var">RightSubmodule</span> <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">QuotientLeftModule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Infix</span> &quot;/" := <span class="id" title="var">QuotientLeftModule</span> : <span class="id" title="var">module_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+TODO: Notation for right module quotient? 
+<div class="paragraph"> </div>
+
+<a id="lab286"></a><h2 class="section">First Isomorphism Theorem</h2>
+
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">module_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">wc_iso_scope</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_first_iso</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">M</span> / <span class="id" title="var">lm_kernel</span> <span class="id" title="var">f</span> ≅ <span class="id" title="var">lm_image</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleIsomorphism'</span>.<br/>
+&nbsp;&nbsp;1: <span class="id" title="var">rapply</span> <span class="id" title="var">abgroup_first_iso</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">Quotient_ind_hprop</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">lm_homo_lact</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_first_iso</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">M</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">QuotientRightModule</span> <span class="id" title="var">M</span> (<span class="id" title="var">rm_kernel</span> <span class="id" title="var">f</span>) ≅ <span class="id" title="var">rm_image</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_first_iso</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">f</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab287"></a><h2 class="section">Direct products</h2>
+
+<div class="paragraph"> </div>
+
+ TODO: generalise to biproducts  The direct product of modules 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_prod</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">Build_LeftModule</span> <span class="id" title="var">R</span> (<span class="id" title="var">ab_biprod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_IsLeftModule</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">functor_prod</span>; <span class="id" title="tactic">exact</span> (<span class="id" title="var">lact</span> <span class="id" title="var">r</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">lm_dist_l</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">m</span> <span class="id" title="var">n</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">lm_dist_r</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">s</span> <span class="id" title="var">m</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">lm_assoc</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">lm_unit</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_prod</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span> -&gt; <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_prod</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_prod_fst</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} : <span class="id" title="var">lm_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> $-&gt; <span class="id" title="var">M</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleHomomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">grp_prod_pr1</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_prod_fst</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} : <span class="id" title="var">rm_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> $-&gt; <span class="id" title="var">M</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_prod_fst</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_prod_snd</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} : <span class="id" title="var">lm_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> $-&gt; <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleHomomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">grp_prod_pr2</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_prod_snd</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} : <span class="id" title="var">rm_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span> $-&gt; <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_prod_snd</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_prod_corec</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">L</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">L</span> $-&gt; <span class="id" title="var">M</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">L</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">L</span> $-&gt; <span class="id" title="var">lm_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_LeftModuleHomomorphism</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">grp_prod_corec</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">r</span> <span class="id" title="var">l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_prod</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">lm_homo_lact</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_prod_corec</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} {<span class="id" title="var">M</span> <span class="id" title="var">N</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>} (<span class="id" title="var">R'</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">R'</span> $-&gt; <span class="id" title="var">M</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">R'</span> $-&gt; <span class="id" title="var">N</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">R'</span> $-&gt; <span class="id" title="var">rm_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_prod_corec</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">R'</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasbinaryproducts_leftmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasBinaryProducts</span> (<span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_BinaryProduct</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> (<span class="id" title="var">lm_prod</span> <span class="id" title="var">M</span> <span class="id" title="var">N</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">lm_prod_fst</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">lm_prod_snd</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> <span class="id" title="var">lm_prod_corec</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="var">cbn</span>; <span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">intros</span> <span class="id" title="var">L</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">p</span> <span class="id" title="var">q</span> <span class="id" title="var">a</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">path_prod'</span> (<span class="id" title="var">p</span> <span class="id" title="var">a</span>) (<span class="id" title="var">q</span> <span class="id" title="var">a</span>)).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">hasbinaryproducts_rightmodule</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">HasBinaryProducts</span> (<span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">hasbinaryproducts_leftmodule</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab288"></a><h2 class="section">Finite Sums</h2>
+
+<div class="paragraph"> </div>
+
+ Left scalar multplication distributes over finite sums of left module elements. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_sum_dist_l</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, (<span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">M</span>) (<span class="id" title="var">r</span> : <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> = <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span> =&gt; <span class="id" title="var">r</span> *<span class="id" title="var">L</span> <span class="id" title="var">f</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">lm_zero_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_dist_l</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">f_ap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Right scalar multiplication distributes over finite sums of right module elements. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_sum_dist_r</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, (<span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">M</span>) (<span class="id" title="var">r</span> : <span class="id" title="var">R</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span> = <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span> *<span class="id" title="var">R</span> <span class="id" title="var">r</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_sum_dist_l</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> <span class="id" title="var">r</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Left module elements distribute over finite sums of scalars. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">lm_sum_dist_r</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">LeftModule</span> <span class="id" title="var">R</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, (<span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">R</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> *<span class="id" title="var">L</span> <span class="id" title="var">x</span> = <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span> =&gt; <span class="id" title="var">f</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span> *<span class="id" title="var">L</span> <span class="id" title="var">x</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">induction</span> <span class="id" title="var">n</span> <span class="id" title="keyword">as</span> [|<span class="id" title="var">n</span> <span class="id" title="var">IHn</span>].<br/>
+&nbsp;&nbsp;1: <span class="id" title="tactic">apply</span> <span class="id" title="var">lm_zero_l</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">nrapply</span> <span class="id" title="var">lm_dist_r</span>; <span class="id" title="tactic">simpl</span>; <span class="id" title="var">f_ap</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Right module elements distribute over finite sums of scalar. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">rm_sum_dist_l</span> {<span class="id" title="var">R</span> : <span class="id" title="var">Ring</span>} (<span class="id" title="var">M</span> : <span class="id" title="var">RightModule</span> <span class="id" title="var">R</span>) (<span class="id" title="var">n</span> : <span class="id" title="var">nat</span>)<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">k</span>, (<span class="id" title="var">k</span> &lt; <span class="id" title="var">n</span>)%<span class="id" title="var">nat</span> -&gt; <span class="id" title="var">R</span>) (<span class="id" title="var">x</span> : <span class="id" title="var">M</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">x</span> *<span class="id" title="var">R</span> <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> = <span class="id" title="var">ab_sum</span> <span class="id" title="var">n</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span> =&gt; <span class="id" title="var">x</span> *<span class="id" title="var">R</span> <span class="id" title="var">f</span> <span class="id" title="var">k</span> <span class="id" title="var">Hk</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">lm_sum_dist_r</span> (<span class="id" title="var">R</span>:=<span class="id" title="var">rng_op</span> <span class="id" title="var">R</span>) <span class="id" title="var">M</span> <span class="id" title="var">n</span> <span class="id" title="var">f</span> <span class="id" title="var">x</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

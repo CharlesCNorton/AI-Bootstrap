@@ -1,0 +1,471 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>BAut</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library BAut</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Basics</span> <span class="id" title="var">HoTT.Types</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Constant</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">HoTT.Truncations</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">ObjectClassifier</span> <span class="id" title="var">Homotopy.ExactSequence</span> <span class="id" title="var">Pointed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">type_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1774"></a><h1 class="section">BAut(X)</h1>
+
+<div class="paragraph"> </div>
+
+<a id="lab1775"></a><h2 class="section">Basics</h2>
+
+<div class="paragraph"> </div>
+
+ <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is the type of types that are merely equal to <span class="inlinecode"><span class="id" title="var">X</span></span>. It is connected, by <span class="inlinecode"><span class="id" title="var">is0connected_component</span></span> and any two points are merely equal by <span class="inlinecode"><span class="id" title="var">merely_path_component</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">BAut</span> (<span class="id" title="var">X</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}) := { <span class="id" title="var">Z</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>} &amp; <span class="id" title="var">merely</span> (<span class="id" title="var">Z</span> = <span class="id" title="var">X</span>) }.<br/>
+
+<br/>
+<span class="id" title="keyword">Coercion</span> <span class="id" title="var">BAut_pr1</span> <span class="id" title="var">X</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="keyword">Type</span> := <span class="id" title="var">pr1</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ispointed_baut</span> {<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>} : <span class="id" title="var">IsPointed</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>) := (<span class="id" title="var">X</span>; <span class="id" title="var">tr</span> 1).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We also define a pointed version <span class="inlinecode"><span class="id" title="var">pBAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>, since the coercion <span class="inlinecode"><span class="id" title="var">BAut_pr1</span></span> doesn't work if <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is a <span class="inlinecode"><span class="id" title="var">pType</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">pBAut</span> (<span class="id" title="var">X</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">pType</span><br/>
+&nbsp;&nbsp;:= [<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>, <span class="id" title="var">_</span>].<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">path_baut</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">X</span>} (<span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">X</span>)<br/>
+: (<span class="id" title="var">Z</span> &lt;~&gt; <span class="id" title="var">Z'</span>) &lt;~&gt; (<span class="id" title="var">Z</span> = <span class="id" title="var">Z'</span> :&gt; <span class="id" title="var">BAut</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="var">equiv_path_sigma_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_path_universe</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_pr1_path_baut</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">X</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">Z</span> &lt;~&gt; <span class="id" title="var">Z'</span>)<br/>
+: <span class="id" title="var">ap</span> (<span class="id" title="var">BAut_pr1</span> <span class="id" title="var">X</span>) (<span class="id" title="var">path_baut</span> <span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> <span class="id" title="var">f</span>) = <span class="id" title="var">path_universe</span> <span class="id" title="var">f</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">path_baut</span>, <span class="id" title="var">BAut_pr1</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap_pr1_path_sigma_hprop</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">transport_path_baut</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">X</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">Z</span> &lt;~&gt; <span class="id" title="var">Z'</span>) (<span class="id" title="var">z</span> : <span class="id" title="var">Z</span>)<br/>
+: <span class="id" title="var">transport</span> (<span class="id" title="keyword">fun</span> (<span class="id" title="var">W</span>:<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>) =&gt; <span class="id" title="var">W</span>) (<span class="id" title="var">path_baut</span> <span class="id" title="var">Z</span> <span class="id" title="var">Z'</span> <span class="id" title="var">f</span>) <span class="id" title="var">z</span> = <span class="id" title="var">f</span> <span class="id" title="var">z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">transport_compose</span> <span class="id" title="var">idmap</span> (<span class="id" title="var">BAut_pr1</span> <span class="id" title="var">X</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">transport_path_universe</span> <span class="id" title="var">f</span> <span class="id" title="var">z</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap10</span>, <span class="id" title="var">ap</span>, <span class="id" title="var">ap_pr1_path_baut</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The following tactic, which applies when trying to prove an hprop, replaces all assumed elements of <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> by <span class="inlinecode"><span class="id" title="var">X</span></span> itself. With <span class="inlinecode"><span class="id" title="var">Univalence</span></span>, this would work for any 0-connected type, but using <span class="inlinecode"><span class="id" title="var">merely_path_component</span></span> we can avoid univalence. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Ltac</span> <span class="id" title="var">baut_reduce</span> :=<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">progress</span> <span class="id" title="tactic">repeat</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ <span class="id" title="var">Z</span> : <span class="id" title="var">BAut</span> ?<span class="id" title="var">X</span> |- <span class="id" title="var">_</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="keyword">let</span> <span class="id" title="var">Zispoint</span> := <span class="id" title="tactic">fresh</span> "Zispoint" <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">Zispoint</span> := <span class="id" title="var">merely_path_component</span> (<span class="id" title="var">point</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>)) <span class="id" title="var">Z</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">Zispoint</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (@<span class="id" title="var">Trunc_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span> <span class="id" title="var">Zispoint</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">Zispoint</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1776"></a><h2 class="section">Truncation</h2>
+
+<div class="paragraph"> </div>
+
+ If <span class="inlinecode"><span class="id" title="var">X</span></span> is an <span class="inlinecode"><span class="id" title="var">n</span>.+1</span>-type, then <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is an <span class="inlinecode"><span class="id" title="var">n</span>.+2</span>-type. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">trunc_baut</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">n</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span>.+1 <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span>.+2 (<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">Z</span> <span class="id" title="var">W</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">baut_reduce</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (@<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">path_baut</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">n</span>.+1 <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+If <span class="inlinecode"><span class="id" title="var">X</span></span> is truncated, then so is every element of <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">trunc_el_baut</span> {<span class="id" title="var">n</span> <span class="id" title="var">X</span>} `{<span class="id" title="var">Funext</span>} `{<span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> <span class="id" title="var">X</span>} (<span class="id" title="var">Z</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsTrunc</span> <span class="id" title="var">n</span> <span class="id" title="var">Z</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="tactic">by</span> <span class="id" title="var">baut_reduce</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1777"></a><h2 class="section">Operations on <span class="inlinecode"><span class="id" title="var">BAut</span></span></h2>
+
+<div class="paragraph"> </div>
+
+ Multiplying by a fixed type 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">baut_prod_r</span> (<span class="id" title="var">X</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">BAut</span> <span class="id" title="var">X</span> -&gt; <span class="id" title="var">BAut</span> (<span class="id" title="var">X</span> * <span class="id" title="var">A</span>)<br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span>:<span class="id" title="var">BAut</span> <span class="id" title="var">X</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">Z</span> * <span class="id" title="var">A</span> ; <span class="id" title="var">Trunc_functor</span> (-1) (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">W</span> =&gt; <span class="id" title="var">W</span> * <span class="id" title="var">A</span>)) (<span class="id" title="var">pr2</span> <span class="id" title="var">Z</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">BAut</span> (<span class="id" title="var">X</span> * <span class="id" title="var">A</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">ap_baut_prod_r</span> `{<span class="id" title="var">Univalence</span>} (<span class="id" title="var">X</span> <span class="id" title="var">A</span> : <span class="id" title="keyword">Type</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Z</span> <span class="id" title="var">W</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">X</span>} (<span class="id" title="var">e</span> : <span class="id" title="var">Z</span> &lt;~&gt; <span class="id" title="var">W</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">ap</span> (<span class="id" title="var">baut_prod_r</span> <span class="id" title="var">X</span> <span class="id" title="var">A</span>) (<span class="id" title="var">path_baut</span> <span class="id" title="var">Z</span> <span class="id" title="var">W</span> <span class="id" title="var">e</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="var">path_baut</span> (<span class="id" title="var">baut_prod_r</span> <span class="id" title="var">X</span> <span class="id" title="var">A</span> <span class="id" title="var">Z</span>) (<span class="id" title="var">baut_prod_r</span> <span class="id" title="var">X</span> <span class="id" title="var">A</span> <span class="id" title="var">W</span>) (<span class="id" title="var">equiv_functor_prod_r</span> <span class="id" title="var">e</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_equiv_M</span>; <span class="id" title="var">cbn</span>; <span class="id" title="tactic">unfold</span> <span class="id" title="var">pr1_path</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap_compose</span> (<span class="id" title="var">baut_prod_r</span> <span class="id" title="var">X</span> <span class="id" title="var">A</span>) <span class="id" title="var">pr1</span> (<span class="id" title="var">path_sigma_hprop</span> <span class="id" title="var">Z</span> <span class="id" title="var">W</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- ((<span class="id" title="var">ap_compose</span> <span class="id" title="var">pr1</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; <span class="id" title="var">Z</span> * <span class="id" title="var">A</span>) (<span class="id" title="var">path_sigma_hprop</span> <span class="id" title="var">Z</span> <span class="id" title="var">W</span> <span class="id" title="var">_</span>))^).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">ap_pr1_path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">moveL_equiv_M</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap_prod_r_path_universe</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1778"></a><h2 class="section">Centers</h2>
+
+<div class="paragraph"> </div>
+
+ The following lemma says that to define a section of a family <span class="inlinecode"><span class="id" title="var">P</span></span> of hsets over <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>, it is equivalent to define an element of <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> which is fixed by all automorphisms of <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Lemma</span> <span class="id" title="var">baut_ind_hset</span> `{<span class="id" title="var">Univalence</span>} <span class="id" title="var">X</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="doc">
+It ought to be possible to allow more generally <span class="inlinecode"><span class="id" title="var">P</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="keyword">Type</span></span>, but the proof would get more complicated, and this version suffices for present applications. 
+</div>
+<div class="code">
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> : <span class="id" title="keyword">Type</span> -&gt; <span class="id" title="keyword">Type</span>) `{<span class="id" title="keyword">forall</span> (<span class="id" title="var">Z</span> : <span class="id" title="var">BAut</span> <span class="id" title="var">X</span>), <span class="id" title="var">IsHSet</span> (<span class="id" title="var">P</span> <span class="id" title="var">Z</span>)}<br/>
+: { <span class="id" title="var">e</span> : <span class="id" title="var">P</span> (<span class="id" title="var">point</span> (<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>)) &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> <span class="id" title="var">g</span> : <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">X</span>, <span class="id" title="var">transport</span> <span class="id" title="var">P</span> (<span class="id" title="var">path_universe</span> <span class="id" title="var">g</span>) <span class="id" title="var">e</span> = <span class="id" title="var">e</span> }<br/>
+&nbsp;&nbsp;&lt;~&gt; (<span class="id" title="keyword">forall</span> (<span class="id" title="var">Z</span>:<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>), <span class="id" title="var">P</span> <span class="id" title="var">Z</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_sig_ind</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+</div>
+
+<div class="doc">
+We use the fact that maps out of a propositional truncation into an hset are equivalent to weakly constant functions. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">equiv_functor_forall'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">P</span> := <span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; { <span class="id" title="var">f</span> : (<span class="id" title="var">Z</span>=<span class="id" title="var">X</span>) -&gt; <span class="id" title="var">P</span> <span class="id" title="var">Z</span> &amp; <span class="id" title="var">WeaklyConstant</span> <span class="id" title="var">f</span> })<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; <span class="id" title="var">equiv_merely_rec_hset_if_domain</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)) <span class="id" title="var">oE</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;{ <span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>. <span class="id" title="tactic">change</span> (<span class="id" title="var">IsHSet</span> (<span class="id" title="var">P</span> (<span class="id" title="var">BAut_pr1</span> <span class="id" title="var">X</span> (<span class="id" title="var">Z</span> ; <span class="id" title="var">tr</span> <span class="id" title="var">p</span>)))). <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>. }<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">WeaklyConstant</span>.<br/>
+</div>
+
+<div class="doc">
+Now we peel away a bunch of contractible types. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_sig_coind</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_sigma'</span>.<br/>
+&nbsp;&nbsp;1:<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_paths_ind_r</span> <span class="id" title="var">X</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">_</span> =&gt; <span class="id" title="var">P</span> <span class="id" title="var">x</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">p</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_paths_ind_r</span> <span class="id" title="var">X</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_forall'</span>.<br/>
+&nbsp;&nbsp;1:<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_equiv_path</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">e</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_moveL_transport_V</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_concat_r</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">path_universe_transport_idmap</span>, <span class="id" title="var">paths_ind_r_transport</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+This implies that if <span class="inlinecode"><span class="id" title="var">X</span></span> is a set, then the center of <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span> is the set of automorphisms of <span class="inlinecode"><span class="id" title="var">X</span></span> that commute with every other automorphism (i.e. the center, in the usual sense, of the group of automorphisms of <span class="inlinecode"><span class="id" title="var">X</span></span>). 
+</div>
+<div class="code">
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">center_baut</span> `{<span class="id" title="var">Univalence</span>} <span class="id" title="var">X</span> `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">X</span>}<br/>
+: { <span class="id" title="var">f</span> : <span class="id" title="var">X</span> &lt;~&gt; <span class="id" title="var">X</span> &amp; <span class="id" title="keyword">forall</span> <span class="id" title="var">g</span>:<span class="id" title="var">X</span>&lt;~&gt;<span class="id" title="var">X</span>, <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> }<br/>
+&nbsp;&nbsp;&lt;~&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">Z</span>:<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>, <span class="id" title="var">Z</span> = <span class="id" title="var">Z</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_forall_id</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; <span class="id" title="var">equiv_path_sigma_hprop</span> <span class="id" title="var">Z</span> <span class="id" title="var">Z</span>) <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">baut_ind_hset</span> <span class="id" title="var">X</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; <span class="id" title="var">Z</span> = <span class="id" title="var">Z</span>) <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_sigma'</span> (<span class="id" title="var">equiv_path_universe</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_forall_id</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">g</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_path_arrow</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_path_equiv</span> (<span class="id" title="var">g</span> <span class="id" title="var">oE</span> <span class="id" title="var">f</span>) (<span class="id" title="var">f</span> <span class="id" title="var">oE</span> <span class="id" title="var">g</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">g</span>. <span class="id" title="var">equiv_intro</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span>) <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">revert</span> <span class="id" title="var">f</span>. <span class="id" title="var">equiv_intro</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span>) <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_concat_l</span> (<span class="id" title="var">equiv_path_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_concat_r</span> (<span class="id" title="var">equiv_path_pp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> (<span class="id" title="var">equiv_ap</span> (<span class="id" title="var">equiv_path</span> <span class="id" title="var">X</span> <span class="id" title="var">X</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_concat_l</span> (<span class="id" title="var">transport_paths_lr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_concat_l</span> (<span class="id" title="var">concat_pp_p</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_moveR_Vp</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_concat_l</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_concat_r</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">concat2</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">concat2</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eissect</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We show that this equivalence takes the identity equivalence to the identity in the center.  We have to be careful in this proof never to <span class="inlinecode"><span class="id" title="tactic">simpl</span></span> or <span class="inlinecode"><span class="id" title="tactic">unfold</span></span> too many things, or Coq will produce gigantic terms that take it forever to compute with. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">id_center_baut</span> `{<span class="id" title="var">Univalence</span>} <span class="id" title="var">X</span> `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">X</span>}<br/>
+: <span class="id" title="var">center_baut</span> <span class="id" title="var">X</span> (<span class="id" title="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">f</span>:<span class="id" title="var">X</span>&lt;~&gt;<span class="id" title="var">X</span>) =&gt; <span class="id" title="keyword">forall</span> (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>&lt;~&gt;<span class="id" title="var">X</span>), <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span> == <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">X</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>&lt;~&gt;<span class="id" title="var">X</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">X</span>) =&gt; <span class="id" title="var">idpath</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>)))<br/>
+&nbsp;&nbsp;= <span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; <span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>.<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">Z</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">IsHSet</span> (<span class="id" title="var">Z</span>.1 = <span class="id" title="var">Z</span>.1)) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">baut_reduce</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">path_sigma_hprop</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">path_universe_1</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ <span class="id" title="var">path_sigma_hprop_1</span> <span class="id" title="var">_</span>).<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Similarly, if <span class="inlinecode"><span class="id" title="var">X</span></span> is a 1-type, we can characterize the 2-center of <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">X</span></span>. 
+<div class="paragraph"> </div>
+
+ Coq is too eager about unfolding some things appearing in this proof. 
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">Center2BAut</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Arguments</span> <span class="id" title="var">equiv_path_equiv</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Arguments</span> <span class="id" title="var">equiv_path2_universe</span> : <span class="id" title="tactic">simpl</span> <span class="id" title="var">never</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">center2_baut</span> `{<span class="id" title="var">Univalence</span>} <span class="id" title="var">X</span> `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;: { <span class="id" title="var">f</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, <span class="id" title="var">x</span>=<span class="id" title="var">x</span> &amp; <span class="id" title="keyword">forall</span> (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>&lt;~&gt;<span class="id" title="var">X</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">X</span>), <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>) = <span class="id" title="var">f</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>) }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;~&gt; (<span class="id" title="keyword">forall</span> <span class="id" title="var">Z</span>:<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>, (<span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>) = (<span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">equiv_functor_forall_id</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; (<span class="id" title="var">equiv_concat_lr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">oE</span> (<span class="id" title="var">equiv_ap</span> (<span class="id" title="var">equiv_path_sigma_hprop</span> <span class="id" title="var">Z</span> <span class="id" title="var">Z</span>) 1%<span class="id" title="var">path</span> 1%<span class="id" title="var">path</span>))) <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop_1</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop_1</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="keyword">forall</span> <span class="id" title="var">Z</span>:<span class="id" title="var">BAut</span> <span class="id" title="var">X</span>, <span class="id" title="var">IsHSet</span> (<span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>.1 = <span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>.1)) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">baut_ind_hset</span> <span class="id" title="var">X</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; <span class="id" title="var">idpath</span> <span class="id" title="var">Z</span> = <span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>) <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simple</span> <span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_functor_sigma'</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_path2_universe</span> 1 1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_concat_lr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_universe_1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">path_universe_1</span>. }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">equiv_functor_forall_id</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">g</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_path3_universe</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">dpath_paths2</span> (<span class="id" title="var">path_universe</span> <span class="id" title="var">g</span>) <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">equiv_idmap</span> <span class="id" title="var">X</span> == <span class="id" title="var">equiv_idmap</span> <span class="id" title="var">X</span>) <span class="id" title="tactic">in</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_concat_lr</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ (<span class="id" title="var">path2_universe_postcompose_idmap</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span>)^).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">abstract</span> (<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">whiskerR_pp</span>, !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">reflexivity</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">path2_universe_precompose_idmap</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">abstract</span> (<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">whiskerL_pp</span>, !<span class="id" title="var">concat_pp_p</span>; <span class="id" title="tactic">reflexivity</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Once again we compute it on the identity.  In this case it seems to be unavoidable to do some <span class="inlinecode"><span class="id" title="tactic">simpl</span></span>ing (or at least <span class="inlinecode"><span class="id" title="var">cbn</span></span>ing), making this proof somewhat slower. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">id_center2_baut</span> `{<span class="id" title="var">Univalence</span>} <span class="id" title="var">X</span> `{<span class="id" title="var">IsTrunc</span> 1 <span class="id" title="var">X</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">center2_baut</span> <span class="id" title="var">X</span> (<span class="id" title="var">exist</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">f</span>:<span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>:<span class="id" title="var">X</span>, <span class="id" title="var">x</span>=<span class="id" title="var">x</span>) =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>&lt;~&gt;<span class="id" title="var">X</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">X</span>), <span class="id" title="var">ap</span> <span class="id" title="var">g</span> (<span class="id" title="var">f</span> <span class="id" title="var">x</span>) = <span class="id" title="var">f</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> =&gt; <span class="id" title="var">idpath</span> <span class="id" title="var">x</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> (<span class="id" title="var">g</span>:<span class="id" title="var">X</span>&lt;~&gt;<span class="id" title="var">X</span>) (<span class="id" title="var">x</span>:<span class="id" title="var">X</span>) =&gt; <span class="id" title="var">idpath</span> (<span class="id" title="var">idpath</span> (<span class="id" title="var">g</span> <span class="id" title="var">x</span>))))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;= <span class="id" title="keyword">fun</span> <span class="id" title="var">Z</span> =&gt; <span class="id" title="var">idpath</span> (<span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">Z</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">assert</span> (<span class="id" title="var">IsHSet</span> (<span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>.1 = <span class="id" title="var">idpath</span> <span class="id" title="var">Z</span>.1)) <span class="id" title="tactic">by</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">baut_reduce</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">cbn</span>. <span class="id" title="tactic">unfold</span> <span class="id" title="var">functor_forall</span>, <span class="id" title="var">sig_rect</span>, <span class="id" title="var">merely_rec_hset</span>. <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> <span class="id" title="var">equiv_path2_universe_1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p1</span>, !<span class="id" title="var">concat_Vp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">concat_p1</span>, !<span class="id" title="var">concat_Vp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">Center2BAut</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">ClassifyingMaps</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab1779"></a><h2 class="section">Maps into <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> classify bundles with fiber <span class="inlinecode"><span class="id" title="var">F</span></span></h2>
+
+<div class="paragraph"> </div>
+
+ The property of being merely equivalent to a given type <span class="inlinecode"><span class="id" title="var">F</span></span> defines a subuniverse. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">subuniverse_merely_equiv</span> (<span class="id" title="var">F</span> : <span class="id" title="keyword">Type</span>) : <span class="id" title="var">Subuniverse</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> (<span class="id" title="var">Build_Subuniverse</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">E</span> =&gt; <span class="id" title="var">merely</span> (<span class="id" title="var">E</span> &lt;~&gt; <span class="id" title="var">F</span>))).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">T</span> <span class="id" title="var">U</span> <span class="id" title="var">mere_eq</span> <span class="id" title="var">f</span> <span class="id" title="var">iseq_f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">strip_truncations</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> (<span class="id" title="var">feq</span>:=<span class="id" title="var">Build_Equiv</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span> <span class="id" title="var">iseq_f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">tr</span> (<span class="id" title="var">mere_eq</span> <span class="id" title="var">oE</span> <span class="id" title="var">feq</span>^-1)).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The universe of O-local types for <span class="inlinecode"><span class="id" title="var">subuniverse_merely_equiv</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> is equivalent to <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Proposition</span> <span class="id" title="var">equiv_baut_typeO</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">F</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:  <span class="id" title="var">BAut</span> <span class="id" title="var">F</span> &lt;~&gt; <span class="id" title="var">Type_</span> (<span class="id" title="var">subuniverse_merely_equiv</span> <span class="id" title="var">F</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">X</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">Trunc_functor_equiv</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">equiv_path_universe</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1%<span class="id" title="var">equiv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Consequently, maps into <span class="inlinecode"><span class="id" title="var">BAut</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> correspond to bundles with fibers merely equivalent to <span class="inlinecode"><span class="id" title="var">F</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Corollary</span> <span class="id" title="var">equiv_map_baut_fibration</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">Y</span> : <span class="id" title="var">pType</span>} {<span class="id" title="var">F</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt; <span class="id" title="var">BAut</span> <span class="id" title="var">F</span>) &lt;~&gt; { <span class="id" title="var">p</span> : <span class="id" title="var">Slice</span> <span class="id" title="var">Y</span> &amp; <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>:<span class="id" title="var">Y</span>, <span class="id" title="var">merely</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">p</span>.2 <span class="id" title="var">y</span> &lt;~&gt; <span class="id" title="var">F</span>) }.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_postcompose'</span> <span class="id" title="var">equiv_baut_typeO</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_sigma_fibration_O</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">equiv_functor_sigma_id</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">p</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_functor_forall_id</span>; <span class="id" title="tactic">intro</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">Trunc_functor_equiv</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+The pointed version of <span class="inlinecode"><span class="id" title="var">equiv_baut_typeO</span></span> above. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Proposition</span> <span class="id" title="var">pequiv_pbaut_typeOp@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span> +} `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">F</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="var">pBAut@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">F</span> &lt;~&gt;* [<span class="id" title="var">Type_</span> (<span class="id" title="var">subuniverse_merely_equiv</span> <span class="id" title="var">F</span>), (<span class="id" title="var">F</span>; <span class="id" title="var">tr</span> <span class="id" title="var">equiv_idmap</span>)].<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">Build_pEquiv'</span>; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;1: <span class="id" title="tactic">exact</span> <span class="id" title="var">equiv_baut_typeO</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">by</span> <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_pmap_pbaut_pfibration</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">Y</span> <span class="id" title="var">F</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* <span class="id" title="var">pBAut@</span>{<span class="id" title="var">u</span> <span class="id" title="var">v</span>} <span class="id" title="var">F</span>) &lt;~&gt; { <span class="id" title="var">p</span> : { <span class="id" title="var">q</span> : <span class="id" title="var">pSlice</span> <span class="id" title="var">Y</span> &amp; <span class="id" title="keyword">forall</span> <span class="id" title="var">y</span>:<span class="id" title="var">Y</span>, <span class="id" title="var">merely</span> (<span class="id" title="var">hfiber</span> <span class="id" title="var">q</span>.2 <span class="id" title="var">y</span> &lt;~&gt; <span class="id" title="var">F</span>) } &amp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">pfiber</span> <span class="id" title="var">p</span>.1.2 &lt;~&gt;* <span class="id" title="var">F</span> }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= (<span class="id" title="var">equiv_sigma_pfibration_O</span> (<span class="id" title="var">subuniverse_merely_equiv</span> <span class="id" title="var">F</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">oE</span> <span class="id" title="var">pequiv_pequiv_postcompose</span> <span class="id" title="var">pequiv_pbaut_typeOp</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+When <span class="inlinecode"><span class="id" title="var">Y</span></span> is connected, pointed maps into <span class="inlinecode"><span class="id" title="var">pBAut</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> correspond to maps into the universe sending the base point to <span class="inlinecode"><span class="id" title="var">F</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Proposition</span> <span class="id" title="var">equiv_pmap_pbaut_type_p</span> `{<span class="id" title="var">Univalence</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Y</span> : <span class="id" title="var">pType@</span>{<span class="id" title="var">u</span>}} {<span class="id" title="var">F</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}} `{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* <span class="id" title="var">pBAut</span> <span class="id" title="var">F</span>) &lt;~&gt; (<span class="id" title="var">Y</span> -&gt;* [<span class="id" title="var">Type@</span>{<span class="id" title="var">u</span>}, <span class="id" title="var">F</span>]).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> <span class="id" title="var">oE</span> <span class="id" title="var">pequiv_pequiv_postcompose</span> <span class="id" title="var">pequiv_pbaut_typeOp</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">rapply</span> <span class="id" title="var">equiv_pmap_typeO_type_connected</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+When <span class="inlinecode"><span class="id" title="var">Y</span></span> is connected, <span class="inlinecode"><span class="id" title="var">pBAut</span></span> <span class="inlinecode"><span class="id" title="var">F</span></span> classifies fiber sequences over <span class="inlinecode"><span class="id" title="var">Y</span></span> with fiber <span class="inlinecode"><span class="id" title="var">F</span></span>. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">equiv_pmap_pbaut_pfibration_connected</span> `{<span class="id" title="var">Univalence</span>} {<span class="id" title="var">Y</span> <span class="id" title="var">F</span> : <span class="id" title="var">pType</span>} `{<span class="id" title="var">IsConnected</span> 0 <span class="id" title="var">Y</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: (<span class="id" title="var">Y</span> -&gt;* <span class="id" title="var">pBAut</span> <span class="id" title="var">F</span>) &lt;~&gt; { <span class="id" title="var">X</span> : <span class="id" title="var">pType</span> &amp; <span class="id" title="var">FiberSeq</span> <span class="id" title="var">F</span> <span class="id" title="var">X</span> <span class="id" title="var">Y</span> }<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">classify_fiberseq</span> <span class="id" title="var">oE</span> <span class="id" title="var">equiv_pmap_pbaut_type_p</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">ClassifyingMaps</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

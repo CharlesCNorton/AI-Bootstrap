@@ -1,0 +1,723 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>abstract_algebra</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library abstract_algebra</h1>
+
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">Basics.Classes</span> <span class="id" title="var">Basics.Overture</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Spaces.Nat.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Export</span> <span class="id" title="var">HoTT.Classes.interfaces.canonical_names</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Modalities.ReflectiveSubuniverse</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local</span> <span class="id" title="keyword">Set</span> <span class="id" title="var">Polymorphic</span> <span class="id" title="keyword">Inductive</span> <span class="id" title="var">Cumulativity</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Generalizable Variables</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span> <span class="id" title="var">f</span> <span class="id" title="var">g</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;<br/>
+For&nbsp;various&nbsp;structures&nbsp;we&nbsp;omit&nbsp;declaration&nbsp;of&nbsp;substructures.&nbsp;For&nbsp;example,&nbsp;if&nbsp;we&nbsp;<br/>
+say:<br/>
+<br/>
+Class&nbsp;Setoid_Morphism&nbsp;:=<br/>
+&nbsp;&nbsp;{&nbsp;setoidmor_a&nbsp;:&nbsp;Setoid&nbsp;A<br/>
+&nbsp;&nbsp;;&nbsp;setoidmor_b&nbsp;:&nbsp;Setoid&nbsp;B<br/>
+&nbsp;&nbsp;;&nbsp;sm_proper&nbsp;:&nbsp;Proper&nbsp;((=)&nbsp;==&gt;&nbsp;(=))&nbsp;f&nbsp;}.<br/>
+[export] Existing Instances setoidmor_a setoidmor_b sm_proper.
+
+then each time a Setoid instance is required, Coq will try to prove that a
+Setoid_Morphism exists. This obviously results in an enormous blow-up of the
+search space. Moreover, one should be careful to declare a Setoid_Morphisms
+as a substructure. Consider [f t1 t2], now if we want to perform setoid rewriting
+in [t2] Coq will first attempt to prove that [f t1] is Proper, for which it will 
+attempt to prove [Setoid_Morphism (f t1)]. If many structures declare
+Setoid_Morphism as a substructure, setoid rewriting will become horribly slow.
+*)</span><br/>
+
+<br/>
+<span class="comment">(*&nbsp;An&nbsp;unbundled&nbsp;variant&nbsp;of&nbsp;the&nbsp;former&nbsp;CoRN&nbsp;CSetoid.&nbsp;We&nbsp;do&nbsp;not&nbsp;<br/>
+&nbsp;&nbsp;include&nbsp;a&nbsp;proof&nbsp;that&nbsp;A&nbsp;is&nbsp;a&nbsp;Setoid&nbsp;because&nbsp;it&nbsp;can&nbsp;be&nbsp;derived.&nbsp;*)</span><br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">IsApart</span> <span class="id" title="var">A</span> {<span class="id" title="var">Aap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">A</span>} : <span class="id" title="keyword">Type</span> :=<br/>
+&nbsp;&nbsp;{ <span class="id" title="var">apart_set</span> : <span class="id" title="var">IsHSet</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;; <span class="id" title="var">apart_mere</span> : <span class="id" title="var">is_mere_relation</span> <span class="id" title="var">_</span> <span class="id" title="var">apart</span><br/>
+&nbsp;&nbsp;; <span class="id" title="var">apart_symmetric</span> : <span class="id" title="var">Symmetric</span> (≶)<br/>
+&nbsp;&nbsp;; <span class="id" title="var">apart_cotrans</span> : <span class="id" title="var">CoTransitive</span> (≶)<br/>
+&nbsp;&nbsp;; <span class="id" title="var">tight_apart</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, ~(<span class="id" title="var">x</span> ≶ <span class="id" title="var">y</span>) &lt;-&gt; <span class="id" title="var">x</span> = <span class="id" title="var">y</span> }.<br/>
+#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">apart_set</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">apart_mere</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">apart_symmetric</span><br/>
+&nbsp;&nbsp;<span class="id" title="var">apart_cotrans</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">apart_irrefl</span> `{<span class="id" title="var">IsApart</span> <span class="id" title="var">A</span>} : <span class="id" title="var">Irreflexive</span> (≶).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">ap</span>.<br/>
+<span class="id" title="tactic">apply</span> (<span class="id" title="var">tight_apart</span> <span class="id" title="var">x</span> <span class="id" title="var">x</span>).<br/>
+- <span class="id" title="tactic">reflexivity</span>.<br/>
+- <span class="id" title="tactic">assumption</span>.<br/>
+<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">tight_apart</span> {<span class="id" title="var">A</span> <span class="id" title="var">Aap</span> <span class="id" title="var">IsApart</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">setoid_morphisms</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} {<span class="id" title="var">Aap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">StrongExtensionality</span> := <span class="id" title="var">strong_extensionality</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">f</span> <span class="id" title="var">x</span> ≶ <span class="id" title="var">f</span> <span class="id" title="var">y</span> -&gt; <span class="id" title="var">x</span> ≶ <span class="id" title="var">y</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">setoid_morphisms</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;HOTT&nbsp;TODO&nbsp;check&nbsp;if&nbsp;this&nbsp;is&nbsp;ok/useful&nbsp;*)</span><br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 (?<span class="id" title="var">f</span> <span class="id" title="var">_</span> = ?<span class="id" title="var">f</span> <span class="id" title="var">_</span>) =&gt; <span class="id" title="tactic">eapply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">f</span>) : <span class="id" title="var">core</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">setoid_binary_morphisms</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">C</span>} {<span class="id" title="var">Aap</span>: <span class="id" title="var">Apart</span> <span class="id" title="var">A</span>} <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Bap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">B</span>} {<span class="id" title="var">Cap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">C</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">StrongBinaryExtensionality</span> := <span class="id" title="var">strong_binary_extensionality</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x₁</span> <span class="id" title="var">y₁</span> <span class="id" title="var">x₂</span> <span class="id" title="var">y₂</span>, <span class="id" title="var">f</span> <span class="id" title="var">x₁</span> <span class="id" title="var">y₁</span> ≶ <span class="id" title="var">f</span> <span class="id" title="var">x₂</span> <span class="id" title="var">y₂</span> -&gt; <span class="id" title="var">hor</span> (<span class="id" title="var">x₁</span> ≶ <span class="id" title="var">x₂</span>) (<span class="id" title="var">y₁</span> ≶ <span class="id" title="var">y₂</span>).<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">setoid_binary_morphisms</span>.<br/>
+
+<br/>
+<span class="comment">(*<br/>
+Since&nbsp;apartness&nbsp;usually&nbsp;only&nbsp;becomes&nbsp;relevant&nbsp;when&nbsp;considering&nbsp;fields&nbsp;(e.g.&nbsp;the&nbsp;<br/>
+real&nbsp;numbers),&nbsp;we&nbsp;do&nbsp;not&nbsp;include&nbsp;it&nbsp;in&nbsp;the&nbsp;lower&nbsp;part&nbsp;of&nbsp;the&nbsp;algebraic&nbsp;hierarchy<br/>
+(as&nbsp;opposed&nbsp;to&nbsp;CoRN).<br/>
+*)</span><br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">upper_classes</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Universe</span> <span class="id" title="var">i</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> (<span class="id" title="var">A</span> : <span class="id" title="var">Type@</span>{<span class="id" title="var">i</span>}).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_mult_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsSemiGroup</span> {<span class="id" title="var">Aop</span>: <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">sg_set</span> : <span class="id" title="var">IsHSet</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">sg_ass</span> : <span class="id" title="var">Associative</span> (.*.) }.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">sg_set</span> <span class="id" title="var">sg_ass</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsCommutativeSemiGroup</span> {<span class="id" title="var">Aop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">comsg_sg</span> : @<span class="id" title="var">IsSemiGroup</span> (.*.)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">comsg_comm</span> : <span class="id" title="var">Commutative</span> (.*.) }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">comsg_sg</span> <span class="id" title="var">comsg_comm</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsSemiLattice</span> {<span class="id" title="var">Aop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">semilattice_sg</span> : @<span class="id" title="var">IsCommutativeSemiGroup</span> (.*.)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">semilattice_idempotent</span> : <span class="id" title="var">BinaryIdempotent</span> (.*.)}.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">semilattice_sg</span> <span class="id" title="var">semilattice_idempotent</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsMonoid</span> {<span class="id" title="var">Aop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Aunit</span> : <span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">monoid_semigroup</span> : <span class="id" title="var">IsSemiGroup</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">monoid_left_id</span> : <span class="id" title="var">LeftIdentity</span> (.*.) <span class="id" title="var">mon_unit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">monoid_right_id</span> : <span class="id" title="var">RightIdentity</span> (.*.) <span class="id" title="var">mon_unit</span> }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">monoid_semigroup</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">monoid_left_id</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">monoid_right_id</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsCommutativeMonoid</span> {<span class="id" title="var">Aop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Aunit</span> : <span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">commonoid_mon</span> : @<span class="id" title="var">IsMonoid</span> (.*.) <span class="id" title="var">Aunit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">commonoid_commutative</span> : <span class="id" title="var">Commutative</span> (.*.) }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">commonoid_mon</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">commonoid_commutative</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsGroup</span> {<span class="id" title="var">Aop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Aunit</span> : <span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Anegate</span> : <span class="id" title="var">Negate</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">group_monoid</span> : @<span class="id" title="var">IsMonoid</span> (.*.) <span class="id" title="var">Aunit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">negate_l</span> : <span class="id" title="var">LeftInverse</span> (.*.) (-) <span class="id" title="var">mon_unit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">negate_r</span> : <span class="id" title="var">RightInverse</span> (.*.) (-) <span class="id" title="var">mon_unit</span> }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">group_monoid</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">negate_l</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">negate_r</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsBoundedSemiLattice</span> {<span class="id" title="var">Aop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Aunit</span> : <span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">bounded_semilattice_mon</span> : @<span class="id" title="var">IsCommutativeMonoid</span> (.*.) <span class="id" title="var">Aunit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">bounded_semilattice_idempotent</span> : <span class="id" title="var">BinaryIdempotent</span> (.*.)}.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bounded_semilattice_mon</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bounded_semilattice_idempotent</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsAbGroup</span> {<span class="id" title="var">Aop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Aunit</span> : <span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Anegate</span> : <span class="id" title="var">Negate</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">abgroup_group</span> : @<span class="id" title="var">IsGroup</span> (.*.) <span class="id" title="var">Aunit</span> <span class="id" title="var">Anegate</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">abgroup_commutative</span> : <span class="id" title="var">Commutative</span> (.*.) }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">abgroup_group</span> <span class="id" title="var">abgroup_commutative</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Close</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_mult_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">Aplus</span> : <span class="id" title="var">Plus</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Amult</span> : <span class="id" title="var">Mult</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Azero</span> : <span class="id" title="var">Zero</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Aone</span> : <span class="id" title="var">One</span> <span class="id" title="var">A</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsSemiCRing</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">semiplus_monoid</span> : @<span class="id" title="var">IsCommutativeMonoid</span> <span class="id" title="var">plus_is_sg_op</span> <span class="id" title="var">zero_is_mon_unit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">semimult_monoid</span> : @<span class="id" title="var">IsCommutativeMonoid</span> <span class="id" title="var">mult_is_sg_op</span> <span class="id" title="var">one_is_mon_unit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">semiring_distr</span> : <span class="id" title="var">LeftDistribute</span> (.*.) (+)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">semiring_left_absorb</span> : <span class="id" title="var">LeftAbsorb</span> (.*.) 0 }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">semiplus_monoid</span> <span class="id" title="var">semimult_monoid</span> <span class="id" title="var">semiring_distr</span> <span class="id" title="var">semiring_left_absorb</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">Anegate</span> : <span class="id" title="var">Negate</span> <span class="id" title="var">A</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsRing</span> := {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ring_abgroup</span> :: @<span class="id" title="var">IsAbGroup</span> <span class="id" title="var">plus_is_sg_op</span> <span class="id" title="var">zero_is_mon_unit</span> <span class="id" title="var">_</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ring_monoid</span> :: @<span class="id" title="var">IsMonoid</span> <span class="id" title="var">mult_is_sg_op</span> <span class="id" title="var">one_is_mon_unit</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ring_dist_left</span> :: <span class="id" title="var">LeftDistribute</span> (.*.) (+);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">ring_dist_right</span> :: <span class="id" title="var">RightDistribute</span> (.*.) (+);<br/>
+&nbsp;&nbsp;}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsCRing</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">cring_group</span> : @<span class="id" title="var">IsAbGroup</span> <span class="id" title="var">plus_is_sg_op</span> <span class="id" title="var">zero_is_mon_unit</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">cring_monoid</span> : @<span class="id" title="var">IsCommutativeMonoid</span> <span class="id" title="var">mult_is_sg_op</span> <span class="id" title="var">one_is_mon_unit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">cring_dist</span> : <span class="id" title="var">LeftDistribute</span> (.*.) (+) }.<br/>
+
+<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">cring_group</span> <span class="id" title="var">cring_monoid</span> <span class="id" title="var">cring_dist</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">isring_iscring</span> : <span class="id" title="var">IsCRing</span> -&gt; <span class="id" title="var">IsRing</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">H</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">econstructor</span>; <span class="id" title="tactic">try</span> <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span> <span class="id" title="var">c</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">rapply</span> <span class="id" title="var">commutativity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lhs</span> <span class="id" title="var">rapply</span> <span class="id" title="var">distribute_l</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">f_ap</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">commutativity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsIntegralDomain</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">intdom_ring</span> : <span class="id" title="var">IsCRing</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">intdom_nontrivial</span> : <span class="id" title="var">PropHolds</span> (<span class="id" title="var">not</span> (1 = 0))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">intdom_nozeroes</span> : <span class="id" title="var">NoZeroDivisors</span> <span class="id" title="var">A</span> }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">intdom_nozeroes</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;do&nbsp;not&nbsp;include&nbsp;strong&nbsp;extensionality&nbsp;for&nbsp;(-)&nbsp;and&nbsp;(/)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;because&nbsp;it&nbsp;can&nbsp;de&nbsp;derived&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsField</span> {<span class="id" title="var">Aap</span>: <span class="id" title="var">Apart</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Arecip</span>: <span class="id" title="var">Recip</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">field_ring</span> : <span class="id" title="var">IsCRing</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">field_apart</span> : <span class="id" title="var">IsApart</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">field_plus_ext</span> : <span class="id" title="var">StrongBinaryExtensionality</span> (+)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">field_mult_ext</span> : <span class="id" title="var">StrongBinaryExtensionality</span> (.*.)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">field_nontrivial</span> : <span class="id" title="var">PropHolds</span> (1 ≶ 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">recip_inverse</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">x</span>.1 // <span class="id" title="var">x</span> = 1 }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">field_ring</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">field_apart</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">field_plus_ext</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">field_mult_ext</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;let&nbsp;/0&nbsp;=&nbsp;0&nbsp;so&nbsp;properties&nbsp;as&nbsp;Injective&nbsp;(/),<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;f&nbsp;(/x)&nbsp;=&nbsp;/&nbsp;(f&nbsp;x),&nbsp;/&nbsp;/x&nbsp;=&nbsp;x,&nbsp;/x&nbsp;*&nbsp;/y&nbsp;=&nbsp;/(x&nbsp;*&nbsp;y)&nbsp;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;hold&nbsp;without&nbsp;any&nbsp;additional&nbsp;assumptions&nbsp;*)</span><br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsDecField</span> {<span class="id" title="var">Adec_recip</span> : <span class="id" title="var">DecRecip</span> <span class="id" title="var">A</span>} :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">decfield_ring</span> : <span class="id" title="var">IsCRing</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">decfield_nontrivial</span> : <span class="id" title="var">PropHolds</span> (1 &lt;&gt; 0)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">dec_recip_0</span> : /0 = 0<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">dec_recip_inverse</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span>, <span class="id" title="var">x</span> &lt;&gt; 0 -&gt; <span class="id" title="var">x</span> / <span class="id" title="var">x</span> = 1 }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">decfield_ring</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">FieldCharacteristic@</span>{<span class="id" title="var">j</span>} {<span class="id" title="var">Aap</span> : <span class="id" title="var">Apart@</span>{<span class="id" title="var">i</span> <span class="id" title="var">j</span>} <span class="id" title="var">A</span>} (<span class="id" title="var">k</span> : <span class="id" title="var">nat</span>) : <span class="id" title="var">Type@</span>{<span class="id" title="var">j</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="var">field_characteristic</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">n</span> : <span class="id" title="var">nat</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Nat.Core.lt</span> 0 <span class="id" title="var">n</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">iff@</span>{<span class="id" title="var">j</span> <span class="id" title="var">j</span> <span class="id" title="var">j</span>} (<span class="id" title="keyword">forall</span> <span class="id" title="var">m</span> : <span class="id" title="var">nat</span>, <span class="id" title="var">not@</span>{<span class="id" title="var">j</span>} (<span class="id" title="var">paths@</span>{<span class="id" title="keyword">Set</span>} <span class="id" title="var">n</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">nat_mul</span> <span class="id" title="var">k</span> <span class="id" title="var">m</span>)))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(@<span class="id" title="var">apart</span> <span class="id" title="var">A</span> <span class="id" title="var">Aap</span> (<span class="id" title="var">nat_iter</span> <span class="id" title="var">n</span> (1 +) 0) 0).<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">upper_classes</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;Due&nbsp;to&nbsp;bug&nbsp;2528 *)</span><br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 (<span class="id" title="var">PropHolds</span> (1 &lt;&gt; 0)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> @<span class="id" title="var">intdom_nontrivial</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 5 (<span class="id" title="var">PropHolds</span> (1 ≶ 0)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> @<span class="id" title="var">field_nontrivial</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 5 (<span class="id" title="var">PropHolds</span> (1 &lt;&gt; 0)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">eapply</span> @<span class="id" title="var">decfield_nontrivial</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="comment">(*&nbsp;<br/>
+For&nbsp;a&nbsp;strange&nbsp;reason&nbsp;IsCRing&nbsp;instances&nbsp;of&nbsp;Integers&nbsp;are&nbsp;sometimes&nbsp;obtained&nbsp;by<br/>
+Integers&nbsp;-&gt;&nbsp;IntegralDomain&nbsp;-&gt;&nbsp;Ring&nbsp;and&nbsp;sometimes&nbsp;directly.&nbsp;Making&nbsp;this&nbsp;an<br/>
+instance&nbsp;with&nbsp;a&nbsp;low&nbsp;priority&nbsp;instead&nbsp;of&nbsp;using&nbsp;intdom_ring:&gt;&nbsp;IsCRing&nbsp;forces&nbsp;Coq&nbsp;to<br/>
+take&nbsp;the&nbsp;right&nbsp;way&nbsp;<br/>
+*)</span><br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 10 (<span class="id" title="var">IsCRing</span> <span class="id" title="var">_</span>) =&gt; <span class="id" title="tactic">apply</span> @<span class="id" title="var">intdom_ring</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">recip_inverse</span> {<span class="id" title="var">A</span> <span class="id" title="var">Aplus</span> <span class="id" title="var">Amult</span> <span class="id" title="var">Azero</span> <span class="id" title="var">Aone</span> <span class="id" title="var">Anegate</span> <span class="id" title="var">Aap</span> <span class="id" title="var">Arecip</span> <span class="id" title="var">IsField</span>} <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">dec_recip_inverse</span><br/>
+&nbsp;&nbsp;{<span class="id" title="var">A</span> <span class="id" title="var">Aplus</span> <span class="id" title="var">Amult</span> <span class="id" title="var">Azero</span> <span class="id" title="var">Aone</span> <span class="id" title="var">Anegate</span> <span class="id" title="var">Adec_recip</span> <span class="id" title="var">IsDecField</span>} <span class="id" title="var">_</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Arguments</span> <span class="id" title="var">dec_recip_0</span> {<span class="id" title="var">A</span> <span class="id" title="var">Aplus</span> <span class="id" title="var">Amult</span> <span class="id" title="var">Azero</span> <span class="id" title="var">Aone</span> <span class="id" title="var">Anegate</span> <span class="id" title="var">Adec_recip</span> <span class="id" title="var">IsDecField</span>}.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">lattice</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> <span class="id" title="var">A</span> {<span class="id" title="var">Ajoin</span>: <span class="id" title="var">Join</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Ameet</span>: <span class="id" title="var">Meet</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Abottom</span> : <span class="id" title="var">Bottom</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Atop</span> : <span class="id" title="var">Top</span> <span class="id" title="var">A</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsJoinSemiLattice</span> := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">join_semilattice</span> : @<span class="id" title="var">IsSemiLattice</span> <span class="id" title="var">A</span> <span class="id" title="var">join_is_sg_op</span>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <span class="id" title="var">join_semilattice</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsBoundedJoinSemiLattice</span> := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bounded_join_semilattice</span> : @<span class="id" title="var">IsBoundedSemiLattice</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">join_is_sg_op</span> <span class="id" title="var">bottom_is_mon_unit</span>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <span class="id" title="var">bounded_join_semilattice</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsMeetSemiLattice</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">meet_semilattice</span> : @<span class="id" title="var">IsSemiLattice</span> <span class="id" title="var">A</span> <span class="id" title="var">meet_is_sg_op</span>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <span class="id" title="var">meet_semilattice</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsBoundedMeetSemiLattice</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bounded_meet_semilattice</span> : @<span class="id" title="var">IsBoundedSemiLattice</span> <span class="id" title="var">A</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">meet_is_sg_op</span> <span class="id" title="var">top_is_mon_unit</span>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="keyword">Instance</span> <span class="id" title="var">bounded_meet_semilattice</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsLattice</span> := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">lattice_join</span> : <span class="id" title="var">IsJoinSemiLattice</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">lattice_meet</span> : <span class="id" title="var">IsMeetSemiLattice</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">join_meet_absorption</span> : <span class="id" title="var">Absorption</span> (⊔) (⊓) <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">meet_join_absorption</span> : <span class="id" title="var">Absorption</span> (⊓) (⊔) }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lattice_join</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">lattice_meet</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">join_meet_absorption</span> <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">meet_join_absorption</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsBoundedLattice</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">boundedlattice_join</span> : <span class="id" title="var">IsBoundedJoinSemiLattice</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">boundedlattice_meet</span> : <span class="id" title="var">IsBoundedMeetSemiLattice</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">boundedjoin_meet_absorption</span> : <span class="id" title="var">Absorption</span> (⊔) (⊓)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">boundedmeet_join_absorption</span> : <span class="id" title="var">Absorption</span> (⊓) (⊔)}.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">boundedlattice_join</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">boundedlattice_meet</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">boundedjoin_meet_absorption</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">boundedmeet_join_absorption</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsDistributiveLattice</span> := <br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">distr_lattice_lattice</span> : <span class="id" title="var">IsLattice</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">join_meet_distr_l</span> : <span class="id" title="var">LeftDistribute</span> (⊔) (⊓) }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">distr_lattice_lattice</span> <span class="id" title="var">join_meet_distr_l</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">lattice</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">morphism_classes</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">sgmorphism_classes</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Aop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bop</span> : <span class="id" title="var">SgOp</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Aunit</span> : <span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bunit</span> : <span class="id" title="var">MonUnit</span> <span class="id" title="var">B</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">mc_mult_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsSemiGroupPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">preserves_sg_op</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">f</span> (<span class="id" title="var">x</span> * <span class="id" title="var">y</span>) = <span class="id" title="var">f</span> <span class="id" title="var">x</span> * <span class="id" title="var">f</span> <span class="id" title="var">y</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsUnitPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">preserves_mon_unit</span> : <span class="id" title="var">f</span> <span class="id" title="var">mon_unit</span> = <span class="id" title="var">mon_unit</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsMonoidPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">monmor_sgmor</span> : <span class="id" title="var">IsSemiGroupPreserving</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">monmor_unitmor</span> : <span class="id" title="var">IsUnitPreserving</span> <span class="id" title="var">f</span> }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">monmor_sgmor</span> <span class="id" title="var">monmor_unitmor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">sgmorphism_classes</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">ringmorphism_classes</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Aplus</span> : <span class="id" title="var">Plus</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bplus</span> : <span class="id" title="var">Plus</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Amult</span> : <span class="id" title="var">Mult</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bmult</span> : <span class="id" title="var">Mult</span> <span class="id" title="var">B</span>} {<span class="id" title="var">Azero</span> : <span class="id" title="var">Zero</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bzero</span> : <span class="id" title="var">Zero</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Aone</span> : <span class="id" title="var">One</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bone</span> : <span class="id" title="var">One</span> <span class="id" title="var">B</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsSemiRingPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">semiringmor_plus_mor</span> : @<span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">plus_is_sg_op</span> <span class="id" title="var">plus_is_sg_op</span> <span class="id" title="var">zero_is_mon_unit</span> <span class="id" title="var">zero_is_mon_unit</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">semiringmor_mult_mor</span> : @<span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">mult_is_sg_op</span> <span class="id" title="var">mult_is_sg_op</span> <span class="id" title="var">one_is_mon_unit</span> <span class="id" title="var">one_is_mon_unit</span> <span class="id" title="var">f</span> }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">semiringmor_plus_mor</span> <span class="id" title="var">semiringmor_mult_mor</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">Aap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">B</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsSemiRingStrongPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">strong_semiringmor_sr_mor</span> : <span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">strong_semiringmor_strong_mor</span> : <span class="id" title="var">StrongExtensionality</span> <span class="id" title="var">f</span> }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">strong_semiringmor_sr_mor</span> <span class="id" title="var">strong_semiringmor_strong_mor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">ringmorphism_classes</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">latticemorphism_classes</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} {<span class="id" title="var">Ajoin</span> : <span class="id" title="var">Join</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bjoin</span> : <span class="id" title="var">Join</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{<span class="id" title="var">Ameet</span> : <span class="id" title="var">Meet</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bmeet</span> : <span class="id" title="var">Meet</span> <span class="id" title="var">B</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsJoinPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">join_slmor_sgmor</span> : @<span class="id" title="var">IsSemiGroupPreserving</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">join_is_sg_op</span> <span class="id" title="var">join_is_sg_op</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">join_slmor_sgmor</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsMeetPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">meet_slmor_sgmor</span> : @<span class="id" title="var">IsSemiGroupPreserving</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">meet_is_sg_op</span> <span class="id" title="var">meet_is_sg_op</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">meet_slmor_sgmor</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">Abottom</span> : <span class="id" title="var">Bottom</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bbottom</span> : <span class="id" title="var">Bottom</span> <span class="id" title="var">B</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsBoundedJoinPreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) := <span class="id" title="var">bounded_join_slmor_monmor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: @<span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">A</span> <span class="id" title="var">B</span> <span class="id" title="var">join_is_sg_op</span> <span class="id" title="var">join_is_sg_op</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">bottom_is_mon_unit</span> <span class="id" title="var">bottom_is_mon_unit</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span> <span class="id" title="var">bounded_join_slmor_monmor</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsLatticePreserving</span> (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">latticemor_join_mor</span> : <span class="id" title="var">IsJoinPreserving</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">latticemor_meet_mor</span> : <span class="id" title="var">IsMeetPreserving</span> <span class="id" title="var">f</span> }.<br/>
+&nbsp;&nbsp;#[<span class="id" title="var">export</span>] <span class="id" title="var">Existing</span> <span class="id" title="var">Instances</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">latticemor_join_mor</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">latticemor_meet_mor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">latticemorphism_classes</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">morphism_classes</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">id_mor</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>}.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">id_sg_morphism</span> : <span class="id" title="var">IsSemiGroupPreserving</span> (@<span class="id" title="var">id</span> <span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">id_monoid_morphism</span> : <span class="id" title="var">IsMonoidPreserving</span> (@<span class="id" title="var">id</span> <span class="id" title="var">A</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">split</span>; <span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">id_mor</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">compose_mor</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">SgOp</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">SgOp</span> <span class="id" title="var">C</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">C</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) (<span class="id" title="var">g</span> : <span class="id" title="var">B</span> -&gt; <span class="id" title="var">C</span>).<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+Making these global instances causes typeclass loops.  Instead they are declared below as <span class="inlinecode"><span class="id" title="keyword">Hint</span></span> <span class="inlinecode"><span class="id" title="keyword">Extern</span></span>s that apply only when the goal has the specified form. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">compose_sg_morphism</span> : <span class="id" title="var">IsSemiGroupPreserving</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">IsSemiGroupPreserving</span> <span class="id" title="var">g</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsSemiGroupPreserving</span> (<span class="id" title="var">g</span> ∘ <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">red</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">fp</span> <span class="id" title="var">gp</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> ((<span class="id" title="var">ap</span> <span class="id" title="var">g</span> <span class="id" title="var">_</span>) @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">fp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">gp</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">compose_monoid_morphism</span> : <span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">g</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsMonoidPreserving</span> (<span class="id" title="var">g</span> ∘ <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">red</span>;<span class="id" title="tactic">unfold</span> <span class="id" title="var">Compose</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">etransitivity</span>;[|<span class="id" title="tactic">apply</span> (<span class="id" title="var">preserves_mon_unit</span> (<span class="id" title="var">f</span>:=<span class="id" title="var">g</span>))].<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">ap</span>,<span class="id" title="var">preserves_mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">compose_mor</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">invert_mor</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;`{<span class="id" title="var">SgOp</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">invert_sg_morphism</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> `{!<span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>}, <span class="id" title="var">IsSemiGroupPreserving</span> <span class="id" title="var">f</span> -&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">IsSemiGroupPreserving</span> (<span class="id" title="var">f</span>^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">red</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">E</span> <span class="id" title="var">fp</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">_</span> @ <span class="id" title="var">_</span> @ <span class="id" title="var">_</span>)^.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">fp</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">(*&nbsp;We&nbsp;could&nbsp;use&nbsp;<span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">ap2</span>;</span> <span class="inlinecode"><span class="id" title="tactic">apply</span></span> <span class="inlinecode"><span class="id" title="var">eisretr</span></span>&nbsp;here,&nbsp;but&nbsp;it&nbsp;is&nbsp;convenient<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;have&nbsp;things&nbsp;in&nbsp;terms&nbsp;of&nbsp;ap.&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; <span class="id" title="var">sg_op</span> <span class="id" title="var">z</span> <span class="id" title="var">_</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">refine</span> (<span class="id" title="var">ap</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">z</span> =&gt; <span class="id" title="var">sg_op</span> <span class="id" title="var">_</span> <span class="id" title="var">z</span>) <span class="id" title="var">_</span>); <span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Instance</span> <span class="id" title="var">invert_monoid_morphism</span> :<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">forall</span> `{!<span class="id" title="var">IsEquiv</span> <span class="id" title="var">f</span>}, <span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">f</span> -&gt; <span class="id" title="var">IsMonoidPreserving</span> (<span class="id" title="var">f</span>^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>;<span class="id" title="tactic">split</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">_</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> (<span class="id" title="var">equiv_inj</span> <span class="id" title="var">f</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">_</span> @ <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">apply</span> <span class="id" title="var">eisretr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span class="id" title="tactic">symmetry</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">preserves_mon_unit</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">invert_mor</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 (<span class="id" title="var">IsSemiGroupPreserving</span> (<span class="id" title="var">_</span> ∘ <span class="id" title="var">_</span>)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">class_apply</span> @<span class="id" title="var">compose_sg_morphism</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 (<span class="id" title="var">IsMonoidPreserving</span> (<span class="id" title="var">_</span> ∘ <span class="id" title="var">_</span>)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">class_apply</span> @<span class="id" title="var">compose_monoid_morphism</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 (<span class="id" title="var">IsSemiGroupPreserving</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> <span class="id" title="var">_</span>)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">class_apply</span> @<span class="id" title="var">compose_sg_morphism</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 (<span class="id" title="var">IsMonoidPreserving</span> (<span class="id" title="var">_</span> <span class="id" title="var">o</span> <span class="id" title="var">_</span>)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">class_apply</span> @<span class="id" title="var">compose_monoid_morphism</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 (<span class="id" title="var">IsSemiGroupPreserving</span> (<span class="id" title="var">_</span>^-1)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">class_apply</span> @<span class="id" title="var">invert_sg_morphism</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Hint</span> <span class="id" title="keyword">Extern</span> 4 (<span class="id" title="var">IsMonoidPreserving</span> (<span class="id" title="var">_</span>^-1)) =&gt;<br/>
+&nbsp;&nbsp;<span class="id" title="var">class_apply</span> @<span class="id" title="var">invert_monoid_morphism</span> : <span class="id" title="var">typeclass_instances</span>.<br/>
+
+<br/>
+#[<span class="id" title="var">export</span>]<br/>
+<span class="id" title="keyword">Instance</span> <span class="id" title="var">isinjective_mapinO_tr</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;{<span class="id" title="var">p</span> : <span class="id" title="var">MapIn</span> (<span class="id" title="var">Tr</span> (-1)) <span class="id" title="var">f</span>} : <span class="id" title="var">IsInjective</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">pfeq</span> =&gt; <span class="id" title="var">ap</span> <span class="id" title="var">pr1</span> (@<span class="id" title="var">center</span> <span class="id" title="var">_</span> (<span class="id" title="var">p</span> (<span class="id" title="var">f</span> <span class="id" title="var">y</span>) (<span class="id" title="var">x</span>; <span class="id" title="var">pfeq</span>) (<span class="id" title="var">y</span>; <span class="id" title="var">idpath</span>))).<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">strong_injective</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span>} {<span class="id" title="var">Aap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">A</span>} {<span class="id" title="var">Bap</span> : <span class="id" title="var">Apart</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>) .<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Class</span> <span class="id" title="var">IsStrongInjective</span> :=<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{ <span class="id" title="var">strong_injective</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">x</span> ≶ <span class="id" title="var">y</span> -&gt; <span class="id" title="var">f</span> <span class="id" title="var">x</span> ≶ <span class="id" title="var">f</span> <span class="id" title="var">y</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;; <span class="id" title="var">strong_injective_mor</span> : <span class="id" title="var">StrongExtensionality</span> <span class="id" title="var">f</span> }.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">strong_injective</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">extras</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Class</span> <span class="id" title="var">CutMinusSpec</span> <span class="id" title="var">A</span> (<span class="id" title="var">cm</span> : <span class="id" title="var">CutMinus</span> <span class="id" title="var">A</span>) `{<span class="id" title="var">Zero</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Plus</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">Le</span> <span class="id" title="var">A</span>} := {<br/>
+&nbsp;&nbsp;<span class="id" title="var">cut_minus_le</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">y</span> ≤ <span class="id" title="var">x</span> -&gt; <span class="id" title="var">x</span> ∸ <span class="id" title="var">y</span> + <span class="id" title="var">y</span> = <span class="id" title="var">x</span> ;<br/>
+&nbsp;&nbsp;<span class="id" title="var">cut_minus_0</span> : <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">x</span> ≤ <span class="id" title="var">y</span> -&gt; <span class="id" title="var">x</span> ∸ <span class="id" title="var">y</span> = 0<br/>
+}.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_issemigrouppreserving</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">SgOp</span> <span class="id" title="var">B</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} : <span class="id" title="var">IsHProp</span> (<span class="id" title="var">IsSemiGroupPreserving</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">IsSemiGroupPreserving</span>; <span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_IsSemiRingPreserving</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Plus</span> <span class="id" title="var">A</span>, <span class="id" title="var">Plus</span> <span class="id" title="var">B</span>, <span class="id" title="var">Mult</span> <span class="id" title="var">A</span>, <span class="id" title="var">Mult</span> <span class="id" title="var">B</span>, <span class="id" title="var">Zero</span> <span class="id" title="var">A</span>, <span class="id" title="var">Zero</span> <span class="id" title="var">B</span>, <span class="id" title="var">One</span> <span class="id" title="var">A</span>, <span class="id" title="var">One</span> <span class="id" title="var">B</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">f</span> := <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_IsMonoidPreserving</span> {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">SgOp</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">B</span>} {<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>} : <span class="id" title="var">_</span> &lt;~&gt; <span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">f</span><br/>
+&nbsp;&nbsp;:= <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_ismonoidpreserving</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">SgOp</span> <span class="id" title="var">A</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">SgOp</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">B</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">A</span>} `{<span class="id" title="var">MonUnit</span> <span class="id" title="var">B</span>} (<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">IsMonoidPreserving</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">issig_IsMonoidPreserving</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">istrunc_prod</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">unfold</span> <span class="id" title="var">IsUnitPreserving</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_issemiringpreserving</span> `{<span class="id" title="var">Funext</span>} {<span class="id" title="var">A</span> <span class="id" title="var">B</span> : <span class="id" title="keyword">Type</span>} `{<span class="id" title="var">IsHSet</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;`{<span class="id" title="var">Plus</span> <span class="id" title="var">A</span>, <span class="id" title="var">Plus</span> <span class="id" title="var">B</span>, <span class="id" title="var">Mult</span> <span class="id" title="var">A</span>, <span class="id" title="var">Mult</span> <span class="id" title="var">B</span>, <span class="id" title="var">Zero</span> <span class="id" title="var">A</span>, <span class="id" title="var">Zero</span> <span class="id" title="var">B</span>, <span class="id" title="var">One</span> <span class="id" title="var">A</span>, <span class="id" title="var">One</span> <span class="id" title="var">B</span>}<br/>
+&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">A</span> -&gt; <span class="id" title="var">B</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp</span> (<span class="id" title="var">IsSemiRingPreserving</span> <span class="id" title="var">f</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> (<span class="id" title="var">istrunc_equiv_istrunc</span> <span class="id" title="var">_</span> <span class="id" title="var">issig_IsSemiRingPreserving</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_issemigroup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> : <span class="id" title="var">_</span> &lt;~&gt; @<span class="id" title="var">IsSemiGroup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> := <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_issemigroup</span> `{<span class="id" title="var">Funext</span>}<br/>
+&nbsp;&nbsp;: <span class="id" title="keyword">forall</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>, <span class="id" title="var">IsHProp</span> (@<span class="id" title="var">IsSemiGroup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>; <span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>; <span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eisretr</span> (<span class="id" title="var">issig_issemigroup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eisretr</span> (<span class="id" title="var">issig_issemigroup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>) <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a'</span> := (<span class="id" title="var">issig_issemigroup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)^-1 <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">b'</span> := (<span class="id" title="var">issig_issemigroup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>)^-1 <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">issig_issemigroup</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">b'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">b</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_path_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">contr_prod</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a'</span> <span class="id" title="var">a</span>], <span class="id" title="var">b</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">b'</span> <span class="id" title="var">b</span>].<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">do</span> 3 (<span class="id" title="var">nrefine</span> (<span class="id" title="var">contr_equiv'</span> <span class="id" title="var">_</span> (@<span class="id" title="var">equiv_path_forall</span> <span class="id" title="var">H</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>));<br/>
+&nbsp;&nbsp;<span class="id" title="var">nrefine</span> (@<span class="id" title="var">contr_forall</span> <span class="id" title="var">H</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">intro</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">_</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_ismonoid</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">_</span> &lt;~&gt; @<span class="id" title="var">IsMonoid</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> := <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_ismonoid</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">IsHProp</span> (@<span class="id" title="var">IsMonoid</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eisretr</span> (<span class="id" title="var">issig_ismonoid</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eisretr</span> (<span class="id" title="var">issig_ismonoid</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>) <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a'</span> := (<span class="id" title="var">issig_ismonoid</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>)^-1 <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">b'</span> := (<span class="id" title="var">issig_ismonoid</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>)^-1 <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">issig_ismonoid</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">b'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">b</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_path_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">contr_prod</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a'</span> <span class="id" title="var">a</span>], <span class="id" title="var">b</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">b'</span> <span class="id" title="var">b</span>]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a''</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">b''</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">a''</span> <span class="id" title="var">b''</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_path_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a''</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span> <span class="id" title="var">a''</span>], <span class="id" title="var">b''</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">b</span> <span class="id" title="var">b''</span>]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">snrapply</span> <span class="id" title="var">contr_prod</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">srapply</span> <span class="id" title="var">contr_paths_contr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">srapply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">srapply</span> <span class="id" title="var">istrunc_forall</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">issig_isgroup</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">_</span> &lt;~&gt; @<span class="id" title="var">IsGroup</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> := <span class="id" title="keyword">ltac</span>:(<span class="id" title="var">issig</span>).<br/>
+
+<br/>
+<span class="id" title="keyword">Global Instance</span> <span class="id" title="var">ishprop_isgroup</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span> : <span class="id" title="var">IsHProp</span> (@<span class="id" title="var">IsGroup</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>).<br/>
+<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">istrunc_S</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eisretr</span> (<span class="id" title="var">issig_isgroup</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eisretr</span> (<span class="id" title="var">issig_isgroup</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>) <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a'</span> := (<span class="id" title="var">issig_isgroup</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>)^-1 <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">b'</span> := (<span class="id" title="var">issig_isgroup</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>)^-1 <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">issig_isgroup</span> <span class="id" title="var">w</span> <span class="id" title="var">x</span> <span class="id" title="var">y</span> <span class="id" title="var">z</span>))).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">b'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">b</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b'</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">a'</span> <span class="id" title="var">b'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_path_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">contr_prod</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a'</span> <span class="id" title="var">a</span>], <span class="id" title="var">b</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">b'</span> <span class="id" title="var">b</span>]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">eissect</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>) <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">a''</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">a</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">set</span> (<span class="id" title="var">b''</span> := <span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">b</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="var">clearbody</span> <span class="id" title="var">a''</span> <span class="id" title="var">b''</span>; <span class="id" title="tactic">clear</span> <span class="id" title="var">a</span> <span class="id" title="var">b</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">ap</span> (<span class="id" title="var">equiv_sigma_prod0</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)^-1)).<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> (<span class="id" title="var">contr_equiv</span> <span class="id" title="var">_</span> (<span class="id" title="var">equiv_path_prod</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">a''</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">a</span> <span class="id" title="var">a''</span>], <span class="id" title="var">b''</span> <span class="id" title="keyword">as</span> [<span class="id" title="var">b</span> <span class="id" title="var">b''</span>]; <span class="id" title="var">cbn</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">srapply</span> <span class="id" title="var">contr_prod</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">srapply</span> <span class="id" title="var">contr_paths_contr</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">srapply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="var">all</span>: <span class="id" title="var">srapply</span> <span class="id" title="var">istrunc_forall</span>.<br/>
+<span class="id" title="keyword">Defined</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">extras</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>

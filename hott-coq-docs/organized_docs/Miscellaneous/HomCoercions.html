@@ -1,0 +1,352 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<link href="coqdoc.css" rel="stylesheet" type="text/css" />
+<title>HomCoercions</title>
+</head>
+
+<body>
+
+<div id="page">
+
+<div id="header">
+</div>
+
+<div id="main">
+
+<h1 class="libtitle">Library HomCoercions</h1>
+
+<div class="code">
+</div>
+
+<div class="doc">
+<a id="lab574"></a><h1 class="section">Coercions between hom-set adjunctions and unit+counit adjunctions</h1>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Core</span> <span class="id" title="var">Functor.Core</span> <span class="id" title="var">NaturalTransformation.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Adjoint.UnitCounit</span> <span class="id" title="var">Adjoint.UnitCounitCoercions</span> <span class="id" title="var">Adjoint.Hom</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Category.Morphisms</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Composition.Core</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">FunctorCategory.Morphisms</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Functor.Identity</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">SetCategory.Morphisms</span>.<br/>
+<span class="id" title="keyword">Require</span> <span class="id" title="keyword">Import</span> <span class="id" title="var">Basics.Trunc</span> <span class="id" title="var">Types.Sigma</span> <span class="id" title="var">HoTT.Tactics</span> <span class="id" title="var">Equivalences</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Universe</span> <span class="id" title="var">Polymorphism</span>.<br/>
+<span class="id" title="keyword">Set Implicit Arguments</span>.<br/>
+<span class="id" title="keyword">Generalizable All Variables</span>.<br/>
+<span class="id" title="keyword">Set</span> <span class="id" title="var">Asymmetric</span> <span class="id" title="var">Patterns</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">path_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">morphism_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">category_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">functor_scope</span>.<br/>
+<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">natural_transformation_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab575"></a><h2 class="section">unit+UMP from hom-set adjunction</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">AdjunctionEquivalences</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variables</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="var">PreCategory</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">F</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">G</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">D</span> <span class="id" title="var">C</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">morphism_scope</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+We need to jump through some hoops with <span class="inlinecode"><span class="id" title="tactic">simpl</span></span> for speed 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">adjunction_naturality</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">A</span> : <span class="id" title="var">AdjunctionHom</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">nat1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">D</span> (<span class="id" title="var">F</span> <span class="id" title="var">c</span>) <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">D</span> <span class="id" title="var">d</span> <span class="id" title="var">d'</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">adjunction_naturalityT</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">G</span> <span class="id" title="var">_1</span> <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>) <span class="id" title="var">f</span> = <span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d'</span>) (<span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">f</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">adjunction_naturality</span> : <span class="id" title="var">adjunction_naturalityT</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">ap10</span> (<span class="id" title="var">commutes</span> <span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>) (<span class="id" title="var">c</span>, <span class="id" title="var">d'</span>) (1%<span class="id" title="var">morphism</span>, <span class="id" title="var">g</span>))^ <span class="id" title="var">f</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">H'</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> ?<span class="id" title="var">identity_of</span>, ?<span class="id" title="var">left_identity</span>, ?<span class="id" title="var">right_identity</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">nat1</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Section</span> <span class="id" title="var">nat2</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Context</span> <span class="id" title="var">c</span> <span class="id" title="var">c'</span> <span class="id" title="var">d</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">f</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">D</span> (<span class="id" title="var">F</span> <span class="id" title="var">c'</span>) <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">g</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">C</span> <span class="id" title="var">c</span> <span class="id" title="var">c'</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Let</span> <span class="id" title="var">adjunction_naturalityT'</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:= <span class="id" title="keyword">Eval</span> <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">A</span> (<span class="id" title="var">c'</span>, <span class="id" title="var">d</span>) <span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">g</span> = <span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>) (<span class="id" title="var">f</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span> <span class="id" title="var">_1</span> <span class="id" title="var">g</span>).<br/>
+
+<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">adjunction_naturality'</span> : <span class="id" title="var">adjunction_naturalityT'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">pose</span> <span class="id" title="var">proof</span> (<span class="id" title="var">ap10</span> (<span class="id" title="var">commutes</span> <span class="id" title="var">A</span> (<span class="id" title="var">c'</span>, <span class="id" title="var">d</span>) (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>) (<span class="id" title="var">g</span>, 1%<span class="id" title="var">morphism</span>))^ <span class="id" title="var">f</span>) <span class="id" title="keyword">as</span> <span class="id" title="var">H'</span>; <span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> ?<span class="id" title="var">identity_of</span>, ?<span class="id" title="var">left_identity</span>, ?<span class="id" title="var">right_identity</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> <span class="id" title="var">H'</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">nat2</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">End</span> <span class="id" title="var">adjunction_naturality</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+     Quoting from Awodey's "Category Theory":
+
+<div class="paragraph"> </div>
+
+     Proposition 9.4. Given categories and functors,
+
+<div class="paragraph"> </div>
+
+     <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">C</span></span> <span class="inlinecode">↔</span> <span class="inlinecode"><span class="id" title="var">D</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">G</span></span>
+
+<div class="paragraph"> </div>
+
+     the following conditions are equivalent:
+
+<div class="paragraph"> </div>
+
+     1. <span class="inlinecode"><span class="id" title="var">F</span></span> is left adjoint to <span class="inlinecode"><span class="id" title="var">G</span></span>; that is, there is a natural
+        transformation
+
+<div class="paragraph"> </div>
+
+        <span class="inlinecode"><span class="id" title="var">η</span></span> <span class="inlinecode">:</span> <span class="inlinecode">1<span class="id" title="var">_C</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode">∘</span> <span class="inlinecode"><span class="id" title="var">F</span></span>
+
+<div class="paragraph"> </div>
+
+        that has the UMP of the unit:
+
+<div class="paragraph"> </div>
+
+        For any <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">C</span></span>, <span class="inlinecode"><span class="id" title="var">d</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">D</span></span> and <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">-&gt;</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode"><span class="id" title="var">d</span></span> there exists a
+        unique <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">F</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">→</span> <span class="inlinecode"><span class="id" title="var">d</span></span> such that <span class="inlinecode"><span class="id" title="var">f</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">∘</span> <span class="inlinecode"><span class="id" title="var">η</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span>.
+
+<div class="paragraph"> </div>
+
+     2. For any <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">C</span></span> and <span class="inlinecode"><span class="id" title="var">d</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">D</span></span> there is an isomorphism,
+
+<div class="paragraph"> </div>
+
+        <span class="inlinecode"><span class="id" title="var">ϕ</span></span> <span class="inlinecode">:</span> <span class="inlinecode"><span class="id" title="var">Hom_D</span></span> <span class="inlinecode">(<span class="id" title="var">F</span></span> <span class="inlinecode"><span class="id" title="var">c</span>,</span> <span class="inlinecode"><span class="id" title="var">d</span>)</span> <span class="inlinecode">≅</span> <span class="inlinecode"><span class="id" title="var">Hom_C</span></span> <span class="inlinecode">(<span class="id" title="var">c</span>,</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode"><span class="id" title="var">d</span>)</span>
+
+<div class="paragraph"> </div>
+
+        that is natural in both <span class="inlinecode"><span class="id" title="var">c</span></span> and <span class="inlinecode"><span class="id" title="var">d</span></span>.
+
+<div class="paragraph"> </div>
+
+     Moreover, the two conditions are related by the formulas
+
+<div class="paragraph"> </div>
+
+     <span class="inlinecode"><span class="id" title="var">ϕ</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">G</span></span> <span class="inlinecode"><span class="id" title="var">g</span></span> <span class="inlinecode">∘</span> <span class="inlinecode"><span class="id" title="var">η</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span>
+
+<div class="paragraph"> </div>
+
+     <span class="inlinecode"><span class="id" title="var">η</span></span> <span class="inlinecode"><span class="id" title="var">c</span></span> <span class="inlinecode">=</span> <span class="inlinecode"><span class="id" title="var">ϕ</span>(1<span class="id" title="var">_</span>{<span class="id" title="var">F</span></span> <span class="inlinecode"><span class="id" title="var">c</span>})</span>
+     
+</div>
+<div class="code">
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">adjunction_unit__of__adjunction_hom_helper</span> (<span class="id" title="var">A</span> : <span class="id" title="var">AdjunctionHom</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">D</span>) (<span class="id" title="var">f</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">C</span> <span class="id" title="var">c</span> (<span class="id" title="var">G</span> <span class="id" title="var">d</span>))<br/>
+&nbsp;&nbsp;: <span class="id" title="var">IsHProp</span> {<span class="id" title="var">g</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">D</span> (<span class="id" title="var">F</span> <span class="id" title="var">c</span>) <span class="id" title="var">d</span> &amp; <span class="id" title="var">G</span> <span class="id" title="var">_1</span> <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">F</span> <span class="id" title="var">c</span>) 1 = <span class="id" title="var">f</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">hprop_allpath</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> [<span class="id" title="var">g0</span> <span class="id" title="var">H0</span>] [<span class="id" title="var">g1</span> <span class="id" title="var">H1</span>]; <span class="id" title="tactic">apply</span> <span class="id" title="var">path_sigma_hprop</span>; <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">destruct</span> <span class="id" title="var">H1</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">adjunction_naturality</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">right_identity</span> <span class="id" title="tactic">in</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">change</span> (<span class="id" title="var">idmap</span> <span class="id" title="var">g0</span> = <span class="id" title="var">idmap</span> <span class="id" title="var">g1</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> &lt;- (<span class="id" title="var">ap10</span> (@<span class="id" title="var">left_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>)) <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">H0</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">let</span> <span class="id" title="var">k</span> := <span class="id" title="keyword">constr</span>:(<span class="id" title="var">ap10</span> (@<span class="id" title="var">left_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>)) <span class="id" title="var">_</span>)) <span class="id" title="tactic">in</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">rewrite</span> <span class="id" title="var">k</span>. <span class="comment">(*&nbsp;https://coq.inria.fr/bugs/show_bug.cgi?id=3773&nbsp;and&nbsp;https://coq.inria.fr/bugs/show_bug.cgi?id=3772&nbsp;(probably)&nbsp;*)</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">adjunction_unit__of__adjunction_hom__mate_of__commutes</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="var">AdjunctionHom</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>) (<span class="id" title="var">s</span> <span class="id" title="var">d</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">m</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">C</span> <span class="id" title="var">s</span> <span class="id" title="var">d</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">A</span> (<span class="id" title="var">d</span>, <span class="id" title="var">F</span> <span class="id" title="var">d</span>) 1 <span class="id" title="var">o</span> <span class="id" title="var">m</span> = <span class="id" title="var">G</span> <span class="id" title="var">_1</span> (<span class="id" title="var">F</span> <span class="id" title="var">_1</span> <span class="id" title="var">m</span>) <span class="id" title="var">o</span> <span class="id" title="var">A</span> (<span class="id" title="var">s</span>, <span class="id" title="var">F</span> <span class="id" title="var">s</span>) 1.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>; <span class="id" title="tactic">rewrite</span> <span class="id" title="var">adjunction_naturality'</span>, <span class="id" title="var">adjunction_naturality</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> ?<span class="id" title="var">left_identity</span>, ?<span class="id" title="var">right_identity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">adjunction_unit__of__adjunction_hom</span> (<span class="id" title="var">A</span> : <span class="id" title="var">AdjunctionHom</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AdjunctionUnit</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exists</span> (<span class="id" title="var">Build_NaturalTransformation</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1 (<span class="id" title="var">G</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">c</span> =&gt; <span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">F</span> <span class="id" title="var">c</span>) 1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">adjunction_unit__of__adjunction_hom__mate_of__commutes</span> <span class="id" title="var">A</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">in</span> *.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span> <span class="id" title="var">c</span> <span class="id" title="var">d</span> <span class="id" title="var">f</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">contr_inhabited_hprop</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">apply</span> <span class="id" title="var">adjunction_unit__of__adjunction_hom_helper</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="tactic">exact</span> ((<span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>))^-1%<span class="id" title="var">morphism</span> <span class="id" title="var">f</span>;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;((<span class="id" title="var">adjunction_naturality</span> <span class="id" title="var">A</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ (<span class="id" title="var">ap</span> (<span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>)) (<span class="id" title="var">right_identity</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>))<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@ (<span class="id" title="var">ap10</span> (@<span class="id" title="var">right_inverse</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> (<span class="id" title="var">A</span> (<span class="id" title="var">c</span>, <span class="id" title="var">d</span>)) <span class="id" title="var">_</span>) <span class="id" title="var">f</span>))%<span class="id" title="var">path</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">AdjunctionEquivalences</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Section</span> <span class="id" title="var">isequiv</span>.<br/>
+</div>
+
+<div class="doc">
+We want to be able to use this without needing <span class="inlinecode"><span class="id" title="var">Funext</span></span>.  So, first, we prove that the types of hom-sets are equivalent. 
+</div>
+<div class="code">
+&nbsp;&nbsp;<span class="id" title="keyword">Variables</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="var">PreCategory</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">F</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">G</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">D</span> <span class="id" title="var">C</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">morphism_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">T</span> : <span class="id" title="var">AdjunctionUnit</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">equiv_hom_set_adjunction</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">c</span> : <span class="id" title="var">C</span>) (<span class="id" title="var">d</span> : <span class="id" title="var">D</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">morphism</span> <span class="id" title="var">C</span> <span class="id" title="var">c</span> (<span class="id" title="var">G</span> <span class="id" title="var">d</span>) &lt;~&gt; <span class="id" title="var">morphism</span> <span class="id" title="var">D</span> (<span class="id" title="var">F</span> <span class="id" title="var">c</span>) <span class="id" title="var">d</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">refine</span> (<span class="id" title="var">equiv_adjointify</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">f</span> =&gt; (@<span class="id" title="var">center</span> <span class="id" title="var">_</span> (<span class="id" title="var">T</span>.2 <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">f</span>)).1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">g</span> =&gt; <span class="id" title="var">G</span> <span class="id" title="var">_1</span> <span class="id" title="var">g</span> <span class="id" title="var">o</span> <span class="id" title="var">T</span>.1 <span class="id" title="var">c</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span>);<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intro</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- @<span class="id" title="var">pr1</span> ?<span class="id" title="var">A</span> ?<span class="id" title="var">P</span> ?<span class="id" title="var">x</span> = ?<span class="id" title="var">y</span> ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="tactic">change</span> (<span class="id" title="var">x</span>.1 = (<span class="id" title="var">exist</span> <span class="id" title="var">P</span> <span class="id" title="var">y</span> <span class="id" title="var">idpath</span>).1)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (<span class="id" title="var">ap</span> <span class="id" title="var">pr1</span>).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">contr</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;- <span class="id" title="keyword">match</span> <span class="id" title="keyword">goal</span> <span class="id" title="keyword">with</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;| [ |- <span class="id" title="keyword">context</span>[?<span class="id" title="var">x</span>.1] ]<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;=&gt; <span class="id" title="tactic">apply</span> <span class="id" title="var">x</span>.2<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="keyword">end</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">isequiv</span>.<br/>
+
+<br/>
+</div>
+
+<div class="doc">
+<a id="lab576"></a><h2 class="section">hom-set adjunction from unit+ump adjunction</h2>
+
+</div>
+<div class="code">
+<span class="id" title="keyword">Section</span> <span class="id" title="var">AdjunctionEquivalences'</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Context</span> `{<span class="id" title="var">Funext</span>}.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variables</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> : <span class="id" title="var">PreCategory</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">F</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Variable</span> <span class="id" title="var">G</span> : <span class="id" title="var">Functor</span> <span class="id" title="var">D</span> <span class="id" title="var">C</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Local Open</span> <span class="id" title="keyword">Scope</span> <span class="id" title="var">morphism_scope</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Lemma</span> <span class="id" title="var">adjunction_hom__of__adjunction_unit__commutes</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span> : <span class="id" title="var">AdjunctionUnit</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">sc</span> <span class="id" title="var">sd</span> <span class="id" title="var">dc</span> <span class="id" title="var">dd</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">mc</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">C</span> <span class="id" title="var">dc</span> <span class="id" title="var">sc</span>) (<span class="id" title="var">md</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">D</span> <span class="id" title="var">sd</span> <span class="id" title="var">dd</span>)<br/>
+&nbsp;&nbsp;: (<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">D</span> (<span class="id" title="var">F</span> <span class="id" title="var">sc</span>) <span class="id" title="var">sd</span> =&gt; <span class="id" title="var">G</span> <span class="id" title="var">_1</span> (<span class="id" title="var">md</span> <span class="id" title="var">o</span> <span class="id" title="var">x</span> <span class="id" title="var">o</span> <span class="id" title="var">F</span> <span class="id" title="var">_1</span> <span class="id" title="var">mc</span>) <span class="id" title="var">o</span> <span class="id" title="var">T</span> .1 <span class="id" title="var">dc</span>) =<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="keyword">fun</span> <span class="id" title="var">x</span> : <span class="id" title="var">morphism</span> <span class="id" title="var">D</span> (<span class="id" title="var">F</span> <span class="id" title="var">sc</span>) <span class="id" title="var">sd</span> =&gt; <span class="id" title="var">G</span> <span class="id" title="var">_1</span> <span class="id" title="var">md</span> <span class="id" title="var">o</span> (<span class="id" title="var">G</span> <span class="id" title="var">_1</span> <span class="id" title="var">x</span> <span class="id" title="var">o</span> <span class="id" title="var">T</span> .1 <span class="id" title="var">sc</span>) <span class="id" title="var">o</span> <span class="id" title="var">mc</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> <span class="id" title="var">path_forall</span>; <span class="id" title="tactic">intro</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">rewrite</span> !<span class="id" title="var">composition_of</span>, !<span class="id" title="keyword">associativity</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span> <span class="id" title="tactic">rewrite</span> (<span class="id" title="var">commutes</span> <span class="id" title="var">T</span>.1).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">reflexivity</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Qed</span>.<br/>
+
+<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Definition</span> <span class="id" title="var">adjunction_hom__of__adjunction_unit</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">T</span> : <span class="id" title="var">AdjunctionUnit</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>)<br/>
+&nbsp;&nbsp;: <span class="id" title="var">AdjunctionHom</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Proof</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">constructor</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="tactic">eexists</span> (<span class="id" title="var">Build_NaturalTransformation</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">apply</span> (@<span class="id" title="var">isisomorphism_natural_transformation</span> <span class="id" title="var">_</span>); <span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="keyword">fun</span> <span class="id" title="var">cd</span> =&gt;<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;@<span class="id" title="var">isiso_isequiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_isequiv</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">equiv_hom_set_adjunction</span> <span class="id" title="var">T</span> (<span class="id" title="var">fst</span> <span class="id" title="var">cd</span>) (<span class="id" title="var">snd</span> <span class="id" title="var">cd</span>))^-1)).<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="var">Unshelve</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">simpl</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">intros</span>.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="id" title="tactic">exact</span> (<span class="id" title="var">adjunction_hom__of__adjunction_unit__commutes</span> <span class="id" title="var">T</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>).<br/>
+&nbsp;&nbsp;<span class="id" title="keyword">Defined</span>.<br/>
+<span class="id" title="keyword">End</span> <span class="id" title="var">AdjunctionEquivalences'</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">AdjunctionUnitWithFunext</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> := @<span class="id" title="var">AdjunctionUnit</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">AdjunctionCounitWithFunext</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> := @<span class="id" title="var">AdjunctionCounit</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">AdjunctionUnitCounitWithFunext</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> := @<span class="id" title="var">AdjunctionUnitCounit</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span>.<br/>
+<span class="id" title="keyword">Identity</span> <span class="id" title="keyword">Coercion</span> <span class="id" title="var">AdjunctionUnit_Funext</span> : <span class="id" title="var">AdjunctionUnitWithFunext</span> &gt;-&gt; <span class="id" title="var">AdjunctionUnit</span>.<br/>
+<span class="id" title="keyword">Identity</span> <span class="id" title="keyword">Coercion</span> <span class="id" title="var">AdjunctionCounit_Funext</span> : <span class="id" title="var">AdjunctionCounitWithFunext</span> &gt;-&gt; <span class="id" title="var">AdjunctionCounit</span>.<br/>
+<span class="id" title="keyword">Identity</span> <span class="id" title="keyword">Coercion</span> <span class="id" title="var">AdjunctionUnitCounit_Funext</span> : <span class="id" title="var">AdjunctionUnitCounitWithFunext</span> &gt;-&gt; <span class="id" title="var">AdjunctionUnitCounit</span>.<br/>
+
+<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">adjunction_hom__of__adjunction_unit_Funext</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="var">AdjunctionUnitWithFunext</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+: <span class="id" title="var">AdjunctionHom</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">adjunction_hom__of__adjunction_unit</span> <span class="id" title="var">_</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">A</span>.<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">AdjunctionHomOfAdjunctionCounit_Funext</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="var">AdjunctionCounitWithFunext</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+: <span class="id" title="var">AdjunctionHom</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">adjunction_hom__of__adjunction_unit</span> <span class="id" title="var">_</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> (<span class="id" title="var">adjunction_unit_counit__of__adjunction_counit</span> <span class="id" title="var">A</span>).<br/>
+<span class="id" title="keyword">Definition</span> <span class="id" title="var">adjunction_hom__of__adjunction_unitCounit_Funext</span> `{<span class="id" title="var">Funext</span>} <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span><br/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(<span class="id" title="var">A</span> : <span class="id" title="var">AdjunctionUnitCounitWithFunext</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span>)<br/>
+: <span class="id" title="var">AdjunctionHom</span> <span class="id" title="var">_</span> <span class="id" title="var">_</span><br/>
+&nbsp;&nbsp;:= @<span class="id" title="var">adjunction_hom__of__adjunction_unit</span> <span class="id" title="var">_</span> <span class="id" title="var">C</span> <span class="id" title="var">D</span> <span class="id" title="var">F</span> <span class="id" title="var">G</span> <span class="id" title="var">A</span>.<br/>
+</div>
+</div>
+
+<div id="footer">
+<hr/><a href="index.html">Index</a><hr/>This page has been generated by <a href="http://coq.inria.fr/">coqdoc</a>
+</div>
+
+</div>
+
+</body>
+</html>
