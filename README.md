@@ -11,5 +11,7 @@ By focusing on low-complexity, unsolved questions in any domain, this project se
 - Integrate valuable insights, while discarding non-viable approaches.
 
 Contributions are welcomed. 
+
 License: MIT.
+
 October 2024
