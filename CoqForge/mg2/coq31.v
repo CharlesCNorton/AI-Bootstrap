@@ -105,7 +105,6 @@ Record PolynomialTerm := {
     coefficient * (c ^ (count_occurrences M variables));
   degree_minimality : forall (M : MotivicSpace),
     count_occurrences M variables > term_degree -> False;
-  (* New conditions *)
   tower_compatibility : forall (n m : nat) (M : MotivicSpace),
     (n > m)%nat ->
     Rabs (evaluate_term {| coefficient := coefficient;
@@ -161,7 +160,6 @@ Record ChernClass := {
   value_zero : value {| rank := 0; 
                        chern_class := 1; 
                        chern_nontrivial := R1_neq_R0 |} = 0;
-  (* New conditions *)
   tower_value_bound : forall (v : VectorBundle) (n m : nat),
     (n > m)%nat ->
     (m >= degree)%nat ->
