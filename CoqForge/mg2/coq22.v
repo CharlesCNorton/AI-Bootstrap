@@ -23,7 +23,6 @@ Record VectorBundle := {
   chern_nontrivial : chern_class <> 0
 }.
 
-(* Proof of existence of a VectorBundle satisfying chern_nontrivial *)
 Definition example_vector_bundle : VectorBundle :=
   {|
     rank := 1;
@@ -33,7 +32,6 @@ Definition example_vector_bundle : VectorBundle :=
 
 Lemma vector_bundle_exists : exists v : VectorBundle, chern_class v <> 0.
 Proof.
-  (* Use the example vector bundle as the witness *)
   exists example_vector_bundle.
   simpl.
   exact R1_neq_R0.
