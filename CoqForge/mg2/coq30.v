@@ -91,32 +91,8 @@ Record PolynomialTerm := {
   variables : list MotivicSpace;
   term_degree : nat;
   term_bound : (length variables <= term_degree)%nat;
-  homogeneity : forall (c : R) (M : MotivicSpace),
-    In M variables -> 
-    evaluate_term {| coefficient := coefficient;
-                    variables := map (fun x => if MotivicSpace_eq_dec x M 
-                                             then bundle_to_space 
-                                                  {| rank := 1;
-                                                     chern_class := c;
-                                                     chern_nontrivial := R1_neq_R0 |}
-                                             else x) variables;
-                    term_degree := term_degree;
-                    term_bound := term_bound |} = 
-    coefficient * (c ^ (count_occurrences M variables));
-  degree_minimality : forall (M : MotivicSpace),
-    count_occurrences M variables > term_degree -> False;
-  (* New conditions *)
-  tower_compatibility : forall (n m : nat) (M : MotivicSpace),
-    (n > m)%nat ->
-    Rabs (evaluate_term {| coefficient := coefficient;
-                          variables := variables;
-                          term_degree := n;
-                          term_bound := le_trans _ _ _ term_bound (le_n_S _ _ (le_S _ _ (Nat.lt_le_incl _ _ (Nat.lt_trans _ _ _ H (le_n _)))))
-                       |} M) <=
-    Rabs (evaluate_term {| coefficient := coefficient;
-                          variables := variables;
-                          term_degree := m;
-                          term_bound := term_bound |} M)
+  zero_coefficient_zero_degree : 
+    coefficient = 0%R -> term_degree = 0%nat
 }.
 
 Definition evaluate_term (t : PolynomialTerm) (M : MotivicSpace) : R :=
