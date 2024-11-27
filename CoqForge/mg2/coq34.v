@@ -129,7 +129,6 @@ Record ChernClass := {
   rank_bound : forall (v : VectorBundle),
     (rank v < degree)%nat -> value v = 0;
   nontrivial : exists v : VectorBundle, value v <> 0;
-  (* New conditions *)
   naturality : forall (v1 v2 : VectorBundle),
     rank v1 = rank v2 ->
     chern_class v1 = chern_class v2 ->
