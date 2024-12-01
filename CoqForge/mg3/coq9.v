@@ -1,5 +1,9 @@
 Require Import UniMath.Foundations.All.
 Require Import UniMath.CategoryTheory.Core.Categories.
+Require Import UniMath.Foundations.Sets.
+Require Vector.
+Require Import Coq.Vectors.Vector.
+Require Import Coq.Arith.Arith.
 
 Local Open Scope cat.
 
@@ -135,3 +139,147 @@ Definition post_comp_with_iso_is_inj {C : category} {a b c : ob C}
 Proof.
   apply (cancelR_iso h H).
 Qed.
+
+Record BiFunctor (C D : category) : UU := {
+  bi_ob : ob C → ob C → ob D;
+  bi_mor : ∏ (x1 y1 x2 y2 : ob C),
+    (x1 --> y1) → (x2 --> y2) →
+    bi_ob x1 x2 --> bi_ob y1 y2;
+  bi_id : ∏ (x1 x2 : ob C),
+    bi_mor x1 x1 x2 x2 (identity x1) (identity x2) = identity (bi_ob x1 x2);
+  bi_comp : ∏ (x1 y1 z1 x2 y2 z2 : ob C)
+    (f1 : x1 --> y1) (g1 : y1 --> z1)
+    (f2 : x2 --> y2) (g2 : y2 --> z2),
+    bi_mor x1 z1 x2 z2 (f1 · g1) (f2 · g2) = 
+    bi_mor x1 y1 x2 y2 f1 f2 · bi_mor y1 z1 y2 z2 g1 g2
+}.
+
+Record TriFunctor (C D : category) : UU := {
+  tri_ob : ob C → ob C → ob C → ob D;
+  tri_mor : ∏ (x1 y1 x2 y2 x3 y3 : ob C),
+    (x1 --> y1) → (x2 --> y2) → (x3 --> y3) →
+    tri_ob x1 x2 x3 --> tri_ob y1 y2 y3;
+  tri_id : ∏ (x1 x2 x3 : ob C),
+    tri_mor x1 x1 x2 x2 x3 x3 (identity x1) (identity x2) (identity x3) = 
+    identity (tri_ob x1 x2 x3);
+  tri_comp : ∏ (x1 y1 z1 x2 y2 z2 x3 y3 z3 : ob C)
+    (f1 : x1 --> y1) (g1 : y1 --> z1)
+    (f2 : x2 --> y2) (g2 : y2 --> z2)
+    (f3 : x3 --> y3) (g3 : y3 --> z3),
+    tri_mor x1 z1 x2 z2 x3 z3 (f1 · g1) (f2 · g2) (f3 · g3) = 
+    tri_mor x1 y1 x2 y2 x3 y3 f1 f2 f3 · tri_mor y1 z1 y2 z2 y3 z3 g1 g2 g3
+}.
+
+Record NTuple (C : category) (n : Datatypes.nat) : UU := {
+  base_obj : ob C;
+  objects : list (ob C);
+  obj_length : length objects = n
+}.
+
+Definition get_objects {C : category} {n : Datatypes.nat} 
+  (t : NTuple C n) : list (ob C) := @objects C n t.
+
+Definition get_length {C : category} {n : Datatypes.nat} 
+  (t : NTuple C n) : length (@objects C n t) = n := @obj_length C n t.
+
+Definition ntuple_map {C : category} {n : Datatypes.nat}
+  (t1 t2 : NTuple C n) : UU :=
+  ∏ (i : Datatypes.nat), 
+    List.nth i (@objects C n t1) (@base_obj C n t1) --> 
+    List.nth i (@objects C n t2) (@base_obj C n t2).
+
+Definition make_ntuple {C : category} {n : Datatypes.nat} 
+  (base : ob C) (obs : list (ob C)) (pf : length obs = n) : NTuple C n := 
+  {| base_obj := base; objects := obs; obj_length := pf |}.
+
+Definition ntuple_id {C : category} {n : Datatypes.nat}
+  (t : NTuple C n) : ntuple_map t t :=
+  λ i, identity (List.nth i (@objects C n t) (@base_obj C n t)).
+
+Definition ntuple_comp {C : category} {n : Datatypes.nat}
+  {t1 t2 t3 : NTuple C n}
+  (f : ntuple_map t1 t2) (g : ntuple_map t2 t3) : ntuple_map t1 t3 :=
+  λ i, f i · g i.
+
+Record MultiFunctor (C D : category) (n : Datatypes.nat) : UU := {
+  multi_ob : NTuple C n → ob D;
+  multi_mor : ∏ (xs ys : NTuple C n),
+    ntuple_map xs ys → multi_ob xs --> multi_ob ys;
+  multi_id : ∏ (xs : NTuple C n),
+    multi_mor xs xs (ntuple_id xs) = identity (multi_ob xs);
+  multi_comp : ∏ (xs ys zs : NTuple C n)
+    (f : ntuple_map xs ys) (g : ntuple_map ys zs),
+    multi_mor xs zs (ntuple_comp f g) = 
+    multi_mor xs ys f · multi_mor ys zs g
+}.
+
+Definition get_multi_mor {C D : category} {n : Datatypes.nat}
+  (F : MultiFunctor C D n) : 
+  ∏ (xs ys : NTuple C n), ntuple_map xs ys → 
+  @multi_ob C D n F xs --> @multi_ob C D n F ys := 
+  @multi_mor C D n F.
+
+Definition get_multi_id {C D : category} {n : Datatypes.nat}
+  (F : MultiFunctor C D n) : 
+  ∏ (xs : NTuple C n),
+  @multi_mor C D n F xs xs (ntuple_id xs) = identity (@multi_ob C D n F xs) := 
+  @multi_id C D n F.
+
+Definition get_multi_comp {C D : category} {n : Datatypes.nat}
+  (F : MultiFunctor C D n) :
+  ∏ (xs ys zs : NTuple C n)
+    (f : ntuple_map xs ys) (g : ntuple_map ys zs),
+    @multi_mor C D n F xs zs (ntuple_comp f g) = 
+    @multi_mor C D n F xs ys f · @multi_mor C D n F ys zs g :=
+  @multi_comp C D n F.
+
+Lemma list_map_preserves_length {A B : UU} (f : A → B) (l : list A) :
+  List.length (List.map f l) = List.length l.
+Proof.
+  induction l.
+  - reflexivity.
+  - simpl. 
+    rewrite IHl.
+    reflexivity.
+Defined.
+
+Definition lift_to_ntuple {C : category} {n : Datatypes.nat} 
+  (x : ob C) : NTuple C n.
+Proof.
+  use (make_ntuple x (List.repeat x n)).
+  induction n.
+  - reflexivity.
+  - simpl. 
+    rewrite IHn.
+    reflexivity.
+Defined.
+
+Lemma list_repeat_nth {A : UU} (x : A) (n i : Datatypes.nat) :
+  List.nth i (List.repeat x n) x = x.
+Proof.
+  revert i.
+  induction n.
+  - intro i. simpl. 
+    destruct i; reflexivity.
+  - intro i. simpl.
+    destruct i.
+    + reflexivity.
+    + simpl. apply IHn.
+Defined.
+
+Lemma lift_to_ntuple_nth {C : category} {n : Datatypes.nat}
+  (x : ob C) (i : Datatypes.nat) :
+  List.nth i (@objects C n (lift_to_ntuple x)) (@base_obj C n (lift_to_ntuple x)) = x.
+Proof.
+  unfold lift_to_ntuple.
+  simpl.
+  apply list_repeat_nth.
+Defined.
+
+Definition lift_morphism {C : category} {n : Datatypes.nat}
+  {x y : ob C} (f : x --> y) : @ntuple_map C n (lift_to_ntuple x) (lift_to_ntuple y).
+Proof.
+  intro i.
+  rewrite !lift_to_ntuple_nth.
+  exact f.
+Defined.
