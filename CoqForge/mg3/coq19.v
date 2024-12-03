@@ -81,8 +81,6 @@ Definition SimplicialPresheafComp_eq {C : category}
   ∏ c, presheaf_ob C F c → presheaf_ob C K c :=
   λ c x, γ_comp c (β_comp c (α_comp c x)).
 
-(*WIP HERE*)
-
 Definition functor_preserves_id {C : category} 
   (F_ob : ob C -> ob C)
   (F_mor : ∏ (a b : ob C), (a --> b) -> (F_ob a --> F_ob b)) : UU :=
