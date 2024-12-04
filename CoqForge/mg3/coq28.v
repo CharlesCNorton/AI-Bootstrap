@@ -1044,8 +1044,6 @@ Record GoodwillieTower (C : category) (F : MultiFunctor C C (Datatypes.S Datatyp
     get_P_n (tower_approx (S n)) X --> get_P_n (tower_approx n) X
 }.
 
-
-
 (*WE NEED TO ADD some essential properties that a Goodwillie tower should satisfy. The key properties are:
 
 1. The tower maps should be natural transformations
