@@ -3,7 +3,7 @@
                  FORMALIZATION WITH DETAILED PROOFS AND CONTEXT
 ────────────────────────────────────────────────────────────────────────────────────
 
-By: Charles Norton and GPT-4o
+By: Charles Norton and GPT-4o/o3-mini-high/o1-pro
 
 Date: November 20, 2024
 
