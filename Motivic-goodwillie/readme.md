@@ -1548,254 +1548,254 @@ This confluence of motivic and homotopical insights, given a “weight-based sta
 
 # 9. Glossary
 
-Below is a **hyper-precise** glossary intended to ensure future readers—human or machine—grasp the exact meanings of terms used throughout this document. Each entry is written to provide definitions, motivations, and context so that the *Weighted Motivic Taylor Tower* arguments can be parsed unambiguously.
+Below is a hyper-precise glossary intended to ensure future readers—human or machine—grasp the exact meanings of terms used throughout this document. Each entry is written to provide definitions, motivations, and context so that the *Weighted Motivic Taylor Tower* arguments can be parsed unambiguously.
 
 ---
 
-## **Blow-Up**
+## Blow-Up
 
-**Definition**:  
-A **blow-up** is a birational morphism \(\mathrm{Bl}_Z(X) \to X\) obtained by replacing a subvariety \(Z \subseteq X\) with the projectivized normal bundle \(\mathbb{P}(N_{Z/X})\). Concretely, one *blows up* the variety \(X\) along \(Z\), introducing an **exceptional divisor** that accounts for the new geometry in place of \(Z\).
+Definition:  
+A blow-up is a birational morphism \(\mathrm{Bl}_Z(X) \to X\) obtained by replacing a subvariety \(Z \subseteq X\) with the projectivized normal bundle \(\mathbb{P}(N_{Z/X})\). Concretely, one *blows up* the variety \(X\) along \(Z\), introducing an exceptional divisor that accounts for the new geometry in place of \(Z\).
 
-**Relevance**:  
+Relevance:  
 Blow-ups are notorious in motivic contexts because they often fail to be homotopy pushouts under naive \(\mathbb{A}^1\)-local equivalences, thereby introducing *obstructions* in Goodwillie-style towers. In the Weighted Motivic Taylor Tower, blow-ups are systematically tamed by assigning *dimension-based or singularity-based* penalties to the newly created exceptional divisors.
 
 ---
 
-## **Bondarko’s Weight Structures**
+## Bondarko’s Weight Structures
 
-**Definition**:  
-A *weight structure* on a triangulated category \(\mathcal{T}\) is a pair of subcategories \(\mathcal{T}^{w \leq n}\) and \(\mathcal{T}^{w \geq n}\) for each integer \(n\), satisfying axioms that allow every object to admit a canonical *weight Postnikov tower*. Introduced by **M. Bondarko**, these structures split an object \(M\) into subquotients that are *pure* in a certain integral weight.
+Definition:  
+A *weight structure* on a triangulated category \(\mathcal{T}\) is a pair of subcategories \(\mathcal{T}^{w \leq n}\) and \(\mathcal{T}^{w \geq n}\) for each integer \(n\), satisfying axioms that allow every object to admit a canonical *weight Postnikov tower*. Introduced by M. Bondarko, these structures split an object \(M\) into subquotients that are *pure* in a certain integral weight.
 
-**Relevance**:  
-In motivic homotopy or derived categories of motives, weight structures mirror how **Deligne’s mixed Hodge theory** organizes cohomology by weight. The Weighted Motivic Taylor Tower partially generalizes Bondarko’s approach to *functorial towers* by allowing real-valued or stage-dependent weight functions, rather than integral ones.
+Relevance:  
+In motivic homotopy or derived categories of motives, weight structures mirror how Deligne’s mixed Hodge theory organizes cohomology by weight. The Weighted Motivic Taylor Tower partially generalizes Bondarko’s approach to *functorial towers* by allowing real-valued or stage-dependent weight functions, rather than integral ones.
 
 ---
 
-## **cdh-Topology**
+## cdh-Topology
 
-**Definition**:  
-The **cdh-topology** (short for *coproduct-disjoint-hypercover*) on the category of schemes refines the usual Nisnevich or Zariski topologies to handle blow-ups and nilpotent thickenings more effectively. In cdh-topology, many problematic diagrams (like blow-up squares) become *excisive* homotopy pushouts.
+Definition:  
+The cdh-topology (short for *coproduct-disjoint-hypercover*) on the category of schemes refines the usual Nisnevich or Zariski topologies to handle blow-ups and nilpotent thickenings more effectively. In cdh-topology, many problematic diagrams (like blow-up squares) become *excisive* homotopy pushouts.
 
-**Relevance**:  
+Relevance:  
 For a cdh-excisive functor, blow-ups are well-behaved. The Weighted Motivic Taylor Tower interacts naturally with cdh-topological arguments, ensuring that dimension or singularity expansions from blow-ups are penalized, and thus large obstructions vanish after sufficiently many tower stages.
 
 ---
 
-## **Dimension-Based Weight Function**
+## Dimension-Based Weight Function
 
-**Definition**:  
+Definition:  
 A real-valued function \(w_{\mathrm{dim}}(X) = 1 \,/\,\bigl(1 + \dim(X)\bigr)\) that assigns smaller weights to varieties of larger dimension \(\dim(X)\). Often extended to more general forms like \(w_{\mathrm{dim}}(X) = \mathrm{const}\,\times\,\bigl(1 + \dim(X)\bigr)^{-1}\).
 
-**Relevance**:  
+Relevance:  
 By penalizing higher-dimensional objects, such a weight function ensures that blow-ups or added geometric complexity reduce the permissible factor in the Weighted Tower. This ensures that if an obstruction arises from large \(\dim(X)\), it *decays to zero* at higher tower stages because the reciprocal penalty becomes very small.
 
 ---
 
-## **Equivariant Motivic Homotopy**
+## Equivariant Motivic Homotopy
 
-**Definition**:  
+Definition:  
 The study of motivic homotopy theory where a finite group \(G\) (or more general group scheme) acts on a variety or a stable motive. Equivariant motivic categories incorporate fixed-point functors, orbit functors, and often require multi-sorted versions of slices or weight filtrations.
 
-**Relevance**:  
+Relevance:  
 In Weighted Towers, one can add “equivariant complexity” to the dimension-based or singularity-based measure if the presence of large isotropy subgroups or intricate orbit stratifications is a cause of persistent obstructions. *Equivariant weighting* then further suppresses these complexities.
 
 ---
 
-## **Goodwillie Calculus**
+## Goodwillie Calculus
 
-**Definition**:  
-A technique introduced by **Thomas Goodwillie** that approximates homotopy functors \(F\colon \mathbf{C}\to\mathbf{D}\) by *polynomial functors*, forming a *Taylor tower* \(P_nF\). Under connectivity conditions, the tower converges to \(F\). The difference \(F\to P_nF\) often measures the “non-excisive” part of \(F\).
+Definition:  
+A technique introduced by Thomas Goodwillie that approximates homotopy functors \(F\colon \mathbf{C}\to\mathbf{D}\) by *polynomial functors*, forming a *Taylor tower* \(P_nF\). Under connectivity conditions, the tower converges to \(F\). The difference \(F\to P_nF\) often measures the “non-excisive” part of \(F\).
 
-**Relevance**:  
+Relevance:  
 The Weighted Motivic Taylor Tower extends Goodwillie’s approach to *motivic spaces*, which have additional complexities (singularities, blow-ups). Weight functions “downscale” these complexities so that classical Goodwillie obstructions—previously unbounded—are forced to vanish.
 
 ---
 
-## **Homotopy Limit**
+## Homotopy Limit
 
-**Definition**:  
-Given a tower \(X_n \to X_{n-1}\to \dots\) in a stable \(\infty\)-category, the **homotopy limit** \(\operatorname{holim} X_n\) is a universal object that factors through each \(X_n\). Concretely, it is the inverse limit in the homotopy sense, often computed via totalization or the Milnor exact sequence.
+Definition:  
+Given a tower \(X_n \to X_{n-1}\to \dots\) in a stable \(\infty\)-category, the homotopy limit \(\operatorname{holim} X_n\) is a universal object that factors through each \(X_n\). Concretely, it is the inverse limit in the homotopy sense, often computed via totalization or the Milnor exact sequence.
 
-**Relevance**:  
+Relevance:  
 In Weighted Towers, proving \(\lim_n P_n^w F(X) \simeq F(X)\) typically relies on *\(\lim^1\)-vanishing*, forced by bounding arguments that show the difference \(P_n^w F(X)\to P_{n-1}^wF(X)\) is eventually *highly connected or small* in weight. This ensures the inverse limit recovers the original functor.
 
 ---
 
-## **Iterated Blow-Up**
+## Iterated Blow-Up
 
-**Definition**:  
+Definition:  
 The repeated process of blowing up subvarieties in an algebraic variety \(X\). After one blow-up, one can blow up again either the strict transform of a subvariety or an exceptional divisor, step by step.
 
-**Relevance**:  
+Relevance:  
 Classical Goodwillie calculus may not converge when dimension or singularities keep reappearing upon repeated blow-ups. Weighted Towers solve this by introducing dimension-based or singularity-based weight \(\omega(n)\to0\), ensuring that each new blow-up eventually yields obstructions “too big” in dimension to persist at higher stages.
 
 ---
 
-## **Macaulay2**
+## Macaulay2
 
-**Definition**:  
+Definition:  
 A software system for research in algebraic geometry and commutative algebra, providing commands for blow-ups, intersection rings, and computations of Chow or cohomology groups for algebraic varieties.
 
-**Relevance**:  
+Relevance:  
 Macaulay2 scripts can illustrate how blow-up transformations change the intersection ring or local invariants. Checking these changes across the Weighted Tower verifies that new divisors or singular components introduced by blow-ups become negligible once dimension-based weighting is applied sufficiently many times.
 
 ---
 
-## **Milnor Number**
+## Milnor Number
 
-**Definition**:  
+Definition:  
 An integer measuring the local complexity of a singularity, especially for an isolated hypersurface singularity at a point \(p\). Formally, it can be computed as the dimension (over \(\Bbbk\)) of the local algebra \(\mathcal{O}_{X,p}/(\partial f / \partial x_i)\).
 
-**Relevance**:  
+Relevance:  
 Singularity-based weight functions often rely on “singularity complexity,” such as the sum of Milnor numbers for all singular points. If blow-ups or degenerations increase these Milnor numbers, the Weighted Tower penalizes them by lowering \(\omega(n)\) enough that new obstructions vanish.
 
 ---
 
-## **Motivic Cohomology**
+## Motivic Cohomology
 
-**Definition**:  
+Definition:  
 Higher Chow groups \(CH^p(X, q)\) or \(H^{p,q}(X)\) introduced by Bloch and Voevodsky, providing a universal cohomology theory for algebraic varieties, capturing cycles and equivalently stable homotopy classes in \(SH(k)\).
 
-**Relevance**:  
+Relevance:  
 Weighted approaches frequently measure obstructions in motivic cohomology classes. Dimension-based or singularity-based weighting can be implemented as a filtration on \(H^{p,q}\), ensuring that classes from high dimension or severe singularities are suppressed at larger tower stages.
 
 ---
 
-## **Motivic Space**
+## Motivic Space
 
-**Definition**:  
+Definition:  
 An object in an \(\infty\)-category \(\mathcal{S}_k\) of “spaces over a field \(k\)” that generalizes algebraic varieties with \(\mathbb{A}^1\)-homotopy equivalences. Typically includes smooth schemes or simplicial presheaves on them.
 
-**Relevance**:  
+Relevance:  
 The Weighted Tower focuses on such *MotivicSpaces*, associating each one with dimension or singular complexity. The tower’s polynomial approximations \(P_n^wF(X)\) rely on controlling these measures via real-valued weight functions.
 
 ---
 
-## **Non-Reduced Scheme**
+## Non-Reduced Scheme
 
-**Definition**:  
+Definition:  
 An algebraic scheme with *nilpotent elements* in its structure sheaf, so the underlying topological space does not reflect the entire scheme’s ring-theoretic complexity. Formally, \(\mathrm{Spec}(A)\) for a ring \(A\) that has nilpotent elements.
 
-**Relevance**:  
+Relevance:  
 Classical \(\mathbb{A}^1\)-homotopy invariants often cannot see nilpotents. Weighted Towers, especially in cdh-topology, can track these non-reduced components by penalizing each thickening’s “height,” ensuring that repeated nilpotent additions become negligible at higher stages.
 
 ---
 
-## **Obstruction Class**
+## Obstruction Class
 
-**Definition**:  
+Definition:  
 An element in a cohomology group or fiber sequence \(\mathrm{fib}(P_n^w F(X)\to P_{n-1}^wF(X))\) that prevents the next tower stage from being an equivalence. Typically detected by differentials in a spectral sequence or by extension classes in a triangulated category.
 
-**Relevance**:  
+Relevance:  
 The Weighted Motivic Taylor Tower *filters out* these classes by forcing their dimension or singularity-based measure to vanish. Once the *obstruction measure* is dominated by a factor \(\omega(n)\to0\), the class is forced to zero in the limit.
 
 ---
 
-## **Obstruction Measure**
+## Obstruction Measure
 
-**Definition**:  
+Definition:  
 A real-valued function \(\mathrm{obstruction\_measure}(\alpha)\) that quantifies the “size” of an obstruction class \(\alpha\). In the Weighted Tower approach, one may define or assume that each difference \(\mathrm{fib}(P_n^w F\to P_{n-1}^wF)\) has a measure bounded by \(C\,\omega(n)\).
 
-**Relevance**:  
+Relevance:  
 This measure is central to bounding arguments: if the measure of an obstruction at stage \(n\) is \(\le C\,\omega(n)\), and \(\omega(n)\to 0\) as \(n\to\infty\), then \(\mathrm{obstruction\_measure}\) inevitably becomes arbitrarily small, guaranteeing eventual vanishing.
 
 ---
 
-## **Polynomial Approximation**
+## Polynomial Approximation
 
-**Definition**:  
+Definition:  
 In Goodwillie calculus, a polynomial (or \(n\)-excisive) functor is one that takes strongly homotopy cocartesian \((n+1)\)-dimensional cubes to cartesian cubes. The *polynomial approximation* \(P_nF\) is a universal functor satisfying that property, truncating the high-order cross-effects of \(F\).
 
-**Relevance**:  
+Relevance:  
 Weighted Taylor Towers incorporate polynomial approximation but *also* impose weight-based truncation at each step \(n\). The result is \(P_n^wF\), controlling both the “degree” of polynomial excision and the dimension/singularity of the underlying geometry.
 
 ---
 
-## **SageMath**
+## SageMath
 
-**Definition**:  
+Definition:  
 An open-source mathematical software system built on Python libraries, used for computations in algebraic geometry, number theory, group theory, and more. It interfaces with packages for toric geometry and algebraic computations.
 
-**Relevance**:  
+Relevance:  
 Sage can automate blow-up transformations, track group actions, compute cohomology or invariants of varieties, verifying that the Weighted Motivic Taylor Tower’s dimension-based or singularity-based measures indeed drive obstructions to zero in test cases.
 
 ---
 
-## **Singularity-Based Weight Function**
+## Singularity-Based Weight Function
 
-**Definition**:  
+Definition:  
 A map \(\displaystyle w_{\mathrm{sing}}(X) = 1\;/\;\bigl(1 + \mathrm{singComplexity}(X)\bigr)\) that decreases as the variety’s singular locus becomes more complicated. The measure \(\mathrm{singComplexity}(X)\) might be total Milnor number, codim of the singular locus, etc.
 
-**Relevance**:  
+Relevance:  
 Whenever blow-ups or degenerations produce new singular components, \(\mathrm{singComplexity}(X)\) increases, shrinking the reciprocal weight \(w_{\mathrm{sing}}(X)\). This ensures that *singularity-based obstructions* fade out at higher tower stages.
 
 ---
 
-## **Stage-Based Weight Function**
+## Stage-Based Weight Function
 
-**Definition**:  
+Definition:  
 A map \(\displaystyle w_{\mathrm{stage}}(n) = \frac{1}{n + 1}\) that depends purely on the tower index \(n\). As \(n\) grows, \(w_{\mathrm{stage}}(n)\) \(\to 0\).
 
-**Relevance**:  
+Relevance:  
 One key reason Weighted Towers converge is that at stage \(n\), highly complex features are multiplied by \(\omega(n) = w_{\mathrm{stage}}(n)\times (\dots)\). If \(\omega(n)\to0\), any persistent obstruction must eventually vanish because it is scaled by a diminishing factor.
 
 ---
 
-## **Stable Category**
+## Stable Category
 
-**Definition**:  
+Definition:  
 An \(\infty\)-category or model category in which “suspension” is an equivalence, and “exact triangles” behave analogously to short exact sequences in classical homological algebra. In motivic theory, \(SH(k)\) is the *stable* category of motivic spectra.
 
-**Relevance**:  
+Relevance:  
 Goodwillie calculus and Weighted Towers are typically carried out in stable categories, ensuring one can interpret fiber sequences, cofiber sequences, and triangulated arguments consistently. Convergence often uses “\(\lim^1\)-vanishing” in stable categories.
 
 ---
 
-## **Tower Convergence**
+## Tower Convergence
 
-**Definition**:  
+Definition:  
 For a tower \(\cdots \to X_n \to X_{n-1}\to \dots \), *convergence* means that its homotopy limit \(\operatorname{holim}_n X_n\) is equivalent to an intended target (e.g., \(F(X)\)). Often proven by showing that each successive difference \(X_n\to X_{n-1}\) is *arbitrarily connected* or small in some measure.
 
-**Relevance**:  
+Relevance:  
 The Weighted Motivic Taylor Tower is proven to converge by bounding each difference with a factor \(\omega(n)\). If that factor \(\omega(n)\to0\), the tower stabilizes on the original functor \(F(X)\). This is the essence of the approach’s success in the presence of high-dimensional or singular components.
 
 ---
 
-## **Weight Function**
+## Weight Function
 
-**Definition**:  
+Definition:  
 Any real-valued map \(w(X)\) assigned to motivic spaces (or objects in a stable category) that indicates “how complex” or “how large” they are in dimension or singularity. Could be a dimension-based reciprocal or a stage-based penalty. Usually, \(w(X)\) is *strictly positive* and *decreasing* in dimension or singularity measure, so bigger geometry yields smaller weights.
 
-**Relevance**:  
+Relevance:  
 In the Weighted Motivic Taylor Tower, these functions ensure that each stage $n$ kills or down-weights obstructions deriving from “features” (dimension, singularities) that exceed the chosen threshold. Reciprocals are typical: \(1/(1 + \dim(X))\), \(1/(1 + \mathrm{sing}(X))\).
 
 ---
 
-## **Weight Filtration**
+## Weight Filtration
 
-**Definition**:  
+Definition:  
 A filtration on cohomology or on objects in a (triangulated) category, indexed by numerical values (often integers in Bondarko’s case, real numbers in Weighted Tower usage). A weight filtration typically breaks an object into simpler or “lower-weight” parts and captures extension classes as transitions between layers.
 
-**Relevance**:  
+Relevance:  
 Deligne’s Hodge decomposition is an example of a classical weight filtration. The Weighted Tower approach globalizes this idea, letting dimension-based or singularity-based weights physically remove or scale out complex contributions as we move through the tower.  
 
 ---
 
-## **Weighted Motivic Taylor Tower**
+## Weighted Motivic Taylor Tower
 
-**Definition**:  
+Definition:  
 A sequence of functors \(\bigl\{P_n^w F\bigr\}\) that combine Goodwillie’s polynomial truncation \(P_nF\) with a further *weight-based* truncation—often restricting to objects of *weight \(\le \omega(n)\)* for some strictly positive decreasing function \(\omega(n)\). 
 
-**Relevance**:  
+Relevance:  
 This tower approximates a motivic homotopy functor \(F\) while systematically suppressing high-dimensional or singular obstructions. The main theorem states \(\lim_{n\to\infty}P_n^wF(X)\simeq F(X)\), proven by bounding the difference objects with small weight factors that go to zero.
 
 ---
 
-## **\(\omega(n)\)**
+## \(\omega(n)\)
 
-**Definition**:  
+Definition:  
 A stage-dependent real-valued function—often \(\omega(n)= \frac{1}{n+1}\) or a product \(\displaystyle w_{\mathrm{dim}}(X)\times w_{\mathrm{sing}}(X)\times w_{\mathrm{stage}}(n)\). The key property is \(\omega(n)\to 0\) as \(n\to \infty\).
 
-**Relevance**:  
+Relevance:  
 \(\omega(n)\) is the “total weighting factor” in the Weighted Tower. Because it shrinks at higher \(n\), it kills any persistent obstruction class, guaranteeing the convergence of \(\{P_n^wF\}\) to \(F\).
