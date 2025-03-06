@@ -1,0 +1,297 @@
+(* Define basic algebraic scheme structure *)
+ClearAll["Global`*"];
+
+(* Create a scheme from polynomials *)
+createScheme[polys_, vars_, name_] := <|
+  "Polynomials" -> polys,
+  "Variables" -> vars,
+  "Name" -> name,
+  "Dimension" -> Length[vars] - Length[polys],
+  "SingularLoci" -> computeSingularLoci[polys, vars]
+|>
+
+(* Compute singular loci - simplified version *)
+computeSingularLoci[polys_, vars_] := Module[{jacob, eqns, sols},
+  jacob = Table[D[poly, var], {poly, polys}, {var, vars}];
+  eqns = Join[polys, Flatten[jacob]];
+  sols = NSolve[Map[# == 0 &, eqns], vars];
+  Length[sols]
+]
+
+(* Blow-up a scheme at a point - simplified implementation *)
+blowUp[scheme_, point_] := Module[{newPolys, dim},
+  dim = scheme["Dimension"] + 1;
+  (* Add an equation representing exceptional divisor *)
+  newPolys = Join[scheme["Polynomials"], 
+    {scheme["Variables"][[1]]^2 + scheme["Variables"][[2]]^2}];
+  <|
+    "Polynomials" -> newPolys,
+    "Variables" -> scheme["Variables"],
+    "Name" -> "BlowUp[" <> scheme["Name"] <> "]",
+    "Dimension" -> dim,
+    "SingularLoci" -> scheme["SingularLoci"] + 1
+  |>
+]
+
+(* Compute motivic cohomology - simplified model *)
+computeMotivicCohomology[scheme_, maxDegree_] := Module[{result = <||>, dim, sing},
+  dim = scheme["Dimension"];
+  sing = scheme["SingularLoci"];
+  
+  (* Generate simplified motivic cohomology ranks *)
+  Do[
+    Do[
+      (* More complex cohomology for singular schemes *)
+      If[p <= dim && q <= dim,
+        If[p == q, 
+          result[{p, q}] = 1, (* Diagonal entries *)
+          If[p + q <= dim + 1, 
+            result[{p, q}] = If[sing > 0 && p > 0 && q > 0, sing, 1],
+            result[{p, q}] = 0
+          ]
+        ],
+        result[{p, q}] = 0
+      ],
+      {q, 0, maxDegree}
+    ],
+    {p, 0, maxDegree}
+  ];
+  
+  result
+]
+
+(* Compute differentials with optional weight bound *)
+computeDifferential[source_, target_, sourceRank_, targetRank_, r_, weight_:None] := Module[{maxRank, actualRank},
+  If[sourceRank == 0 || targetRank == 0, Return[0]];
+  
+  maxRank = Min[sourceRank, targetRank];
+  
+  (* Apply weight bound if provided *)
+  If[weight =!= None,
+    maxRank = Min[maxRank, Ceiling[weight * sourceRank]]
+  ];
+  
+  (* Simplified model: rank decreases more with weights *)
+  actualRank = If[weight === None,
+    Max[1, Floor[maxRank * 0.8]],  (* Unweighted case *)
+    Max[0, Floor[maxRank * weight]] (* Weighted case *)
+  ];
+  
+  actualRank
+]
+
+(* Compute next page in spectral sequence *)
+computeNextPage[currentPage_, r_, weightBound_:None] := Module[
+  {nextPage = <||>, differentials = <||>, bidegrees, diff},
+  
+  bidegrees = Keys[currentPage];
+  
+  (* Compute all differentials *)
+  Do[
+    With[{p = degree[[1]], q = degree[[2]]},
+      With[{targetDegree = {p + r, q - r + 1}},
+        If[KeyExistsQ[currentPage, targetDegree],
+          diff = computeDifferential[
+            degree, targetDegree, 
+            currentPage[degree], currentPage[targetDegree],
+            r, weightBound
+          ];
+          If[diff > 0, differentials[degree] = diff]
+        ]
+      ]
+    ],
+    {degree, bidegrees}
+  ];
+  
+  (* Compute next page cohomology *)
+  Do[
+    With[{p = degree[[1]], q = degree[[2]]},
+      With[{sourceKey = {p - r, q + r - 1}},
+        (* Outgoing differential *)
+        outgoing = If[KeyExistsQ[differentials, degree], 
+          differentials[degree], 0];
+        
+        (* Incoming differential *)
+        incoming = If[KeyExistsQ[differentials, sourceKey], 
+          differentials[sourceKey], 0];
+        
+        (* New rank = current - outgoing - incoming *)
+        newRank = currentPage[degree] - outgoing - incoming;
+        If[newRank > 0, nextPage[degree] = newRank]
+      ]
+    ],
+    {degree, bidegrees}
+  ];
+  
+  {nextPage, differentials}
+]
+
+(* Compute full spectral sequence *)
+computeSpectralSequence[initialPage_, maxPage_, weightBounds_:None] := Module[
+  {pages = {initialPage}, differentials = {}, r, nextResult, nextPage, currDiffs},
+  
+  For[r = 1, r <= maxPage, r++,
+    weight = If[weightBounds === None, None, weightBounds[[r]]];
+    nextResult = computeNextPage[pages[[-1]], r, weight];
+    nextPage = nextResult[[1]];
+    currDiffs = nextResult[[2]];
+    
+    AppendTo[pages, nextPage];
+    AppendTo[differentials, currDiffs];
+    
+    (* Check if converged *)
+    If[Length[currDiffs] == 0, Break[]];
+  ];
+  
+  {pages, differentials}
+]
+
+(* Create test cases *)
+testSchemes = {
+  createScheme[{x^2 + y^2 + z^2 - 1}, {x, y, z}, "Sphere"],
+  createScheme[{y^2 - x^3 - x}, {x, y}, "Elliptic"],
+  createScheme[{y^2 - x^3}, {x, y}, "Cusp"]
+};
+
+(* Create a pathological case with multiple blow-ups *)
+pathological = Fold[blowUp[#1, {0, 0}] &, testSchemes[[2]], Range[5]];
+testSchemes = Append[testSchemes, pathological];
+
+(* Apply unweighted approach *)
+unweightedResults = <||>;
+Do[
+  scheme = testSchemes[[i]];
+  cohomology = computeMotivicCohomology[scheme, 5];
+  result = computeSpectralSequence[cohomology, 10, None];
+  unweightedResults[scheme["Name"]] = result,
+  {i, Length[testSchemes]}
+];
+
+(* Apply weighted approach *)
+weightedResults = <||>;
+Do[
+  scheme = testSchemes[[i]];
+  cohomology = computeMotivicCohomology[scheme, 5];
+  
+  (* Calculate weights for each stage *)
+  dimension = scheme["Dimension"];
+  singularity = scheme["SingularLoci"];
+  weights = Table[
+    With[{
+      w_dim = 1.0/(1.0 + dimension),
+      w_sing = 1.0/(1.0 + singularity),
+      w_stage = 1.0/(n + 1.0)
+    },
+    w_dim * w_sing * w_stage],
+    {n, 1, 10}
+  ];
+  
+  result = computeSpectralSequence[cohomology, 10, weights];
+  weightedResults[scheme["Name"]] = result,
+  {i, Length[testSchemes]}
+];
+
+(* Analyze results *)
+comparisonResults = <||>;
+Do[
+  scheme = testSchemes[[i]];
+  name = scheme["Name"];
+  
+  (* Calculate obstruction measures for each approach *)
+  unweightedObstructions = Table[
+    Total[Values[unweightedResults[name][[2, r]]]], 
+    {r, 1, Length[unweightedResults[name][[2]]]}
+  ];
+  
+  weightedObstructions = Table[
+    Total[Values[weightedResults[name][[2, r]]]], 
+    {r, 1, Length[weightedResults[name][[2]]]}
+  ];
+  
+  (* Pad to ensure equal length *)
+  maxLength = Max[Length[unweightedObstructions], Length[weightedObstructions]];
+  unweightedObstructions = PadRight[unweightedObstructions, maxLength];
+  weightedObstructions = PadRight[weightedObstructions, maxLength];
+  
+  (* Find convergence stage *)
+  unweightedConverged = Position[unweightedObstructions, 0, 1, 1];
+  weightedConverged = Position[weightedObstructions, 0, 1, 1];
+  
+  unweightedConvergeStage = If[Length[unweightedConverged] > 0, 
+    unweightedConverged[[1, 1]], "Never"];
+  weightedConvergeStage = If[Length[weightedConverged] > 0, 
+    weightedConverged[[1, 1]], "Never"];
+  
+  (* Total obstruction sum - lower is faster convergence *)
+  unweightedTotal = Total[unweightedObstructions];
+  weightedTotal = Total[weightedObstructions];
+  speedup = If[weightedTotal > 0, N[unweightedTotal/weightedTotal], Infinity];
+  
+  comparisonResults[name] = <|
+    "Dimension" -> scheme["Dimension"],
+    "Singularities" -> scheme["SingularLoci"],
+    "UnweightedConvergence" -> unweightedConvergeStage,
+    "WeightedConvergence" -> weightedConvergeStage,
+    "UnweightedTotal" -> unweightedTotal,
+    "WeightedTotal" -> weightedTotal,
+    "Speedup" -> speedup
+  |>,
+  {i, Length[testSchemes]}
+];
+
+(* Output results in tabular form *)
+resultTable = {{"Scheme", "Dimension", "Singularities", 
+  "Unweighted Convergence", "Weighted Convergence", "Speedup Factor"}};
+
+AppendTo[resultTable, 
+  {"Sphere", comparisonResults["Sphere"]["Dimension"], 
+   comparisonResults["Sphere"]["Singularities"],
+   comparisonResults["Sphere"]["UnweightedConvergence"], 
+   comparisonResults["Sphere"]["WeightedConvergence"],
+   N[comparisonResults["Sphere"]["Speedup"]]}];
+
+AppendTo[resultTable, 
+  {"Elliptic", comparisonResults["Elliptic"]["Dimension"], 
+   comparisonResults["Elliptic"]["Singularities"],
+   comparisonResults["Elliptic"]["UnweightedConvergence"], 
+   comparisonResults["Elliptic"]["WeightedConvergence"],
+   N[comparisonResults["Elliptic"]["Speedup"]]}];
+
+AppendTo[resultTable, 
+  {"Cusp", comparisonResults["Cusp"]["Dimension"], 
+   comparisonResults["Cusp"]["Singularities"],
+   comparisonResults["Cusp"]["UnweightedConvergence"], 
+   comparisonResults["Cusp"]["WeightedConvergence"],
+   N[comparisonResults["Cusp"]["Speedup"]]}];
+
+AppendTo[resultTable, 
+  {"Pathological", comparisonResults["BlowUp[BlowUp[BlowUp[BlowUp[BlowUp[Elliptic]]]]]"]["Dimension"], 
+   comparisonResults["BlowUp[BlowUp[BlowUp[BlowUp[BlowUp[Elliptic]]]]]"]["Singularities"],
+   comparisonResults["BlowUp[BlowUp[BlowUp[BlowUp[BlowUp[Elliptic]]]]]"]["UnweightedConvergence"], 
+   comparisonResults["BlowUp[BlowUp[BlowUp[BlowUp[BlowUp[Elliptic]]]]]"]["WeightedConvergence"],
+   N[comparisonResults["BlowUp[BlowUp[BlowUp[BlowUp[BlowUp[Elliptic]]]]]"]["Speedup"]]}];
+
+(* Create nice output tables *)
+Grid[resultTable, Frame -> All, Alignment -> Left]
+
+(* Plot convergence for pathological case *)
+pathName = "BlowUp[BlowUp[BlowUp[BlowUp[BlowUp[Elliptic]]]]]";
+unweightedPath = Table[
+  Total[Values[unweightedResults[pathName][[2, r]]]], 
+  {r, 1, Length[unweightedResults[pathName][[2]]]}
+];
+weightedPath = Table[
+  Total[Values[weightedResults[pathName][[2, r]]]], 
+  {r, 1, Length[weightedResults[pathName][[2]]]}
+];
+
+(* Create plot comparing convergence *)
+ListLinePlot[{unweightedPath, weightedPath}, 
+  PlotLegends -> {"Unweighted", "Weighted"},
+  AxesLabel -> {"Stage", "Obstruction Measure"},
+  PlotLabel -> "Convergence for Pathological Case",
+  PlotStyle -> {{Red, Thick}, {Blue, Thick}},
+  PlotRange -> All,
+  GridLines -> Automatic,
+  Frame -> True
+]
