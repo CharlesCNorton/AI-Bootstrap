@@ -1,0 +1,662 @@
+BeginPackage["SingularModuliCalculator`", {"NumericalCalculus`", "AlgebraicGeometry`", "GroupTheory`"}];
+
+CalculateMotivicCohomology::usage = "CalculateMotivicCohomology[space, options]";
+ModuliSpace::usage = "ModuliSpace[g, n]";
+MotivicStructure::usage = "MotivicStructure[cohomology]";
+ExportMotivicData::usage = "ExportMotivicData[result, filename]";
+ComputeMixedTateStructure::usage = "ComputeMixedTateStructure[cohomology]";
+ComputeEquivariantStructure::usage = "ComputeEquivariantStructure[space]";
+VisualizeCohomology::usage = "VisualizeCohomology[cohomology]";
+ExtractTannakianData::usage = "ExtractTannakianData[cohomology]";
+ComputePeriodMatrix::usage = "ComputePeriodMatrix[cohomology]";
+CalculateMotivicGaloisAction::usage = "CalculateMotivicGaloisAction[cohomology]";
+ConvertToHodgeStructure::usage = "ConvertToHodgeStructure[cohomology]";
+ExtractFeynmanData::usage = "ExtractFeynmanData[cohomology]";
+ExportCAD::usage = "ExportCAD[cohomology, filename]";
+
+Begin["`Private`"];
+
+Options[CalculateMotivicCohomology] = {Singular -> True, EquivariantAction -> None, WeightedApproach -> True, 
+   MaxPrecision -> MachinePrecision, CachingEnabled -> True, ParallelCalculation -> True, 
+   ErrorTolerance -> 10^-10, VerboseOutput -> False, StoreIntermediateSteps -> False, UseSymbolicEngine -> True};
+
+Options[ModuliSpace] = {Singular -> True, EquivariantAction -> None, StratificationLevel -> Full, 
+   IncludeExceptionalDivisors -> True, DesingularizeIfNeeded -> False, ExplicitModel -> Automatic};
+
+Options[ExportMotivicData] = {Format -> "JSON", IncludeMetadata -> True, Compress -> False, 
+   IncludeVisualization -> True, AppendTimestamp -> True, ExportIntermediateStages -> False};
+
+CreateModuliSpaceM0n[n_Integer, opts:OptionsPattern[ModuliSpace]] := Module[
+  {space, dim, singular, action, strata, codimStructure, boundaryDivisors, singularLoci, fundClasses, 
+   exceptionalDivisors, stratificationData, modelType, strataGraph, stabilizationMap, boundaryCells, 
+   intersectionMatrix, coherentSheaves, algebraicCycles, homologyBasis, cohomologyRing, 
+   canonicalDivisor, tautologicalClasses, forgetfulMaps, mixedStructure, tangentBundle},
+  
+  dim = Max[0, n - 3];
+  singular = OptionValue[Singular];
+  action = OptionValue[EquivariantAction];
+  modelType = OptionValue[ExplicitModel];
+  
+  strata = GenerateStratificationM0n[n, OptionValue[StratificationLevel]];
+  codimStructure = CalculateCodimensionStructure[strata, dim];
+  boundaryDivisors = ExtractBoundaryDivisors[strata, dim];
+  singularLoci = If[singular, ComputeSingularLocusM0n[n, strata], 
+     GenerateResolutionData[n, strata]];
+  
+  fundClasses = GenerateFundamentalClassesM0n[dim, strata, boundaryDivisors];
+  exceptionalDivisors = If[OptionValue[IncludeExceptionalDivisors], 
+     ComputeExceptionalDivisors[n, strata, singularLoci], {}];
+  
+  stratificationData = ConstructStratificationData[strata, codimStructure, boundaryDivisors];
+  strataGraph = ConstructStrataIncidenceGraph[strata, codimStructure];
+  boundaryCells = ConstructBoundaryCells[strata, codimStructure, boundaryDivisors];
+  
+  intersectionMatrix = ComputeIntersectionMatrix[boundaryDivisors, exceptionalDivisors, dim];
+  algebraicCycles = GenerateAlgebraicCycleData[strata, dim, singularLoci];
+  
+  homologyBasis = ComputeHomologyBasis[dim, strata, boundaryCells];
+  cohomologyRing = ComputeCohomologyRingStructure[boundaryDivisors, dim, singular];
+  tangentBundle = ComputeTangentBundleData[dim, strata, singularLoci];
+  
+  canonicalDivisor = CalculateCanonicalDivisor[boundaryDivisors, dim];
+  tautologicalClasses = GenerateTautologicalClasses[n, dim, boundaryDivisors];
+  
+  space = CreateMathematicalStructure[
+    "ModuliSpace", <|
+      "Type" -> "M0n",
+      "Genus" -> 0,
+      "MarkedPoints" -> n,
+      "Dimension" -> dim,
+      "Singular" -> singular,
+      "EquivariantAction" -> action,
+      "Strata" -> strata,
+      "BoundaryDivisors" -> boundaryDivisors,
+      "SingularLoci" -> singularLoci,
+      "ExceptionalDivisors" -> exceptionalDivisors,
+      "FundamentalClasses" -> fundClasses,
+      "StratificationData" -> stratificationData,
+      "StrataGraph" -> strataGraph,
+      "IntersectionMatrix" -> intersectionMatrix,
+      "CodimensionStructure" -> codimStructure,
+      "BoundaryCells" -> boundaryCells,
+      "AlgebraicCycles" -> algebraicCycles,
+      "HomologyBasis" -> homologyBasis,
+      "CohomologyRing" -> cohomologyRing,
+      "CanonicalDivisor" -> canonicalDivisor,
+      "TautologicalClasses" -> tautologicalClasses,
+      "TangentBundle" -> tangentBundle,
+      "ExplicitModel" -> modelType
+    |>
+  ];
+  
+  If[action =!= None, space = AddEquivariantStructure[space, action]];
+  
+  space
+];
+
+GenerateStratificationM0n[n_Integer, level_] := Module[
+  {stableGraphs, strata = {}, dim = n - 3, equivalenceClasses, orbifoldStrata, strataMap, 
+   kapranovModel, stratumData, graphDataStructure, equivalenceMap},
+  
+  stableGraphs = GenerateStableGraphsM0n[n, level];
+  strataMap = Association[MapIndexed[#1 -> #2[[1]]&, stableGraphs]];
+  equivalenceClasses = GroupStableGraphsByIsomorphism[stableGraphs];
+  
+  orbifoldStrata = Map[
+    Function[graph, 
+      Module[{codim, incidenceMatrix, boundaryStratum, automorphismGroup, fixedPoints},
+        codim = CalculateGraphComplexity[graph, n];
+        incidenceMatrix = GenerateIncidenceMatrix[graph];
+        automorphismGroup = ComputeGraphAutomorphisms[graph];
+        
+        boundaryStratum = <|
+          "Graph" -> graph,
+          "Codimension" -> codim,
+          "IncidenceMatrix" -> incidenceMatrix,
+          "AutoGroup" -> automorphismGroup,
+          "Dimension" -> dim - codim
+        |>;
+        
+        If[codim == 1, 
+          boundaryStratum = boundaryStratum // Append[#, "BoundaryType" -> 
+            IdentifyBoundaryType[graph, n]]&
+        ];
+        
+        boundaryStratum
+      ]
+    ],
+    stableGraphs
+  ];
+  
+  kapranovModel = ConstructKapranovModel[n];
+  stratumData = ConstructStrataMultinomialData[n, orbifoldStrata];
+  
+  graphDataStructure = AssembleGraphDataStructure[orbifoldStrata, strataMap, stratumData];
+  
+  equivalenceMap = GroupStableGraphsByIsomorphism[graphDataStructure];
+  
+  GenerateStrataObject[orbifoldStrata, equivalenceMap, dim]
+];
+
+CalculateWeightedMotivicCohomology[space_] := Module[
+  {dim, exactCohomology, weightedSpectralSequence, result, modifiersData, extendedData, 
+   multipleZetaData, galoisAction, absoluteCohomology, relativeVersion, parametrizedVersion, 
+   mixedTateStructure, equivariantStructure, familyStructureData, deRhamRealization, 
+   motivicRealization, crystalRealization, etaleRealization, besselData, cachedResults},
+  
+  If[CheckCacheValidity[space, "MotivicCohomology"], 
+    Return[RetrieveCachedResult[space, "MotivicCohomology"]]];
+  
+  dim = space["Dimension"];
+  exactCohomology = CalculateExactCohomology[space, MaxRecursionDepth -> 100];
+  weightedSpectralSequence = ConstructWeightedSpectralSequence[space, exactCohomology];
+  
+  mixedTateStructure = CalculateMixedTateStructure[weightedSpectralSequence["FinalPage"], space];
+  extendedData = CalculateExtendedStructure[weightedSpectralSequence, space];
+  
+  If[space["EquivariantAction"] =!= None,
+    equivariantStructure = CalculateEquivariantStructure[weightedSpectralSequence, space];
+  ];
+  
+  motivicRealization = CalculateMotivicRealization[weightedSpectralSequence["FinalPage"], space];
+  deRhamRealization = CalculateDeRhamRealization[weightedSpectralSequence["FinalPage"], space];
+  etaleRealization = CalculateEtaleRealization[weightedSpectralSequence["FinalPage"], space];
+  crystalRealization = CalculateCrystallineRealization[weightedSpectralSequence["FinalPage"], space];
+  
+  galoisAction = CalculateMotivicGaloisAction[mixedTateStructure, space];
+  absoluteCohomology = CalculateAbsoluteCohomology[weightedSpectralSequence["FinalPage"], space];
+  
+  multipleZetaData = CalculateMZVStructure[mixedTateStructure, space];
+  familyStructureData = CalculateUniversalFamily[space];
+  
+  relativeVersion = CalculateRelativeVersion[weightedSpectralSequence, space];
+  parametrizedVersion = CalculateParametrizedVersion[weightedSpectralSequence, space];
+  
+  modifiersData = CalculateHomotopyModifiers[mixedTateStructure, space];
+  besselData = ComputeBesselDataForCohomology[mixedTateStructure];
+  
+  result = <|
+    "Space" -> space,
+    "ExactCohomology" -> exactCohomology,
+    "WeightedSpectralSequence" -> weightedSpectralSequence,
+    "FinalCohomology" -> weightedSpectralSequence["FinalPage"],
+    "MixedTateStructure" -> mixedTateStructure,
+    "ConvergenceData" -> weightedSpectralSequence["ConvergenceData"],
+    "ModifierData" -> modifiersData,
+    "ExtendedData" -> extendedData,
+    "MZVData" -> multipleZetaData,
+    "MotivicGaloisAction" -> galoisAction,
+    "AbsoluteCohomology" -> absoluteCohomology,
+    "RelativeVersion" -> relativeVersion,
+    "ParametrizedVersion" -> parametrizedVersion,
+    "DeRhamRealization" -> deRhamRealization,
+    "MotivicRealization" -> motivicRealization,
+    "CrystalRealization" -> crystalRealization,
+    "EtaleRealization" -> etaleRealization,
+    "FamilyStructure" -> familyStructureData,
+    "BesselData" -> besselData
+  |>;
+  
+  If[space["EquivariantAction"] =!= None,
+    result["EquivariantStructure"] = equivariantStructure;
+  ];
+  
+  CacheResult[space, "MotivicCohomology", result];
+  
+  result
+];
+
+CalculateExactCohomology[space_, opts:OptionsPattern[]] := Module[
+  {dim, strata, cohomology, p, q, strataMeasure, boundaryContributions, singularityContributions, 
+   exceptionalContributions, stableRankData, recursionDepth, invariantClasses, vanishingCycles},
+  
+  dim = space["Dimension"];
+  strata = space["Strata"];
+  recursionDepth = OptionValue[MaxRecursionDepth];
+  cohomology = Association[];
+  
+  If[CheckCacheValidity[space, "ExactCohomology"], 
+    Return[RetrieveCachedResult[space, "ExactCohomology"]]];
+  
+  strataMeasure = CalculateStableMeasure[space];
+  boundaryContributions = CalculateBoundaryContributions[space];
+  singularityContributions = If[space["Singular"], CalculateSingularityContributions[space], <||>];
+  exceptionalContributions = CalculateExceptionalContributions[space];
+  
+  stableRankData = GenerateStableRankData[space];
+  invariantClasses = CalculateTopologicallyInvariantClasses[space];
+  vanishingCycles = CalculateVanishingCycles[space];
+  
+  For[p = 0, p <= 2*dim + 3, p++,
+    For[q = 0, q <= 2*dim + 3, q++,
+      cohomology[{p, q}] = CalculateExactCohomologyBidegree[space, p, q, strataMeasure, 
+                           boundaryContributions, singularityContributions, exceptionalContributions,
+                           stableRankData, invariantClasses, vanishingCycles, recursionDepth];
+    ]
+  ];
+  
+  Do[
+    cohomology[class] = Max[cohomology[class], 1],
+    {class, space["FundamentalClasses"]}
+  ];
+  
+  cohomology = NormalizeExactCohomology[cohomology, space];
+  
+  CacheResult[space, "ExactCohomology", cohomology];
+  
+  cohomology
+];
+
+ConstructWeightedSpectralSequence[space_, initialPage_, maxPage_:30] := Module[
+  {pages, weights, obstructions, r, nextPage, diffs, weight, convergenceData, totalObstructions, 
+   absoluteTolerance, maxIterations, convergenceCriteria, analyticConvergence, 
+   homotopicConvergence, weightSequence, weightFunctionData, weightedDifferentialSystem, 
+   stabilizationData, spectralDataStream, convergenceRate, truncationErrors},
+  
+  absoluteTolerance = 10^-12;
+  maxIterations = maxPage;
+  
+  pages = {initialPage};
+  weights = {};
+  obstructions = {};
+  totalObstructions = <||>;
+  
+  weightFunctionData = PrepareWeightFunctionData[space];
+  weightSequence = GenerateOptimalWeightSequence[space, weightFunctionData, maxIterations];
+  weightedDifferentialSystem = InitializeDifferentialSystem[space, initialPage];
+  
+  spectralDataStream = <||>;
+  stabilizationData = <||>;
+  
+  For[r = 1, r <= maxIterations, r++,
+    weight = weightSequence[[Min[r, Length[weightSequence]]]];
+    AppendTo[weights, weight];
+    
+    spectralDataStream[r] = CalculateSpectralDataForStage[r, space, pages, weightedDifferentialSystem];
+    
+    {nextPage, diffs} = ComputeNextWeightedPage[pages[[-1]], r, space, weight, weightedDifferentialSystem];
+    AppendTo[pages, nextPage];
+    
+    totalObstructions[r] = CalculateObstructionData[diffs, r, space];
+    AppendTo[obstructions, Total[Values[totalObstructions[r]["TotalObstruction"]]]);
+    
+    stabilizationData[r] = CalculateStabilizationData[pages, r, obstructions];
+    
+    If[CheckConvergenceCriteria[nextPage, pages[[-2]], weight, obstructions, absoluteTolerance, r], 
+      Break[]];
+  ];
+  
+  convergenceRate = CalculateConvergenceRate[obstructions];
+  truncationErrors = CalculateTruncationErrors[pages, stabilizationData, space];
+  
+  analyticConvergence = AnalyzeAnalyticConvergence[pages, obstructions, weights];
+  homotopicConvergence = AnalyzeHomotopicConvergence[pages, stabilizationData];
+  
+  convergenceData = <|
+    "ConvergedAt" -> Min[r, maxIterations],
+    "ObstructionMeasures" -> obstructions,
+    "AnalyticConvergence" -> analyticConvergence,
+    "HomotopicConvergence" -> homotopicConvergence,
+    "TotalObstructions" -> totalObstructions,
+    "StabilizationData" -> stabilizationData,
+    "ConvergenceRate" -> convergenceRate,
+    "TruncationErrors" -> truncationErrors,
+    "FinalWeight" -> weights[[-1]]
+  |>;
+  
+  <|
+    "InitialPage" -> pages[[1]],
+    "FinalPage" -> pages[[-1]],
+    "AllPages" -> pages,
+    "Weights" -> weights,
+    "Obstructions" -> obstructions,
+    "ConvergenceData" -> convergenceData,
+    "WeightFunctionData" -> weightFunctionData,
+    "SpectralDataStream" -> spectralDataStream
+  |>
+];
+
+CalculateMixedTateStructure[finalCohomology_, space_] := Module[
+  {dim, weights, extensions, pureComponents, weightFiltration, hodgeDecomposition, 
+   infinitesimalStructure, deligneSplitting, absoluteWeightData, extensionRing, extensionClasses, 
+   motivicGaloisAction, polylogarithmicData, ellipticPolylogData, multipleZetaValues,
+   weightedCategories, weightedMotivicCategories, extensionAlgebra, nilpotenceOrder, 
+   unipotentCompletions, universalEnvelopingAlgebra, framesData, baseChangeMaps, 
+   deRhamFrames, dualFrames, extensionMeasure, mixedHodgeModules, mixedDatum},
+  
+  dim = space["Dimension"];
+  
+  weights = CalculateWeightFiltration[finalCohomology, space];
+  extensions = CalculateExtensions[finalCohomology, weights, space];
+  pureComponents = IdentifyPureTateComponents[finalCohomology, weights];
+  
+  hodgeDecomposition = CalculateHodgeDecomposition[finalCohomology, weights, space];
+  infinitesimalStructure = CalculateInfinitesimalStructure[finalCohomology, weights, space];
+  deligneSplitting = CalculateDeligneSplitting[hodgeDecomposition, weights, space];
+  
+  absoluteWeightData = CalculateAbsoluteWeightData[weights, finalCohomology, space];
+  extensionRing = CalculateExtensionRing[extensions, pureComponents, space];
+  extensionClasses = IdentifyExtensionClasses[extensions, pureComponents, weights, space];
+  
+  polylogarithmicData = CalculatePolylogarithmicData[finalCohomology, weights, extensions, space];
+  ellipticPolylogData = CalculateEllipticPolylogData[finalCohomology, weights, space];
+  multipleZetaValues = CalculateMZVStructure[finalCohomology, weights, extensions, space];
+  
+  weightedCategories = CalculateWeightedCategories[pureComponents, weights, space];
+  weightedMotivicCategories = CalculateWeightedMotivicCategories[weightedCategories, space];
+  
+  extensionAlgebra = CalculateExtensionAlgebra[extensions, pureComponents, weights, space];
+  nilpotenceOrder = CalculateNilpotenceOrder[extensionAlgebra, space];
+  
+  unipotentCompletions = CalculateUnipotentCompletions[nilpotenceOrder, extensionAlgebra, space];
+  universalEnvelopingAlgebra = CalculateUniversalEnvelopingAlgebra[extensionAlgebra, space];
+  
+  framesData = CalculateFramesData[finalCohomology, weights, pureComponents, space];
+  baseChangeMaps = CalculateBaseChangeMaps[framesData, weights, space];
+  deRhamFrames = CalculateDeRhamFrames[framesData, weights, space];
+  dualFrames = CalculateDualFrames[framesData, weights, space];
+  
+  extensionMeasure = CalculateExtensionMeasure[extensions, pureComponents, weights, space];
+  
+  mixedHodgeModules = CalculateMixedHodgeModules[finalCohomology, weights, extensions, space];
+  mixedDatum = CalculateMixedDatum[finalCohomology, weights, pureComponents, extensions, space];
+  
+  weightFiltration = CreateWeightFiltration[weights, finalCohomology];
+  
+  <|
+    "WeightFiltration" -> weightFiltration,
+    "PureComponents" -> pureComponents,
+    "Extensions" -> extensions,
+    "IsMixedTate" -> True,
+    "WeightRange" -> {Min[Keys[weightFiltration]], Max[Keys[weightFiltration]]},
+    "HodgeDecomposition" -> hodgeDecomposition,
+    "InfinitesimalStructure" -> infinitesimalStructure,
+    "DeligneSplitting" -> deligneSplitting,
+    "AbsoluteWeightData" -> absoluteWeightData,
+    "ExtensionRing" -> extensionRing,
+    "ExtensionClasses" -> extensionClasses,
+    "PolylogarithmicData" -> polylogarithmicData,
+    "EllipticPolylogData" -> ellipticPolylogData,
+    "MZVData" -> multipleZetaValues,
+    "WeightedCategories" -> weightedCategories,
+    "WeightedMotivicCategories" -> weightedMotivicCategories,
+    "ExtensionAlgebra" -> extensionAlgebra,
+    "NilpotenceOrder" -> nilpotenceOrder,
+    "UnipotentCompletions" -> unipotentCompletions,
+    "UniversalEnvelopingAlgebra" -> universalEnvelopingAlgebra,
+    "FramesData" -> framesData,
+    "BaseChangeMaps" -> baseChangeMaps,
+    "DeRhamFrames" -> deRhamFrames,
+    "DualFrames" -> dualFrames,
+    "ExtensionMeasure" -> extensionMeasure,
+    "MixedHodgeModules" -> mixedHodgeModules,
+    "MixedDatum" -> mixedDatum
+  |>
+];
+
+CalculateEquivariantStructure[spectralSequence_, space_] := Module[
+  {groupName, cohomology, equivariantDecomposition, representations, characterTable, 
+   groupOrder, irreducibleDecomposition, stabilizers, fixedPointComponents, 
+   equivariantStabilizationData, equivariantFrames, groupCohomologyClasses, 
+   twistedEquivariantCohomology, groupoidCohomology, orbitDecomposition, 
+   stackDecomposition, inertiaStack, cyclicSubgroups, reflectionData, 
+   equivariantMixedHodgeStructure, decompositionByIsotypicalComponent, 
+   equivariantMotivicDatum, equivariantExtensionData},
+  
+  groupName = space["EquivariantAction"];
+  cohomology = spectralSequence["FinalPage"];
+  groupOrder = CalculateGroupOrder[groupName];
+  
+  equivariantDecomposition = DecomposeUnderGroupAction[cohomology, space];
+  representations = IdentifyRepresentations[equivariantDecomposition, groupName, space];
+  characterTable = CalculateCharacterTable[groupName];
+  
+  irreducibleDecomposition = DecomposeByIrreducibles[cohomology, groupName, characterTable, space];
+  stabilizers = CalculatePointwiseStabilizers[space, groupName];
+  fixedPointComponents = CalculateFixedPointComponents[space, groupName, stabilizers];
+  
+  equivariantStabilizationData = CalculateEquivariantStabilizationData[spectralSequence, space, groupName];
+  equivariantFrames = CalculateEquivariantFrames[cohomology, space, groupName];
+  
+  groupCohomologyClasses = CalculateGroupCohomologyClasses[groupName, space];
+  twistedEquivariantCohomology = CalculateTwistedEquivariantCohomology[cohomology, space, groupName];
+  
+  groupoidCohomology = CalculateGroupoidCohomology[space, groupName];
+  orbitDecomposition = CalculateOrbitDecomposition[space, groupName];
+  stackDecomposition = CalculateStackDecomposition[space, groupName, orbitDecomposition];
+  
+  inertiaStack = CalculateInertiaStack[space, groupName];
+  cyclicSubgroups = CalculateCyclicSubgroups[groupName];
+  reflectionData = CalculateReflectionData[space, groupName];
+  
+  equivariantMixedHodgeStructure = CalculateEquivariantMixedHodgeStructure[cohomology, space, groupName];
+  decompositionByIsotypicalComponent = CalculateDecompositionByIsotypicalComponent[
+    cohomology, space, groupName, characterTable];
+  
+  equivariantMotivicDatum = CalculateEquivariantMotivicDatum[cohomology, space, groupName];
+  equivariantExtensionData = CalculateEquivariantExtensionData[cohomology, space, groupName];
+  
+  <|
+    "GroupAction" -> groupName,
+    "GroupOrder" -> groupOrder,
+    "DecompositionByDegree" -> equivariantDecomposition,
+    "IrreducibleRepresentations" -> representations,
+    "CharacterTable" -> characterTable,
+    "IrreducibleDecomposition" -> irreducibleDecomposition,
+    "Stabilizers" -> stabilizers,
+    "FixedPointComponents" -> fixedPointComponents,
+    "EquivariantStabilizationData" -> equivariantStabilizationData,
+    "EquivariantFrames" -> equivariantFrames,
+    "GroupCohomologyClasses" -> groupCohomologyClasses,
+    "TwistedEquivariantCohomology" -> twistedEquivariantCohomology,
+    "GroupoidCohomology" -> groupoidCohomology,
+    "OrbitDecomposition" -> orbitDecomposition,
+    "StackDecomposition" -> stackDecomposition,
+    "InertiaStack" -> inertiaStack,
+    "CyclicSubgroups" -> cyclicSubgroups,
+    "ReflectionData" -> reflectionData,
+    "EquivariantMixedHodgeStructure" -> equivariantMixedHodgeStructure,
+    "DecompositionByIsotypicalComponent" -> decompositionByIsotypicalComponent,
+    "EquivariantMotivicDatum" -> equivariantMotivicDatum,
+    "EquivariantExtensionData" -> equivariantExtensionData
+  |>
+];
+
+CalculateMotivicCohomology[spaceExpr_, opts:OptionsPattern[]] := Module[
+  {space, result, analysisData, benchmarkData, alternativeModels, comparativeData, verificationData,
+   crossValidation, stabilizationTests, precisionTests, errorBounds, integralStructure, extendedData,
+   convergenceMetrics, timeSeriesData},
+  
+  benchmarkData = <|"StartTime" -> AbsoluteTime[]|>;
+  space = ParseSpaceExpression[spaceExpr, opts];
+  
+  If[CheckCacheValidity[space, "FullAnalysis"], 
+    Return[RetrieveCachedResult[space, "FullAnalysis"]]];
+  
+  result = CalculateWeightedMotivicCohomology[space];
+  
+  analysisData = PerformCohomologyAnalysis[result, space];
+  alternativeModels = ComputeAlternativeModels[result, space];
+  comparativeData = PerformComparativeAnalysis[result, alternativeModels, space];
+  
+  verificationData = PerformVerificationTests[result, space];
+  crossValidation = PerformCrossValidation[result, space];
+  stabilizationTests = PerformStabilizationTests[result, space];
+  
+  precisionTests = PerformPrecisionTests[result, space, OptionValue[MaxPrecision]];
+  errorBounds = CalculateErrorBounds[result, space, OptionValue[ErrorTolerance]];
+  
+  integralStructure = CalculateIntegralStructure[result, space];
+  extendedData = ComputeExtendedAnalytics[result, space];
+  
+  convergenceMetrics = CalculateConvergenceMetrics[result["WeightedSpectralSequence"], space];
+  timeSeriesData = GenerateTimeSeriesData[result["WeightedSpectralSequence"], space];
+  
+  benchmarkData["EndTime"] = AbsoluteTime[];
+  benchmarkData["TotalTime"] = benchmarkData["EndTime"] - benchmarkData["StartTime"];
+  
+  result = Join[result, <|
+    "AnalysisData" -> analysisData,
+    "AlternativeModels" -> alternativeModels,
+    "ComparativeData" -> comparativeData,
+    "VerificationData" -> verificationData,
+    "CrossValidation" -> crossValidation,
+    "StabilizationTests" -> stabilizationTests,
+    "PrecisionTests" -> precisionTests,
+    "ErrorBounds" -> errorBounds,
+    "IntegralStructure" -> integralStructure,
+    "ExtendedData" -> extendedData,
+    "ConvergenceMetrics" -> convergenceMetrics,
+    "TimeSeriesData" -> timeSeriesData,
+    "BenchmarkData" -> benchmarkData
+  |>];
+  
+  CacheResult[space, "FullAnalysis", result];
+  
+  FormatResult[result]
+];
+
+ParseSpaceExpression[expr_, opts:OptionsPattern[]] := Module[
+  {g, n, space, singularOption, equivariantOption, cacheOptions, modelType, 
+   stratificationLevel, includeExceptionalDivisors, desingularize},
+  
+  singularOption = OptionValue[Singular];
+  equivariantOption = OptionValue[EquivariantAction];
+  stratificationLevel = OptionValue[ModuliSpace, StratificationLevel];
+  includeExceptionalDivisors = OptionValue[ModuliSpace, IncludeExceptionalDivisors];
+  desingularize = OptionValue[ModuliSpace, DesingularizeIfNeeded];
+  modelType = OptionValue[ModuliSpace, ExplicitModel];
+  
+  Switch[Head[expr],
+    ModuliSpace,
+      {g, n} = expr[[1;;2]];
+      
+      Switch[g,
+        0, space = CreateModuliSpaceM0n[n, 
+             Singular -> singularOption, 
+             EquivariantAction -> equivariantOption,
+             StratificationLevel -> stratificationLevel,
+             IncludeExceptionalDivisors -> includeExceptionalDivisors,
+             DesingularizeIfNeeded -> desingularize,
+             ExplicitModel -> modelType],
+             
+        1, space = CreateModuliSpaceM1n[n, 
+             Singular -> singularOption, 
+             EquivariantAction -> equivariantOption],
+             
+        _, space = CreateModuliSpaceMgn[g, n, 
+             Singular -> singularOption, 
+             EquivariantAction -> equivariantOption]
+      ],
+    
+    _, ThrowError["UnknownSpaceExpression", ToString[expr]]
+  ];
+  
+  space
+];
+
+FormatResult[result_] := Module[
+  {formattedResult, performance, structureMetrics, precisionMetrics, convergenceMetrics},
+  
+  performance = CalculatePerformanceMetrics[result];
+  structureMetrics = ExtractStructureMetrics[result];
+  precisionMetrics = ExtractPrecisionMetrics[result];
+  convergenceMetrics = ExtractConvergenceMetrics[result];
+  
+  formattedResult = <|
+    "Space" -> FormatSpaceInfo[result["Space"]],
+    "CohomologyRanks" -> FormatCohomologyRanks[result["FinalCohomology"], result["Space"]],
+    "MixedTateStructure" -> FormatMixedTateStructure[result["MixedTateStructure"]],
+    "Performance" -> performance,
+    "StructureMetrics" -> structureMetrics,
+    "PrecisionMetrics" -> precisionMetrics,
+    "ConvergenceMetrics" -> convergenceMetrics,
+    "RawData" -> result
+  |>;
+  
+  If[KeyExistsQ[result, "EquivariantStructure"],
+    formattedResult["EquivariantStructure"] = 
+      FormatEquivariantStructure[result["EquivariantStructure"]];
+  ];
+  
+  formattedResult
+];
+
+ExportMotivicData[result_, filename_, opts:OptionsPattern[]] := Module[
+  {exportData, fullExportData, format, compress, includeMetadata, includeVisualization, 
+   appendTimestamp, exportIntermediateStages, exportFilename, timestamp, exportResult},
+  
+  format = OptionValue[Format];
+  compress = OptionValue[Compress];
+  includeMetadata = OptionValue[IncludeMetadata];
+  includeVisualization = OptionValue[IncludeVisualization];
+  appendTimestamp = OptionValue[AppendTimestamp];
+  exportIntermediateStages = OptionValue[ExportIntermediateStages];
+  
+  exportData = PrepareExportData[result, includeMetadata, includeVisualization, 
+               exportIntermediateStages];
+  
+  fullExportData = If[compress, Compress[exportData], exportData];
+  
+  timestamp = If[appendTimestamp, "_" <> StringReplace[DateString[], {" " -> "_", ":" -> ""}], ""];
+  exportFilename = filename <> timestamp <> "." <> ToLowerCase[format];
+  
+  exportResult = Export[exportFilename, fullExportData, format];
+  
+  If[exportResult === $Failed,
+    ThrowError["ExportFailed", exportFilename],
+    exportFilename
+  ]
+];
+
+MotivicStructure[result_] := Module[
+  {mixedTate, weightRange, purePieces, extensions, graphics, graphicsList, fullStructure, 
+   structureData, hodgeNumberPlot, extensionGraph, weightFiltrationGraph, 
+   mixedTateStructureGraph, deligneSplittingGraph, polarizationData, limitMixedHodgeData, 
+   periodsVisualization},
+  
+  mixedTate = result["RawData"]["MixedTateStructure"];
+  
+  structureData = ExtractStructuralData[mixedTate];
+  
+  hodgeNumberPlot = PlotHodgeNumbers[structureData["HodgeNumbers"]];
+  extensionGraph = PlotExtensionGraph[mixedTate["Extensions"], mixedTate["PureComponents"]];
+  weightFiltrationGraph = PlotWeightFiltration[mixedTate["WeightFiltration"]];
+  mixedTateStructureGraph = VisualizeMixedTateStructure[mixedTate];
+  deligneSplittingGraph = VisualizeDeligneSplitting[mixedTate["DeligneSplitting"]];
+  
+  polarizationData = VisualizePolarizationData[mixedTate];
+  limitMixedHodgeData = VisualizeLimitMixedHodgeData[mixedTate];
+  periodsVisualization = VisualizePeriodsData[mixedTate["PolylogarithmicData"]];
+  
+  graphicsList = {
+    hodgeNumberPlot,
+    extensionGraph,
+    weightFiltrationGraph,
+    mixedTateStructureGraph,
+    deligneSplittingGraph,
+    polarizationData,
+    limitMixedHodgeData,
+    periodsVisualization
+  };
+  
+  fullStructure = TabView[{
+    "Hodge Numbers" -> hodgeNumberPlot,
+    "Extension Graph" -> extensionGraph,
+    "Weight Filtration" -> weightFiltrationGraph,
+    "Mixed Tate Structure" -> mixedTateStructureGraph,
+    "Deligne Splitting" -> deligneSplittingGraph,
+    "Polarization Data" -> polarizationData,
+    "Limit Mixed Hodge Data" -> limitMixedHodgeData,
+    "Periods" -> periodsVisualization
+  }];
+  
+  fullStructure
+];
+
+End[];
+
+EndPackage[];
+
+ModuliSpace[0, 6, Singular -> True]
+CalculateMotivicCohomology[ModuliSpace[0, 7, Singular -> True, EquivariantAction -> "S7"]]
