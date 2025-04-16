@@ -1,0 +1,887 @@
+Macaulay2, version 1.24.11-1695-gf35df1017f (vanilla)
+with packages: ConwayPolynomials, Elimination, IntegralClosure, InverseSystems, Isomorphism, LLLBases, MinimalPrimes, OnlineLookup, PackageCitations, Polyhedra, PrimaryDecomposition, ReesAlgebra, Saturation, TangentCone, Truncations, Varieties
+i1 : 
+
+
+---------------------------------------------------------------
+
+-- STAGE 0: ORIGINAL CUBIC IN AN AFFINE CHART
+
+---------------------------------------------------------------
+
+-- Let x, t, z be affine coordinates. The original cubic is:
+
+--   f(x, t, z) = (x*t)^2*z - x^2*(x+z)
+
+-- This models the nodal cubic in the chart y = x*t.
+
+
+
+R0 = QQ[x, t, z]
+
+
+o1 =  R0 
+
+o1 :  PolynomialRing 
+i2 : 
+f0 = (x*t)^2*z - x^2*(x + z)
+
+
+o2 =  x 
+2
+ t 
+2
+ z−x 
+3
+ −x 
+2
+ z 
+
+o2 :  R0 
+i3 : 
+print "Stage 0 strict transform (original nodal cubic in chart y = x*t):"
+
+Stage 0 strict transform (original nodal cubic in chart y = x*t): 
+i4 : 
+f0
+
+
+o4 =  x 
+2
+ t 
+2
+ z−x 
+3
+ −x 
+2
+ z 
+
+o4 :  R0 
+i5 : 
+
+
+---------------------------------------------------------------
+
+-- STAGE 1: FIRST BLOWUP (at the origin x = 0, t = 0, z = 0)
+
+-- We take the affine chart t = x*u (so u is the new variable).
+
+---------------------------------------------------------------
+
+-- The origin remains (x = 0, u = 0, z = 0) in these coordinates.
+
+-- The substitution t = x*u gives the strict transform in (x, u, z).
+
+R1 = QQ[x, u, z]
+
+
+o5 =  R1 
+
+o5 :  PolynomialRing 
+i6 : 
+f1 = (x^2*(x*u)^2)*z - x^2*(x + z)
+
+
+o6 =  x 
+4
+ u 
+2
+ z−x 
+3
+ −x 
+2
+ z 
+
+o6 :  R1 
+i7 : 
+print "\nStage 1 strict transform (after first blowup, chart t = x*u):"
+
+
+Stage 1 strict transform (after first blowup, chart t = x*u): 
+i8 : 
+f1
+
+
+o8 =  x 
+4
+ u 
+2
+ z−x 
+3
+ −x 
+2
+ z 
+
+o8 :  R1 
+i9 : 
+
+
+-- Compute the Jacobian matrix (partial derivatives w.r.t x, u, z)
+
+J1 = jacobian matrix{{f1}}
+
+
+o9 =   
+{1}4x 
+3
+ u 
+2
+ z−3x 
+2
+ −2xz
+{1}2x 
+4
+ uz
+{1}x 
+4
+ u 
+2
+ −x 
+2
+ 
+​
+  
+​
+  
+{1}4x 
+3
+ u 
+2
+ z−3x 
+2
+ −2xz
+{1}2x 
+4
+ uz
+{1}x 
+4
+ u 
+2
+ −x 
+2
+ 
+​
+  
+​
+  
+
+o9 :  Matrix R1 
+3
+ ⟵R1 
+1
+  
+i10 : 
+d1_1 = (entries J1)#0#0 -- ∂f1/∂x
+
+
+o10 =  4x 
+3
+ u 
+2
+ z−3x 
+2
+ −2xz 
+
+o10 :  R1 
+i11 : 
+d1_2 = (entries J1)#1#0 -- ∂f1/∂u
+
+
+o11 =  2x 
+4
+ uz 
+
+o11 :  R1 
+i12 : 
+d1_3 = (entries J1)#2#0 -- ∂f1/∂z
+
+
+o12 =  x 
+4
+ u 
+2
+ −x 
+2
+  
+
+o12 :  R1 
+i13 : 
+print "\nStage 1 partial derivatives:"
+
+
+Stage 1 partial derivatives: 
+i14 : 
+d1_1
+
+
+o14 =  4x 
+3
+ u 
+2
+ z−3x 
+2
+ −2xz 
+
+o14 :  R1 
+i15 : 
+d1_2
+
+
+o15 =  2x 
+4
+ uz 
+
+o15 :  R1 
+i16 : 
+d1_3
+
+
+o16 =  x 
+4
+ u 
+2
+ −x 
+2
+  
+
+o16 :  R1 
+i17 : 
+
+
+-- The ideal of the strict transform and all partials (singular locus)
+
+I1 = ideal(f1, d1_1, d1_2, d1_3)
+
+
+o17 =  ideal(x 
+4
+ u 
+2
+ z−x 
+3
+ −x 
+2
+ z,4x 
+3
+ u 
+2
+ z−3x 
+2
+ −2xz,2x 
+4
+ uz,x 
+4
+ u 
+2
+ −x 
+2
+ ) 
+
+o17 :  Ideal of R1 
+i18 : 
+print "\nStage 1 singular locus ideal:"
+
+
+Stage 1 singular locus ideal: 
+i19 : 
+I1
+
+
+o19 =  ideal(x 
+4
+ u 
+2
+ z−x 
+3
+ −x 
+2
+ z,4x 
+3
+ u 
+2
+ z−3x 
+2
+ −2xz,2x 
+4
+ uz,x 
+4
+ u 
+2
+ −x 
+2
+ ) 
+
+o19 :  Ideal of R1 
+i20 : 
+
+
+-- Primary decomposition yields the individual singular points/schemes
+
+print "\nStage 1 primary components of the singular locus:"
+
+
+Stage 1 primary components of the singular locus: 
+i21 : 
+primaryDecomposition I1
+
+
+o21 =  { ideal x , ideal(z,x 
+2
+ ) } 
+
+o21 :  List 
+i22 : 
+
+
+---------------------------------------------------------------
+
+-- STAGE 2: SECOND BLOWUP (at x = 0, u = 0, z = 0)
+
+-- Proceed in chart u = x*v (affine variable v replaces u)
+
+---------------------------------------------------------------
+
+R2 = QQ[x, v, z]
+
+
+o22 =  R2 
+
+o22 :  PolynomialRing 
+i23 : 
+f2 = (x^2*(x*v)^2)*z - x^2*(x + z)
+
+
+o23 =  x 
+4
+ v 
+2
+ z−x 
+3
+ −x 
+2
+ z 
+
+o23 :  R2 
+i24 : 
+print "\nStage 2 strict transform (after second blowup, chart u = x*v):"
+
+
+Stage 2 strict transform (after second blowup, chart u = x*v): 
+i25 : 
+f2
+
+
+o25 =  x 
+4
+ v 
+2
+ z−x 
+3
+ −x 
+2
+ z 
+
+o25 :  R2 
+i26 : 
+
+
+-- Jacobian for stage 2
+
+J2 = jacobian matrix{{f2}}
+
+
+o26 =   
+{1}4x 
+3
+ v 
+2
+ z−3x 
+2
+ −2xz
+{1}2x 
+4
+ vz
+{1}x 
+4
+ v 
+2
+ −x 
+2
+ 
+​
+  
+​
+  
+{1}4x 
+3
+ v 
+2
+ z−3x 
+2
+ −2xz
+{1}2x 
+4
+ vz
+{1}x 
+4
+ v 
+2
+ −x 
+2
+ 
+​
+  
+​
+  
+
+o26 :  Matrix R2 
+3
+ ⟵R2 
+1
+  
+i27 : 
+d2_1 = (entries J2)#0#0 -- ∂f2/∂x
+
+
+o27 =  4x 
+3
+ v 
+2
+ z−3x 
+2
+ −2xz 
+
+o27 :  R2 
+i28 : 
+d2_2 = (entries J2)#1#0 -- ∂f2/∂v
+
+
+o28 =  2x 
+4
+ vz 
+
+o28 :  R2 
+i29 : 
+d2_3 = (entries J2)#2#0 -- ∂f2/∂z
+
+
+o29 =  x 
+4
+ v 
+2
+ −x 
+2
+  
+
+o29 :  R2 
+i30 : 
+print "\nStage 2 partial derivatives:"
+
+
+Stage 2 partial derivatives: 
+i31 : 
+d2_1
+
+
+o31 =  4x 
+3
+ v 
+2
+ z−3x 
+2
+ −2xz 
+
+o31 :  R2 
+i32 : 
+d2_2
+
+
+o32 =  2x 
+4
+ vz 
+
+o32 :  R2 
+i33 : 
+d2_3
+
+
+o33 =  x 
+4
+ v 
+2
+ −x 
+2
+  
+
+o33 :  R2 
+i34 : 
+
+
+I2 = ideal(f2, d2_1, d2_2, d2_3)
+
+
+o34 =  ideal(x 
+4
+ v 
+2
+ z−x 
+3
+ −x 
+2
+ z,4x 
+3
+ v 
+2
+ z−3x 
+2
+ −2xz,2x 
+4
+ vz,x 
+4
+ v 
+2
+ −x 
+2
+ ) 
+
+o34 :  Ideal of R2 
+i35 : 
+print "\nStage 2 singular locus ideal:"
+
+
+Stage 2 singular locus ideal: 
+i36 : 
+I2
+
+
+o36 =  ideal(x 
+4
+ v 
+2
+ z−x 
+3
+ −x 
+2
+ z,4x 
+3
+ v 
+2
+ z−3x 
+2
+ −2xz,2x 
+4
+ vz,x 
+4
+ v 
+2
+ −x 
+2
+ ) 
+
+o36 :  Ideal of R2 
+i37 : 
+
+
+print "\nStage 2 primary components of the singular locus:"
+
+
+Stage 2 primary components of the singular locus: 
+i38 : 
+primaryDecomposition I2
+
+
+o38 =  { ideal x , ideal(z,x 
+2
+ ) } 
+
+o38 :  List 
+i39 : 
+
+
+---------------------------------------------------------------
+
+-- STAGE 3: THIRD BLOWUP (at x = 0, v = 0, z = 0)
+
+-- Proceed in chart v = x*w (affine variable w replaces v)
+
+---------------------------------------------------------------
+
+R3 = QQ[x, w, z]
+
+
+o39 =  R3 
+
+o39 :  PolynomialRing 
+i40 : 
+f3 = (x^2*(x*w)^2)*z - x^2*(x + z)
+
+
+o40 =  x 
+4
+ w 
+2
+ z−x 
+3
+ −x 
+2
+ z 
+
+o40 :  R3 
+i41 : 
+print "\nStage 3 strict transform (after third blowup, chart v = x*w):"
+
+
+Stage 3 strict transform (after third blowup, chart v = x*w): 
+i42 : 
+f3
+
+
+o42 =  x 
+4
+ w 
+2
+ z−x 
+3
+ −x 
+2
+ z 
+
+o42 :  R3 
+i43 : 
+
+
+-- Jacobian for stage 3
+
+J3 = jacobian matrix{{f3}}
+
+
+o43 =   
+{1}4x 
+3
+ w 
+2
+ z−3x 
+2
+ −2xz
+{1}2x 
+4
+ wz
+{1}x 
+4
+ w 
+2
+ −x 
+2
+ 
+​
+  
+​
+  
+{1}4x 
+3
+ w 
+2
+ z−3x 
+2
+ −2xz
+{1}2x 
+4
+ wz
+{1}x 
+4
+ w 
+2
+ −x 
+2
+ 
+​
+  
+​
+  
+
+o43 :  Matrix R3 
+3
+ ⟵R3 
+1
+  
+i44 : 
+d3_1 = (entries J3)#0#0 -- ∂f3/∂x
+
+
+o44 =  4x 
+3
+ w 
+2
+ z−3x 
+2
+ −2xz 
+
+o44 :  R3 
+i45 : 
+d3_2 = (entries J3)#1#0 -- ∂f3/∂w
+
+
+o45 =  2x 
+4
+ wz 
+
+o45 :  R3 
+i46 : 
+d3_3 = (entries J3)#2#0 -- ∂f3/∂z
+
+
+o46 =  x 
+4
+ w 
+2
+ −x 
+2
+  
+
+o46 :  R3 
+i47 : 
+print "\nStage 3 partial derivatives:"
+
+
+Stage 3 partial derivatives: 
+i48 : 
+d3_1
+
+
+o48 =  4x 
+3
+ w 
+2
+ z−3x 
+2
+ −2xz 
+
+o48 :  R3 
+i49 : 
+d3_2
+
+
+o49 =  2x 
+4
+ wz 
+
+o49 :  R3 
+i50 : 
+d3_3
+
+
+o50 =  x 
+4
+ w 
+2
+ −x 
+2
+  
+
+o50 :  R3 
+i51 : 
+
+
+I3 = ideal(f3, d3_1, d3_2, d3_3)
+
+
+o51 =  ideal(x 
+4
+ w 
+2
+ z−x 
+3
+ −x 
+2
+ z,4x 
+3
+ w 
+2
+ z−3x 
+2
+ −2xz,2x 
+4
+ wz,x 
+4
+ w 
+2
+ −x 
+2
+ ) 
+
+o51 :  Ideal of R3 
+i52 : 
+print "\nStage 3 singular locus ideal:"
+
+
+Stage 3 singular locus ideal: 
+i53 : 
+I3
+
+
+o53 =  ideal(x 
+4
+ w 
+2
+ z−x 
+3
+ −x 
+2
+ z,4x 
+3
+ w 
+2
+ z−3x 
+2
+ −2xz,2x 
+4
+ wz,x 
+4
+ w 
+2
+ −x 
+2
+ ) 
+
+o53 :  Ideal of R3 
+i54 : 
+
+
+print "\nStage 3 primary components of the singular locus:"
+
+
+Stage 3 primary components of the singular locus: 
+i55 : 
+primaryDecomposition I3
+
+
+o55 =  { ideal x , ideal(z,x 
+2
+ ) } 
+
+o55 :  List 
+i56 : 
+
+
+---------------------------------------------------------------
+
+-- (Optional) CONTINUE AS DESIRED:
+
+-- For each further blowup at the origin, introduce a new variable,
+
+-- substituting e.g. w = x*y, and so forth.
+
+-- At each stage: update the polynomial, ring, Jacobian, and run again!
+
+---------------------------------------------------------------
+
+
+
+-- END
+
+print "\nEnd of weighted motivic tower algebraic test (3 blowups shown)."
+
+
+End of weighted motivic tower algebraic test (3 blowups shown). 
+i57 : 
+arrow_drop_down
