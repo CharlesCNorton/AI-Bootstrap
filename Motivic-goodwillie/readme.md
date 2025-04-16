@@ -3,11 +3,11 @@
                  FORMALIZATION WITH DETAILED PROOFS AND CONTEXT
 ────────────────────────────────────────────────────────────────────────────────────
 
-By: Charles Norton and GPT-4o/o3-mini-high/o1-pro
+By: Charles Norton / OpenAI / Anthropic
 
 Date: November 20, 2024
 
-Revised: 2/22/25
+Revised: 4/16/25
 
 ────────────────────────────────────────────────────────────────────────────────────
 
