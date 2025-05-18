@@ -1,10 +1,10 @@
-    import time
-    import numpy as np
-    import pandas as pd
-    import matplotlib.pyplot as plt
+import time
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 
-    # Greedy Coloring Algorithm
-    def greedy_coloring(n):
+# Greedy Coloring Algorithm
+def greedy_coloring(n):
         S_red, S_blue = 0, 0
         discrepancies = []
         for i in range(2, n + 2):
@@ -16,8 +16,8 @@
             discrepancies.append(S_red - S_blue)
         return discrepancies
 
-    # Ratio-Based Coloring Algorithm
-    def ratio_based_coloring(n):
+# Ratio-Based Coloring Algorithm
+def ratio_based_coloring(n):
         S_red, S_blue = 0, 0
         discrepancies = []
         for i in range(2, n + 2):
@@ -29,8 +29,8 @@
             discrepancies.append(S_red - S_blue)
         return discrepancies
 
-    # Weighted Averaging Algorithm
-    def weighted_averaging_coloring(n):
+# Weighted Averaging Algorithm
+def weighted_averaging_coloring(n):
         S_red, S_blue = 0, 0
         discrepancies = []
         for i in range(2, n + 2):
@@ -44,8 +44,8 @@
             discrepancies.append(S_red - S_blue)
         return discrepancies
 
-    # Function to measure execution time and final discrepancy
-    def run_torture_test(algorithm, n):
+# Function to measure execution time and final discrepancy
+def run_torture_test(algorithm, n):
         start_time = time.time()
         discrepancies = algorithm(n)
         end_time = time.time()
@@ -53,8 +53,8 @@
         final_discrepancy = discrepancies[-1]
         return execution_time, final_discrepancy
 
-    # Compare algorithms
-    def compare_algorithms(n):
+# Compare algorithms
+def compare_algorithms(n):
         algorithms = {
             "Greedy Coloring": greedy_coloring,
             "Ratio-Based Coloring": ratio_based_coloring,
@@ -82,6 +82,6 @@
         plt.grid(True)
         plt.show()
 
-    # Run the comparison for a specified n
-    n = 1000000000  # You can adjust this value for larger torture tests
-    compare_algorithms(n)
+# Run the comparison for a specified n
+n = 1000000000  # You can adjust this value for larger torture tests
+compare_algorithms(n)
